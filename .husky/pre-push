@@ -1,0 +1,1 @@
+pnpm exec tsc --noEmit && pnpm exec vitest run --passWithNoTests && pnpm audit --prod --audit-level=high
