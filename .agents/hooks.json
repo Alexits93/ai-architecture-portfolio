@@ -1,0 +1,14 @@
+{
+  "anti-slop-guardrail": {
+    "PreToolUse": [
+      {
+        "matcher": "write_to_file\\|replace_file_content",
+        "hooks": [
+          {
+            "command": "node .agents/scripts/anti-slop-guard.js"
+          }
+        ]
+      }
+    ]
+  }
+}

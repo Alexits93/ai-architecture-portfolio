@@ -1,0 +1,9 @@
+{
+  "name": "ai-architecture-portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  },
+  "packageManager": "pnpm@9.0.0"
+}
