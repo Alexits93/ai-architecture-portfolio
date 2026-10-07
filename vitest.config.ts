@@ -5,6 +5,7 @@ export default getViteConfig({
     environment: 'node',
     coverage: {
       provider: 'v8',
+      reporter: ['text', 'json-summary', 'json'],
       include: ['src/**'],
       exclude: ['tests/**', '**/*.config.*', 'src/env.d.ts', 'src/pages/**'],
       thresholds: {

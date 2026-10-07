@@ -36,7 +36,15 @@ jobs:
         run: pnpm exec tsc --noEmit
 
       - name: Unit Tests
-        run: pnpm exec vitest run --passWithNoTests --reporter=default --reporter=junit --outputFile=test-results/junit.xml
+        run: pnpm exec vitest run --coverage --passWithNoTests --reporter=default --reporter=junit --outputFile=test-results/junit.xml
+
+      - name: Report Coverage
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          name: 'Vitest Coverage'
+          json-summary-path: 'coverage/coverage-summary.json'
+          json-final-path: 'coverage/coverage-final.json'
 
       - name: Publish Test Results
         uses: dorny/test-reporter@v1
