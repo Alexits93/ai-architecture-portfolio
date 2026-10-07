@@ -18,6 +18,10 @@ Once Phase 0 is approved, execute this loop:
    - Embed a `mermaid` diagram mapping the *new* Astro DOM tree and state flow.
 3. **Behavioral Matrix (DevSpec):**
    - Create the `[component-name].devspec.md`.
+   - **Mandatory Dimensions:** The DevSpec MUST explicitly address:
+     - *Security (OWASP):* XSS prevention strategies (CSP nonces, sanitization of `set:html`, origin checks).
+     - *Performance (Web Vitals):* CLS/LCP guarantees (image dimensions, no inline render blocking, hydration strictly limited via Astro islands), INP strictness.
+     - *Maintainability:* FSD compliance.
 4. **Test-Driven Implementation:**
    - Write a failing Vitest/Playwright test.
    - Implement the Astro component.

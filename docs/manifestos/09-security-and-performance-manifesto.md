@@ -1,0 +1,44 @@
+# 09 - Security & Performance Manifesto (2026 Standards)
+
+Every architectural decision, implementation plan (`devspec`), and line of code must be heavily scrutinized through the lens of OWASP and Core Web Vitals (CWV). We do not treat these as afterthoughts; they are deterministic prerequisites for merging code.
+
+## 1. Security Standard (OWASP Top 10)
+
+As an Astro-first SSR architecture, our attack surface is vastly different from an SPA, but XSS remains our primary threat model.
+
+### 1.1 XSS (Cross-Site Scripting) Prevention
+- **Strict Content Security Policy (CSP):** CSP is non-negotiable. Inline scripts (even Astro `<script>` blocks) must be securely managed via hashes or nonces generated on the server. `unsafe-inline` is banned.
+- **Zero-Trust Hydration (`set:html` / `dangerouslySetInnerHTML`):**
+  - Astro automatically escapes UI variables by default.
+  - Using `set:html` or any raw HTML injection is strictly forbidden unless the payload is deterministically sanitized via DOMPurify on the server before reaching the client. 
+  - Dynamic `define:vars` in client-side scripts must never receive unsanitized user inputs.
+- **Origin Checking:** Astro's `security.checkOrigin` must remain strictly enabled to defend against CSRF and cross-site injection attacks.
+
+### 1.2 Supply Chain / Package Security
+- We enforce a **Native-First Principle**. Third-party libraries increase supply chain attack surfaces.
+- We rely on deterministic `pnpm audit` in our pre-push Husky hooks to immediately block vulnerabilities in our dependency tree.
+
+## 2. Performance Standard (Core Web Vitals - 2026)
+
+We hold ourselves to the 75th percentile of real-world CrUX data for mobile networks. 
+
+### 2.1 Largest Contentful Paint (LCP) -> Target: ≤ 2.5s
+- **Preload Critical Assets:** The primary LCP element (often hero images or primary font) must be explicitly identified in the `devspec` and preloaded.
+- **Native Astro Image Optimization:** All raster images must pass through Astro's native asset optimization (`<Image />` or `<Picture />`) to enforce WebP/AVIF output. 
+- **Banned:** Client-side rendering of the LCP element is strictly forbidden.
+
+### 2.2 Interaction to Next Paint (INP) -> Target: ≤ 200ms
+- **Zero-JS by Default:** We leverage Astro's island architecture. JavaScript is considered a liability.
+- **Hydration Strictness:** `client:load` is banned unless absolutely necessary. We default to `client:visible` or `client:idle` for interactive widgets. 
+- **Main-Thread Relief:** Nano Stores will handle localized state updates synchronously without triggering heavy VDOM re-renders, protecting the INP score.
+
+### 2.3 Cumulative Layout Shift (CLS) -> Target: ≤ 0.1
+- **Deterministic Dimensions:** Every `<img />`, `<svg>`, and external embed MUST have explicit `width` and `height` attributes to prevent reflow.
+- **Font Loading:** We use `font-display: swap` or `optional` combined with size-adjust properties to guarantee zero shifting between the fallback and web font. 
+- **Skeleton States:** If a component requires client-side hydration that alters layout, a deterministic SSR fallback/skeleton must be provided.
+
+## 3. The DevSpec Requirement
+Before any component is implemented, its `devspec.md` MUST contain a section outlining:
+1. **Security:** How the component avoids XSS (if dynamic data is handled).
+2. **Performance:** The component's LCP/CLS strategy (e.g., explicit sizing, hydration directives).
+3. **Maintainability:** Proof of Feature-Sliced Design boundary adherence.
