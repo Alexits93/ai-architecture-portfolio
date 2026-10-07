@@ -5,15 +5,18 @@ on:
     branches: ["master", "main"]
   pull_request:
     branches: ["master", "main"]
+  merge_group:
+    branches: ["master", "main"]
 
 # Cancel in-progress runs for the same branch to save free-tier minutes
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Strictly scope GITHUB_TOKEN permissions (Least Privilege)
 permissions:
   contents: read
+  checks: write
+  pull-requests: write
 
 jobs:
   quality-gate:
@@ -23,19 +26,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9.0.0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup Environment
+        uses: ./.github/actions/setup-pnpm-env
 
       - name: Enforce Formatting & Linting
         run: pnpm exec eslint .
@@ -44,7 +36,16 @@ jobs:
         run: pnpm exec tsc --noEmit
 
       - name: Unit Tests
-        run: pnpm exec vitest run --passWithNoTests
+        run: pnpm exec vitest run --passWithNoTests --reporter=default --reporter=junit --outputFile=test-results/junit.xml
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Unit Tests Report
+          path: test-results/junit.xml
+          reporter: java-junit
+          fail-on-error: 'false'
 
   security-gate:
     name: Security & Dependency Scan
@@ -53,19 +54,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9.0.0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup Environment
+        uses: ./.github/actions/setup-pnpm-env
 
       - name: pnpm Audit (Supply Chain Security)
         run: pnpm audit --prod --audit-level=high
@@ -78,19 +68,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9.0.0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup Environment
+        uses: ./.github/actions/setup-pnpm-env
 
       - name: Astro Build
         run: pnpm run build
