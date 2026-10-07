@@ -30,7 +30,7 @@ describe('NavigatorMenu Widget (Astro)', () => {
     expect(links.length).toBeGreaterThan(0);
     
     // Check if the home link exists
-    const homeLink = Array.from(links).find(link => link.getAttribute('href') === '/');
+    const homeLink = Array.from(links).find((link: Element) => link.getAttribute('href') === '/');
     expect(homeLink).not.toBeUndefined();
     expect(homeLink?.textContent?.trim()).toBe('Home');
   });
