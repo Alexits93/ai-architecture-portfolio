@@ -1,0 +1,104 @@
+---
+---
+
+<div class="header-wrapper">
+  <header>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="navigator-menu">
+      <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+        <path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/>
+      </svg>
+      <span class="sr-only">Toggle Menu</span>
+    </button>
+
+    <a href="/">
+      <span class="sr-only">Back to Home page</span>
+      <svg id="Patrik Alexits logo" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 467.68 294.45"><path d="m123.48,57.74H54.68v32.43l25.37,41.28h-25.37v106.98h32.26v-74.72h36.54c29.27,0,52.99-23.72,52.99-52.99h0c0-29.27-23.72-52.99-52.99-52.99Zm1.16,73.53h-4.99l-25.58-41.66h30.57c11.5,0,20.83,9.33,20.83,20.83s-9.33,20.83-20.83,20.83Z"/><circle class="cls-1" cx="207.75" cy="223.56" r="17.26" transform="translate(-33.13 36.16) rotate(-9.22)"/><circle class="cls-1" cx="398.28" cy="223.56" r="17.26" transform="translate(39.32 505.97) rotate(-67.5)"/><polygon class="cls-1" points="13.25 192.57 0 192.57 0 281.21 0 294.45 13.25 294.45 101.89 294.45 101.89 281.21 13.25 281.21 13.25 192.57"/><polygon class="cls-1" points="454.43 0 365.79 0 365.79 13.25 454.43 13.25 454.43 101.89 467.68 101.89 467.68 13.25 467.68 0 454.43 0"/><path class="cls-1" d="m228.91,237.51h35.6l6.52-18.68h62.49l6.52,18.68h35.6l-73.36-185.04-73.36,185.04Zm51.79-47.1l21.57-57.11,21.57,57.11h-43.13Z"/></svg>
+    </a>
+
+    <button class="theme-toggle">
+      <img src="/assets/icons/light_mode.svg" class="icon" alt="light mode icon" width="50" height="50" />
+    </button>
+  </header>
+</div>
+
+<script>
+  import { toggleMenu, toggleTheme, isMenuOpen, themeStore } from '@/shared/stores/ui';
+
+  const menuBtn = document.querySelector('.menu-toggle');
+  const themeBtn = document.querySelector('.theme-toggle');
+  const themeIcon = themeBtn?.querySelector('img.icon') as HTMLImageElement;
+
+  if (menuBtn) {
+    menuBtn.addEventListener('click', toggleMenu);
+    
+    // Subscribe to store to update aria-expanded
+    isMenuOpen.subscribe((isOpen: boolean) => {
+      menuBtn.setAttribute('aria-expanded', String(isOpen));
+    });
+  }
+
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+    
+    // Subscribe to store to update UI
+    themeStore.subscribe((theme: 'light' | 'dark') => {
+      if (themeIcon) {
+        themeIcon.src = `/assets/icons/${theme === 'light' ? 'dark' : 'light'}_mode.svg`;
+        themeIcon.alt = `${theme} mode icon`;
+      }
+      document.body.setAttribute('data-theme', theme);
+    });
+  }
+</script>
+
+<style>
+  .header-wrapper {
+      position: sticky;
+      top: 0;
+      z-index: 9998;
+  }
+  .header-wrapper header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background-color: var(--body-background);
+      color: var(--font-color);
+  }
+  .header-wrapper header a:active,
+  .header-wrapper header a:focus,
+  .header-wrapper header a:focus-visible {
+      outline: 2px solid var(--focus-color);
+  }
+  .header-wrapper header a {
+      text-decoration: none;
+      color: var(--font-color);
+  }
+  .header-wrapper header a svg {
+      height: 50px;
+  }
+  .header-wrapper header a h1 {
+      color: var(--font-color-bold);
+      margin: 0;
+      letter-spacing: -.025em;
+      font-weight: 700;
+      font-size: 2.25rem;
+      line-height: 2.5rem;
+  }
+  .header-wrapper header button {
+      background: none;
+      border: none;
+      cursor: pointer;
+  }
+  .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+  }
+</style>

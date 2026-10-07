@@ -1,0 +1,83 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: ["master", "main"]
+  pull_request:
+    branches: ["master", "main"]
+  merge_group:
+    branches: ["master", "main"]
+
+# Cancel in-progress runs for the same branch to save free-tier minutes
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  quality-gate:
+    name: Code Quality (Lint, Typecheck, Test)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        uses: ./.github/actions/setup-pnpm-env
+
+      - name: Enforce Formatting & Linting
+        run: pnpm exec eslint .
+
+      - name: Typecheck
+        run: pnpm exec tsc --noEmit
+
+      - name: Unit Tests
+        run: pnpm exec vitest run --coverage --passWithNoTests --reporter=default --reporter=junit --outputFile=test-results/junit.xml
+
+      - name: Report Coverage
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          name: 'Vitest Coverage'
+          json-summary-path: 'coverage/coverage-summary.json'
+          json-final-path: 'coverage/coverage-final.json'
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Unit Tests Report
+          path: test-results/junit.xml
+          reporter: java-junit
+          fail-on-error: 'false'
+
+  security-gate:
+    name: Security & Dependency Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        uses: ./.github/actions/setup-pnpm-env
+
+      - name: pnpm Audit (Supply Chain Security)
+        run: pnpm audit --prod --audit-level=high
+
+  build-gate:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    needs: [quality-gate, security-gate]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        uses: ./.github/actions/setup-pnpm-env
+
+      - name: Astro Build
+        run: pnpm run build

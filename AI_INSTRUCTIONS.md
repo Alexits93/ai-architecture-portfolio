@@ -19,3 +19,8 @@ This project strictly enforces Spec-Driven Development (SDD) and Test-Driven Dev
 4. **Implement:** Write code to pass tests.
 
 See `/docs/manifestos/` for detailed governing rules.
+
+## Native-First Tooling Principle (Strict)
+Third-party packages, plugins, and custom scripts are an absolute last resort. 
+- You must always attempt to solve a problem using native features of the established toolset (Astro, TypeScript, Vitest, Node).
+- Before introducing any third-party dependency, you must conduct proper internet research to prove that no official or native workaround exists.

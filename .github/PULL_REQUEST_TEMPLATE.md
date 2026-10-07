@@ -1,0 +1,21 @@
+## Summary & Motivation
+<!-- A concise explanation of the change and the problem it solves. Why did it change? -->
+
+
+## Linked Tickets/Issues
+<!-- Direct links to your project management tool / GitHub Issues (e.g., Closes #123) -->
+
+
+## Testing Strategy
+<!-- Details such as environment details, edge cases covered, and verification steps (e.g., Vitest passing, Astro Container verified). -->
+
+
+## Pre-Merge Checklist
+- [ ] Tests passed
+- [ ] FSD / Architectural boundaries respected
+- [ ] No `any` / `unknown` introduced
+- [ ] Modernization mandated (used latest HTML5/CSS3/TS)
+- [ ] Documentation updated (DevSpecs, Specs, Architecture)
+
+## Screenshots/Gifs
+<!-- For UI-related changes, add a visual representation here. -->

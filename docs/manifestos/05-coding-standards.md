@@ -23,3 +23,8 @@ Code must be deterministic, readable, and strictly scoped.
 ## 5. Architectural Principles
 - **Static-First (Zero JS Default):** Astro components must ship zero runtime JavaScript to the client unless explicitly required via client directives (`client:load`, `client:idle`).
 - **Strict Typing:** TypeScript is not optional. `any` is strictly banned. Unknown structures must be typed as `unknown` and parsed via schema validation (e.g., Zod).
+- **Modernization Mandate:** Always utilize the latest available features of HTML5, CSS3/SCSS, and TypeScript. Never port outdated legacy practices; improve the code baseline while ensuring visual parity during migration.
+
+## 6. Version Control Standards
+- **Branch Management:** Always create and switch to a properly named branch before starting work (e.g., `feat/migrate-[component]`, `fix/[issue]`). Do not pile unrelated features into the same branch.
+- **Conventional Commits:** Commit messages must strictly adhere to the Conventional Commits specification (e.g., `feat(...)`, `fix(...)`, `docs(...)`, `chore(...)`) as enforced by `commitlint`.
