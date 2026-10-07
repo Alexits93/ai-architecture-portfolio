@@ -22,7 +22,7 @@ Follow these 4 steps in exact order when this skill is invoked:
 - **Action:** 
   - Review the session for repeated mistakes (e.g., struggling with a specific test framework, failing a specific linter rule repeatedly).
   - Update the appropriate LLM context file (e.g., `.cursor/rules/global.mdc`, `docs/manifestos/`, or a specific skill) with a concise, high-signal rule to prevent this in the future.
-  - **Constraint:** Do NOT just append unstructured text. Keep updates highly condensed. Follow the "Anti-Slop" zero-fluff methodology. Avoid context bloating.
+  - **Constraint (Non-Narrative Documentation):** Do NOT turn documents into a bloated notepad citing exact issues, debugging steps, or specific error messages you faced. Persist the lesson in a way that becomes a natural, informative part of the documentation (e.g., instead of "we got a NoMatchingRenderer error because jsdom...", write "Configure environment: 'node' to preserve compiler metadata").
 
 ## Step 3: Knowledge-Base Audit (Prevent Context Spiral)
 - **Objective:** Ensure memory and LLM-specific files follow standards and do not cause a self-destructing spiral of AI context bloating and slopping.
@@ -36,7 +36,7 @@ Follow these 4 steps in exact order when this skill is invoked:
 - **Objective:** Generate a structured prompt for the user to copy-paste into the *next* agent session.
 - **Action:** Output a final markdown block containing the exact prompt the user should use. 
 - **The Prompt MUST Include:**
-  1. **Current State:** A hyper-concise summary of what was just achieved (e.g., "Header migration complete, FSD enforced").
+  1. **Current State (Git-Verified):** A hyper-concise summary of what was just achieved. You MUST base this strictly on `git log` / Git history to ensure the state is factual and grounded, not hallucinated.
   2. **Active Work:** What the very next step is, pointing to the specific `devspec.md` or component.
   3. **Strict Constraints Reminder:** A reminder of the most critical guardrails (e.g., OWASP, Web Vitals, TDD, zero `any`/`unknown`).
   4. **Self-Propagation Directive:** An explicit instruction for the *next* agent to acknowledge and bind itself to this `checkpoint-and-handover` skill, ensuring the no-loss mentality persists across all future sessions.

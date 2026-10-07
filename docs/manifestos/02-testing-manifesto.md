@@ -20,5 +20,5 @@ Code is written only to satisfy a failing test, following the **Testing Trophy**
 - Branches, functions, and lines must maintain 100% coverage for core utilities and logic domains.
 
 ## 5. Astro Component Testing
-- **AstroContainer:** When testing `.astro` components in Vitest via `experimental_AstroContainer`, use `environment: 'node'` in `vitest.config.ts`. The `jsdom` environment strips `isAstroComponentFactory` metadata causing a `NoMatchingRenderer` error. Import `JSDOM` manually inside the test file to parse the HTML string.
-- **SVG Constraints:** Do not leave `<?xml version="1.0" encoding="UTF-8"?>` tags inside Astro HTML/SVG templates, as it breaks the Astro compiler.
+- **AstroContainer:** When testing `.astro` components in Vitest via `experimental_AstroContainer`, configure `environment: 'node'` in `vitest.config.ts` to preserve `isAstroComponentFactory` compiler metadata. Import `JSDOM` manually inside the test file to parse the HTML string.
+- **SVG Constraints:** Do not include XML declarations (`<?xml version="1.0" encoding="UTF-8"?>`) inside Astro HTML/SVG templates; they are invalid HTML and will break the Astro compiler.
