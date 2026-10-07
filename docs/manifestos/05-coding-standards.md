@@ -23,3 +23,4 @@ Code must be deterministic, readable, and strictly scoped.
 ## 5. Architectural Principles
 - **Static-First (Zero JS Default):** Astro components must ship zero runtime JavaScript to the client unless explicitly required via client directives (`client:load`, `client:idle`).
 - **Strict Typing:** TypeScript is not optional. `any` is strictly banned. Unknown structures must be typed as `unknown` and parsed via schema validation (e.g., Zod).
+- **Modernization Mandate:** Always utilize the latest available features of HTML5, CSS3/SCSS, and TypeScript. Never port outdated legacy practices; improve the code baseline while ensuring visual parity during migration.

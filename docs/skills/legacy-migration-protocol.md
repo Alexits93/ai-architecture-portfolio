@@ -5,7 +5,9 @@ This is a standardized workflow protocol for Claude, Cursor, and Codex to safely
 
 
 ## Phase 0: Reverse-Engineering & Pathology (Zero Assumptions)
-Never assume a 1:1 migration is safe. Legacy components are often highly niche, non-standard, and entangled (e.g., custom shadow DOM lifecycle hacks, side-effect heavy). 
+Never assume a 1:1 migration is safe. Legacy components are often highly niche, non-standard, and entangled (e.g., custom shadow DOM lifecycle hacks, side-effect heavy).
+**Modernization Baseline:** Assume legacy code is outdated. When migrating, ensure visual parity for initial browser tests, but proactively rewrite code to utilize modern HTML5, CSS3, SCSS, and TypeScript features. Do not port over outdated practices.
+
 1. **Analyze:** Read the legacy code thoroughly.
 2. **De-entanglement Report:** Generate a Mermaid.js diagram documenting the *current entanglements* (CSS coupling, hidden state mutations, non-standard DOM manipulation).
 3. **Decoupling Strategy:** Propose how to extract the presentation (CSS) from the non-standard logic before writing the spec.
