@@ -1,0 +1,26 @@
+name: Task
+description: Define a specific technical or actionable task.
+title: "[Task] "
+labels: ["task"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Detailed explanation of what needs to be done.
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Requirements / Constraints
+      description: Technical constraints, FSD rules, or testing requirements.
+    validations:
+      required: true
+  - type: input
+    id: parent-link
+    attributes:
+      label: Parent Story/Epic
+      description: Link to the parent issue if applicable.
+    validations:
+      required: false

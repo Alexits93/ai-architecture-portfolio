@@ -1,0 +1,26 @@
+name: PR Lint
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  pr-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR description
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body;
+            if (!body || body.trim() === '') {
+              core.setFailed('PR description cannot be empty. Please fill out the PULL_REQUEST_TEMPLATE.');
+              return;
+            }
+            // Ensure the user actually filled out the template (removed comments or added content)
+            if (body.includes('<!-- A concise explanation of the change and the problem it solves. Why did it change? -->')) {
+              core.setFailed('Please remove the HTML comments and fill out the Summary & Motivation section in the PR template.');
+            }
+            if (!body.includes('[x] Tests passed') && !body.includes('[x] FSD / Architectural boundaries respected')) {
+              core.setFailed('Please complete the Pre-Merge Checklist in the PR description.');
+            }

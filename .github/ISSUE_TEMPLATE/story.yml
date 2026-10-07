@@ -1,0 +1,31 @@
+name: Story
+description: Define a user story linked to an Epic.
+title: "[Story] "
+labels: ["story"]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for creating a Story! Ensure it connects to user value."
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User Story
+      description: "Format: As a [role], I want to [action] so that [benefit]."
+      placeholder: As a...
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Specific conditions that must be met for the story to be complete.
+      placeholder: - [ ] Condition 1...
+    validations:
+      required: true
+  - type: input
+    id: epic-link
+    attributes:
+      label: Parent Epic
+      description: Link to the parent epic issue number (e.g., #123)
+    validations:
+      required: false
