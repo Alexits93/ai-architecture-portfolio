@@ -20,3 +20,9 @@ This file acts as an index for AI agents (Claude, Cursor, Copilot) to ingest the
 
 ## Execution (Active Specs)
 - /docs/exec-plans/ (Directory containing active *.spec.md and *.devspec.md files)
+
+## Workflows & Skills
+- /docs/skills/legacy-migration-protocol.md
+
+## Visualization Standard
+- /docs/manifestos/07-visualization-manifesto.md
