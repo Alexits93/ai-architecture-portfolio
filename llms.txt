@@ -26,3 +26,6 @@ This file acts as an index for AI agents (Claude, Cursor, Copilot) to ingest the
 
 ## Visualization Standard
 - /docs/manifestos/07-visualization-manifesto.md
+
+## Domain Architecture
+- /docs/manifestos/08-architecture-boundaries.md
