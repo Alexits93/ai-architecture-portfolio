@@ -1,6 +1,8 @@
 # Skill: Legacy Migration Protocol
 
 This is a standardized workflow protocol for Claude, Cursor, and Codex to safely migrate the legacy `web-components` codebase into the new Astro architecture.
+**Note on Legacy Path:** The old codebase is located outside this repository at `../web-components/` (e.g., `/home/patrika/Documents/projects/web-components/`). Do not search the local git tree for it.
+
 
 ## Phase 0: Reverse-Engineering & Pathology (Zero Assumptions)
 Never assume a 1:1 migration is safe. Legacy components are often highly niche, non-standard, and entangled (e.g., custom shadow DOM lifecycle hacks, side-effect heavy). 
