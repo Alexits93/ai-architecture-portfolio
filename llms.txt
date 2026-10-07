@@ -1,5 +1,7 @@
 # AI Architecture Portfolio - LLM Documentation Map
 
+> A machine-readable, AI-optimized index of the governing rules, architectural manifestos, and active execution plans for the AI Architecture Portfolio migration.
+
 This file acts as an index for AI agents (Claude, Cursor, Copilot) to ingest the governing rules of this repository.
 
 ## Core Directives
