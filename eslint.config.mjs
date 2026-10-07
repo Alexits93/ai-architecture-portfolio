@@ -1,11 +1,16 @@
-import tsEslint from "typescript-eslint";
 import js from "@eslint/js";
+import tsEslint from "typescript-eslint";
 import eslintPluginAstro from "eslint-plugin-astro";
+import fsd from "@conarti/eslint-plugin-feature-sliced";
 
 export default [
   js.configs.recommended,
   ...tsEslint.configs.recommended,
   ...eslintPluginAstro.configs.recommended,
+  fsd(),
+  {
+    ignores: [".agents/**", "dist/**"]
+  },
   {
     files: ["**/*.{ts,js,mjs,cjs,astro}"],
     rules: {
@@ -25,6 +30,14 @@ export default [
           "message": "Type assertion 'as unknown' is strictly banned. Validate data instead of forcing casts."
         }
       ]
+    }
+  },
+  {
+    // Astro pages are handled dynamically by the framework, FSD public API doesn't apply
+    files: ["src/pages/**/*.astro", "eslint.config.mjs"],
+    rules: {
+      "@conarti/feature-sliced/public-api": "off",
+      "@conarti/feature-sliced/import-order": "off"
     }
   }
 ];
