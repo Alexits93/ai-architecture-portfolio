@@ -16,6 +16,10 @@ This file acts as an index for AI agents (Claude, Cursor, Copilot) to ingest the
 - /docs/manifestos/04-app-architecture.md
 - /docs/manifestos/05-coding-standards.md
 - /docs/manifestos/06-domain-terminology.md
+- /docs/manifestos/07-visualization-manifesto.md
+- /docs/manifestos/08-architecture-boundaries.md
+- /docs/manifestos/09-security-and-performance-manifesto.md
+- /docs/manifestos/10-memory-and-context-manifesto.md
 
 ## Historical Decisions
 - /docs/adrs/001-framework-migration.md
@@ -26,8 +30,4 @@ This file acts as an index for AI agents (Claude, Cursor, Copilot) to ingest the
 ## Workflows & Skills
 - /docs/skills/legacy-migration-protocol.md
 
-## Visualization Standard
-- /docs/manifestos/07-visualization-manifesto.md
 
-## Domain Architecture
-- /docs/manifestos/08-architecture-boundaries.md
