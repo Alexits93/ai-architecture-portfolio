@@ -24,3 +24,9 @@ jobs:
             if (!body.includes('[x] Tests passed') && !body.includes('[x] FSD / Architectural boundaries respected')) {
               core.setFailed('Please complete the Pre-Merge Checklist in the PR description.');
             }
+            
+            // Deterministic enforcement of issue linkage for traceability
+            const linkedIssueRegex = /(Closes|Fixes|Resolves)\s+#\d+/i;
+            if (!linkedIssueRegex.test(body)) {
+              core.setFailed('Traceability Error: PR description must include a linked issue (e.g., "Closes #123").');
+            }
