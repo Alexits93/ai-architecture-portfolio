@@ -39,5 +39,11 @@ export default [
       "@conarti/feature-sliced/public-api": "off",
       "@conarti/feature-sliced/import-order": "off"
     }
+  },
+  {
+    files: ["**/*.spec.ts", "tests/**/*.ts"],
+    rules: {
+      "max-lines-per-function": "off"
+    }
   }
 ];
