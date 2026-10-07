@@ -1,0 +1,132 @@
+---
+export interface Props {
+    menuItems?: { name: string; path: string }[];
+}
+
+const defaultMenuItems = [
+    { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blog' },
+    { name: 'CV', path: '/cv' }
+];
+
+const { menuItems = defaultMenuItems } = Astro.props;
+---
+
+<section id="navigator-menu">
+    <div class="navigator-menu-overlay"></div>
+    <div class="navigator-menu-body">
+        <ul>
+            {menuItems.map(item => (
+                <li>
+                    <a href={item.path}>
+                        <h2>{item.name}</h2>
+                    </a>
+                </li>
+            ))}
+        </ul>
+    </div>
+</section>
+
+<script>
+    import { isMenuOpen } from '@/shared/stores/ui';
+
+    const menuSection = document.getElementById('navigator-menu');
+    const menuLinks = document.querySelectorAll('#navigator-menu a');
+
+    if (menuSection) {
+        // Subscribe to store to update UI
+        isMenuOpen.subscribe((isOpen: boolean) => {
+            if (isOpen) {
+                menuSection.classList.add('open');
+                // Optional: Prevent body scroll when open
+                document.body.style.overflow = 'hidden';
+            } else {
+                menuSection.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    // Close menu when a link is clicked
+    menuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            isMenuOpen.set(false);
+        });
+    });
+</script>
+
+<style>
+    section#navigator-menu {
+        display: block;
+        pointer-events: none; /* Let clicks pass through when closed */
+        position: fixed;
+        z-index: 9999;
+    }
+
+    section#navigator-menu.open {
+        pointer-events: auto; /* Enable clicks when open */
+    }
+
+    section#navigator-menu .navigator-menu-body {
+        display: none;
+    }
+
+    section#navigator-menu.open .navigator-menu-overlay {
+        display: flex;
+        position: fixed;
+        flex-direction: column;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        backdrop-filter: blur(35px);
+        -webkit-backdrop-filter: blur(35px);
+        background: rgba(0, 0, 0, 0.4);
+        justify-content: center;
+        align-items: center;
+        z-index: 9998;
+    }
+
+    section#navigator-menu.open .navigator-menu-body {
+        display: flex;
+        position: fixed;
+        flex-direction: column;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    section#navigator-menu.open .navigator-menu-body ul {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    section#navigator-menu.open .navigator-menu-body ul li a {
+        display: flex;
+        color: var(--font-color);
+        text-decoration: none;
+    }
+
+    section#navigator-menu.open .navigator-menu-body ul li a:active,
+    section#navigator-menu.open .navigator-menu-body ul li a:focus,
+    section#navigator-menu.open .navigator-menu-body ul li a:focus-visible {
+        outline: 2px solid var(--focus-color);
+        outline-offset: 4px;
+    }
+
+    section#navigator-menu.open .navigator-menu-body ul li a h2 {
+        display: inline-block;
+        margin: 0;
+        font-size: 48px;
+        color: var(--font-color-bold);
+    }
+</style>
