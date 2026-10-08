@@ -45,7 +45,7 @@ const alertId = "alert-" + crypto.randomUUID();
 		</symbol>
 	</svg>
 
-	<div class={`notification ${type}`} role="alert">
+	<div class:list={['notification', type]} role="alert">
 		<div class="notification-header">
 			<svg role="img" aria-label={`${headerText}:`}><use href={iconId}></use></svg>
 			<h4>{headerText}</h4>
