@@ -10,12 +10,12 @@ describe('ExperienceList Widget (Astro)', () => {
     container = await AstroContainer.create();
   });
 
-  it('should render the main cv-wrapper', async () => {
+  it('should render the main experience-list-container', async () => {
     const html = await container.renderToString(ExperienceList);
     const dom = new JSDOM(html);
     const doc = dom.window.document;
     
-    const wrapper = doc.querySelector('.cv-wrapper');
+    const wrapper = doc.querySelector('.experience-list-container');
     expect(wrapper).not.toBeNull();
   });
 

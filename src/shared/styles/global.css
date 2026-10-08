@@ -76,12 +76,20 @@ section#page-wrapper {
   gap: 3rem;
 }
 
+section#page-wrapper > .experience-list-container {
+  align-self: flex-end;
+}
+
 @media (min-width: 768px) {
   section#page-wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 3rem;
     align-items: start;
+  }
+
+  section#page-wrapper > .experience-list-container {
+    align-self: auto;
   }
 
   section#page-wrapper section#about-me {
