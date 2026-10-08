@@ -1,0 +1,67 @@
+:root {
+  /* Colors - Light Mode */
+  --body-background: #ffffff;
+  --font-color: #475569;
+  --font-color-bold: #1e293b;
+  --theme-primary: #3b82f6;
+  --theme-secondary: #e2e8f0;
+  --focus-color: #2563eb;
+  --thumbnail-bg-color: #f8fafc;
+
+  /* Alert Colors - Light Mode */
+  --host-bg-color-success: #dcfce7;
+  --host-font-color-success: #166534;
+  --host-border-color-success: #22c55e;
+  
+  --host-bg-color-info: #e0f2fe;
+  --host-font-color-info: #075985;
+  --host-border-color-info: #0ea5e9;
+
+  --host-bg-color-warning: #fef9c3;
+  --host-font-color-warning: #854d0e;
+  --host-border-color-warning: #eab308;
+
+  --host-bg-color-error: #fee2e2;
+  --host-font-color-error: #991b1b;
+  --host-border-color-error: #ef4444;
+  
+  /* Animations */
+  --animationDurationSeconds: 5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Colors - Dark Mode */
+    --body-background: #0f172a;
+    --font-color: #94a3b8;
+    --font-color-bold: #f8fafc;
+    --theme-primary: #3b82f6;
+    --theme-secondary: #1e293b;
+    --focus-color: #60a5fa;
+    --thumbnail-bg-color: #1e293b;
+
+    /* Alert Colors - Dark Mode */
+    --host-bg-color-success: #14532d;
+    --host-font-color-success: #dcfce7;
+    --host-border-color-success: #22c55e;
+    
+    --host-bg-color-info: #0c4a6e;
+    --host-font-color-info: #e0f2fe;
+    --host-border-color-info: #0ea5e9;
+
+    --host-bg-color-warning: #713f12;
+    --host-font-color-warning: #fef9c3;
+    --host-border-color-warning: #eab308;
+
+    --host-bg-color-error: #7f1d1d;
+    --host-font-color-error: #fee2e2;
+    --host-border-color-error: #ef4444;
+  }
+}
+
+body {
+  background-color: var(--body-background);
+  color: var(--font-color);
+  margin: 0;
+  padding: 0;
+}
