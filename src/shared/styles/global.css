@@ -97,3 +97,64 @@ section#page-wrapper > .experience-list-container {
     top: 6rem;
   }
 }
+
+/* Experience List styles */
+.experience-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.experience-list-container .experience-item {
+    padding: 1rem;
+    border-radius: 10px;
+    filter: drop-shadow(0 10px 8px rgba(0, 0, 0, .04)) drop-shadow(0 4px 3px rgba(0, 0, 0, .1));
+    box-shadow: 0 0 #0000, 0 0 #0000, inset 0 1px 0 0 rgba(148, 163, 184, 0.1);
+    background-color: var(--theme-secondary);
+    color: var(--font-color);
+}
+
+.experience-list-container .experience-item .position p strong {
+    color: var(--font-color-bold);
+}
+
+.experience-list-container .experience-item .position p strong:hover {
+    background-color: var(--theme-primary);
+    color: var(--focus-color);
+}
+
+.experience-list-container a {
+    display: flex;
+    color: var(--font-color);
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.experience-list-container a:hover {
+    color: var(--theme-primary);
+    text-decoration: none;
+}
+
+.experience-list-container a svg{
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.experience-list-container .position h3 {
+    margin: 0 0 1rem;
+    color: var(--font-color-bold);
+}
+
+.experience-list-container .position .tags {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+}
+
+.experience-list-container h2 {
+    margin: 0 0 1rem;
+    color: var(--font-color-bold);
+}
