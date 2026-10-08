@@ -1,0 +1,250 @@
+---
+import Header from '@/widgets/header/ui/Header.astro';
+import NavigatorMenu from '@/widgets/navigator-menu/ui/NavigatorMenu.astro';
+import AboutMe from '@/widgets/about-me/ui/AboutMe.astro';
+import SkillTag from '@/shared/ui/skill-tag/SkillTag.astro';
+import '@/shared/styles/global.css';
+
+const aboutMeData = {
+    name: "Patrik Alexits",
+    profession: "Frontend Software Engineer",
+    text: "Bringing 7+ years of experience in web development with an emphasis on front-end technologies. Expert in enhancing user interfaces and ensuring accessibility, delivering projects that consistently meet rigorous web standards.",
+    spotifyTrackId: "60a0Rd6pjrkxjPbaKzXjfq",
+    githubUrl: "https://github.com/Alexits93",
+    linkedinUrl: "https://www.linkedin.com/in/patrik-alexits/",
+    instagramUrl: "https://www.instagram.com/akelafreestyle/",
+    stackoverflowUrl: "https://stackoverflow.com/users/9327050/patrik-alexits"
+};
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>CV - Patrik Alexits</title>
+	</head>
+	<body>
+		<Header />
+		<NavigatorMenu />
+		<main>
+			<section id="page-wrapper">
+                <AboutMe
+                    name={aboutMeData.name}
+                    profession={aboutMeData.profession}
+                    text={aboutMeData.text}
+                    spotifyTrackId={aboutMeData.spotifyTrackId}
+                    githubUrl={aboutMeData.githubUrl}
+                    linkedinUrl={aboutMeData.linkedinUrl}
+                    instagramUrl={aboutMeData.instagramUrl}
+                    stackoverflowUrl={aboutMeData.stackoverflowUrl}
+                />
+                <div class="cv-wrapper">
+                    <div class="experience-wrapper">
+                        <h2>Experience</h2>
+                        <article class="experience-item">
+                            <span>2024 - Present</span>
+                            <div class="position">
+                                <h3>Frontend Software Engineer - Swiss Learning Hub</h3>
+                                <p>Planning and implementing a web-based migration of an enterprise-level Windows application <strong>Evento</strong>, using <strong>web components</strong>, <strong>Context API</strong>, <strong>State Machine</strong> and web standards to ensure an agnostic way of implementation.</p>
+                                <p> Maintaining and developing <strong>Evento’s web-based feature application</strong> written in <strong>Angular</strong>.</p>
+                                <p>Developing <strong>Evento’s new, web-components based</strong> feature applications using <strong>hybrids.js</strong>, <strong>Typescript</strong> and <strong>State Machines (xstate)</strong>.</p>
+                                <p>Researching, documenting <strong>micro frontends</strong> architechture and <strong>web components</strong> based application solutions.</p>
+                                <p>Implemented custom <strong>SCSS Framework</strong> solution, reducing used code by 85%</p>
+                                <div class="tags">
+                                    <SkillTag skill="Web Components" />
+                                    <SkillTag skill="Microfrontend" />
+                                    <SkillTag skill="Angular" />
+                                    <SkillTag skill="TypeScript" />
+                                    <SkillTag skill="JavaScript" />
+                                    <SkillTag skill="Accessibility" />
+                                    <SkillTag skill="Context API" />
+                                    <SkillTag skill="TFS" />
+                                    <SkillTag skill="SCSS" />
+                                    <SkillTag skill="Agile" />
+                                    <SkillTag skill="Scrum" />
+                                </div>
+                            </div>
+                        </article>
+                        <article class="experience-item">
+                            <span>2020 - 2023</span>
+                            <div class="position">
+                                <h3>Frontend Developer - Avensys Consulting</h3>
+                                <p> Spearheaded frontend development on enterprise projects across Banking and Retail sectors, utilizing <strong>Angular</strong>, <strong>Vue.js</strong> and <strong>Microfrontend</strong> architecture.</p>
+                                <p> Developed an internal platform combining <strong>SAP CX</strong>, <strong>Adobe Experience Manager</strong>, and <strong>Vue.js</strong> for a Proof of Concept.</p>
+                                <div class="tags">
+                                    <SkillTag skill="Angular" />
+                                    <SkillTag skill="Microfrontend" />
+                                    <SkillTag skill="Vue.js" />
+                                    <SkillTag skill="TypeScript" />
+                                    <SkillTag skill="JavaScript" />
+                                    <SkillTag skill="Accessibility" />
+                                    <SkillTag skill="JQuery" />
+                                    <SkillTag skill="SAP CX" />
+                                    <SkillTag skill="Adobe Experience Manager (AEM)" />
+                                    <SkillTag skill="Agile" />
+                                    <SkillTag skill="Scrum" />
+                                    <SkillTag skill="Kanban" />
+                                    <SkillTag skill="SaFe" />
+                                </div>
+                            </div>
+                        </article>
+                        <article class="experience-item">
+                            <span>2019 - 2020</span>
+                            <div class="position">
+                                <h3>Fullstack Developer - Solvistas GmbH</h3>
+                                <p> Developed and maintained 'Easy Arena,' a high-traffic ticketing web app, focusing on frontend enhancements with <strong>Angular</strong>, <strong>TypeScript</strong>, and <strong>RxJS</strong>. Improved app scalability and performance in a <strong>multi tenant</strong> architecture, utilizing <strong>Java</strong>, <strong>Spring Boot</strong> and <strong>MySQL</strong> on the backend.</p>
+                                <div class="tags">
+                                    <SkillTag skill="Angular" />
+                                    <SkillTag skill="TypeScript" />
+                                    <SkillTag skill="JavaScript" />
+                                    <SkillTag skill="Java" />
+                                    <SkillTag skill="Spring Boot" />
+                                    <SkillTag skill="MySQL" />
+                                    <SkillTag skill="Agile" />
+                                    <SkillTag skill="Scrum" />
+                                </div>
+                            </div>
+                        </article>
+                        <article class="experience-item">
+                            <span>2017 - 2018</span>
+                            <div class="position">
+                                <h3>Fullstack Developer - Voov Ltd.</h3>
+                                <p> Engineered multiple client websites as a Fullstack Developer, leveraging <strong>PHP</strong> and the <strong>Laravel</strong> framework for comprehensive site and backend solutions.</p>
+                                <div class="tags">
+                                    <SkillTag skill="Laravel" />
+                                    <SkillTag skill="PHP" />
+                                    <SkillTag skill="JavaScript" />
+                                    <SkillTag skill="JQuery" />
+                                    <SkillTag skill="Photoshop" />
+                                    <SkillTag skill="Sitebuilding" />
+                                </div>
+                            </div>
+                        </article>
+                        <a href="/assets/files/patri-alexits-cv.pdf" download="patrik-alexits-cv.pdf">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 14.78a.75.75 0 001.06 0l7.22-7.22v5.69a.75.75 0 001.5 0v-7.5a.75.75 0 00-.75-.75h-7.5a.75.75 0 000 1.5h5.69l-7.22 7.22a.75.75 0 000 1.06z" clip-rule="evenodd"></path></svg>
+                            <span>
+                                Download full resumé
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+		</main>
+	</body>
+</html>
+
+<style>
+    section#page-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+    }
+
+    ::selection {
+        background-color: var(--theme-primary);
+    }
+
+    section#page-wrapper .cv-wrapper {
+        display: flex;
+        align-self: flex-end;
+    }
+
+    section#page-wrapper .cv-wrapper .experience-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    /* We use global dark mode tokens implicitly via variables. 
+       If specific backgrounds are needed, we tie them to .theme-dark */
+    :global(.theme-dark) section#page-wrapper .cv-wrapper .experience-wrapper .experience-item {
+        padding: 1rem;
+        border-radius: 10px;
+        filter: drop-shadow(0 10px 8px rgba(0, 0, 0, .04)) drop-shadow(0 4px 3px rgba(0, 0, 0, .1));
+        box-shadow: 0 0 #0000, 0 0 #0000, inset 0 1px 0 0 rgba(148, 163, 184, 0.1);
+        background-color: rgba(154, 170, 195, 0.05);
+    }
+
+    :global(.theme-light) section#page-wrapper .cv-wrapper .experience-wrapper .experience-item {
+        padding: 1rem;
+        border-radius: 10px;
+        filter: drop-shadow(0 10px 8px rgba(0, 0, 0, .04)) drop-shadow(0 4px 3px rgba(0, 0, 0, .1));
+        box-shadow: 0 0 #0000, 0 0 #0000, inset 0 1px 0 0 rgba(148, 163, 184, 0.1);
+        background-color: rgba(83, 95, 114, 0.05);
+    }
+
+    section#page-wrapper .cv-wrapper .experience-wrapper .experience-item {
+        padding: 1rem;
+        border-radius: 10px;
+        filter: drop-shadow(0 10px 8px rgba(0, 0, 0, .04)) drop-shadow(0 4px 3px rgba(0, 0, 0, .1));
+        box-shadow: 0 0 #0000, 0 0 #0000, inset 0 1px 0 0 rgba(148, 163, 184, 0.1);
+        background-color: rgba(83, 95, 114, 0.05);
+        color: var(--font-color);
+    }
+
+    section#page-wrapper .cv-wrapper .experience-wrapper .experience-item .position p strong {
+        color: var(--font-color-bold);
+    }
+
+    section#page-wrapper .cv-wrapper .experience-wrapper .experience-item .position p strong:hover {
+        background-color: var(--theme-primary);
+        color: var(--focus-color);
+    }
+
+    section#page-wrapper .cv-wrapper .experience-wrapper a {
+        display: flex;
+        color: var(--font-color);
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    section#page-wrapper .cv-wrapper .experience-wrapper a:hover {
+        color: var(--theme-primary);
+        text-decoration: none;
+    }
+
+    section#page-wrapper .cv-wrapper .experience-wrapper a svg{
+        display: inline-block;
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    section#page-wrapper .cv-wrapper .experience-wrapper .position h3 {
+        margin: 0 0 1rem;
+        color: var(--font-color-bold);
+    }
+
+    section#page-wrapper .cv-wrapper .experience-wrapper .position .tags {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin: 1rem 0;
+    }
+
+    section#page-wrapper .cv-wrapper .experience-wrapper h2 {
+        margin: 0 0 1rem;
+        color: var(--font-color-bold);
+    }
+
+    @media (min-width: 768px) {
+        section#page-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        section#page-wrapper :global(section#about-me) {
+            position: sticky;
+            top: 6rem;
+        }
+
+        section#page-wrapper .cv-wrapper {
+            align-self: auto;
+        }
+    }
+</style>
