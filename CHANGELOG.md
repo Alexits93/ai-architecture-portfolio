@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.11.0...v1.12.0) (2026-10-08)
+
+
+### Features
+
+* **blog:** implement single blog post view ([#27](https://github.com/Alexits93/ai-architecture-portfolio/issues/27)) ([ec1cc99](https://github.com/Alexits93/ai-architecture-portfolio/commit/ec1cc999018df7cf7562fac72ec45a22b6d9a359))
+
 # [1.11.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.10.0...v1.11.0) (2026-10-08)
 
 
