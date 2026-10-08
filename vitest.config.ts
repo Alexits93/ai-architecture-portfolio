@@ -10,7 +10,7 @@ export default defineConfig(
         provider: 'v8',
         reporter: ['text', 'json-summary', 'json'],
         include: ['src/**'],
-        exclude: ['tests/**', '**/*.config.*', 'src/env.d.ts', 'src/pages/**'],
+        exclude: ['tests/**', '**/*.config.*', 'src/env.d.ts', 'src/pages/**', '**/*.md'],
         thresholds: {
           lines: 100,
           functions: 100,

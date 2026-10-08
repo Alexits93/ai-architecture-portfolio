@@ -22,3 +22,9 @@ Code is written only to satisfy a failing test, following the **Testing Trophy**
 ## 5. Astro Component Testing
 - **AstroContainer:** When testing `.astro` components in Vitest via `experimental_AstroContainer`, configure `environment: 'node'` in `vitest.config.ts` to preserve `isAstroComponentFactory` compiler metadata. Import `JSDOM` manually inside the test file to parse the HTML string.
 - **SVG Constraints:** Do not include XML declarations (`<?xml version="1.0" encoding="UTF-8"?>`) inside Astro HTML/SVG templates; they are invalid HTML and will break the Astro compiler.
+
+## Local Visual Verification (Chrome-Free)
+To perform in-browser visual verifications without installing OS-level browsers or using external MCPs, the AI must use the natively installed `playwright` package.
+- Start the Astro dev server (`pnpm dev`).
+- Run a short Playwright script to capture screenshots (`page.screenshot()`).
+- Use the native `view_file` tool to inspect the image.
