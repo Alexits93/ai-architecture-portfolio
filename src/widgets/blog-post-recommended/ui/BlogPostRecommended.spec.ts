@@ -1,51 +1,49 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
+import * as contentModule from 'astro:content';
 import { JSDOM } from 'jsdom';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { createTestPost } from '@/entities/blog-post/testing';
 import BlogPostRecommended from './BlogPostRecommended.astro';
 
-vi.mock('astro:content', () => ({
-  getCollection: vi.fn().mockResolvedValue([
-    {
-      id: 'test',
-      body: '',
-      collection: 'blog',
-      data: {
-        title: 'Test',
-        description: 'Test',
-        publishDate: new Date(),
-        tags: [],
-        isFeatured: false,
-        isRecommended: true,
-      },
-    },
-  ]),
-}));
+vi.mock('astro:content', () => ({ getCollection: vi.fn() }));
+
+const posts = [
+  createTestPost({ id: 'featured', isFeatured: true }),
+  createTestPost({ id: 'first', publishDate: '2026-03-01' }),
+  createTestPost({ id: 'second', publishDate: '2026-02-01' }),
+];
 
 describe('BlogPostRecommended Widget (Astro)', () => {
   let container: AstroContainer;
 
   beforeEach(async () => {
     container = await AstroContainer.create();
+    vi.mocked(contentModule.getCollection).mockResolvedValue(posts);
   });
 
-  it('should render the recommended post thumbnails', async () => {
-    const html = await container.renderToString(BlogPostRecommended);
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
+  const render = async (props = {}) =>
+    new JSDOM(await container.renderToString(BlogPostRecommended, { props })).window.document;
 
-    const section = doc.querySelector('section#blog-section');
-    expect(section).not.toBeNull();
+  const hrefs = (doc: Document) =>
+    [...doc.querySelectorAll('.blog-post-thumbnail')].map((a) => a.getAttribute('href'));
 
-    const thumbnail = doc.querySelector('.blog-post-thumbnail');
-    expect(thumbnail).not.toBeNull();
+  it('renders non-featured posts newest first with slug permalinks', async () => {
+    const doc = await render();
+    expect(hrefs(doc)).toEqual(['/blog/first/', '/blog/second/']);
   });
 
-  it('should render with custom class', async () => {
-    const html = await container.renderToString(BlogPostRecommended, { props: { blogPostClass: 'custom-class' } });
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
+  it('omits the excluded post', async () => {
+    const doc = await render({ excludeId: 'first' });
+    expect(hrefs(doc)).toEqual(['/blog/second/']);
+  });
 
-    const section = doc.querySelector('section#blog-section.custom-class');
-    expect(section).not.toBeNull();
+  it('links "See more" to the blog index route', async () => {
+    const doc = await render();
+    expect(doc.querySelector('.wrapper-bottom a')?.getAttribute('href')).toBe('/blog/');
+  });
+
+  it('applies the optional class', async () => {
+    const doc = await render({ blogPostClass: 'custom-class' });
+    expect(doc.querySelector('section.custom-class')).not.toBeNull();
   });
 });

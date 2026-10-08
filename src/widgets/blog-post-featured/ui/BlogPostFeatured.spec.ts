@@ -1,91 +1,42 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import * as contentModule from 'astro:content';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { createTestPost } from '@/entities/blog-post/testing';
 import BlogPostFeatured from './BlogPostFeatured.astro';
 
-vi.mock('astro:content', () => ({
-  getCollection: vi.fn(),
-}));
+vi.mock('astro:content', () => ({ getCollection: vi.fn() }));
 
-describe('BlogPostFeatured Widget (Astro) - Featured Post', () => {
+describe('BlogPostFeatured Widget (Astro)', () => {
   let container: AstroContainer;
-  const mockGetCollection = vi.mocked(contentModule.getCollection);
 
   beforeEach(async () => {
     container = await AstroContainer.create();
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
+  const renderWith = async (posts: ReturnType<typeof createTestPost>[]) => {
+    vi.mocked(contentModule.getCollection).mockResolvedValueOnce(posts);
+    return new JSDOM(await container.renderToString(BlogPostFeatured)).window.document;
+  };
+
+  it('renders the featured post', async () => {
+    const doc = await renderWith([
+      createTestPost({ id: 'other', publishDate: '2026-05-01' }),
+      createTestPost({ id: 'picked', isFeatured: true }),
+    ]);
+    expect(doc.querySelector('.blog-post-thumbnail')?.getAttribute('href')).toBe('/blog/picked/');
   });
 
-  it('should render the featured post thumbnail', async () => {
-    mockGetCollection.mockResolvedValueOnce([
-      {
-        id: 'test',
-        body: '',
-        collection: 'blog',
-        data: {
-          title: 'Test Featured',
-          description: 'Test',
-          publishDate: new Date(),
-          tags: [],
-          isFeatured: true,
-          isRecommended: false,
-        },
-      },
+  it('falls back to the newest post when none is featured', async () => {
+    const doc = await renderWith([
+      createTestPost({ id: 'old', publishDate: '2026-01-01' }),
+      createTestPost({ id: 'new', publishDate: '2026-06-01' }),
     ]);
+    expect(doc.querySelector('.blog-post-thumbnail')?.getAttribute('href')).toBe('/blog/new/');
+  });
 
-    const html = await container.renderToString(BlogPostFeatured);
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-
-    const section = doc.querySelector('section#blog-featured');
-    expect(section).not.toBeNull();
-
-    const thumbnail = doc.querySelector('.blog-post-thumbnail');
-    expect(thumbnail).not.toBeNull();
-    expect(thumbnail?.textContent).toContain('Test Featured');
+  it('renders no thumbnail for an empty collection', async () => {
+    const doc = await renderWith([]);
+    expect(doc.querySelector('.blog-post-thumbnail')).toBeNull();
   });
 });
-
-describe('BlogPostFeatured Widget (Astro) - Fallback Post', () => {
-  let container: AstroContainer;
-  const mockGetCollection = vi.mocked(contentModule.getCollection);
-
-  beforeEach(async () => {
-    container = await AstroContainer.create();
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('should fallback to the first post if no featured post exists', async () => {
-    mockGetCollection.mockResolvedValueOnce([
-      {
-        id: 'fallback',
-        body: '',
-        collection: 'blog',
-        data: {
-          title: 'Test Fallback',
-          description: 'Test',
-          publishDate: new Date(),
-          tags: [],
-          isFeatured: false,
-          isRecommended: false,
-        },
-      },
-    ]);
-
-    const html = await container.renderToString(BlogPostFeatured);
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-
-    const thumbnail = doc.querySelector('.blog-post-thumbnail');
-    expect(thumbnail).not.toBeNull();
-    expect(thumbnail?.textContent).toContain('Test Fallback');
-  });
-});
-

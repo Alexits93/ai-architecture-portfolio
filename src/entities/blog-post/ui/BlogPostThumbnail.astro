@@ -1,4 +1,5 @@
 ---
+import { getPostPath } from '../lib/permalink';
 import type { BlogPost } from '../model/types';
 
 interface Props {
@@ -8,7 +9,7 @@ interface Props {
 const { post } = Astro.props;
 ---
 
-<a href={`/blog/${post.id}`} class="blog-post-thumbnail">
+<a href={getPostPath(post)} class="blog-post-thumbnail">
   <article>
     <h2>{post.data.title}</h2>
     <p>{post.data.description}</p>

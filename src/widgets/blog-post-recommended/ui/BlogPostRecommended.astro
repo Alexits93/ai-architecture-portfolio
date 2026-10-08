@@ -1,14 +1,16 @@
 ---
 import { getCollection } from 'astro:content';
-import { BlogPostThumbnail } from '@/entities/blog-post';
+import { BlogPostThumbnail, selectRecommendedPosts } from '@/entities/blog-post';
+import { ROUTES } from '@/shared/config';
 
 interface Props {
   blogPostClass?: string;
+  /** Post to omit, e.g. the article currently being read. */
+  excludeId?: string;
 }
 
-const { blogPostClass = "" } = Astro.props;
-const allPosts = await getCollection('blog');
-const recommendedPosts = allPosts.filter((p) => p.data.isRecommended).slice(0, 3);
+const { blogPostClass = "", excludeId } = Astro.props;
+const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { excludeId });
 ---
 <section id="blog-section" class:list={[blogPostClass]}>
   <div class="wrapper-top">
@@ -20,7 +22,7 @@ const recommendedPosts = allPosts.filter((p) => p.data.isRecommended).slice(0, 3
     ))}
   </div>
   <div class="wrapper-bottom">
-    <a href="/blog">See more</a>
+    <a href={ROUTES.blog}>See more</a>
   </div>
 </section>
 

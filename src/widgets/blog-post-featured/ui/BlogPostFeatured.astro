@@ -1,9 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
-import { BlogPostThumbnail } from '@/entities/blog-post';
+import { BlogPostThumbnail, selectFeaturedPost } from '@/entities/blog-post';
 
-const allPosts = await getCollection('blog');
-const featuredPost = allPosts.find((p) => p.data.isFeatured) || allPosts[0];
+const featuredPost = selectFeaturedPost(await getCollection('blog'));
 ---
 <section id="blog-featured">
   <div class="wrapper">
