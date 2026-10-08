@@ -29,34 +29,32 @@
   --animationDurationSeconds: 5;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Colors - Dark Mode */
-    --body-background: #0f172a;
-    --font-color: #94a3b8;
-    --font-color-bold: #f8fafc;
-    --theme-primary: #3b82f6;
-    --theme-secondary: #1e293b;
-    --focus-color: #60a5fa;
-    --thumbnail-bg-color: #1e293b;
+body[data-theme="dark"] {
+  /* Colors - Dark Mode */
+  --body-background: #0f172a;
+  --font-color: #94a3b8;
+  --font-color-bold: #f8fafc;
+  --theme-primary: #3b82f6;
+  --theme-secondary: #1e293b;
+  --focus-color: #60a5fa;
+  --thumbnail-bg-color: #1e293b;
 
-    /* Alert Colors - Dark Mode */
-    --host-bg-color-success: #14532d;
-    --host-font-color-success: #dcfce7;
-    --host-border-color-success: #22c55e;
-    
-    --host-bg-color-info: #0c4a6e;
-    --host-font-color-info: #e0f2fe;
-    --host-border-color-info: #0ea5e9;
+  /* Alert Colors - Dark Mode */
+  --host-bg-color-success: #14532d;
+  --host-font-color-success: #dcfce7;
+  --host-border-color-success: #22c55e;
+  
+  --host-bg-color-info: #0c4a6e;
+  --host-font-color-info: #e0f2fe;
+  --host-border-color-info: #0ea5e9;
 
-    --host-bg-color-warning: #713f12;
-    --host-font-color-warning: #fef9c3;
-    --host-border-color-warning: #eab308;
+  --host-bg-color-warning: #713f12;
+  --host-font-color-warning: #fef9c3;
+  --host-border-color-warning: #eab308;
 
-    --host-bg-color-error: #7f1d1d;
-    --host-font-color-error: #fee2e2;
-    --host-border-color-error: #ef4444;
-  }
+  --host-bg-color-error: #7f1d1d;
+  --host-font-color-error: #fee2e2;
+  --host-border-color-error: #ef4444;
 }
 
 body {
@@ -157,4 +155,37 @@ section#page-wrapper > .experience-list-container {
 .experience-list-container h2 {
     margin: 0 0 1rem;
     color: var(--font-color-bold);
+}
+
+/* Index Page layout */
+.home-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.home-top-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.home-bottom-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .home-top-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+}
+
+/* Generic Page Container */
+.page-container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
 }
