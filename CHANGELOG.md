@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.2.0...v1.3.0) (2026-10-08)
+
+
+### Features
+
+* **skill-tag:** migrate skill-tag to shared ui component ([#13](https://github.com/Alexits93/ai-architecture-portfolio/issues/13)) ([762a3b5](https://github.com/Alexits93/ai-architecture-portfolio/commit/762a3b54f20120e26ee543c883f7815cecf26a5b))
+
 # [1.2.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.1.0...v1.2.0) (2026-10-08)
 
 
