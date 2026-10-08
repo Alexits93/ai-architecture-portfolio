@@ -1,0 +1,54 @@
+---
+---
+<section id="blog-featured">
+  <div class="wrapper">
+    <h1>Featured Article</h1>
+    <div class="stub">Stub: BlogPostThumbnail goes here</div>
+  </div>
+</section>
+
+<style>
+  #blog-featured {
+    width: 100%;
+  }
+  
+  #blog-featured .wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 400px));
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  #blog-featured .wrapper h1 {
+    color: var(--font-color-bold);
+    text-align: center;
+    margin: 0;
+    letter-spacing: -.025em;
+    font-weight: 700;
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+  
+  .stub {
+    border: 1px dashed var(--theme-secondary);
+    padding: 2rem;
+    text-align: center;
+    color: var(--font-color);
+  }
+  
+  @media (min-width: 768px) {
+    #blog-featured .wrapper {
+      justify-content: flex-start;
+    }
+  
+    #blog-featured .wrapper h1 {
+      text-align: left;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    #blog-featured .wrapper {
+      justify-content: flex-end;
+    }
+  }
+</style>

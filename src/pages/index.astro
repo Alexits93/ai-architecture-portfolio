@@ -1,6 +1,20 @@
 ---
 import Header from '@/widgets/header/ui/Header.astro';
 import NavigatorMenu from '@/widgets/navigator-menu/ui/NavigatorMenu.astro';
+import AboutMe from '@/widgets/about-me/ui/AboutMe.astro';
+import BlogPostFeatured from '@/widgets/blog-post-featured/ui/BlogPostFeatured.astro';
+import BlogPostRecommended from '@/widgets/blog-post-recommended/ui/BlogPostRecommended.astro';
+
+const aboutMeData = {
+    name: "Patrik Alexits",
+    profession: "Frontend Software Engineer",
+    text: "This page was made with hybrids.js and TypeScript - every single page and component you see is a web component. I wanted to experiment how efficient these technologies are for SPAs and \"developer blog\"-like web applications, including SEO, performance, scalability and maintainability, even with multiple developers.",
+    spotifyTrackId: "60a0Rd6pjrkxjPbaKzXjfq",
+    githubUrl: "https://github.com/Alexits93",
+    linkedinUrl: "https://www.linkedin.com/in/patrik-alexits/",
+    instagramUrl: "https://www.instagram.com/akelafreestyle/",
+    stackoverflowUrl: "https://stackoverflow.com/users/9327050/patrik-alexits"
+};
 ---
 
 <html lang="en">
@@ -16,7 +30,51 @@ import NavigatorMenu from '@/widgets/navigator-menu/ui/NavigatorMenu.astro';
 		<Header />
 		<NavigatorMenu />
 		<main>
-			<h1>Portfolio</h1>
+			<div class="home-wrapper">
+				<div class="home-top-wrapper">
+					<AboutMe
+						name={aboutMeData.name}
+						profession={aboutMeData.profession}
+						text={aboutMeData.text}
+						spotifyTrackId={aboutMeData.spotifyTrackId}
+						githubUrl={aboutMeData.githubUrl}
+						linkedinUrl={aboutMeData.linkedinUrl}
+						instagramUrl={aboutMeData.instagramUrl}
+						stackoverflowUrl={aboutMeData.stackoverflowUrl}
+					/>
+					<BlogPostFeatured />
+				</div>
+				<div class="home-bottom-wrapper">
+					<BlogPostRecommended />
+				</div>
+			</div>
 		</main>
 	</body>
 </html>
+
+<style>
+	.home-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 3rem;
+	}
+
+	.home-top-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 3rem;
+	}
+
+	.home-bottom-wrapper {
+		display: flex;
+		justify-content: center;
+	}
+
+	@media (min-width: 768px) {
+		.home-top-wrapper {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 3rem;
+		}
+	}
+</style>

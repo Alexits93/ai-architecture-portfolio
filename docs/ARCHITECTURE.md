@@ -14,6 +14,9 @@ flowchart TD
     subgraph Widgets ["Widgets (Layer)"]
         Header["Header (src/widgets/header)"]
         NavigatorMenu["NavigatorMenu (src/widgets/navigator-menu)"]
+        AboutMe["AboutMe (src/widgets/about-me)"]
+        BlogPostFeatured["BlogPostFeatured (src/widgets/blog-post-featured)"]
+        BlogPostRecommended["BlogPostRecommended (src/widgets/blog-post-recommended)"]
     end
     
     subgraph Shared ["Shared (Layer)"]
@@ -23,6 +26,9 @@ flowchart TD
     %% Relationships
     Index --> Header
     Index --> NavigatorMenu
+    Index --> AboutMe
+    Index --> BlogPostFeatured
+    Index --> BlogPostRecommended
     
     Header --> UIStore
     NavigatorMenu --> UIStore
