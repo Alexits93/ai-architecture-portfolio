@@ -36,3 +36,8 @@ Code must be deterministic, readable, and strictly scoped.
 ## 8. Offline Asset Resolution
 - Do not download fonts dynamically during builds using raw GitHub URLs (susceptible to HTML wrapper redirects or 404s).
 - Prefer `@fontsource/*` dependencies and local `fs.readFileSync` for deterministic static artifact builds.
+
+## 9. FSD & Framework Interactions (Anti-Sloppiness Guardrails)
+- **FSD Public APIs:** Never import internal components directly from deep paths (e.g., `@/entities/blog-post/ui/BlogPostThumbnail.astro`). You must always route exports through the module's `index.ts` public API and import from the root module (e.g., `@/entities/blog-post`).
+- **Astro 7+ Content Collections:** The legacy `src/content/config.ts` is deprecated. Use `src/content.config.ts` with `astro/loaders` (e.g., `glob()`). Additionally, the `slug` and `render` fields no longer exist on `CollectionEntry`; use `id` and `rendered` respectively. Always run `pnpm astro sync` after mutating schemas to prevent `never` type inference failures.
+- **Strict Mocking (Zero Casts):** When mocking complex objects (like Astro Collections) in Vitest, do not forcefully cast via `as any` or `as unknown as Type`. Provide the exact matching structure natively, or if the framework's internal types are faulty, suppress specific lines with `// @ts-expect-error` instead of polluting the codebase with unsafe type assertions.
