@@ -3,5 +3,6 @@
 ## Behavioral Matrix
 | State / Action | Expected Behavior |
 | --- | --- |
-| User navigates between routes | The page transitions smoothly via native View Transitions API instead of a hard refresh. |
-| `<head>` generation | The Astro View Transitions router is injected via `<ViewTransitions />`. |
+| User navigates between routes | The page transitions smoothly via native View Transitions API instead of a hard refresh (if supported). |
+| CSS configuration | `global.css` includes `@view-transition { navigation: auto; }`. |
+| JS Overhead | 0 bytes. We explicitly avoid `<ClientRouter />` to rely purely on CSS natively. |
