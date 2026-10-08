@@ -5,14 +5,14 @@ export interface Props {
 
 const defaultMenuItems = [
     { name: 'Home', path: '/' },
-    { name: 'Blog', path: '/blog' },
-    { name: 'CV', path: '/cv' }
+    { name: 'Blog', path: '/blog/' },
+    { name: 'CV', path: '/cv/' }
 ];
 
 const { menuItems = defaultMenuItems } = Astro.props;
 ---
 
-<section id="navigator-menu" transition:persist>
+<section id="navigator-menu">
     <label for="mobile-menu-toggle" class="navigator-menu-overlay" aria-label="Close menu"></label>
     <div class="navigator-menu-body">
         <ul>

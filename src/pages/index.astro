@@ -16,7 +16,6 @@ const aboutMeData = {
     instagramUrl: "https://www.instagram.com/akelafreestyle/",
     stackoverflowUrl: "https://stackoverflow.com/users/9327050/patrik-alexits"
 };
-import { ClientRouter } from 'astro:transitions';
 ---
 
 <html lang="en">
@@ -29,8 +28,11 @@ import { ClientRouter } from 'astro:transitions';
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
+		<script is:inline>
+			const localTheme = localStorage.getItem('theme') || 'light';
+			document.documentElement.setAttribute('data-theme', localTheme);
+		</script>
 		<title>Patrik Alexits - AI Architect</title>
-		<ClientRouter />
 	</head>
 	<body>
 		<Header />

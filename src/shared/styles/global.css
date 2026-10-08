@@ -16,6 +16,8 @@ a:hover { text-decoration: none; }
 }
 
 /* theme.css */
+@view-transition { navigation: auto; }
+
 :root, [data-theme="light"] {
     color-scheme: light;
     --body-background: hsl(200, 25%, 90%);

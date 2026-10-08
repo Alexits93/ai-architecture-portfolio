@@ -3,7 +3,6 @@ import Header from '@/widgets/header/ui/Header.astro';
 import NavigatorMenu from '@/widgets/navigator-menu/ui/NavigatorMenu.astro';
 import { PrivacyPolicy } from '@/widgets/privacy-policy';
 import '@/shared/styles/global.css';
-import { ClientRouter } from 'astro:transitions';
 ---
 
 <html lang="en">
@@ -17,7 +16,6 @@ import { ClientRouter } from 'astro:transitions';
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Privacy Policy</title>
-		<ClientRouter />
 	</head>
 	<body>
 		<Header />
