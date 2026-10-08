@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.5.0...v1.6.0) (2026-10-08)
+
+
+### Features
+
+* migrate cookie-disclaimer and privacy policy components ([#17](https://github.com/Alexits93/ai-architecture-portfolio/issues/17)) ([b3cf1d6](https://github.com/Alexits93/ai-architecture-portfolio/commit/b3cf1d6eb3104475de7c673867224bb043bcabc7))
+
 # [1.5.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.4.0...v1.5.0) (2026-10-08)
 
 
