@@ -26,6 +26,9 @@ Before invoking `write_to_file` or `replace_file_content` to create/edit an Astr
 
 See `/docs/manifestos/` for detailed governing rules.
 
+**DETERMINISTIC CODE GATES (THE "NO PROSE" LAW):**
+Architectural principles and constraints must be enforced deterministically via code gates (ESLint rules, AST selectors like `no-restricted-syntax`, TypeScript strict compiler flags, or 100% test coverage thresholds). If you suggest an architectural rule, you MUST simultaneously implement the linter/compiler rule that will cause the CI to fail (turn red) if the rule is violated. Prose in markdown is not enforcement.
+
 ## Native-First Tooling Principle (Strict)
 Third-party packages, plugins, and custom scripts are an absolute last resort. 
 - You must always attempt to solve a problem using native features of the established toolset (Astro, TypeScript, Vitest, Node).
