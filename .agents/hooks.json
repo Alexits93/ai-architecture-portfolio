@@ -10,5 +10,17 @@
         ]
       }
     ]
+  },
+  "gh-pr-safeguard": {
+    "PreToolUse": [
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "command": "node .agents/scripts/gh-pr-hook.js"
+          }
+        ]
+      }
+    ]
   }
 }

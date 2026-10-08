@@ -32,3 +32,7 @@ Code must be deterministic, readable, and strictly scoped.
 
 ## 7. Idiomatic Tooling Over Hacks
 - **No Mixing Principles with Hacks:** When adhering to architectural principles (such as the HTML5 State Law), never compromise the idiomatic best practices of the tool/framework in use. For example, instead of using messy inline `style="..."` interpolation in Astro, use native features like `define:vars` or `class:list`. The tools must be utilized in their designed, optimal way without falling back to lower-level string manipulation hacks.
+
+## 8. Offline Asset Resolution
+- Do not download fonts dynamically during builds using raw GitHub URLs (susceptible to HTML wrapper redirects or 404s).
+- Prefer `@fontsource/*` dependencies and local `fs.readFileSync` for deterministic static artifact builds.
