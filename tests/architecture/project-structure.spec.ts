@@ -16,9 +16,5 @@ describe('Project Structure & Tooling Check (Deterministic Guardrails)', () => {
     }
   });
 
-  it('should enforce no generic "any" casts allowed in tests', () => {
-    // This serves as an architectural reminder test.
-    // The actual enforcement happens in eslint.spec.ts via AST selectors.
-    expect(true).toBe(true);
-  });
+
 });
