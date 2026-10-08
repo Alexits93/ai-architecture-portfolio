@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.4.0...v1.5.0) (2026-10-08)
+
+
+### Features
+
+* **ui:** migrate blog-post-filter to Astro FSD ([#16](https://github.com/Alexits93/ai-architecture-portfolio/issues/16)) ([d767a2b](https://github.com/Alexits93/ai-architecture-portfolio/commit/d767a2b68d1916be3c99cffa7aba7c2ab30fb17e))
+
 # [1.4.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.3.0...v1.4.0) (2026-10-08)
 
 
