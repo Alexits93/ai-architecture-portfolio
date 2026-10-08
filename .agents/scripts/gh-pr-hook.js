@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
+import fs from 'fs';
 
 const input = fs.readFileSync(0, 'utf-8');
 const payload = JSON.parse(input);

@@ -5,7 +5,7 @@
         "matcher": "write_to_file\\|replace_file_content",
         "hooks": [
           {
-            "command": "node .agents/scripts/anti-slop-guard.js"
+            "command": "node scripts/anti-slop-guard.js"
           }
         ]
       }
@@ -17,7 +17,7 @@
         "matcher": "run_command",
         "hooks": [
           {
-            "command": "node .agents/scripts/gh-pr-hook.js"
+            "command": "node scripts/gh-pr-hook.js"
           }
         ]
       }

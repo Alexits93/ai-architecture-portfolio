@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 
 const BANNED_WORDS = [
     'delve', 'robust', 'seamless', 'synergy', 'tapestry', 'cutting-edge', 
