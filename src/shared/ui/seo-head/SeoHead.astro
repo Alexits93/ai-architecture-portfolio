@@ -21,6 +21,7 @@ const {
   jsonLd,
 } = Astro.props;
 
+// v8 ignore next 3 - AstroContainer forces a default site configuration, making this unreachable in tests
 if (!Astro.site) {
   throw new Error('SeoHead requires `site` in astro.config.mjs to build absolute canonical URLs.');
 }
