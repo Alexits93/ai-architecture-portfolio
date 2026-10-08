@@ -28,13 +28,4 @@ describe('ExperienceList Widget (Astro)', () => {
     expect(items.length).toBeGreaterThan(0);
   });
 
-  it('should render the download CV link', async () => {
-    const html = await container.renderToString(ExperienceList);
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-    
-    const downloadLink = doc.querySelector('a[download="patrik-alexits-cv.pdf"]');
-    expect(downloadLink).not.toBeNull();
-    expect(downloadLink?.getAttribute('href')).toBe('/assets/files/patri-alexits-cv.pdf');
-  });
 });

@@ -15,7 +15,7 @@ describe('Footer Widget (Astro)', () => {
     const dom = new JSDOM(html);
     const doc = dom.window.document;
     
-    const footer = doc.querySelector('[data-testid="app-footer"]');
+    const footer = doc.querySelector('.app-footer');
     expect(footer).not.toBeNull();
     
     // Check year and name
@@ -24,15 +24,15 @@ describe('Footer Widget (Astro)', () => {
     expect(footer?.textContent).toContain('Patrik Alexits');
 
     // Check framework link
-    const frameworkLink = doc.querySelector('[data-testid="framework-link"]');
-    expect(frameworkLink?.getAttribute('href')).toBe('https://astro.build/');
+    const frameworkLink = doc.querySelector('a[href="https://astro.build/"]');
+    expect(frameworkLink).not.toBeNull();
     expect(frameworkLink?.textContent).toBe('Astro');
 
     // Check policy links
-    const cookieLink = doc.querySelector('[data-testid="cookie-link"]');
-    expect(cookieLink?.getAttribute('href')).toBe('/cookie-disclaimer/');
+    const cookieLink = doc.querySelector('a[href="/cookie-disclaimer/"]');
+    expect(cookieLink).not.toBeNull();
     
-    const privacyLink = doc.querySelector('[data-testid="privacy-link"]');
-    expect(privacyLink?.getAttribute('href')).toBe('/privacy-policy/');
+    const privacyLink = doc.querySelector('a[href="/privacy-policy/"]');
+    expect(privacyLink).not.toBeNull();
   });
 });

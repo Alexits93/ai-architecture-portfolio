@@ -168,9 +168,7 @@ section#page-wrapper > .experience-list-container { align-self: flex-end; }
 }
 .experience-list-container .experience-item .position p strong { color: var(--font-color-bold); }
 .experience-list-container .experience-item .position p strong:hover { background-color: var(--theme-primary); color: var(--focus-color); }
-.experience-list-container a { display: flex; color: var(--font-color); align-items: center; gap: 0.5rem; margin-top: 1rem; }
-.experience-list-container a:hover { color: var(--theme-primary); text-decoration: none; }
-.experience-list-container a svg { display: inline-block; width: 1.5rem; height: 1.5rem; }
+
 .experience-list-container .position h3 { margin: 0 0 1rem; color: var(--font-color-bold); }
 .experience-list-container .position .tags { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0; }
 .experience-list-container h2 { margin: 0 0 1rem; color: var(--font-color-bold); }
