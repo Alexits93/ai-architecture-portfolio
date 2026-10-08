@@ -44,11 +44,12 @@ Follow these 4 steps in exact order when this skill is invoked:
 ### Example Handover Prompt Format:
 ```markdown
 **[HANDOVER PROTOCOL INITIATED]**
-**State:** [Brief summary of codebase state]
+**State:** [Brief summary of codebase state based on git log]
 **Next Step:** [Specific actionable next step]
 **Directives for New Agent:**
-1. Read the manifestos in `docs/manifestos/`.
-2. Adhere to FSD, OWASP XSS prevention, and Web Vitals (LCP/INP/CLS) standards.
-3. No `any`, no `unknown`. TDD is mandatory.
-4. **SELF-PROPAGATION:** You must acknowledge and adhere to the `.agents/skills/checkpoint-and-handover/SKILL.md` skill. Before ending your session, you will be required to run this exact handover protocol.
+1. **GIT STATE VERIFICATION:** Before writing any code, you MUST run `git status` and `git fetch origin`. Depending on the task, ensure you are on the correct branch, rebase onto the latest `origin/master` if required, or checkout a new properly named branch (e.g., `feat/` or `fix/`).
+2. Read the manifestos in `docs/manifestos/`.
+3. Adhere to FSD, OWASP XSS prevention, and Web Vitals (LCP/INP/CLS) standards.
+4. No `any`, no `unknown`. TDD is mandatory.
+5. **SELF-PROPAGATION:** You must acknowledge and adhere to the `.agents/skills/checkpoint-and-handover/SKILL.md` skill. Before ending your session, you will be required to run this exact handover protocol.
 ```
