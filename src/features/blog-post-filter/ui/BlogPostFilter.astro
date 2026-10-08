@@ -1,6 +1,4 @@
 ---
-import SkillTag from '@/shared/ui/skill-tag/SkillTag.astro';
-
 export interface Props {
 	tags?: string[];
 	selectedTags?: string[];
@@ -9,16 +7,27 @@ export interface Props {
 const { tags = [], selectedTags = [] } = Astro.props;
 ---
 
-<blog-post-filter data-selected={JSON.stringify(selectedTags)}>
-	<div class="filter-wrapper">
-		{tags.map((tag) => (
-			<SkillTag 
-				skill={tag} 
-				interactive={true} 
-				active={selectedTags.includes(tag)} 
-			/>
-		))}
-	</div>
+<blog-post-filter>
+	<form id="filter-form" action="/blog" method="GET">
+		<div class="filter-wrapper">
+			{tags.map((tag) => (
+				<label class="skill-tag-label">
+					<input 
+						type="checkbox" 
+						name="tag" 
+						value={tag} 
+						checked={selectedTags.includes(tag)} 
+						class="sr-only" 
+					/>
+					<span class="skill-tag-visual">{tag}</span>
+				</label>
+			))}
+		</div>
+		
+		<noscript>
+			<button type="submit" class="fallback-submit">Filter</button>
+		</noscript>
+	</form>
 </blog-post-filter>
 
 <style>
@@ -27,64 +36,77 @@ const { tags = [], selectedTags = [] } = Astro.props;
 		justify-content: center;
 		align-items: center;
 		flex-wrap: wrap;
-		gap: .5rem;
+		gap: 0.5rem;
 		margin-bottom: 1rem;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		border: 0;
+	}
+
+	.skill-tag-label {
+		cursor: pointer;
+	}
+
+	.skill-tag-visual {
+		display: inline-block;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.25rem;
+		background-color: var(--theme-secondary, #e2e8f0);
+		color: var(--font-color, #1e293b);
+		font-size: 1rem;
+		transition: background-color 0.3s ease, color 0.3s ease;
+		user-select: none;
+	}
+
+	/* Declarative State Styling! */
+	input[type="checkbox"]:checked + .skill-tag-visual {
+		background-color: var(--theme-primary, #3b82f6);
+		color: white;
+	}
+
+	input[type="checkbox"]:focus-visible + .skill-tag-visual {
+		outline: 2px solid var(--theme-primary, #3b82f6);
+		outline-offset: 2px;
+	}
+
+	.skill-tag-label:hover .skill-tag-visual {
+		background-color: var(--theme-primary, #3b82f6);
+		color: white;
+	}
+
+	.fallback-submit {
+		margin-top: 1rem;
+		padding: 0.5rem 1rem;
+		background: var(--theme-primary, #3b82f6);
+		color: white;
+		border: none;
+		border-radius: 0.25rem;
+		cursor: pointer;
 	}
 </style>
 
 <script>
-	class BlogPostFilter extends HTMLElement {
-		private selectedTags: string[] = [];
-
-		connectedCallback() {
-			try {
-				const selectedAttr = this.getAttribute('data-selected');
-				this.selectedTags = selectedAttr ? JSON.parse(selectedAttr) : [];
-			} catch {
-				this.selectedTags = [];
-			}
-
-			this.addEventListener('click', this.handleClick.bind(this));
-		}
-
-		disconnectedCallback() {
-			this.removeEventListener('click', this.handleClick.bind(this));
-		}
-
-		private toggleTagState(button: Element, skill: string) {
-			const isActive = this.selectedTags.includes(skill);
-			if (isActive) {
-				this.selectedTags = this.selectedTags.filter((t) => t !== skill);
-				button.classList.remove('active');
-				button.setAttribute('aria-pressed', 'false');
-			} else {
-				this.selectedTags.push(skill);
-				button.classList.add('active');
-				button.setAttribute('aria-pressed', 'true');
-			}
-		}
-
-		private handleClick(event: Event) {
-			const target = event.target as HTMLElement;
-			const button = target.closest('button.skill-tag');
-			if (!button) return;
-
-			const skill = button.getAttribute('data-skill');
-			if (!skill) return;
-
-			this.toggleTagState(button, skill);
-
-			this.dispatchEvent(
-				new CustomEvent('filter-tag-selected', {
-					detail: { selectedTags: this.selectedTags },
-					bubbles: true,
-					composed: true,
-				})
-			);
-		}
-	}
-
-	if (!customElements.get('blog-post-filter')) {
-		customElements.define('blog-post-filter', BlogPostFilter);
-	}
+	// Progressive Enhancement: Auto-submit/dispatch on change
+	const form = document.querySelector('#filter-form') as HTMLFormElement;
+	
+	form?.addEventListener('change', () => {
+		const formData = new FormData(form);
+		const selectedTags = formData.getAll('tag');
+		
+		form.dispatchEvent(
+			new CustomEvent('filter-tag-selected', {
+				detail: { selectedTags },
+				bubbles: true,
+				composed: true,
+			})
+		);
+	});
 </script>

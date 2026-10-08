@@ -10,7 +10,7 @@ describe('BlogPostFilter - Initial Render', () => {
     container = await AstroContainer.create();
   });
 
-  it('should render a list of interactive skill tags', async () => {
+  it('should render a list of native checkboxes', async () => {
     const tags = ['Astro', 'React', 'Svelte'];
 
     const html = await container.renderToString(BlogPostFilter, {
@@ -20,17 +20,16 @@ describe('BlogPostFilter - Initial Render', () => {
     const dom = new JSDOM(html);
     const doc = dom.window.document;
 
-    const filterEl = doc.querySelector('blog-post-filter');
-    expect(filterEl).not.toBeNull();
-    expect(filterEl?.getAttribute('data-selected')).toBe('[]');
+    const formEl = doc.querySelector('form#filter-form');
+    expect(formEl).not.toBeNull();
 
-    const buttons = doc.querySelectorAll('button.skill-tag.interactive');
-    expect(buttons.length).toBe(3);
+    const inputs = doc.querySelectorAll('input[type="checkbox"]');
+    expect(inputs.length).toBe(3);
 
     // Verify first tag
-    expect(buttons[0].getAttribute('data-skill')).toBe('Astro');
-    expect(buttons[0].textContent?.trim()).toBe('Astro');
-    expect(buttons[0].classList.contains('active')).toBe(false);
+    expect(inputs[0].getAttribute('value')).toBe('Astro');
+    expect((inputs[0] as HTMLInputElement).checked).toBe(false);
+    expect(inputs[0].hasAttribute('checked')).toBe(false);
   });
 });
 
@@ -41,7 +40,7 @@ describe('BlogPostFilter - With Selected Tags', () => {
     container = await AstroContainer.create();
   });
 
-  it('should mark tags as active if they are in selectedTags', async () => {
+  it('should mark inputs as checked if they are in selectedTags', async () => {
     const tags = ['Astro', 'React', 'Svelte'];
     const selectedTags = ['React'];
 
@@ -52,18 +51,13 @@ describe('BlogPostFilter - With Selected Tags', () => {
     const dom = new JSDOM(html);
     const doc = dom.window.document;
 
-    const filterEl = doc.querySelector('blog-post-filter');
-    expect(filterEl?.getAttribute('data-selected')).toBe(JSON.stringify(['React']));
-
-    const buttons = doc.querySelectorAll('button.skill-tag.interactive');
+    const inputs = doc.querySelectorAll('input[type="checkbox"]');
     
-    // Astro should not be active
-    expect(buttons[0].classList.contains('active')).toBe(false);
-    expect(buttons[0].getAttribute('aria-pressed')).toBe('false');
+    // Astro should not be checked
+    expect(inputs[0].hasAttribute('checked')).toBe(false);
 
-    // React should be active
-    expect(buttons[1].classList.contains('active')).toBe(true);
-    expect(buttons[1].getAttribute('aria-pressed')).toBe('true');
+    // React should be checked
+    expect(inputs[1].hasAttribute('checked')).toBe(true);
   });
 });
 
@@ -80,11 +74,7 @@ describe('BlogPostFilter - Empty Props', () => {
     const dom = new JSDOM(html);
     const doc = dom.window.document;
 
-    const filterEl = doc.querySelector('blog-post-filter');
-    expect(filterEl).not.toBeNull();
-    expect(filterEl?.getAttribute('data-selected')).toBe('[]');
-
-    const buttons = doc.querySelectorAll('button.skill-tag');
-    expect(buttons.length).toBe(0);
+    const inputs = doc.querySelectorAll('input[type="checkbox"]');
+    expect(inputs.length).toBe(0);
   });
 });
