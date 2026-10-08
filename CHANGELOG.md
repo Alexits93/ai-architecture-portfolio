@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.7.0...v1.7.1) (2026-10-08)
+
+
+### Bug Fixes
+
+* convert hook scripts to ES modules ([1ca09bc](https://github.com/Alexits93/ai-architecture-portfolio/commit/1ca09bc349ba4a39e29182068132d7c15dc1f813))
+
 # [1.7.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.6.0...v1.7.0) (2026-10-08)
 
 
