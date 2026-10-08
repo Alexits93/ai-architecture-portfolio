@@ -7,6 +7,7 @@ export default [
   js.configs.recommended,
   ...tsEslint.configs.recommended,
   ...eslintPluginAstro.configs.recommended,
+  ...eslintPluginAstro.configs["jsx-a11y-strict"],
   fsd(),
   {
     ignores: [".agents/**", "dist/**"]
