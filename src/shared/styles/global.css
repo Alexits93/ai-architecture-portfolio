@@ -65,3 +65,27 @@ body {
   margin: 0;
   padding: 0;
 }
+
+::selection {
+  background-color: var(--theme-primary);
+}
+
+section#page-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+@media (min-width: 768px) {
+  section#page-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  section#page-wrapper section#about-me {
+    position: sticky;
+    top: 6rem;
+  }
+}

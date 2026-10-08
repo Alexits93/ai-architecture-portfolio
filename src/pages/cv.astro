@@ -47,28 +47,4 @@ const aboutMeData = {
 	</body>
 </html>
 
-<style>
-    section#page-wrapper {
-        display: flex;
-        flex-direction: column;
-        gap: 3rem;
-    }
 
-    ::selection {
-        background-color: var(--theme-primary);
-    }
-
-    @media (min-width: 768px) {
-        section#page-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: start;
-        }
-
-        section#page-wrapper :global(section#about-me) {
-            position: sticky;
-            top: 6rem;
-        }
-    }
-</style>
