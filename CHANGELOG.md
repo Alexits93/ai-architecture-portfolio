@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.8.0...v1.9.0) (2026-10-08)
+
+
+### Features
+
+* **blog:** implement BlogPostFeatured and BlogPostRecommended widgets ([#20](https://github.com/Alexits93/ai-architecture-portfolio/issues/20)) ([1a13b2a](https://github.com/Alexits93/ai-architecture-portfolio/commit/1a13b2a3b5f95760ba9e15e9574665ee31c45218))
+
 # [1.8.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.7.1...v1.8.0) (2026-10-08)
 
 
