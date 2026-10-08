@@ -1,4 +1,5 @@
 ---
+import { SkillTag } from '@/shared/ui/skill-tag';
 import { getPostPath } from '../lib/permalink';
 import type { BlogPost } from '../model/types';
 
@@ -11,12 +12,29 @@ const { post } = Astro.props;
 
 <a href={getPostPath(post)} class="blog-post-thumbnail">
   <article>
-    <h2>{post.data.title}</h2>
-    <p>{post.data.description}</p>
-    <div class="tags">
-      {(post.data.tags || []).map(tag => (
-        <span class="tag">{tag}</span>
-      ))}
+    <figure>
+      <img src="/assets/images/placeholder.webp"
+           alt={post.data.title}
+           height="200" width="420" loading="lazy" />
+      <figcaption>{post.data.title}</figcaption>
+    </figure>
+    <div class="thumbnail-body">
+      <div class="thumbnail-body-top">
+        <h2>
+          <span>
+            {post.data.title}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </span>
+        </h2>
+        <p>{post.data.description}</p>
+      </div>
+      <div class="tags">
+        {(post.data.tags || []).map(tag => (
+          <SkillTag skill={tag} />
+        ))}
+      </div>
     </div>
   </article>
 </a>
@@ -26,41 +44,84 @@ const { post } = Astro.props;
     display: block;
     text-decoration: none;
     color: inherit;
-    border: 1px solid var(--theme-secondary);
-    border-radius: 8px;
-    padding: 1.5rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  article {
+    padding: 1rem;
+    border-radius: 10px;
     background-color: var(--thumbnail-bg-color);
   }
 
-  .blog-post-thumbnail:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  article figure {
+    margin: 0;
+    margin-bottom: 1rem;
   }
 
-  h2 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.25rem;
+  article figure img {
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  article figure figcaption {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+  }
+
+  article .thumbnail-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  article .thumbnail-body .thumbnail-body-top h2 {
     color: var(--font-color-bold);
+    margin: 0 0 1rem;
+    letter-spacing: -.025em;
+    font-weight: 500;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
   }
 
-  p {
-    margin: 0 0 1rem 0;
-    color: var(--font-color);
-    line-height: 1.5;
+  article .thumbnail-body .thumbnail-body-top h2 span {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
   }
 
-  .tags {
+  article .thumbnail-body .thumbnail-body-top h2 span svg {
+    width: 25px;
+    transition: all .3s ease-in-out;
+  }
+
+  article .thumbnail-body .thumbnail-body-top p {
+    margin: 0;
+  }
+
+  article .thumbnail-body .thumbnail-body-top h2:hover span svg {
+    transform: scale(1.5);
+    color: var(--theme-primary);
+  }
+
+  article .thumbnail-body .tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
   }
 
-  .tag {
-    font-size: 0.875rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    background-color: var(--theme-secondary);
-    color: var(--font-color);
+  @media (min-width: 768px) {
+    article .thumbnail-body {
+      min-height: 250px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    article .thumbnail-body .thumbnail-body-top h2 {
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
   }
 </style>

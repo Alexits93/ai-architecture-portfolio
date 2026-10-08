@@ -1,18 +1,25 @@
 ---
 ---
 
-<div class="header-wrapper">
+<div class="header-wrapper" transition:persist>
   <script is:inline>
     // FOUC Prevention: Native Astro best practice to block rendering and read localStorage synchronously
-    const localTheme = localStorage.getItem('theme') || 'light';
-    document.body.setAttribute('data-theme', localTheme);
+    const applyTheme = () => {
+      const localTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', localTheme);
+    };
+    
+    // Apply on initial load
+    applyTheme();
+    
+    // Apply immediately after DOM swap to prevent white flash
+    document.addEventListener('astro:after-swap', applyTheme);
   </script>
   <header>
     <input type="checkbox" id="mobile-menu-toggle" class="sr-only" autocomplete="off" />
-    <label for="mobile-menu-toggle" class="menu-toggle" aria-label="Toggle Menu">
-      <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-        <path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/>
-      </svg>
+    <label for="mobile-menu-toggle" class="menu-toggle navigator-menu-opener" aria-label="Toggle Menu">
+      <span></span>
+      <span></span>
     </label>
 
     <a href="/">
@@ -29,21 +36,69 @@
 <script>
   import { toggleTheme, themeStore } from '@/shared/stores/ui';
 
-  const themeBtn = document.querySelector('.theme-toggle');
-  const themeIcon = themeBtn?.querySelector('img.icon') as HTMLImageElement;
+  const setupThemeToggle = () => {
+    const themeBtn = document.querySelector('.theme-toggle');
+    const themeIcon = themeBtn?.querySelector('img.icon') as HTMLImageElement;
 
-  if (themeBtn) {
-    themeBtn.addEventListener('click', toggleTheme);
-    
-    // Subscribe to store to update UI
-    themeStore.subscribe((theme: 'light' | 'dark') => {
-      if (themeIcon) {
-        themeIcon.src = `/assets/icons/${theme === 'light' ? 'dark' : 'light'}_mode.svg`;
-        themeIcon.alt = `${theme} mode icon`;
-      }
-      document.body.setAttribute('data-theme', theme);
+    if (themeBtn) {
+      themeBtn.addEventListener('click', toggleTheme);
+      
+      themeStore.subscribe((theme: 'light' | 'dark') => {
+        if (themeIcon) {
+          themeIcon.src = `/assets/icons/${theme === 'light' ? 'dark' : 'light'}_mode.svg`;
+          themeIcon.alt = `${theme} mode icon`;
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+      });
+    }
+  };
+
+  const handleMenuOverlayClick = (toggle: HTMLInputElement, updateState: () => void) => {
+    const overlay = document.querySelector('.navigator-menu-overlay');
+    if (overlay) {
+      overlay.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggle.checked = false;
+        updateState();
+      });
+    }
+  };
+
+  const handleMenuLinkClick = (toggle: HTMLInputElement, menu: HTMLElement, updateState: () => void) => {
+    const menuLinks = menu.querySelectorAll('a');
+    menuLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        toggle.checked = false;
+        updateState();
+      });
     });
-  }
+  };
+
+  const setupMobileMenu = () => {
+    const toggle = document.getElementById('mobile-menu-toggle') as HTMLInputElement;
+    const label = document.querySelector('label[for="mobile-menu-toggle"]');
+    const menu = document.getElementById('navigator-menu');
+
+    if (!toggle || !label || !menu) return;
+
+    const updateState = () => {
+      const isChecked = toggle.checked;
+      label.setAttribute('aria-expanded', isChecked.toString());
+      menu.setAttribute('aria-hidden', (!isChecked).toString());
+      document.body.classList.toggle('is-menu-open', isChecked);
+    };
+
+    toggle.addEventListener('change', updateState);
+    updateState();
+    
+    handleMenuOverlayClick(toggle, updateState);
+    handleMenuLinkClick(toggle, menu, updateState);
+  };
+
+  document.addEventListener('astro:page-load', () => {
+    setupThemeToggle();
+    setupMobileMenu();
+  });
 </script>
 
 <style>
@@ -84,6 +139,32 @@
       background: none;
       border: none;
       cursor: pointer;
+  }
+  .navigator-menu-opener {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      padding: .5rem;
+      gap: .5rem;
+      position: relative;
+      z-index: 9999;
+  }
+  .navigator-menu-opener span {
+      display: block;
+      transition: all .1s ease-in-out;
+      height: .2rem;
+      width: 2rem;
+      background-color: var(--font-color-bold);
+  }
+  #mobile-menu-toggle:checked + .navigator-menu-opener, body.is-menu-open .navigator-menu-opener {
+      padding: 1rem .5rem;
+      gap: 0;
+  }
+  #mobile-menu-toggle:checked + .navigator-menu-opener span:first-of-type, body.is-menu-open .navigator-menu-opener span:first-of-type {
+      transform: rotate(37deg) translate(3px, 2px);
+  }
+  #mobile-menu-toggle:checked + .navigator-menu-opener span:last-of-type, body.is-menu-open .navigator-menu-opener span:last-of-type {
+      transform: rotate(-37deg);
   }
   #mobile-menu-toggle:focus-visible + label {
       outline: 2px solid var(--focus-color);

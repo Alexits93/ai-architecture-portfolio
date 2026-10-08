@@ -12,8 +12,8 @@ const defaultMenuItems = [
 const { menuItems = defaultMenuItems } = Astro.props;
 ---
 
-<section id="navigator-menu">
-    <div class="navigator-menu-overlay"></div>
+<section id="navigator-menu" transition:persist>
+    <label for="mobile-menu-toggle" class="navigator-menu-overlay" aria-label="Close menu"></label>
     <div class="navigator-menu-body">
         <ul>
             {menuItems.map(item => (
@@ -35,7 +35,7 @@ const { menuItems = defaultMenuItems } = Astro.props;
         z-index: 9999;
     }
 
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu {
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu, body.is-menu-open section#navigator-menu {
         pointer-events: auto; /* Enable clicks when open */
     }
 
@@ -43,7 +43,7 @@ const { menuItems = defaultMenuItems } = Astro.props;
         display: none;
     }
 
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-overlay {
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-overlay, body.is-menu-open section#navigator-menu .navigator-menu-overlay {
         display: flex;
         position: fixed;
         flex-direction: column;
@@ -59,7 +59,7 @@ const { menuItems = defaultMenuItems } = Astro.props;
         z-index: 9998;
     }
 
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body {
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body, body.is-menu-open section#navigator-menu .navigator-menu-body {
         display: flex;
         position: fixed;
         flex-direction: column;
@@ -70,35 +70,38 @@ const { menuItems = defaultMenuItems } = Astro.props;
         justify-content: center;
         align-items: center;
         z-index: 9999;
+        pointer-events: none;
     }
 
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul {
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul, body.is-menu-open section#navigator-menu .navigator-menu-body ul {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 1rem;
+        gap: 3rem;
         list-style: none;
         padding: 0;
         margin: 0;
+        pointer-events: auto;
     }
 
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a {
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a, body.is-menu-open section#navigator-menu .navigator-menu-body ul li a {
         display: flex;
         color: var(--font-color);
         text-decoration: none;
     }
 
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a:active,
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a:focus,
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a:focus-visible {
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a:active, body.is-menu-open section#navigator-menu .navigator-menu-body ul li a:active,
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a:focus, body.is-menu-open section#navigator-menu .navigator-menu-body ul li a:focus,
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a:focus-visible, body.is-menu-open section#navigator-menu .navigator-menu-body ul li a:focus-visible {
         outline: 2px solid var(--focus-color);
         outline-offset: 4px;
     }
 
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a h2 {
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a h2, body.is-menu-open section#navigator-menu .navigator-menu-body ul li a h2 {
         display: inline-block;
         margin: 0;
         font-size: 48px;
+        line-height: 1.2;
         color: var(--font-color-bold);
     }
 </style>
