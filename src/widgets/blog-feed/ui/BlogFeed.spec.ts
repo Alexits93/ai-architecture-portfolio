@@ -17,6 +17,11 @@ vi.mock('astro:content', () => ({
 
 const standardPost1 = createTestPost({ id: 'standard-1', publishDate: '2026-02-01', tags: ['vue', 'react'] });
 const standardPost2 = createTestPost({ id: 'standard-2', publishDate: '2026-03-01', tags: ['react', 'astro'] });
+const standardPost3 = createTestPost({ id: 'standard-3', publishDate: '2026-01-01' });
+// Explicitly override to undefined to satisfy the 100% branch coverage for `if (post.data.tags)`
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - overriding strictly for branch coverage
+standardPost3.data.tags = undefined;
 const featuredPost = createTestPost({ id: 'featured-1', publishDate: '2026-04-01', tags: ['svelte'], isFeatured: true });
 
 describe('BlogFeed Widget (Astro) - Initialization', () => {
@@ -25,7 +30,7 @@ describe('BlogFeed Widget (Astro) - Initialization', () => {
   beforeEach(async () => {
     container = await AstroContainer.create();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.mocked(getCollection).mockResolvedValue([standardPost1, standardPost2, featuredPost] as any);
+    vi.mocked(getCollection).mockResolvedValue([standardPost1, standardPost2, standardPost3, featuredPost] as any);
   });
 
   const render = async () => {
@@ -36,11 +41,11 @@ describe('BlogFeed Widget (Astro) - Initialization', () => {
   it('filters out featured posts and sorts remaining by newest', async () => {
     const doc = await render();
     const wrappers = doc.querySelectorAll('.blog-post-wrapper');
-    expect(wrappers.length).toBe(2);
+    expect(wrappers.length).toBe(3);
     
-    // Ordered by newest: standardPost2 (March) then standardPost1 (Feb)
+    // Ordered by newest: standardPost2 (March), standardPost1 (Feb), standardPost3 (Jan)
     const titles = Array.from(doc.querySelectorAll('h2')).map((el) => el.textContent);
-    expect(titles).toEqual(['Title standard-2', 'Title standard-1']);
+    expect(titles).toEqual(['Title standard-2', 'Title standard-1', 'Title standard-3']);
   });
 });
 
@@ -50,7 +55,7 @@ describe('BlogFeed Widget (Astro) - Tags and Attributes', () => {
   beforeEach(async () => {
     container = await AstroContainer.create();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.mocked(getCollection).mockResolvedValue([standardPost1, standardPost2, featuredPost] as any);
+    vi.mocked(getCollection).mockResolvedValue([standardPost1, standardPost2, standardPost3, featuredPost] as any);
   });
 
   const render = async () => {
@@ -79,6 +84,9 @@ describe('BlogFeed Widget (Astro) - Tags and Attributes', () => {
     
     // standardPost1 is second
     expect(wrappers[1].getAttribute('data-tags')).toBe('vue,react');
+
+    // standardPost3 is third and has no tags
+    expect(wrappers[2].getAttribute('data-tags')).toBe('');
   });
 
   it('hides the submit button as JS handles the form (via component)', async () => {
