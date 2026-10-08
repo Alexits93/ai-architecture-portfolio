@@ -1,8 +1,7 @@
- 
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
 import { describe, it, expect, beforeEach } from 'vitest';
-import Index from '../src/pages/index.astro';
+import Index from '@/pages/index.astro';
 
 describe('Home Page (index.astro)', () => {
   let container: AstroContainer;

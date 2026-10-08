@@ -1,9 +1,9 @@
 ---
-import Header from '@/widgets/header/ui/Header.astro';
-import NavigatorMenu from '@/widgets/navigator-menu/ui/NavigatorMenu.astro';
-import AboutMe from '@/widgets/about-me/ui/AboutMe.astro';
-import BlogPostFeatured from '@/widgets/blog-post-featured/ui/BlogPostFeatured.astro';
-import BlogPostRecommended from '@/widgets/blog-post-recommended/ui/BlogPostRecommended.astro';
+import { Header } from '@/widgets/header';
+import { NavigatorMenu } from '@/widgets/navigator-menu';
+import { AboutMe } from '@/widgets/about-me';
+import { BlogPostFeatured } from '@/widgets/blog-post-featured';
+import { BlogPostRecommended } from '@/widgets/blog-post-recommended';
 import '@/shared/styles/global.css';
 
 const aboutMeData = {
@@ -53,29 +53,3 @@ const aboutMeData = {
 	</body>
 </html>
 
-<style>
-	.home-wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: 3rem;
-	}
-
-	.home-top-wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: 3rem;
-	}
-
-	.home-bottom-wrapper {
-		display: flex;
-		justify-content: center;
-	}
-
-	@media (min-width: 768px) {
-		.home-top-wrapper {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			gap: 3rem;
-		}
-	}
-</style>

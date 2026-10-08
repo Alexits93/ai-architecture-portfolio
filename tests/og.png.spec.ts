@@ -1,8 +1,7 @@
-/* eslint-disable @conarti/feature-sliced/layers-slices */
 import type { APIContext } from 'astro';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { GET } from '@/pages/og.png';
 import * as ogModule from '@/shared/lib/og/generate-og-image';
-import { GET } from './og.png';
 
 describe('og.png endpoint', () => {
   beforeEach(() => {

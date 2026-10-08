@@ -28,3 +28,6 @@ To perform in-browser visual verifications without installing OS-level browsers 
 - Start the Astro dev server (`pnpm dev`).
 - Run a short Playwright script to capture screenshots (`page.screenshot()`).
 - Use the native `view_file` tool to inspect the image.
+
+## 6. Testing & FSD Boundaries
+- **Page Tests:** To prevent FSD `layers-slices` eslint errors without using `eslint-disable` bypasses, tests for `src/pages/` components must be placed in the root `tests/` directory instead of co-locating them in `src/pages/`.
