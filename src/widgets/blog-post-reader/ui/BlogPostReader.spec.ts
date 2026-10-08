@@ -2,8 +2,8 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import type { CollectionEntry } from 'astro:content';
 import { JSDOM } from 'jsdom';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import MockContent from '../__mocks__/MockContent.astro';
 import BlogPostReader from './BlogPostReader.astro';
-import MockContent from './MockContent.astro';
 
 const mockPost: CollectionEntry<'blog'> = {
   id: 'test-post',
