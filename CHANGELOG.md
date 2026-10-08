@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.1.0...v1.2.0) (2026-10-08)
+
+
+### Features
+
+* **about-me:** migrate about-me to Astro widget ([#11](https://github.com/Alexits93/ai-architecture-portfolio/issues/11)) ([6e51908](https://github.com/Alexits93/ai-architecture-portfolio/commit/6e519088412691a3338566ba577ac067b7025572))
+
 # [1.1.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.0.0...v1.1.0) (2026-10-08)
 
 
