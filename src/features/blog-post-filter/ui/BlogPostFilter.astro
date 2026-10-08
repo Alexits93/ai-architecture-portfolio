@@ -1,0 +1,90 @@
+---
+import SkillTag from '@/shared/ui/skill-tag/SkillTag.astro';
+
+export interface Props {
+	tags?: string[];
+	selectedTags?: string[];
+}
+
+const { tags = [], selectedTags = [] } = Astro.props;
+---
+
+<blog-post-filter data-selected={JSON.stringify(selectedTags)}>
+	<div class="filter-wrapper">
+		{tags.map((tag) => (
+			<SkillTag 
+				skill={tag} 
+				interactive={true} 
+				active={selectedTags.includes(tag)} 
+			/>
+		))}
+	</div>
+</blog-post-filter>
+
+<style>
+	.filter-wrapper {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: .5rem;
+		margin-bottom: 1rem;
+	}
+</style>
+
+<script>
+	class BlogPostFilter extends HTMLElement {
+		private selectedTags: string[] = [];
+
+		connectedCallback() {
+			try {
+				const selectedAttr = this.getAttribute('data-selected');
+				this.selectedTags = selectedAttr ? JSON.parse(selectedAttr) : [];
+			} catch {
+				this.selectedTags = [];
+			}
+
+			this.addEventListener('click', this.handleClick.bind(this));
+		}
+
+		disconnectedCallback() {
+			this.removeEventListener('click', this.handleClick.bind(this));
+		}
+
+		private toggleTagState(button: Element, skill: string) {
+			const isActive = this.selectedTags.includes(skill);
+			if (isActive) {
+				this.selectedTags = this.selectedTags.filter((t) => t !== skill);
+				button.classList.remove('active');
+				button.setAttribute('aria-pressed', 'false');
+			} else {
+				this.selectedTags.push(skill);
+				button.classList.add('active');
+				button.setAttribute('aria-pressed', 'true');
+			}
+		}
+
+		private handleClick(event: Event) {
+			const target = event.target as HTMLElement;
+			const button = target.closest('button.skill-tag');
+			if (!button) return;
+
+			const skill = button.getAttribute('data-skill');
+			if (!skill) return;
+
+			this.toggleTagState(button, skill);
+
+			this.dispatchEvent(
+				new CustomEvent('filter-tag-selected', {
+					detail: { selectedTags: this.selectedTags },
+					bubbles: true,
+					composed: true,
+				})
+			);
+		}
+	}
+
+	if (!customElements.get('blog-post-filter')) {
+		customElements.define('blog-post-filter', BlogPostFilter);
+	}
+</script>

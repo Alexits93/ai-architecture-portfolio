@@ -19,6 +19,7 @@ const tagContent = interactive ? skill : `#${skill.toLocaleLowerCase()}`;
     type="button" 
     class:list={['skill-tag', 'interactive', { active }]} 
     aria-pressed={active ? "true" : "false"}
+    data-skill={skill}
   >
     {tagContent}
   </button>
