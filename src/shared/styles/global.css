@@ -181,3 +181,90 @@ section#page-wrapper > .experience-list-container { align-self: flex-end; }
 @media (min-width: 768px) { .home-top-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; } }
 .page-container { padding: 2rem; max-width: 800px; margin: 0 auto; }
 h1, h2, h3, h4, h5, h6 { scroll-margin-top: 100px; }
+
+
+/* BlogPostThumbnail styles extracted from entity */
+.blog-post-thumbnail {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.blog-post-thumbnail article {
+  padding: 1rem;
+  border-radius: 10px;
+  background-color: var(--thumbnail-bg-color);
+}
+
+.blog-post-thumbnail article figure {
+  margin: 0;
+  margin-bottom: 1rem;
+}
+
+.blog-post-thumbnail article figure img {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.blog-post-thumbnail article figure figcaption {
+  height: 0;
+  width: 0;
+  visibility: hidden;
+}
+
+.blog-post-thumbnail article .thumbnail-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2 {
+  color: var(--font-color-bold);
+  margin: 0 0 1rem;
+  letter-spacing: -.025em;
+  font-weight: 500;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2 span {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+}
+
+.blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2 span svg {
+  width: 25px;
+  transition: all .3s ease-in-out;
+}
+
+.blog-post-thumbnail article .thumbnail-body .thumbnail-body-top p {
+  margin: 0;
+}
+
+.blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2:hover span svg {
+  transform: scale(1.5);
+  color: var(--theme-primary);
+}
+
+.blog-post-thumbnail article .thumbnail-body .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .blog-post-thumbnail article .thumbnail-body {
+    min-height: 250px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+}

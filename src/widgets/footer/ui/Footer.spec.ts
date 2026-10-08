@@ -30,9 +30,9 @@ describe('Footer Widget (Astro)', () => {
 
     // Check policy links
     const cookieLink = doc.querySelector('[data-testid="cookie-link"]');
-    expect(cookieLink?.getAttribute('href')).toBe('/cookie-disclaimer');
+    expect(cookieLink?.getAttribute('href')).toBe('/cookie-disclaimer/');
     
     const privacyLink = doc.querySelector('[data-testid="privacy-link"]');
-    expect(privacyLink?.getAttribute('href')).toBe('/privacy-policy');
+    expect(privacyLink?.getAttribute('href')).toBe('/privacy-policy/');
   });
 });
