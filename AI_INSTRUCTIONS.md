@@ -24,3 +24,11 @@ See `/docs/manifestos/` for detailed governing rules.
 Third-party packages, plugins, and custom scripts are an absolute last resort. 
 - You must always attempt to solve a problem using native features of the established toolset (Astro, TypeScript, Vitest, Node).
 - Before introducing any third-party dependency, you must conduct proper internet research to prove that no official or native workaround exists.
+
+## Model Allocation Strategy
+When planning or executing tasks, the AI must advise the user on which model is best suited for the job based on the following benchmarks:
+- **Claude Opus 5.5:** Reserve for deep architecture or complex logic. Stronger model for general reasoning (Score: 58 AAII).
+- **Gemini 3.1 Pro:** Select for front-end UI generation or analyzing large repositories. Leads the WebDev Arena benchmark and handles up to 1M input tokens.
+- **Gemini 3.8 Flash:** Use for rapid, high-volume bulk edits.
+- **GPT-OSS 120B (medium):** Avoid relying on this (scheduled for removal from Antigravity on Nov 2, 2026).
+If the current model does not align with the task, the AI should prompt the user to change it in their UI settings.
