@@ -1,0 +1,100 @@
+---
+export interface Props {
+	tags?: string[];
+	selectedTags?: string[];
+}
+
+const { tags = [], selectedTags = [] } = Astro.props;
+---
+
+<blog-post-filter>
+	<form id="filter-form" action="/blog" method="GET">
+		<div class="filter-wrapper">
+			{tags.map((tag) => (
+				<label class="skill-tag-label">
+					<input 
+						type="checkbox" 
+						name="tag" 
+						value={tag} 
+						checked={selectedTags.includes(tag)} 
+						class="sr-only" 
+					/>
+					<span class="skill-tag-visual">{tag}</span>
+				</label>
+			))}
+		</div>
+		
+		<button type="submit" class="filter-submit">Apply Filters</button>
+	</form>
+</blog-post-filter>
+
+<style>
+	.filter-wrapper {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-bottom: 1rem;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		border: 0;
+	}
+
+	.skill-tag-label {
+		cursor: pointer;
+	}
+
+	.skill-tag-visual {
+		display: inline-block;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.25rem;
+		background-color: var(--theme-secondary, #e2e8f0);
+		color: var(--font-color, #1e293b);
+		font-size: 1rem;
+		transition: background-color 0.3s ease, color 0.3s ease;
+		user-select: none;
+	}
+
+	/* Declarative State Styling! */
+	input[type="checkbox"]:checked + .skill-tag-visual {
+		background-color: var(--theme-primary, #3b82f6);
+		color: white;
+	}
+
+	input[type="checkbox"]:focus-visible + .skill-tag-visual {
+		outline: 2px solid var(--theme-primary, #3b82f6);
+		outline-offset: 2px;
+	}
+
+	.skill-tag-label:hover .skill-tag-visual {
+		background-color: var(--theme-primary, #3b82f6);
+		color: white;
+	}
+
+	.filter-submit {
+		display: block;
+		margin: 1rem auto 0;
+		padding: 0.5rem 1.5rem;
+		background: var(--theme-primary, #3b82f6);
+		color: white;
+		border: none;
+		border-radius: 0.25rem;
+		cursor: pointer;
+		font-family: inherit;
+		font-size: 1rem;
+		transition: opacity 0.3s ease;
+	}
+
+	.filter-submit:hover {
+		opacity: 0.9;
+	}
+</style>

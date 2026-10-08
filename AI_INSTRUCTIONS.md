@@ -18,6 +18,12 @@ This project strictly enforces Spec-Driven Development (SDD) and Test-Driven Dev
 3. **Test:** Write failing tests (`*.test.ts` via Vitest/Playwright).
 4. **Implement:** Write code to pass tests.
 
+**DETERMINISTIC PRE-EXECUTION PROTOCOL:**
+Before invoking `write_to_file` or `replace_file_content` to create/edit an Astro component, you MUST:
+1. Ask yourself: *"Can this interactivity be achieved entirely via native HTML5 forms, checkboxes, radio buttons, and CSS `:checked`/`:target` pseudo-classes?"*
+2. If yes, you are **forbidden** from using a `<script>` tag or managing DOM state in JavaScript. 
+3. Explicitly verify cross-layer imports use absolute `@/` paths per FSD rules.
+
 See `/docs/manifestos/` for detailed governing rules.
 
 ## Native-First Tooling Principle (Strict)
