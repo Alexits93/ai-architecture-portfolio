@@ -1,0 +1,45 @@
+---
+import { getCollection } from 'astro:content';
+import { Header } from '@/widgets/header';
+import { NavigatorMenu } from '@/widgets/navigator-menu';
+import { Footer } from '@/widgets/footer';
+import { BlogPostRecommended } from '@/widgets/blog-post-recommended';
+import BlogPostReader from '@/widgets/blog-post-reader/ui/BlogPostReader.astro';
+import SeoHead from '@/shared/ui/seo-head/SeoHead.astro';
+import '@/shared/styles/global.css';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+        
+        <SeoHead
+            title={`${post.data.title} - Patrik Alexits`}
+            description={post.data.description}
+            ogType="article"
+        />
+	</head>
+	<body>
+        <Header />
+		<NavigatorMenu />
+        
+        <BlogPostReader post={post} />
+        <BlogPostRecommended />
+
+        <Footer />
+	</body>
+</html>

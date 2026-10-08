@@ -1,0 +1,191 @@
+---
+import { Picture } from 'astro:assets';
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import ArticleNavigator from '@/shared/ui/article-navigator/ArticleNavigator.astro';
+import SkillTag from '@/shared/ui/skill-tag/SkillTag.astro';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+const monthNames = [
+  "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+  "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+];
+const d = new Date(post.data.publishDate);
+const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+---
+
+<div class="blog-post-layout">
+  <main class="blog-post-reader">
+    <header class="wrapper-top">
+      <div class="wrapper-top-heading">
+        <h1>{post.data.title}</h1>
+        <h2>{post.data.subtitle}</h2>
+      </div>
+      <div class="wrapper-top-post-data">
+        <div class="author-info">
+          <svg id="editable" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 467.68 294.45">
+            <path d="m123.48,57.74H54.68v32.43l25.37,41.28h-25.37v106.98h32.26v-74.72h36.54c29.27,0,52.99-23.72,52.99-52.99h0c0-29.27-23.72-52.99-52.99-52.99Zm1.16,73.53h-4.99l-25.58-41.66h30.57c11.5,0,20.83,9.33,20.83,20.83s-9.33,20.83-20.83,20.83Z"/>
+            <circle cx="207.75" cy="223.56" r="17.26" transform="translate(-33.13 36.16) rotate(-9.22)"/>
+            <circle cx="398.28" cy="223.56" r="17.26" transform="translate(39.32 505.97) rotate(-67.5)"/>
+            <polygon points="13.25 192.57 0 192.57 0 281.21 0 294.45 13.25 294.45 101.89 294.45 101.89 281.21 13.25 281.21 13.25 192.57"/>
+            <polygon points="454.43 0 365.79 0 365.79 13.25 454.43 13.25 454.43 101.89 467.68 101.89 467.68 13.25 467.68 0 454.43 0"/>
+            <path d="m228.91,237.51h35.6l6.52-18.68h62.49l6.52,18.68h35.6l-73.36-185.04-73.36,185.04Zm51.79-47.1l21.57-57.11,21.57,57.11h-43.13Z"/>
+          </svg>
+          <p>Patrik Alexits</p>
+        </div>
+        <p class="publish-date">{formattedDate}</p>
+      </div>
+
+      <figure>
+        <!-- Using a static path for the hero image. In a real scenario we might use Astro.glob or Image component -->
+        <Picture 
+          src={`/assets/images/${post.id}.webp`}
+          alt={post.data.title}
+          width={728}
+          height={364}
+          formats={['avif', 'webp']}
+          loading="eager"
+          fetchpriority="high"
+        />
+        <figcaption class="sr-only">{post.data.title}</figcaption>
+      </figure>
+    </header>
+
+    <article class="prose">
+      <Content />
+    </article>
+
+    {post.data.tags && post.data.tags.length > 0 && (
+      <div class="tags">
+        {post.data.tags.map((tag) => (
+          <SkillTag skill={tag} />
+        ))}
+      </div>
+    )}
+  </main>
+
+  <aside class="navigator-sidebar">
+    <ArticleNavigator headings={headings} />
+  </aside>
+</div>
+
+
+<style>
+  .blog-post-layout {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .blog-post-reader {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .navigator-sidebar {
+    display: none;
+  }
+
+  .wrapper-top-heading h1 {
+    color: var(--font-color-bold);
+    margin: 0 0 1rem;
+    letter-spacing: -.025em;
+    font-weight: 700;
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  .wrapper-top-heading h2 {
+    margin: 0 0 1rem;
+  }
+
+  .wrapper-top-post-data {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    margin-bottom: 1rem;
+    border-top: 1px solid var(--font-color);
+    border-bottom: 1px solid var(--font-color);
+  }
+
+  .author-info {
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+    align-items: center;
+  }
+
+  .author-info svg {
+    height: 40px;
+  }
+
+  figure {
+    margin: 0 0 1rem;
+  }
+
+  figure img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .tags {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin: 3rem 0;
+  }
+
+  .prose {
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    .blog-post-layout {
+      display: grid;
+      grid-template-columns: 90% 10%;
+      gap: 1rem;
+      max-width: calc(100% - (12rem - 150px));
+      margin-right: 150px;
+    }
+
+    .navigator-sidebar {
+      display: block;
+      position: sticky;
+      top: 6rem;
+      height: max-content;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .blog-post-layout {
+      margin: 0 0 auto 0;
+      max-width: 880px;
+    }
+  }
+</style>
