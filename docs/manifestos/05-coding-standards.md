@@ -6,7 +6,7 @@
 
 ## 2. Code Complexity & Constraints
 Code must be deterministic, readable, and strictly scoped.
-- **Maximum Function Length:** 25 lines. Forces Single Responsibility Principle (SRP).
+- **Maximum Function Length:** 25 lines (50 for some specs). Forces Single Responsibility Principle (SRP). *Note: In test files, `describe` blocks written as arrow functions count towards `max-lines-per-function`. Split large test suites into multiple smaller `describe` blocks to comply.*
 - **Maximum Parameters:** 3 parameters. If more are needed, use a strongly-typed configuration object (interface/type).
 - **Maximum File Length:** 250 lines. Files exceeding this must be decomposed into logical modules.
 - **Cyclomatic Complexity:** Maximum 5 branches per function. Use early returns and guard clauses instead of nested `if/else` statements.
