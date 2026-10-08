@@ -14,7 +14,7 @@ const { post } = Astro.props;
     <h2>{post.data.title}</h2>
     <p>{post.data.description}</p>
     <div class="tags">
-      {post.data.tags.map(tag => (
+      {(post.data.tags || []).map(tag => (
         <span class="tag">{tag}</span>
       ))}
     </div>

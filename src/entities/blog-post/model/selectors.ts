@@ -27,3 +27,11 @@ export const selectRecommendedPosts = (
     .filter((post) => post.id !== featuredId && post.id !== excludeId)
     .slice(0, limit);
 };
+
+/**
+ * Standard posts are all posts except those explicitly marked as featured.
+ * They are always returned sorted by newest.
+ */
+export const selectStandardPosts = (posts: readonly BlogPost[]): BlogPost[] => {
+  return sortByNewest(posts).filter((post) => !post.data.isFeatured);
+};

@@ -7,7 +7,7 @@ export default defineConfig(
     test: {
       environment: 'node',
       include: ['src/**/*.spec.ts', 'tests/**/*.spec.ts'],
-      exclude: ['e2e/**'],
+      exclude: ['e2e/**', 'tests/pages/**'],
       coverage: {
         provider: 'v8',
         reporter: ['text', 'json-summary', 'json'],

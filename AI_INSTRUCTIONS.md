@@ -12,6 +12,7 @@ Build a high-end personal AI portfolio and blog with superior SEO and LinkedIn i
 - **Tone:** Active voice, simple sentences, extremely high signal-to-noise ratio. State facts directly. Do not flatter the user.
 
 ## Methodology
+The legacy web-components codebase is located locally at `/home/patrika/Documents/projects/web-components/`. Reference it when migrating components.
 This project strictly enforces Spec-Driven Development (SDD) and Test-Driven Development (TDD).
 1. **Spec:** Write a functional spec (`*.spec.md`).
 2. **DevSpec:** Translate to a Behavioral Matrix (`*.devspec.md`).

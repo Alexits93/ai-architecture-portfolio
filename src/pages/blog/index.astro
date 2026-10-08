@@ -1,0 +1,24 @@
+---
+import { Header } from '@/widgets/header';
+import { NavigatorMenu } from '@/widgets/navigator-menu';
+import { BlogFeed } from '@/widgets/blog-feed';
+import '@/shared/styles/global.css';
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Blog - Patrik Alexits</title>
+	</head>
+	<body>
+		<Header />
+		<NavigatorMenu />
+		<main>
+			<BlogFeed />
+		</main>
+	</body>
+</html>
