@@ -2,12 +2,12 @@
 
 ## 1. Determinism Over Prompting
 Do not rely on the LLM "remembering" to write good code. Enforce it at the system level.
-- **Formatter/Linter:** `Biome` (fast, strict).
+- **Formatter/Linter:** `ESLint` (fast, strict).
 - **Types:** Strict TypeScript (`strict: true`, `noImplicitAny`, etc.).
 - **Git Hooks:** `husky` and `lint-staged` must block any commit that fails tests or linting.
 
 ## 2. CI/CD Pipeline
-- GitHub Actions must run the full Vitest/Playwright suite and Biome checks on every Pull Request.
+- GitHub Actions must run the full Vitest/Playwright suite and ESLint checks on every Pull Request.
 - Deployments to Cloudflare Pages only occur if the CI pipeline passes.
 
 ## 3. Deterministic AI Safeguards (Anti-Slop Hook)
