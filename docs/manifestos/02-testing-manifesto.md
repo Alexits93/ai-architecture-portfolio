@@ -31,3 +31,7 @@ To perform in-browser visual verifications without installing OS-level browsers 
 
 ## 6. Testing & FSD Boundaries
 - **Page Tests:** To prevent FSD `layers-slices` eslint errors without using `eslint-disable` bypasses, tests for `src/pages/` components must be placed in the root `tests/` directory instead of co-locating them in `src/pages/`.
+
+## 7. E2E Testing for Astro Pages
+- **Script Execution:** `experimental_AstroContainer` does not bundle or execute client-side `<script>` blocks (e.g., custom elements). To physically simulate user interactions that rely on client JS, always write a **Playwright E2E test**.
+- **Page Test Location:** If a Playwright test must reside in `tests/pages/` to satisfy FSD rules, update `vitest.config.ts` to `exclude: ['tests/pages/**']` so Vitest's Node runner doesn't crash trying to execute a browser-native Playwright test file.
