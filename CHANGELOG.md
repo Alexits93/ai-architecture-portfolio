@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.10.0...v1.11.0) (2026-10-08)
+
+
+### Features
+
+* **blog:** implement blog page layer and E2E filtering tests ([#24](https://github.com/Alexits93/ai-architecture-portfolio/issues/24)) ([63ae5db](https://github.com/Alexits93/ai-architecture-portfolio/commit/63ae5db992df149ae2aa8aab68fb0b50c5470f4e))
+
 # [1.10.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.9.0...v1.10.0) (2026-10-08)
 
 
