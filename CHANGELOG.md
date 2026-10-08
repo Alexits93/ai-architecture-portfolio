@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.7.1...v1.8.0) (2026-10-08)
+
+
+### Features
+
+* **home:** migrate legacy home page to astro architecture ([#19](https://github.com/Alexits93/ai-architecture-portfolio/issues/19)) ([07d49f2](https://github.com/Alexits93/ai-architecture-portfolio/commit/07d49f2373b4188fde99cd81fcb7d164bf801246))
+
 ## [1.7.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.7.0...v1.7.1) (2026-10-08)
 
 
