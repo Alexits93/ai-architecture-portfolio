@@ -6,11 +6,13 @@ export default defineConfig(
   getViteConfig({
     test: {
       environment: 'node',
+      include: ['src/**/*.spec.ts', 'tests/**/*.spec.ts'],
+      exclude: ['e2e/**'],
       coverage: {
         provider: 'v8',
         reporter: ['text', 'json-summary', 'json'],
         include: ['src/**'],
-        exclude: ['tests/**', '**/*.config.*', 'src/env.d.ts', 'src/pages/**', '**/*.md'],
+        exclude: ['tests/**', 'e2e/**', '**/*.config.*', 'src/env.d.ts', 'src/pages/**', '**/*.md'],
         thresholds: {
           lines: 100,
           functions: 100,

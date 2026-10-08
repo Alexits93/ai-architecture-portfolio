@@ -1,6 +1,6 @@
-import { atom } from 'nanostores';
+import { persistentAtom } from '@nanostores/persistent';
 
-export const themeStore = atom<'light' | 'dark'>('light');
+export const themeStore = persistentAtom<'light' | 'dark'>('theme', 'light');
 
 export function toggleTheme(): void {
   const current = themeStore.get();
