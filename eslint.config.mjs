@@ -43,8 +43,8 @@ export default [
   {
     files: ["**/*.spec.ts", "tests/**/*.ts"],
     rules: {
-      "max-lines-per-function": "off",
-      "complexity": "off"
+      "max-lines-per-function": ["error", 50],
+      "complexity": ["error", 10]
     }
   }
 ];
