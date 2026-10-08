@@ -1,0 +1,73 @@
+---
+interface Props {
+  skill?: string;
+  interactive?: boolean;
+  active?: boolean;
+}
+
+const {
+  skill = "404 - Skill not found",
+  interactive = false,
+  active = false,
+} = Astro.props;
+
+const tagContent = interactive ? skill : `#${skill.toLocaleLowerCase()}`;
+---
+
+{interactive ? (
+  <button 
+    type="button" 
+    class:list={['skill-tag', 'interactive', { active }]} 
+    aria-pressed={active ? "true" : "false"}
+  >
+    {tagContent}
+  </button>
+) : (
+  <span class="skill-tag non-interactive">
+    {tagContent}
+  </span>
+)}
+
+<style>
+  .skill-tag {
+    display: inline-block;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Interactive Tag (Filter Pill) */
+  button.skill-tag.interactive {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    background-color: var(--theme-secondary, #e2e8f0);
+    color: var(--font-color, #1e293b);
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-family: inherit;
+  }
+
+  button.skill-tag.interactive:hover,
+  button.skill-tag.interactive:focus-visible {
+    background-color: var(--theme-primary, #3b82f6);
+    color: white;
+    outline: none;
+  }
+
+  button.skill-tag.interactive.active {
+    background-color: var(--theme-primary, #3b82f6);
+    color: white;
+  }
+
+  /* Non-Interactive Tag (Text) */
+  span.skill-tag.non-interactive {
+    font-size: 1rem;
+    padding: 0.25rem;
+    font-style: italic;
+    color: var(--font-color, inherit);
+  }
+
+  /* Global selection override just for this tag to mimic legacy behavior */
+  .skill-tag::selection {
+    background-color: var(--theme-primary, #3b82f6);
+  }
+</style>
