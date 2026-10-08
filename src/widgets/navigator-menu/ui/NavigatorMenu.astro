@@ -13,7 +13,7 @@ const { menuItems = defaultMenuItems } = Astro.props;
 ---
 
 <section id="navigator-menu">
-    <label for="mobile-menu-toggle" class="navigator-menu-overlay" aria-label="Close menu"></label>
+    <div class="navigator-menu-overlay" aria-hidden="true"></div>
     <div class="navigator-menu-body">
         <ul>
             {menuItems.map(item => (
