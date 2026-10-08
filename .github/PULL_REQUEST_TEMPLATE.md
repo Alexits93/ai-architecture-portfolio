@@ -17,5 +17,9 @@
 - [ ] Modernization mandated (used latest HTML5/CSS3/TS)
 - [ ] Documentation updated (DevSpecs, Specs, Architecture)
 
+## Unverified Risks & Metacognition
+<!-- DO NOT claim 100% confidence. You MUST explicitly list at least one 15-20% blind spot (e.g., accessibility gaps, cross-browser quirks, edge cases not mathematically proven by automated tests). -->
+- 
+
 ## Screenshots/Gifs
 <!-- For UI-related changes, add a visual representation here. -->

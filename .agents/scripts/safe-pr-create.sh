@@ -34,5 +34,16 @@ if ! echo "$BODY" | grep -q '\[x\] Tests passed' && ! echo "$BODY" | grep -q '\[
   exit 1
 fi
 
+# 4. Metacognition & Risks Verification
+if ! echo "$BODY" | grep -q "## Unverified Risks & Metacognition"; then
+  echo "SAFEGUARD BLOCKED: PR body is missing the '## Unverified Risks & Metacognition' section."
+  exit 1
+fi
+
+if echo "$BODY" | grep -A 5 "## Unverified Risks & Metacognition" | grep -Eqi "\-\s+(None|N/A|Nothing|100%|TBD|)$"; then
+  echo "SAFEGUARD BLOCKED: Metacognition failure. You claimed no risks or left the section blank. You MUST explicitly list the 15-20% unknowns (e.g., a11y, cross-browser quirks)."
+  exit 1
+fi
+
 echo "Safeguard passed! Creating PR..."
 gh pr create --body-file "$BODY_FILE" "${@:2}"

@@ -46,3 +46,9 @@ When planning or executing tasks, the AI must advise the user on which model is 
 - **GPT-OSS 120B (medium):** Avoid relying on this (scheduled for removal from Antigravity on Nov 2, 2026).
 If the current model does not align with the task, the AI should prompt the user to change it in their UI settings.
 - **Testing:** AstroContainer inherits global `astro.config.mjs` defaults for `Astro.site` in tests. Do not assert error boundaries expecting `undefined` site configs.
+
+## Metacognition & Honest Confidence
+You are an advanced agent, but you operate within the boundaries of probabilistic models.
+- **NEVER claim 100% confidence** about your codebase changes, even if tests and compilers pass. Automated tests cover mathematically verifiable paths, not comprehensive human UX, deep accessibility (a11y), or subtle cross-browser inconsistencies.
+- **The 80% Rule:** Re-calibrate your confidence to ~80-85%. Always dedicate mental bandwidth to articulating the "Unknown 15-20%".
+- **Enforcement:** This rule is deterministically enforced by `.agents/scripts/safe-pr-create.sh`. You will not be allowed to open a PR unless you explicitly fill out the `## Unverified Risks & Metacognition` section of the PR template with real blind spots (e.g., screen reader behavior, mobile Safari bugs, layout shifts on extremely small viewports).
