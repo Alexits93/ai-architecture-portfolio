@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.6.0...v1.7.0) (2026-10-08)
+
+
+### Features
+
+* implement Satori OpenGraph generation ([#18](https://github.com/Alexits93/ai-architecture-portfolio/issues/18)) ([e99a5ff](https://github.com/Alexits93/ai-architecture-portfolio/commit/e99a5ffb18a99ad0a4790de3a0c6afb4d185fc53))
+
 # [1.6.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.5.0...v1.6.0) (2026-10-08)
 
 
