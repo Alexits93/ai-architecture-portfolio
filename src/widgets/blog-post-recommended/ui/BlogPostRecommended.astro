@@ -1,16 +1,23 @@
 ---
+import { getCollection } from 'astro:content';
+import { BlogPostThumbnail } from '@/entities/blog-post';
+
 interface Props {
   blogPostClass?: string;
 }
 
 const { blogPostClass = "" } = Astro.props;
+const allPosts = await getCollection('blog');
+const recommendedPosts = allPosts.filter((p) => p.data.isRecommended).slice(0, 3);
 ---
 <section id="blog-section" class:list={[blogPostClass]}>
   <div class="wrapper-top">
     <h1>Recommended Articles</h1>
   </div>
   <div class="wrapper">
-    <div class="stub">Stub: BlogPostThumbnails go here</div>
+    {recommendedPosts.map(post => (
+      <BlogPostThumbnail post={post} />
+    ))}
   </div>
   <div class="wrapper-bottom">
     <a href="/blog">See more</a>
@@ -67,12 +74,6 @@ const { blogPostClass = "" } = Astro.props;
     background-color: var(--thumbnail-bg-color);
   }
 
-  .stub {
-    border: 1px dashed var(--theme-secondary);
-    padding: 2rem;
-    text-align: center;
-    color: var(--font-color);
-  }
 
   @media (min-width: 768px) {
     #blog-section .wrapper {

@@ -1,13 +1,13 @@
 ## Summary & Motivation
-Migrated the legacy `home` web-component layout to the Astro architecture, utilizing strict Feature-Sliced Design. Created layout composition with the `AboutMe` widget and introduced stub components for `BlogPostFeatured` and `BlogPostRecommended` widgets. Removed reliance on JavaScript for styling and interactivity in favor of pure HTML/CSS.
+Implemented the internal logic for the `BlogPostFeatured` and `BlogPostRecommended` widgets on the home page. This includes setting up the Astro content layer for blog posts, creating the `BlogPostThumbnail` entity, and correctly resolving data dependencies for featured and recommended posts natively via `astro:content`.
 
 ## Linked Tickets/Issues
-Closes #19
+Closes #1
 
 ## Testing Strategy
-- Verified structural constraints using Astro Container via Vitest.
-- E2E testing ensures DOM contains the layout wrapper and widgets.
-- Linter checked for explicit types and lack of cross-boundary FSD imports.
+- Utilized `astro/container` and `jsdom` to write unit tests for the newly created `BlogPostThumbnail` component.
+- Updated `BlogPostFeatured` and `BlogPostRecommended` test suites to mock `astro:content`.
+- Ensured 100% test coverage including fallback behaviors.
 
 ## Pre-Merge Checklist
 - [x] Tests passed
@@ -17,4 +17,4 @@ Closes #19
 - [x] Documentation updated (DevSpecs, Specs, Architecture)
 
 ## Screenshots/Gifs
-<!-- For UI-related changes, add a visual representation here. -->
+N/A

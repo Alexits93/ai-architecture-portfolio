@@ -1,9 +1,14 @@
 ---
+import { getCollection } from 'astro:content';
+import { BlogPostThumbnail } from '@/entities/blog-post';
+
+const allPosts = await getCollection('blog');
+const featuredPost = allPosts.find((p) => p.data.isFeatured) || allPosts[0];
 ---
 <section id="blog-featured">
   <div class="wrapper">
     <h1>Featured Article</h1>
-    <div class="stub">Stub: BlogPostThumbnail goes here</div>
+    {featuredPost && <BlogPostThumbnail post={featuredPost} />}
   </div>
 </section>
 
@@ -29,13 +34,7 @@
     line-height: 2.5rem;
   }
   
-  .stub {
-    border: 1px dashed var(--theme-secondary);
-    padding: 2rem;
-    text-align: center;
-    color: var(--font-color);
-  }
-  
+
   @media (min-width: 768px) {
     #blog-featured .wrapper {
       justify-content: flex-start;
