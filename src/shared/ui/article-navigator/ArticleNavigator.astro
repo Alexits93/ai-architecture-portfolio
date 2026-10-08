@@ -1,0 +1,76 @@
+---
+export interface Heading {
+	depth: number;
+	slug: string;
+	text: string;
+}
+
+export interface Props {
+	headings: Heading[];
+}
+
+const { headings = [] } = Astro.props;
+---
+
+<nav class="article-navigator">
+	{headings.map((heading) => (
+		<a href={`#${heading.slug}`} class={`h${heading.depth}-link`}>
+			{heading.text}
+		</a>
+	))}
+</nav>
+
+<style>
+	.article-navigator {
+		display: none;
+		padding: 0 2rem;
+		max-width: 205px;
+		height: fit-content;
+		font-size: 1rem;
+		position: relative;
+	}
+
+	.article-navigator::before {
+		position: absolute;
+		left: 1rem;
+		top: 0;
+		height: 100%;
+		width: 1px;
+		background: var(--font-color-bold, #333);
+		content: "";
+	}
+
+	a {
+		position: relative;
+		color: var(--font-color-bold, #333);
+		text-decoration: none;
+		display: block;
+		margin-bottom: 5px;
+	}
+
+	a:hover {
+		color: var(--theme-primary, #007bff);
+	}
+
+	a:hover::before {
+		position: absolute;
+		left: -1.22rem;
+		top: calc(50% - .25rem);
+		width: .5rem;
+		height: .5rem;
+		border-radius: 50%;
+		background-color: var(--theme-primary, #007bff);
+		content: "";
+	}
+
+	.h3-link { padding-left: 1rem; }
+	.h4-link { padding-left: 2rem; }
+	.h5-link { padding-left: 3rem; }
+	.h6-link { padding-left: 4rem; }
+
+	@media (min-width: 1024px) {
+		.article-navigator {
+			display: block;
+		}
+	}
+</style>
