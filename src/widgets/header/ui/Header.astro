@@ -2,40 +2,35 @@
 ---
 
 <div class="header-wrapper">
+  <script is:inline>
+    // FOUC Prevention: Native Astro best practice to block rendering and read localStorage synchronously
+    const localTheme = localStorage.getItem('theme') || 'light';
+    document.body.setAttribute('data-theme', localTheme);
+  </script>
   <header>
-    <button class="menu-toggle" aria-expanded="false" aria-controls="navigator-menu">
+    <input type="checkbox" id="mobile-menu-toggle" class="sr-only" autocomplete="off" />
+    <label for="mobile-menu-toggle" class="menu-toggle" aria-label="Toggle Menu">
       <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
         <path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/>
       </svg>
-      <span class="sr-only">Toggle Menu</span>
-    </button>
+    </label>
 
     <a href="/">
       <span class="sr-only">Back to Home page</span>
       <svg id="Patrik Alexits logo" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 467.68 294.45"><path d="m123.48,57.74H54.68v32.43l25.37,41.28h-25.37v106.98h32.26v-74.72h36.54c29.27,0,52.99-23.72,52.99-52.99h0c0-29.27-23.72-52.99-52.99-52.99Zm1.16,73.53h-4.99l-25.58-41.66h30.57c11.5,0,20.83,9.33,20.83,20.83s-9.33,20.83-20.83,20.83Z"/><circle class="cls-1" cx="207.75" cy="223.56" r="17.26" transform="translate(-33.13 36.16) rotate(-9.22)"/><circle class="cls-1" cx="398.28" cy="223.56" r="17.26" transform="translate(39.32 505.97) rotate(-67.5)"/><polygon class="cls-1" points="13.25 192.57 0 192.57 0 281.21 0 294.45 13.25 294.45 101.89 294.45 101.89 281.21 13.25 281.21 13.25 192.57"/><polygon class="cls-1" points="454.43 0 365.79 0 365.79 13.25 454.43 13.25 454.43 101.89 467.68 101.89 467.68 13.25 467.68 0 454.43 0"/><path class="cls-1" d="m228.91,237.51h35.6l6.52-18.68h62.49l6.52,18.68h35.6l-73.36-185.04-73.36,185.04Zm51.79-47.1l21.57-57.11,21.57,57.11h-43.13Z"/></svg>
     </a>
 
-    <button class="theme-toggle">
+    <button class="theme-toggle" aria-label="Toggle Theme">
       <img src="/assets/icons/light_mode.svg" class="icon" alt="light mode icon" width="50" height="50" />
     </button>
   </header>
 </div>
 
 <script>
-  import { toggleMenu, toggleTheme, isMenuOpen, themeStore } from '@/shared/stores/ui';
+  import { toggleTheme, themeStore } from '@/shared/stores/ui';
 
-  const menuBtn = document.querySelector('.menu-toggle');
   const themeBtn = document.querySelector('.theme-toggle');
   const themeIcon = themeBtn?.querySelector('img.icon') as HTMLImageElement;
-
-  if (menuBtn) {
-    menuBtn.addEventListener('click', toggleMenu);
-    
-    // Subscribe to store to update aria-expanded
-    isMenuOpen.subscribe((isOpen: boolean) => {
-      menuBtn.setAttribute('aria-expanded', String(isOpen));
-    });
-  }
 
   if (themeBtn) {
     themeBtn.addEventListener('click', toggleTheme);
@@ -89,6 +84,9 @@
       background: none;
       border: none;
       cursor: pointer;
+  }
+  #mobile-menu-toggle:focus-visible + label {
+      outline: 2px solid var(--focus-color);
   }
   .sr-only {
       position: absolute;

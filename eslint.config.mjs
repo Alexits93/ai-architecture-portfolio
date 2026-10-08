@@ -7,6 +7,7 @@ export default [
   js.configs.recommended,
   ...tsEslint.configs.recommended,
   ...eslintPluginAstro.configs.recommended,
+  ...eslintPluginAstro.configs["jsx-a11y-strict"],
   fsd(),
   {
     ignores: [".agents/**", "dist/**"]
@@ -28,6 +29,14 @@ export default [
         {
           "selector": "TSAsExpression[typeAnnotation.type='TSUnknownKeyword']",
           "message": "Type assertion 'as unknown' is strictly banned. Validate data instead of forcing casts."
+        },
+        {
+          "selector": "JSXAttribute[name.name='style'] JSXExpressionContainer",
+          "message": "Idiomatic Tooling (HTML5 State Law): Do not use dynamic inline styles (style={...}). Use Astro's <style define:vars={{...}}> instead."
+        },
+        {
+          "selector": "JSXAttribute[name.name='class'] JSXExpressionContainer",
+          "message": "Idiomatic Tooling (HTML5 State Law): Do not use dynamic class interpolation (class={...}). Use Astro's native class:list={...} directive instead."
         }
       ]
     }

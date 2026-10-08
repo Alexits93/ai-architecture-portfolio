@@ -14,7 +14,7 @@ const { headings = [] } = Astro.props;
 
 <nav class="article-navigator">
 	{headings.map((heading) => (
-		<a href={`#${heading.slug}`} class={`h${heading.depth}-link`}>
+		<a href={`#${heading.slug}`} class:list={[`h${heading.depth}-link`]}>
 			{heading.text}
 		</a>
 	))}

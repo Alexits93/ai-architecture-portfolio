@@ -1,11 +1,6 @@
-import { atom } from 'nanostores';
+import { persistentAtom } from '@nanostores/persistent';
 
-export const isMenuOpen = atom<boolean>(false);
-export const themeStore = atom<'light' | 'dark'>('light');
-
-export function toggleMenu(): void {
-  isMenuOpen.set(!isMenuOpen.get());
-}
+export const themeStore = persistentAtom<'light' | 'dark'>('theme', 'light');
 
 export function toggleTheme(): void {
   const current = themeStore.get();

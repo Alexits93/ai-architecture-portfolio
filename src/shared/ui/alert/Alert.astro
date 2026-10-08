@@ -28,9 +28,11 @@ const iconId = {
 }[type];
 
 const animationDurationSeconds = duration / 1000;
+const alertId = "alert-" + crypto.randomUUID();
 ---
 
-<ui-alert class="alert-wrapper" data-dismissible={String(dismissible)} data-duration={duration}>
+<input type="checkbox" id={alertId} class="alert-toggle" hidden />
+<label for={alertId} class:list={['alert-wrapper', { dismissible }]} data-duration={duration}>
 	<svg xmlns="http://www.w3.org/2000/svg" class="svg-source" aria-hidden="true" style="display: none;">
 		<symbol id="check-circle-fill" viewBox="0 0 16 16">
 			<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
@@ -43,7 +45,7 @@ const animationDurationSeconds = duration / 1000;
 		</symbol>
 	</svg>
 
-	<div class={`notification ${type}`} role="alert">
+	<div class:list={['notification', type]} role="alert">
 		<div class="notification-header">
 			<svg role="img" aria-label={`${headerText}:`}><use href={iconId}></use></svg>
 			<h4>{headerText}</h4>
@@ -52,12 +54,16 @@ const animationDurationSeconds = duration / 1000;
 			<p>{text}</p>
 		</div>
 		{dismissible && (
-			<div class="notification-footer" style={`animation-duration: ${animationDurationSeconds}s;`}></div>
+			<div class="notification-footer"></div>
 		)}
 	</div>
-</ui-alert>
+</label>
 
-<style>
+<style define:vars={{ animationDurationSeconds }}>
+	.alert-toggle:checked + .alert-wrapper {
+		display: none;
+	}
+
 	.alert-wrapper {
 		--host-bg-color-success: #051b11;
 		--host-bg-color-info: #084298;
@@ -81,6 +87,10 @@ const animationDurationSeconds = duration / 1000;
 		z-index: 9999;
 		transform: translateX(calc(100% + 1rem));
 		animation: show .75s ease-in-out forwards;
+	}
+
+	.alert-wrapper.dismissible {
+		animation: show .75s ease-in-out forwards, hide .75s ease-in-out calc(var(--animationDurationSeconds) * 1s) forwards;
 	}
 
 	.notification {
@@ -157,15 +167,13 @@ const animationDurationSeconds = duration / 1000;
 
 	.notification-footer {
 		animation-name: dismiss;
-		animation-timing-function: ease-in-out;
+		animation-timing-function: linear;
 		animation-fill-mode: forwards;
+		animation-duration: calc(var(--animationDurationSeconds) * 1s);
 	}
 
 	@keyframes dismiss {
 		0% { width: 100%; }
-		25% { width: 75%; }
-		50% { width: 50%; }
-		75% { width: 25%; }
 		100% { width: 0px; }
 	}
 
@@ -173,37 +181,9 @@ const animationDurationSeconds = duration / 1000;
 		0% { transform: translateX(100%); }
 		100% { transform: translateX(0); }
 	}
+
+	@keyframes hide {
+		0% { transform: translateX(0); opacity: 1; visibility: visible; }
+		100% { transform: translateX(100%); opacity: 0; visibility: hidden; pointer-events: none; }
+	}
 </style>
-
-<script>
-	class UIAlert extends HTMLElement {
-		private timeoutId?: number;
-
-		connectedCallback() {
-			this.addEventListener('click', this.close.bind(this));
-
-			const isDismissible = this.dataset.dismissible === 'true';
-			if (isDismissible) {
-				const duration = Number(this.dataset.duration) || 8000;
-				this.timeoutId = window.setTimeout(() => {
-					this.close();
-				}, duration);
-			}
-		}
-
-		disconnectedCallback() {
-			if (this.timeoutId) {
-				window.clearTimeout(this.timeoutId);
-			}
-			this.removeEventListener('click', this.close.bind(this));
-		}
-
-		private close() {
-			this.remove();
-		}
-	}
-
-	if (!customElements.get('ui-alert')) {
-		customElements.define('ui-alert', UIAlert);
-	}
-</script>

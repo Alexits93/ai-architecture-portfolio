@@ -29,3 +29,6 @@ Code must be deterministic, readable, and strictly scoped.
 ## 6. Version Control Standards
 - **Branch Management:** Always create and switch to a properly named branch before starting work (e.g., `feat/migrate-[component]`, `fix/[issue]`). Do not pile unrelated features into the same branch.
 - **Conventional Commits:** Commit messages must strictly adhere to the Conventional Commits specification (e.g., `feat(...)`, `fix(...)`, `docs(...)`, `chore(...)`) as enforced by `commitlint`.
+
+## 7. Idiomatic Tooling Over Hacks
+- **No Mixing Principles with Hacks:** When adhering to architectural principles (such as the HTML5 State Law), never compromise the idiomatic best practices of the tool/framework in use. For example, instead of using messy inline `style="..."` interpolation in Astro, use native features like `define:vars` or `class:list`. The tools must be utilized in their designed, optimal way without falling back to lower-level string manipulation hacks.
