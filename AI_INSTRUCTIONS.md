@@ -26,6 +26,9 @@ Before invoking `write_to_file` or `replace_file_content` to create/edit an Astr
 
 See `/docs/manifestos/` for detailed governing rules.
 
+**FSD + ASTRO GLOBAL CSS RULE:**
+Since Astro's `.astro` files in `src/pages` act as entry points, they reside in the FSD `pages` layer. Strict FSD forbids the `pages` layer from importing the `app` layer. Therefore, global design tokens and layout CSS MUST be placed in `src/shared/styles/` (not `src/app/styles/`) so they can legally be imported into Astro page components.
+
 **DETERMINISTIC CODE GATES (THE "NO PROSE" LAW):**
 Architectural principles and constraints must be enforced deterministically via code gates (ESLint rules, AST selectors like `no-restricted-syntax`, TypeScript strict compiler flags, or 100% test coverage thresholds). If you suggest an architectural rule, you MUST simultaneously implement the linter/compiler rule that will cause the CI to fail (turn red) if the rule is violated. Prose in markdown is not enforcement.
 
