@@ -69,7 +69,10 @@ describe('Alert Component - Dismissible', () => {
     const footer = doc.querySelector('.notification-footer');
     expect(footer).not.toBeNull();
     
-    const style = footer?.getAttribute('style');
-    expect(style).toContain('animation-duration: 5s');
+    // Check if Astro's define:vars applied the CSS variable correctly to the root element (or if it exists in the DOM)
+    // Astro adds the define:vars styles to a wrapper or the root element.
+    const rootEl = doc.querySelector('.alert-wrapper');
+    const style = rootEl?.getAttribute('style');
+    expect(style).toContain('--animationDurationSeconds: 5');
   });
 });

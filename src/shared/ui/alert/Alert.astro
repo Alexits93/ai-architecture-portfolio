@@ -32,7 +32,7 @@ const alertId = "alert-" + crypto.randomUUID();
 ---
 
 <input type="checkbox" id={alertId} class="alert-toggle" hidden />
-<label for={alertId} class="alert-wrapper" data-dismissible={String(dismissible)} data-duration={duration} style={dismissible ? `animation: show .75s ease-in-out forwards, hide .75s ease-in-out ${animationDurationSeconds}s forwards;` : `animation: show .75s ease-in-out forwards;`}>
+<label for={alertId} class:list={['alert-wrapper', { dismissible }]} data-duration={duration}>
 	<svg xmlns="http://www.w3.org/2000/svg" class="svg-source" aria-hidden="true" style="display: none;">
 		<symbol id="check-circle-fill" viewBox="0 0 16 16">
 			<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
@@ -54,12 +54,12 @@ const alertId = "alert-" + crypto.randomUUID();
 			<p>{text}</p>
 		</div>
 		{dismissible && (
-			<div class="notification-footer" style={`animation-duration: ${animationDurationSeconds}s;`}></div>
+			<div class="notification-footer"></div>
 		)}
 	</div>
 </label>
 
-<style>
+<style define:vars={{ animationDurationSeconds }}>
 	.alert-toggle:checked + .alert-wrapper {
 		display: none;
 	}
@@ -86,6 +86,11 @@ const alertId = "alert-" + crypto.randomUUID();
 		right: 1rem;
 		z-index: 9999;
 		transform: translateX(calc(100% + 1rem));
+		animation: show .75s ease-in-out forwards;
+	}
+
+	.alert-wrapper.dismissible {
+		animation: show .75s ease-in-out forwards, hide .75s ease-in-out calc(var(--animationDurationSeconds) * 1s) forwards;
 	}
 
 	.notification {
@@ -164,6 +169,7 @@ const alertId = "alert-" + crypto.randomUUID();
 		animation-name: dismiss;
 		animation-timing-function: linear;
 		animation-fill-mode: forwards;
+		animation-duration: calc(var(--animationDurationSeconds) * 1s);
 	}
 
 	@keyframes dismiss {
