@@ -1,7 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
 import { describe, it, expect, beforeEach } from 'vitest';
-import Alert from './Alert.astro';
+import { Alert } from './index';
 
 describe('Alert Component - Rendering', () => {
   let container: AstroContainer;
