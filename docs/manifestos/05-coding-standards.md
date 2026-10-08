@@ -24,6 +24,7 @@ Code must be deterministic, readable, and strictly scoped.
 - **Static-First (Zero JS Default):** Astro components must ship zero runtime JavaScript to the client unless explicitly required. 
 - **The HTML5 State Law:** You are strictly forbidden from tracking visual or selection state in JavaScript arrays/variables (e.g., `selectedTags: string[]`) or manually toggling classes if a native HTML form element (e.g., `<input type="checkbox">`, `<input type="radio">`) and CSS pseudo-classes (`:checked`) can handle it natively. The DOM *is* the state.
 - **Strict Typing:** TypeScript is not optional. `any` is strictly banned. Unknown structures must be typed as `unknown` and parsed via schema validation (e.g., Zod).
+- **FSD Page Styling:** The `src/pages/` layer must remain strictly compositional. Inline `<style>` blocks in pages are forbidden; layout and page-level styling must be extracted to `src/shared/styles/global.css` or handled by dedicated Layout widgets.
 - **Modernization Mandate:** Always utilize the latest available features of HTML5, CSS3/SCSS, and TypeScript. Never port outdated legacy practices; improve the code baseline while ensuring visual parity during migration.
 
 ## 6. Version Control Standards
