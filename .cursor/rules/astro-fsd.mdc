@@ -1,0 +1,24 @@
+---
+description: "Astro 7 and FSD Integration Rules"
+globs: ["src/**/*.astro", "src/**/*.ts"]
+alwaysApply: true
+---
+# Astro + Feature-Sliced Design (FSD) Rules
+
+To prevent sloppiness, these strict deterministic rules apply whenever you work with Astro components, Vitest testing, or Astro content collections:
+
+1. **Strict FSD Public APIs:** 
+   - Never import internal files directly from deep entity or widget structures.
+   - 🔴 **BAD:** `import Component from '@/entities/blog-post/ui/Component.astro'`
+   - ✅ **GOOD:** `import { Component } from '@/entities/blog-post'`
+   - You MUST create an `index.ts` file in the FSD slice to export Astro components cleanly.
+
+2. **Astro 7 Content Loaders:**
+   - Legacy `src/content/config.ts` is banned. Use `src/content.config.ts`.
+   - Collections must use the `glob()` loader (e.g., `loader: glob({ pattern: "**/*.md", base: "./src/content/blog" })`).
+   - `CollectionEntry<T>` no longer has a `slug` or `render` property. Use `id` and `rendered`.
+   - Always run `pnpm astro sync` after editing schemas to update the `.astro` typings.
+
+3. **Vitest Mocking (Zero Casts):**
+   - Banned: `as any`, `as unknown as Type`.
+   - Mock properties natively. If the framework forces impossible-to-mock internal properties, explicitly use `// @ts-expect-error` inline rather than casting the object.

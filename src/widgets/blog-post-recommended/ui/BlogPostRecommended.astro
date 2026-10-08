@@ -1,19 +1,28 @@
 ---
+import { getCollection } from 'astro:content';
+import { BlogPostThumbnail, selectRecommendedPosts } from '@/entities/blog-post';
+import { ROUTES } from '@/shared/config';
+
 interface Props {
   blogPostClass?: string;
+  /** Post to omit, e.g. the article currently being read. */
+  excludeId?: string;
 }
 
-const { blogPostClass = "" } = Astro.props;
+const { blogPostClass = "", excludeId } = Astro.props;
+const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { excludeId });
 ---
 <section id="blog-section" class:list={[blogPostClass]}>
   <div class="wrapper-top">
     <h1>Recommended Articles</h1>
   </div>
   <div class="wrapper">
-    <div class="stub">Stub: BlogPostThumbnails go here</div>
+    {recommendedPosts.map(post => (
+      <BlogPostThumbnail post={post} />
+    ))}
   </div>
   <div class="wrapper-bottom">
-    <a href="/blog">See more</a>
+    <a href={ROUTES.blog}>See more</a>
   </div>
 </section>
 
@@ -67,12 +76,6 @@ const { blogPostClass = "" } = Astro.props;
     background-color: var(--thumbnail-bg-color);
   }
 
-  .stub {
-    border: 1px dashed var(--theme-secondary);
-    padding: 2rem;
-    text-align: center;
-    color: var(--font-color);
-  }
 
   @media (min-width: 768px) {
     #blog-section .wrapper {

@@ -1,0 +1,66 @@
+---
+import { getPostPath } from '../lib/permalink';
+import type { BlogPost } from '../model/types';
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+---
+
+<a href={getPostPath(post)} class="blog-post-thumbnail">
+  <article>
+    <h2>{post.data.title}</h2>
+    <p>{post.data.description}</p>
+    <div class="tags">
+      {post.data.tags.map(tag => (
+        <span class="tag">{tag}</span>
+      ))}
+    </div>
+  </article>
+</a>
+
+<style>
+  .blog-post-thumbnail {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--theme-secondary, #e2e8f0);
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: var(--thumbnail-bg-color, transparent);
+  }
+
+  .blog-post-thumbnail:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    color: var(--font-color-bold, #1e293b);
+  }
+
+  p {
+    margin: 0 0 1rem 0;
+    color: var(--font-color, #475569);
+    line-height: 1.5;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background-color: var(--theme-secondary, #e2e8f0);
+    color: var(--font-color, #1e293b);
+  }
+</style>
