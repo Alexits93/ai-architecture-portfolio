@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.3.0...v1.4.0) (2026-10-08)
+
+
+### Features
+
+* **alert:** migrate alert to shared ui component ([#14](https://github.com/Alexits93/ai-architecture-portfolio/issues/14)) ([4bf6354](https://github.com/Alexits93/ai-architecture-portfolio/commit/4bf635449e8810d37da7d94e0a7a2bc2e1b5e139))
+
 # [1.3.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.2.0...v1.3.0) (2026-10-08)
 
 
