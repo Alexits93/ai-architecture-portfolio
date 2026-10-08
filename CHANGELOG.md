@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.9.0...v1.10.0) (2026-10-08)
+
+
+### Features
+
+* **cv:** migrate legacy cv-page to Astro FSD architecture ([#23](https://github.com/Alexits93/ai-architecture-portfolio/issues/23)) ([c2aac32](https://github.com/Alexits93/ai-architecture-portfolio/commit/c2aac3299b562cc1d00e7274133d78235cf7fabb))
+
 # [1.9.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.8.0...v1.9.0) (2026-10-08)
 
 
