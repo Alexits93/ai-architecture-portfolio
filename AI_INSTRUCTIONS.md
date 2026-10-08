@@ -41,3 +41,4 @@ When planning or executing tasks, the AI must advise the user on which model is 
 - **Gemini 3.8 Flash:** Use for rapid, high-volume bulk edits.
 - **GPT-OSS 120B (medium):** Avoid relying on this (scheduled for removal from Antigravity on Nov 2, 2026).
 If the current model does not align with the task, the AI should prompt the user to change it in their UI settings.
+- **Testing:** AstroContainer inherits global `astro.config.mjs` defaults for `Astro.site` in tests. Do not assert error boundaries expecting `undefined` site configs.
