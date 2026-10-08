@@ -26,11 +26,11 @@ const { post } = Astro.props;
     display: block;
     text-decoration: none;
     color: inherit;
-    border: 1px solid var(--theme-secondary, #e2e8f0);
+    border: 1px solid var(--theme-secondary);
     border-radius: 8px;
     padding: 1.5rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    background-color: var(--thumbnail-bg-color, transparent);
+    background-color: var(--thumbnail-bg-color);
   }
 
   .blog-post-thumbnail:hover {
@@ -41,12 +41,12 @@ const { post } = Astro.props;
   h2 {
     margin: 0 0 0.5rem 0;
     font-size: 1.25rem;
-    color: var(--font-color-bold, #1e293b);
+    color: var(--font-color-bold);
   }
 
   p {
     margin: 0 0 1rem 0;
-    color: var(--font-color, #475569);
+    color: var(--font-color);
     line-height: 1.5;
   }
 
@@ -60,7 +60,7 @@ const { post } = Astro.props;
     font-size: 0.875rem;
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
-    background-color: var(--theme-secondary, #e2e8f0);
-    color: var(--font-color, #1e293b);
+    background-color: var(--theme-secondary);
+    color: var(--font-color);
   }
 </style>

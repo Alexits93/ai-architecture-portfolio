@@ -36,20 +36,20 @@ const { headings = [] } = Astro.props;
 		top: 0;
 		height: 100%;
 		width: 1px;
-		background: var(--font-color-bold, #333);
+		background: var(--font-color-bold);
 		content: "";
 	}
 
 	a {
 		position: relative;
-		color: var(--font-color-bold, #333);
+		color: var(--font-color-bold);
 		text-decoration: none;
 		display: block;
 		margin-bottom: 5px;
 	}
 
 	a:hover {
-		color: var(--theme-primary, #007bff);
+		color: var(--theme-primary);
 	}
 
 	a:hover::before {
@@ -59,7 +59,7 @@ const { headings = [] } = Astro.props;
 		width: .5rem;
 		height: .5rem;
 		border-radius: 50%;
-		background-color: var(--theme-primary, #007bff);
+		background-color: var(--theme-primary);
 		content: "";
 	}
 

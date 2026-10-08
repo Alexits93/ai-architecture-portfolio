@@ -57,8 +57,8 @@ const { tags = [], selectedTags = [] } = Astro.props;
 		display: inline-block;
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;
-		background-color: var(--theme-secondary, #e2e8f0);
-		color: var(--font-color, #1e293b);
+		background-color: var(--theme-secondary);
+		color: var(--font-color);
 		font-size: 1rem;
 		transition: background-color 0.3s ease, color 0.3s ease;
 		user-select: none;
@@ -66,17 +66,17 @@ const { tags = [], selectedTags = [] } = Astro.props;
 
 	/* Declarative State Styling! */
 	input[type="checkbox"]:checked + .skill-tag-visual {
-		background-color: var(--theme-primary, #3b82f6);
+		background-color: var(--theme-primary);
 		color: white;
 	}
 
 	input[type="checkbox"]:focus-visible + .skill-tag-visual {
-		outline: 2px solid var(--theme-primary, #3b82f6);
+		outline: 2px solid var(--theme-primary);
 		outline-offset: 2px;
 	}
 
 	.skill-tag-label:hover .skill-tag-visual {
-		background-color: var(--theme-primary, #3b82f6);
+		background-color: var(--theme-primary);
 		color: white;
 	}
 
@@ -84,7 +84,7 @@ const { tags = [], selectedTags = [] } = Astro.props;
 		display: block;
 		margin: 1rem auto 0;
 		padding: 0.5rem 1.5rem;
-		background: var(--theme-primary, #3b82f6);
+		background: var(--theme-primary);
 		color: white;
 		border: none;
 		border-radius: 0.25rem;
