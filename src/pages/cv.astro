@@ -1,8 +1,8 @@
 ---
-import Header from '@/widgets/header/ui/Header.astro';
-import NavigatorMenu from '@/widgets/navigator-menu/ui/NavigatorMenu.astro';
-import AboutMe from '@/widgets/about-me/ui/AboutMe.astro';
-import SkillTag from '@/shared/ui/skill-tag/SkillTag.astro';
+import { Header } from '@/widgets/header';
+import { NavigatorMenu } from '@/widgets/navigator-menu';
+import { AboutMe } from '@/widgets/about-me';
+import { SkillTag } from '@/shared/ui/skill-tag';
 import '@/shared/styles/global.css';
 
 const aboutMeData = {
@@ -112,7 +112,7 @@ const aboutMeData = {
                             <span>2017 - 2018</span>
                             <div class="position">
                                 <h3>Fullstack Developer - Voov Ltd.</h3>
-                                <p> Engineered multiple client websites as a Fullstack Developer, leveraging <strong>PHP</strong> and the <strong>Laravel</strong> framework for comprehensive site and backend solutions.</p>
+                                <p> Engineered multiple client websites as a Fullstack Developer, using <strong>PHP</strong> and the <strong>Laravel</strong> framework for comprehensive site and backend solutions.</p>
                                 <div class="tags">
                                     <SkillTag skill="Laravel" />
                                     <SkillTag skill="PHP" />

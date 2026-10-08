@@ -1,12 +1,12 @@
 ## Summary & Motivation
-This PR refactors the remaining Astro pages (`cookie-disclaimer.astro`, `privacy-policy.astro`) to inherit `src/shared/styles/global.css` directly. It also removes a leftover inline fallback (`inherit`) for `var(--font-color)` in `Footer.astro`. This ensures complete adherence to the global CSS token system.
+Migrates the legacy `cv-page` Hybrids.js web component to a modern Astro FSD architecture. Extracts hardcoded template CSS into Astro scoped styles, composes existing `AboutMe` and `SkillTag` components, and establishes a zero-JS static page route for the CV.
 
 ## Linked Tickets/Issues
-Closes #2
+Closes #23
 
 ## Testing Strategy
-- Verified all 64/64 Vitest unit tests pass.
-- Verified ESLint configuration rules pass cleanly.
+- Added Playwright E2E test `e2e/cv.spec.ts` asserting component composition, layout classes, and the PDF download link functionality.
+- Fixed `index.spec.ts` test placement and linting errors to maintain 100% CI compliance.
 
 ## Pre-Merge Checklist
 - [x] Tests passed
