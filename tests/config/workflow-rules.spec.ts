@@ -82,8 +82,10 @@ describe('issue rules', () => {
 describe('linked issue rules', () => {
   const openTask = { state: 'OPEN', labels: { nodes: [{ name: 'task' }] }, parent: { number: 35 } };
 
-  it('read every closing keyword', () => {
-    expect(closedIssueNumbers('Closes #1, fixes #2 and Resolves #3. See #4.')).toEqual([1, 2, 3]);
+  // https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue
+  it('read every closing keyword GitHub honors', () => {
+    const body = 'Closes #1, fixes #2, Resolves #3, close #4, CLOSED: #5, fix #6, fixed #7, resolve #8, resolved o/r#9. See #10.';
+    expect(closedIssueNumbers(body)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
   });
 
   it('accept an open Task with a native parent', () => {

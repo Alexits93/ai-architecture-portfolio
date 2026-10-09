@@ -15,6 +15,7 @@ import {
 const projectDir = join(import.meta.dirname, '..', '..');
 
 // Values of a flag in any form: --name value, --name=value, -n value, quoted or bare.
+// gh keeps the last value of a repeated single-value flag, so checks read `.at(-1)`.
 const flagValues = (segment, names) =>
   [...segment.matchAll(new RegExp(`(?:^|\\s)(?:${names.join('|')})(?:=|\\s+)(?:"([^"]*)"|'([^']*)'|(\\S+))`, 'g'))].map(
     (m) => m[1] ?? m[2] ?? m[3] ?? '',
@@ -22,7 +23,7 @@ const flagValues = (segment, names) =>
 
 const readBody = (segment, cwd) => {
   if (flagValues(segment, ['--body', '-b']).length > 0) return { error: 'Pass the body with --body-file <path>, not --body.' };
-  const [file] = flagValues(segment, ['--body-file', '-F']);
+  const file = flagValues(segment, ['--body-file', '-F']).at(-1);
   if (!file) return { error: 'Pass the body with --body-file <path>.' };
   try {
     return { body: readFileSync(resolve(cwd, file), 'utf8') };
@@ -66,7 +67,7 @@ const checkPr = (segment, cwd) => {
   const { body, error } = readBody(segment, cwd);
   const bodyViolations = error ? [error] : findPrBodyViolations(body);
   return [
-    ...lintTitle(flagValues(segment, ['--title', '-t'])[0]),
+    ...lintTitle(flagValues(segment, ['--title', '-t']).at(-1)),
     ...bodyViolations,
     ...(bodyViolations.length === 0 ? checkLinkedIssues(body, cwd) : []),
   ];
@@ -76,16 +77,17 @@ const checkIssue = (segment, cwd) => {
   const { body, error } = readBody(segment, cwd);
   if (error) return [error];
   const labels = flagValues(segment, ['--label', '-l']).flatMap((value) => value.split(',').map((l) => l.trim()));
-  const [parent] = flagValues(segment, ['--parent']);
-  return findIssueViolations({ title: flagValues(segment, ['--title', '-t'])[0] ?? '', labels, body, parent });
+  const parent = flagValues(segment, ['--parent']).at(-1);
+  return findIssueViolations({ title: flagValues(segment, ['--title', '-t']).at(-1) ?? '', labels, body, parent });
 };
 
 // `gh` must start the segment (after env assignments or env/command/exec), so text that only
 // mentions the command, such as a commit message, passes.
 const PREFIX = String.raw`^\s*(?:(?:env|command|exec)\s+|\w+=\S*\s+)*gh\s+`;
 const GATES = [
-  [new RegExp(`${PREFIX}pr\\s+create\\b`), checkPr],
-  [new RegExp(`${PREFIX}issue\\s+create\\b`), checkIssue],
+  // `new` is gh's built-in alias for `create` (gh pr new --help, gh issue new --help).
+  [new RegExp(`${PREFIX}pr\\s+(?:create|new)\\b`), checkPr],
+  [new RegExp(`${PREFIX}issue\\s+(?:create|new)\\b`), checkIssue],
 ];
 
 try {

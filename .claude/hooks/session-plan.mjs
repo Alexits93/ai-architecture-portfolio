@@ -27,7 +27,8 @@ const graphql = (query, vars = []) =>
     .data.repository;
 
 try {
-  const issues = graphql(OPEN_PLAN_QUERY).issues.nodes;
+  const { nodes: issues, pageInfo } = graphql(OPEN_PLAN_QUERY).issues;
+  if (pageInfo.hasNextPage) throw new Error('more than 100 open issues, so the tree would be incomplete');
   const branch = run('git', ['branch', '--show-current']).trim();
   const task = linkedTask(issues, branch);
   const handover = task

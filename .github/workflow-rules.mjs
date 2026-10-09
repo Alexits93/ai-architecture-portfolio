@@ -88,9 +88,11 @@ export const findIssueViolations = ({ title, labels, body, parent }) => {
   return violations;
 };
 
+// Every keyword GitHub closes an issue on, with an optional colon and owner/repo prefix:
+// https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue
 /** @param {string} body @returns {number[]} */
 export const closedIssueNumbers = (body) =>
-  [...body.matchAll(/\b(?:Closes|Fixes|Resolves) #(\d+)/gi)].map((m) => Number(m[1]));
+  [...body.matchAll(/\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?):?\s+(?:[\w.-]+\/[\w.-]+)?#(\d+)/gi)].map((m) => Number(m[1]));
 
 export const LINKED_ISSUE_QUERY = `query($owner: String!, $repo: String!, $number: Int!) {
   repository(owner: $owner, name: $repo) {
@@ -144,6 +146,7 @@ export const formatCurrentTask = (branch, task, handover) => {
 export const OPEN_PLAN_QUERY = `query($owner: String!, $repo: String!) {
   repository(owner: $owner, name: $repo) {
     issues(states: OPEN, first: 100, orderBy: { field: CREATED_AT, direction: ASC }) {
+      pageInfo { hasNextPage }
       nodes {
         number title parent { number } blockedBy(first: 10) { nodes { number state } }
         linkedBranches(first: 10) { nodes { ref { name } } }

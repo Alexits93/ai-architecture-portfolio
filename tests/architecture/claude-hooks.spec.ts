@@ -53,34 +53,42 @@ const fakeGh = (answer: string, status: number, branch = 'master'): { PATH: stri
   return { PATH: `${bin}${path.delimiter}${process.env.PATH ?? ''}` };
 };
 
-describe('session-plan hook', () => {
-  const run = (env: { PATH: string }): string =>
-    spawnSync(process.execPath, [path.join(process.cwd(), '.claude/hooks/session-plan.mjs')], {
-      env: { ...process.env, ...env },
-      encoding: 'utf8',
-    }).stdout;
+// fakeGh with a `git` that fails, as outside a repository.
+const failingGit = (answer: string): { PATH: string } => {
+  const env = fakeGh(answer, 0);
+  fs.writeFileSync(path.join(env.PATH.split(path.delimiter)[0], 'git'), '#!/bin/sh\nexit 128\n', { mode: 0o755 });
+  return env;
+};
 
-  // One fake answer serves both queries: the plan reads `issues`, the handover lookup reads `issue`.
-  const answer = JSON.stringify({
-    data: {
-      repository: {
-        issues: {
-          nodes: [
-            { number: 32, title: '[Epic] E', parent: null, blockedBy: { nodes: [] }, linkedBranches: { nodes: [] } },
-            {
-              number: 63,
-              title: '[Task] T',
-              parent: { number: 32 },
-              blockedBy: { nodes: [] },
-              linkedBranches: { nodes: [{ ref: { name: 'chore/t' } }] },
-            },
-          ],
-        },
-        issue: { comments: { nodes: [{ body: `${HANDOVER_MARKER}\nNext: tests` }, { body: 'Measured' }] } },
+const run = (env: { PATH: string }): string =>
+  spawnSync(process.execPath, [path.join(process.cwd(), '.claude/hooks/session-plan.mjs')], {
+    env: { ...process.env, ...env },
+    encoding: 'utf8',
+  }).stdout;
+
+// One fake answer serves both queries: the plan reads `issues`, the handover lookup reads `issue`.
+const answer = JSON.stringify({
+  data: {
+    repository: {
+      issues: {
+        pageInfo: { hasNextPage: false },
+        nodes: [
+          { number: 32, title: '[Epic] E', parent: null, blockedBy: { nodes: [] }, linkedBranches: { nodes: [] } },
+          {
+            number: 63,
+            title: '[Task] T',
+            parent: { number: 32 },
+            blockedBy: { nodes: [] },
+            linkedBranches: { nodes: [{ ref: { name: 'chore/t' } }] },
+          },
+        ],
       },
+      issue: { comments: { nodes: [{ body: `${HANDOVER_MARKER}\nNext: tests` }, { body: 'Measured' }] } },
     },
-  });
+  },
+});
 
+describe('session-plan hook', () => {
   it('prints the open issue tree', () => {
     expect(run(fakeGh(answer, 0))).toContain('- #32 [Epic] E\n  - #63 [Task] T');
   });
@@ -99,6 +107,8 @@ describe('session-plan hook', () => {
     ['gh fails', fakeGh('', 1)],
     ['gh answers garbage', fakeGh('not json', 0)],
     ['gh is missing', { PATH: '' }],
+    ['git fails', failingGit(answer)],
+    ['more open issues exist than one page holds', fakeGh(answer.replace('"hasNextPage":false', '"hasNextPage":true'), 0)],
   ])('prints a stop notice when %s', (_label, env) => {
     expect(run(env)).toContain('PLAN UNAVAILABLE');
   });
@@ -108,11 +118,25 @@ describe('session-plan hook', () => {
 const linkedTask = (parent: { number: number } | null): string =>
   JSON.stringify({ data: { repository: { issue: { state: 'OPEN', labels: { nodes: [{ name: 'task' }] }, parent } } } });
 
+const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pr-gate-'));
+const goodPr = path.join(dir, 'good-pr.md');
+const badPr = path.join(dir, 'bad-pr.md');
+const goodIssue = path.join(dir, 'good-issue.md');
+
+const gate = (command: string, ghAnswer = linkedTask({ number: 35 })): { status: number | null; stderr: string } =>
+  spawnSync('node', [path.join(process.cwd(), '.claude/hooks/pr-gate.mjs')], {
+    input: JSON.stringify({ cwd: dir, tool_input: { command } }),
+    env: { ...process.env, ...fakeGh(ghAnswer, 0) },
+    encoding: 'utf8',
+  });
+
+// A crash also exits 2, so a block must name the gate in its message.
+const expectBlocked = (result: { status: number | null; stderr: string }): void => {
+  expect(result.status).toBe(2);
+  expect(result.stderr).toContain('Blocked by .claude/hooks/pr-gate.mjs');
+};
+
 describe('pr-gate hook', () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pr-gate-'));
-  const goodPr = path.join(dir, 'good-pr.md');
-  const badPr = path.join(dir, 'bad-pr.md');
-  const goodIssue = path.join(dir, 'good-issue.md');
   beforeAll(() => {
     const checklist = PR_CHECKLIST.map((item) => `- [x] ${item}`).join('\n');
     fs.writeFileSync(goodPr, PR_SECTIONS.map((s) => `## ${s}\n${s === 'Pre-Merge Checklist' ? checklist : '- Closes #44'}`).join('\n'));
@@ -121,18 +145,11 @@ describe('pr-gate hook', () => {
   });
   afterAll(() => fs.rmSync(dir, { recursive: true, force: true }));
 
-  const gate = (command: string, ghAnswer = linkedTask({ number: 35 })): number | null =>
-    spawnSync('node', [path.join(process.cwd(), '.claude/hooks/pr-gate.mjs')], {
-      input: JSON.stringify({ cwd: dir, tool_input: { command } }),
-      env: { ...process.env, ...fakeGh(ghAnswer, 0) },
-      encoding: 'utf8',
-    }).status;
-
   it.each([
     ['a linked Task without native parent', linkedTask(null)],
     ['a linked PR number instead of an issue', '{"data":{"repository":{"issue":null}}}'],
   ])('blocks a PR with %s', (_label, ghAnswer) => {
-    expect(gate('gh pr create --title "chore: x" --body-file good-pr.md', ghAnswer)).toBe(2);
+    expectBlocked(gate('gh pr create --title "chore: x" --body-file good-pr.md', ghAnswer));
   });
 
   it.each([
@@ -145,8 +162,14 @@ describe('pr-gate hook', () => {
     ['an issue body that misses sections', 'gh issue create -t "[Task] X" -l task --parent 35 -F bad-pr.md'],
     ['a Task without native parent', 'gh issue create --title "[Task] X" --label task --body-file good-issue.md'],
     ['a prefixed call', 'cd /x; GH_PAGER= env gh pr create --title "chore: x"'],
+    ['the pr new alias', 'gh pr new --title "chore: x" --body "hi"'],
+    ['the issue new alias', 'gh issue new -t "[Task] X" -b "hi"'],
+    [
+      'repeated flags whose last value breaks the rules, because gh uses the last one',
+      'gh pr create --title "chore: x" --body-file good-pr.md --title "Add gates" --body-file bad-pr.md',
+    ],
   ])('blocks %s', (_label, command) => {
-    expect(gate(command)).toBe(2);
+    expectBlocked(gate(command));
   });
 
   it.each([
@@ -155,7 +178,7 @@ describe('pr-gate hook', () => {
     ['other commands', 'gh pr view 44'],
     ['text that mentions the command', "git commit -F - <<'EOF'\nchore: gate gh pr create\nEOF"],
   ])('allows %s', (_label, command) => {
-    expect(gate(command)).toBe(0);
+    expect(gate(command).status).toBe(0);
   });
 });
 
