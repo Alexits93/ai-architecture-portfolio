@@ -1,5 +1,6 @@
 // Applies the stored theme before first paint. Loaded as a classic blocking script from <head>
-// so it runs before render, and from a file (not inline) so the hash-based CSP allows it via 'self'.
+// so it runs before render. It is a file, not inline, because Astro does not hash is:inline code.
+// It loads before the CSP <meta>, which does not govern earlier content (W3C CSP3, meta element).
 try {
   var storedTheme = localStorage.getItem('theme');
   var theme = storedTheme === 'dark' || storedTheme === 'light' ? storedTheme : 'light';
