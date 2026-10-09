@@ -32,9 +32,9 @@ describe('Supply chain settings', () => {
     expect(workspace).toMatch(/^trustPolicy: no-downgrade$/m);
     expect(workspace).toMatch(/^trustPolicyExcludePrune: true$/m);
     // pnpm's own parse of the workspace file, so any YAML layout is checked as pnpm reads it
-    // (https://pnpm.io/cli/config).
+    // (https://pnpm.io/cli/config). An unset key prints nothing, as after trustPolicyExcludePrune.
     const excludes: string[] = JSON.parse(
-      execFileSync('pnpm', ['config', 'get', 'trustPolicyExclude', '--json'], { encoding: 'utf8' }),
+      execFileSync('pnpm', ['config', 'get', 'trustPolicyExclude', '--json'], { encoding: 'utf8' }) || '[]',
     );
     for (const entry of excludes) {
       expect(entry).toMatch(/^(?:@[\w.-]+\/)?[\w.-]+@\d+\.\d+\.\d+$/);
