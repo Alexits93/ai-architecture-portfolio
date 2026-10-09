@@ -1,5 +1,9 @@
 {
   "autoMemoryEnabled": false,
+  "statusLine": {
+    "type": "command",
+    "command": "jq -r '(.context_window.total_input_tokens // 0) as $t | \"context \\($t / 1000 | floor)k / 150k\" + (if $t >= 130000 then \" \\u001b[31mHANDOVER NOW\\u001b[0m\" else \"\" end)'"
+  },
   "sandbox": {
     "enabled": true,
     "autoAllowBashIfSandboxed": true,

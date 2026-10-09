@@ -34,3 +34,4 @@ Applies to docs, commit messages, PR bodies and chat.
 ## Context hygiene
 - Do not commit memory, session-log or scratch files to the repo. Durable knowledge goes into this file, `.claude/rules/`, or the relevant spec, by editing the existing text rather than appending.
 - When compacting, keep: the current story, files modified so far, the last `pnpm check` result, and open decisions.
+- Before the session context reaches 150k tokens, stop and write a no-loss handover prompt (the status line in `.claude/settings.json` shows `HANDOVER NOW` from 130k) for the next session: branch and commits (git-verified), the last `pnpm check` result, files modified, open items in priority order, user decisions and pending approvals, sandbox notes, and cited sources with full URLs.

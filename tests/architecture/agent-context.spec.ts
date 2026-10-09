@@ -1,3 +1,4 @@
+import { execFileSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { describe, it, expect } from 'vitest';
@@ -41,6 +42,33 @@ describe('Agent context budget', () => {
 
   it.each(ruleFiles)(`keeps %s under ${RULE_MAX_LINES} lines`, (file) => {
     expect(lineCount(file)).toBeLessThanOrEqual(RULE_MAX_LINES);
+  });
+});
+
+// Hooks receive no context-usage field and compaction loses detail, so the 150k handover rule
+// relies on the status line: it gets the token count and shows a marker from 130k on.
+describe('Session handover status line', () => {
+  const settings: { statusLine?: { type?: string; command?: string } } = JSON.parse(
+    read('.claude/settings.json'),
+  );
+  const render = (inputTokens: number): string =>
+    execFileSync('sh', ['-c', settings.statusLine?.command ?? 'false'], {
+      input: JSON.stringify({ context_window: { total_input_tokens: inputTokens } }),
+      encoding: 'utf8',
+    });
+
+  it('runs as a command status line', () => {
+    expect(settings.statusLine?.type).toBe('command');
+  });
+
+  it('shows the token count without the marker below 130k', () => {
+    const line = render(129999);
+    expect(line).toContain('129k / 150k');
+    expect(line).not.toContain('HANDOVER');
+  });
+
+  it('shows the handover marker from 130k on', () => {
+    expect(render(130000)).toContain('HANDOVER NOW');
   });
 });
 
