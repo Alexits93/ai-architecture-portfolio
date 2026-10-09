@@ -50,17 +50,17 @@ const uniqueTags = Array.from(allTags).sort();
 
 	class BlogFeedInteractive extends HTMLElement {
 		connectedCallback() {
-			const form = this.querySelector('#filter-form') as HTMLFormElement | null;
-			const submitBtn = this.querySelector('.filter-submit') as HTMLButtonElement | null;
+			const form = this.querySelector('#filter-form');
+			const submitBtn = this.querySelector('.filter-submit');
 			const grid = this.querySelector('#blog-grid');
 
-			if (!form || !grid) return;
+			if (!(form instanceof HTMLFormElement) || !grid) return;
 
-			if (submitBtn) submitBtn.style.display = 'none';
+			if (submitBtn instanceof HTMLButtonElement) submitBtn.style.display = 'none';
 
 			form.addEventListener('change', () => {
 				const formData = new FormData(form);
-				const activeTags = formData.getAll('tag') as string[];
+				const activeTags = formData.getAll('tag').filter((tag) => typeof tag === 'string');
 				hideUnmatchedWrappers(activeTags, grid.querySelectorAll('.blog-post-wrapper'));
 			});
 		}
