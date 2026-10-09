@@ -1,8 +1,10 @@
 packages:
   - '.'
+minimumReleaseAge: 1440
+ignoreWorkspaceRootCheck: true
 overrides:
   fflate: '>=0.7.5'
-onlyBuiltDependencies:
-  - '@resvg/resvg-js'
-  - 'esbuild'
-
+allowBuilds:
+  '@resvg/resvg-js': true
+  esbuild: true
+  unrs-resolver: false

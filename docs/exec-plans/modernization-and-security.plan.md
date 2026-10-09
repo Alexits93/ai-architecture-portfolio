@@ -79,7 +79,7 @@ Principle: fix the gates first (every later story relies on them), then the docs
 
 ### Story Q: Quality gates that check what they claim (P0)
 - [ ] `astro check` (`@astrojs/check`) in pre-commit, pre-push and CI (`tsc` skips `.astro` files). Done in `chore/claude-code-setup`.
-- [ ] Bump pnpm from `10.0.0` to the latest 10.x in `packageManager` and `.github/actions/setup-pnpm-env`. `minimum-release-age` needs pnpm >= 10.16, so the supply-chain delay is a no-op today. **(research: exact version, whether to move settings to `pnpm-workspace.yaml`)**
+- [ ] pnpm 12 (`packageManager` is the single version source; CI uses `pnpm/action-setup` v6 without `version`). All pnpm settings live in `pnpm-workspace.yaml`: `minimumReleaseAge: 1440`, `allowBuilds`, the `fflate` override. `.npmrc` holds auth only. Gate: `tests/architecture/supply-chain.spec.ts`.
 - [ ] Run Playwright in CI (`--reporter=line` locally, `github` in CI). Add a `e2e-gate` job and require it.
 - [ ] Coverage honesty: v8 skips all `.astro` files ("empty files skipped"), so "100%" covers only `.ts`. Either exclude `**/*.astro` explicitly and document that components are gated by AstroContainer + e2e, or find a working instrumentation. **(research)**
 - [ ] `eslint-plugin-jsx-a11y` declares peer `eslint <= 9`; the repo runs ESLint 10. Verify the a11y rules actually fire (add a failing fixture test in `tests/config/eslint.spec.ts`), or switch plugin. **(research)**
