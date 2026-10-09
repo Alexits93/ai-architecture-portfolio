@@ -76,3 +76,25 @@ describe('ESLint CSP gate', () => {
     expect(await ruleIds('<script type="application/ld+json" is:inline>{}</script>\n')).not.toContain('no-restricted-syntax');
   });
 });
+
+describe('ESLint AI-prose gate', () => {
+  const ruleIds = async (code: string, filePath = 'src/shared/lib/x.ts') =>
+    (await new ESLint().lintText(code, { filePath }))[0].messages.map(m => m.ruleId);
+
+  it.each([
+    ['a banned word in a comment', '// a robust helper\nexport const a = 1;\n', 'no-warning-comments'],
+    ['an em-dash in a comment', '// fast — small\nexport const a = 1;\n', 'no-warning-comments'],
+    ['a banned word in a string', 'export const a = "Moreover, yes";\n', 'no-restricted-syntax'],
+    ['an emoji in a template', 'export const a = `shipped \u{1F680}`;\n', 'no-restricted-syntax'],
+  ])('flags %s', async (_label, code, ruleId) => {
+    expect(await ruleIds(code)).toContain(ruleId);
+  });
+
+  it('flags slop in Astro template text', async () => {
+    expect(await ruleIds('<p>A seamless site</p>\n', 'src/widgets/x/ui/X.astro')).toContain('no-restricted-syntax');
+  });
+
+  it('allows plain text, derived words and the copyright sign', async () => {
+    expect(await ruleIds('// robustness tests\nexport const a = "© 2026";\n')).toEqual([]);
+  });
+});

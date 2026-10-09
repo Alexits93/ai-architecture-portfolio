@@ -3,6 +3,11 @@ import tsEslint from "typescript-eslint";
 import eslintPluginAstro from "eslint-plugin-astro";
 import fsd from "@conarti/eslint-plugin-feature-sliced";
 
+// AI-prose gate (CLAUDE.md writing rules), enforced in comments, strings and Astro template text.
+const BANNED_WORDS = ["delve", "robust", "seamless", "synergy", "tapestry", "cutting-edge", "leverage", "furthermore", "moreover", "ultimately", "in conclusion", "unlocking"];
+const SLOP = `/\\b(${BANNED_WORDS.join("|")})\\b|\\u2014|\\p{Emoji_Presentation}/iu`;
+const SLOP_MESSAGE = "AI prose: banned word, em-dash or emoji (see CLAUDE.md writing rules).";
+
 export default [
   js.configs.recommended,
   ...tsEslint.configs.recommended,
@@ -20,8 +25,12 @@ export default [
       "max-params": ["error", 3],
       "complexity": ["error", 5],
       "@typescript-eslint/no-explicit-any": "error",
+      "no-warning-comments": ["error", { "terms": [...BANNED_WORDS, "—"], "location": "anywhere" }],
       "no-restricted-syntax": [
         "error",
+        { "selector": `Literal[value=${SLOP}]`, "message": SLOP_MESSAGE },
+        { "selector": `TemplateElement[value.raw=${SLOP}]`, "message": SLOP_MESSAGE },
+        { "selector": `JSXText[value=${SLOP}]`, "message": SLOP_MESSAGE },
         {
           "selector": "TSUnknownKeyword",
           "message": "The 'unknown' type is banned. Define explicit types or interfaces."
@@ -51,6 +60,14 @@ export default [
     ignores: ["src/shared/ui/seo-head/SeoHead.astro"],
     rules: {
       "astro/no-set-html-directive": "error"
+    }
+  },
+  {
+    // These files must spell out the banned list or slop samples to test the gates.
+    files: ["eslint.config.mjs", ".claude/hooks/anti-slop.mjs", "tests/architecture/claude-hooks.spec.ts", "tests/config/eslint.spec.ts"],
+    rules: {
+      "no-warning-comments": "off",
+      "no-restricted-syntax": "off"
     }
   },
   {

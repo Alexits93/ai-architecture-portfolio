@@ -22,7 +22,7 @@ describe('AboutMe Widget (Astro) - Content', () => {
     expect(profession?.textContent).toBe('Jedi Council Member (Not Master though)');
 
     const text = doc.querySelector('p');
-    expect(text?.textContent).toBe("I don't like sand. It's coarse and rough and irritating — and it gets everywhere.");
+    expect(text?.textContent).toBe("I don't like sand. It's coarse and rough and irritating, and it gets everywhere.");
   });
 
   it('should render with custom props', async () => {
