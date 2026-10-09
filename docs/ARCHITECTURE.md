@@ -9,6 +9,11 @@ flowchart TD
     %% Layers
     subgraph Pages ["Pages (Layer)"]
         Index["src/pages/index.astro"]
+        CV["src/pages/cv.astro"]
+        CookieDisclaimer["src/pages/cookie-disclaimer.astro"]
+        PrivacyPolicy["src/pages/privacy-policy.astro"]
+        BlogIndex["src/pages/blog/index.astro"]
+        BlogPost["src/pages/blog/[slug].astro"]
     end
     
     subgraph Widgets ["Widgets (Layer)"]
@@ -24,16 +29,15 @@ flowchart TD
     end
     
     %% Relationships
-    Index --> Header
+    Pages --> Header
     Index --> NavigatorMenu
     Index --> AboutMe
     Index --> BlogPostFeatured
     Index --> BlogPostRecommended
     
     Header --> UIStore
-    NavigatorMenu --> UIStore
 ```
 
 ## State Management
 
-- **UI Store (`isMenuOpen`, `themeStore`)**: Managed via Nano Stores in `src/shared/stores/ui`. Both `Header` and `NavigatorMenu` subscribe to this store to handle their layout and visual state reactively across Astro Islands.
+- **UI Store (`themeStore`)**: Managed via Nano Stores in `src/shared/stores/ui`. Only the `Header` reads this store to handle visual state reactively across Astro Islands.

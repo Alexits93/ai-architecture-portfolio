@@ -3,7 +3,7 @@
 
 
 ## Linked Tickets/Issues
-<!-- Direct links to your project management tool / GitHub Issues (e.g., Closes #123) -->
+<!-- Direct links to your GitHub Issues (e.g., Closes #123). MUST reference the Story/Task issue, NEVER the PR itself. -->
 
 
 ## Testing Strategy

@@ -17,4 +17,4 @@
 
 ## 4. Testing (TDD Strategy)
 - **Vitest + JSDOM:** Ensure the menu renders correctly in isolation given a set of route objects.
-- **Interactivity Test:** Verify that clicking a link triggers the `toggleMenu()` store action to close the menu.
+- **Interactivity Test:** Verify that clicking a link natively closes the `<dialog>` element.

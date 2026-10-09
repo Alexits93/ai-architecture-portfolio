@@ -37,13 +37,13 @@
 - [x] Inline theme script: wrap in `try`, accept only `'light' | 'dark'`.
 
 ### Story D: Make the docs true (agents treat docs as truth)
-- [ ] `docs/ARCHITECTURE.md`: remove the nonexistent `isMenuOpen` store; show all pages; nothing but `Header` reads `themeStore`.
-- [ ] `header.spec.md`, `navigator-menu.spec.md`: remove `isMenuOpen`; describe the actual (then dialog-based) behaviour.
-- [ ] `view-transitions.spec.md` / `.devspec.md`: native CSS only.
-- [ ] Manifesto 09: rewrite for `output: 'static'`:
+- [x] `docs/ARCHITECTURE.md`: remove the nonexistent `isMenuOpen` store; show all pages; nothing but `Header` reads `themeStore`.
+- [x] `header.spec.md`, `navigator-menu.spec.md`: remove `isMenuOpen`; describe the actual (then dialog-based) behaviour.
+- [x] `view-transitions.spec.md` / `.devspec.md`: native CSS only.
+- [x] Manifesto 09: rewrite for `output: 'static'`:
   - drop SSR, `checkOrigin`, server nonces, DOMPurify and `client:load` rules;
   - state CSP = Astro `security.csp` hashes (meta tag) + host headers.
-- [ ] Fix the PR linkage convention: `Closes #N` must reference the Story/Task issue, never the PR itself.
+- [x] Fix the PR linkage convention: `Closes #N` must reference the Story/Task issue, never the PR itself.
 
 ### Story A: Native `<dialog>` menu, no JavaScript (replaces old Stories 2 + 3)
 **Before coding:** check current Baseline status on MDN/web.dev for Invoker Commands (`commandfor`/`command`), `closedby`, `@starting-style`, `transition-behavior: allow-discrete`. If they are not Baseline, the fallback is ~3 lines of JS calling `showModal()`/`close()`.
