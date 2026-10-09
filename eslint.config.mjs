@@ -8,6 +8,30 @@ const BANNED_WORDS = ["delve", "robust", "seamless", "synergy", "tapestry", "cut
 const SLOP = `/\\b(${BANNED_WORDS.join("|")})\\b|\\u2014|\\p{Emoji_Presentation}/iu`;
 const SLOP_MESSAGE = "AI prose: banned word, em-dash or emoji (see CLAUDE.md writing rules).";
 
+// Type and markup bans, kept apart from the prose selectors so the prose exemption below keeps them.
+const SYNTAX_BANS = [
+  {
+    "selector": "TSUnknownKeyword",
+    "message": "The 'unknown' type is banned. Define explicit types or interfaces."
+  },
+  {
+    "selector": "TSAsExpression[typeAnnotation.type='TSUnknownKeyword']",
+    "message": "Type assertion 'as unknown' is strictly banned. Validate data instead of forcing casts."
+  },
+  {
+    "selector": "JSXAttribute[name.name='style'] JSXExpressionContainer",
+    "message": "Idiomatic Tooling (HTML5 State Law): Do not use dynamic inline styles (style={...}). Use Astro's <style define:vars={{...}}> instead."
+  },
+  {
+    "selector": "JSXOpeningElement[name.name='script']:has(JSXNamespacedName[namespace.name='is'][name.name='inline']):not(:has(JSXAttribute[name.name='src'])):not(:has(JSXAttribute[name.name='type'][value.value='application/ld+json']))",
+    "message": "CSP: inline is:inline scripts get no hash and a <meta> CSP does not cover content before it (W3C CSP3 3.3). Move the code to public/ and load it with <script is:inline src=\"/file.js\">."
+  },
+  {
+    "selector": "JSXAttribute[name.name='class'] JSXExpressionContainer",
+    "message": "Idiomatic Tooling (HTML5 State Law): Do not use dynamic class interpolation (class={...}). Use Astro's native class:list={...} directive instead."
+  }
+];
+
 export default [
   js.configs.recommended,
   ...tsEslint.configs.recommended,
@@ -31,26 +55,7 @@ export default [
         { "selector": `Literal[value=${SLOP}]`, "message": SLOP_MESSAGE },
         { "selector": `TemplateElement[value.raw=${SLOP}]`, "message": SLOP_MESSAGE },
         { "selector": `JSXText[value=${SLOP}]`, "message": SLOP_MESSAGE },
-        {
-          "selector": "TSUnknownKeyword",
-          "message": "The 'unknown' type is banned. Define explicit types or interfaces."
-        },
-        {
-          "selector": "TSAsExpression[typeAnnotation.type='TSUnknownKeyword']",
-          "message": "Type assertion 'as unknown' is strictly banned. Validate data instead of forcing casts."
-        },
-        {
-          "selector": "JSXAttribute[name.name='style'] JSXExpressionContainer",
-          "message": "Idiomatic Tooling (HTML5 State Law): Do not use dynamic inline styles (style={...}). Use Astro's <style define:vars={{...}}> instead."
-        },
-        {
-          "selector": "JSXOpeningElement[name.name='script']:has(JSXNamespacedName[namespace.name='is'][name.name='inline']):not(:has(JSXAttribute[name.name='src'])):not(:has(JSXAttribute[name.name='type'][value.value='application/ld+json']))",
-          "message": "CSP: inline is:inline scripts get no hash and a <meta> CSP does not cover content before it (W3C CSP3 3.3). Move the code to public/ and load it with <script is:inline src=\"/file.js\">."
-        },
-        {
-          "selector": "JSXAttribute[name.name='class'] JSXExpressionContainer",
-          "message": "Idiomatic Tooling (HTML5 State Law): Do not use dynamic class interpolation (class={...}). Use Astro's native class:list={...} directive instead."
-        }
+        ...SYNTAX_BANS
       ]
     }
   },
@@ -67,7 +72,7 @@ export default [
     files: ["eslint.config.mjs", ".claude/hooks/anti-slop.mjs", "tests/architecture/claude-hooks.spec.ts", "tests/config/eslint.spec.ts"],
     rules: {
       "no-warning-comments": "off",
-      "no-restricted-syntax": "off"
+      "no-restricted-syntax": ["error", ...SYNTAX_BANS]
     }
   },
   {

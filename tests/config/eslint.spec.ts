@@ -94,6 +94,10 @@ describe('ESLint AI-prose gate', () => {
     expect(await ruleIds('<p>A seamless site</p>\n', 'src/widgets/x/ui/X.astro')).toContain('no-restricted-syntax');
   });
 
+  it('keeps the type bans in files exempt from the prose gate', async () => {
+    expect(await ruleIds('export const a = 1 as unknown as number;\n', 'tests/config/eslint.spec.ts')).toContain('no-restricted-syntax');
+  });
+
   it('allows plain text, derived words and the copyright sign', async () => {
     expect(await ruleIds('// robustness tests\nexport const a = "© 2026";\n')).toEqual([]);
   });
