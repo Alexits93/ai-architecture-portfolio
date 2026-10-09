@@ -1,5 +1,28 @@
 {
   "autoMemoryEnabled": false,
+  "enableArtifact": false,
+  "skillOverrides": {
+    "docx": "user-invocable-only",
+    "pptx": "user-invocable-only",
+    "xlsx": "user-invocable-only",
+    "pdf": "user-invocable-only",
+    "docs": "user-invocable-only",
+    "morning": "user-invocable-only",
+    "google-workspace": "user-invocable-only",
+    "computer-use": "user-invocable-only",
+    "built-in-browser": "user-invocable-only",
+    "chrome-browser": "user-invocable-only",
+    "import-memory": "user-invocable-only",
+    "skill-creator": "user-invocable-only",
+    "deep-research": "user-invocable-only",
+    "dataviz": "user-invocable-only",
+    "claude-api": "user-invocable-only",
+    "claude-in-chrome": "user-invocable-only",
+    "plugin-authoring": "user-invocable-only",
+    "keybindings-help": "user-invocable-only",
+    "schedule": "user-invocable-only",
+    "loop": "user-invocable-only"
+  },
   "statusLine": {
     "type": "command",
     "command": "jq -r '(.context_window.total_input_tokens // 0) as $t | \"context \\($t / 1000 | floor)k / 150k\" + (if $t >= 130000 then \" \\u001b[31mHANDOVER NOW\\u001b[0m\" else \"\" end)'"

@@ -46,6 +46,43 @@ describe('Agent context budget', () => {
   });
 });
 
+// Every listed skill and tool costs context on every turn. These are never used in this repo,
+// so they stay out of Claude's listing; hidden skills remain typable in the / menu.
+describe('Agent context exclusions', () => {
+  const settings: { enableArtifact?: boolean; skillOverrides?: Record<string, string> } =
+    JSON.parse(read('.claude/settings.json'));
+  const hiddenSkills = [
+    'docx',
+    'pptx',
+    'xlsx',
+    'pdf',
+    'docs',
+    'morning',
+    'google-workspace',
+    'computer-use',
+    'built-in-browser',
+    'chrome-browser',
+    'import-memory',
+    'skill-creator',
+    'deep-research',
+    'dataviz',
+    'claude-api',
+    'claude-in-chrome',
+    'plugin-authoring',
+    'keybindings-help',
+    'schedule',
+    'loop',
+  ];
+
+  it('turns the Artifact tool off', () => {
+    expect(settings.enableArtifact).toBe(false);
+  });
+
+  it.each(hiddenSkills)('hides the %s skill from Claude', (skill) => {
+    expect(['user-invocable-only', 'off']).toContain(settings.skillOverrides?.[skill]);
+  });
+});
+
 // Hooks receive no context-usage field and compaction loses detail, so the 150k handover rule
 // relies on the status line: it gets the token count and shows a marker from 130k on.
 describe('Session handover status line', () => {
