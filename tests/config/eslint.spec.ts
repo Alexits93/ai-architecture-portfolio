@@ -62,3 +62,17 @@ describe('ESLint XSS gate', () => {
     expect(await ruleIds('src/shared/ui/seo-head/SeoHead.astro')).not.toContain('astro/no-set-html-directive');
   });
 });
+
+describe('ESLint CSP gate', () => {
+  const ruleIds = async (code: string) =>
+    (await new ESLint().lintText(code, { filePath: 'src/widgets/x/ui/X.astro' }))[0].messages.map(m => m.ruleId);
+
+  it('bans inline is:inline scripts', async () => {
+    expect(await ruleIds('<script is:inline>console.log(1)</script>\n')).toContain('no-restricted-syntax');
+  });
+
+  it('allows is:inline scripts loaded from a file and JSON-LD data blocks', async () => {
+    expect(await ruleIds('<script is:inline src="/theme.js"></script>\n')).not.toContain('no-restricted-syntax');
+    expect(await ruleIds('<script type="application/ld+json" is:inline>{}</script>\n')).not.toContain('no-restricted-syntax');
+  });
+});

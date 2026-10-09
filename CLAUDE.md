@@ -19,8 +19,9 @@ Current plan: `docs/exec-plans/modernization-and-security.plan.md`. Read it befo
 Path-scoped rules in `.claude/rules/` load automatically when you touch matching files. Legacy component migration: `/migrate-legacy <name>`.
 
 ## Engineering rules
-- Native first: solve with Astro, TypeScript, Vitest, Node or the platform before adding a dependency. A new dependency needs evidence that no native option exists, and the user approves it.
-- Verify framework and browser APIs against current official docs before using them. Training data lags Astro 7 and current Baseline features.
+- Native and official solutions only: use the built-in capabilities of the tools in this stack (Astro, TypeScript, ESLint, Vitest, Playwright, pnpm, GitHub, Claude Code) as their docs describe. No custom scripts, workarounds or "creative" solutions. If no native option exists, stop and discuss alternatives with the user before building anything.
+- A new dependency needs evidence that no native option exists, and the user approves it.
+- Research before acting: before you use or recommend any tool, API, config key, method or concept, check current official docs or primary sources on the web, and cite them in your answer or commit. Training data and memory lag this stack (Astro 7, pnpm 10, current Baseline features), and guesses waste tokens on outdated attempts.
 - No `any`, no `unknown`, no `as` casts to bypass types (ESLint enforced).
 - A new architectural rule ships with the ESLint, TypeScript or test gate that enforces it. A rule that exists only in Markdown is a suggestion.
 - Keep changes minimal: no refactors, abstractions or defensive code beyond the task.

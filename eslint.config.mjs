@@ -35,6 +35,10 @@ export default [
           "message": "Idiomatic Tooling (HTML5 State Law): Do not use dynamic inline styles (style={...}). Use Astro's <style define:vars={{...}}> instead."
         },
         {
+          "selector": "JSXOpeningElement[name.name='script']:has(JSXNamespacedName[namespace.name='is'][name.name='inline']):not(:has(JSXAttribute[name.name='src'])):not(:has(JSXAttribute[name.name='type'][value.value='application/ld+json']))",
+          "message": "CSP: inline is:inline scripts get no hash and a <meta> CSP does not cover content before it (W3C CSP3 3.3). Move the code to public/ and load it with <script is:inline src=\"/file.js\">."
+        },
+        {
           "selector": "JSXAttribute[name.name='class'] JSXExpressionContainer",
           "message": "Idiomatic Tooling (HTML5 State Law): Do not use dynamic class interpolation (class={...}). Use Astro's native class:list={...} directive instead."
         }
@@ -47,6 +51,14 @@ export default [
     ignores: ["src/shared/ui/seo-head/SeoHead.astro"],
     rules: {
       "astro/no-set-html-directive": "error"
+    }
+  },
+  {
+    // Classic browser scripts served as-is from public/ (outside Astro's bundler).
+    files: ["public/**/*.js"],
+    languageOptions: {
+      sourceType: "script",
+      globals: { document: "readonly", localStorage: "readonly" }
     }
   },
   {

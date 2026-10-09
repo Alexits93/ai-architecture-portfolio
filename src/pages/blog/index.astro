@@ -15,15 +15,7 @@ import '@/shared/styles/global.css';
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<script is:inline>
-			try {
-    const localTheme = localStorage.getItem('theme');
-    const theme = (localTheme === 'dark' || localTheme === 'light') ? localTheme : 'light';
-    document.documentElement.setAttribute('data-theme', theme);
-  } catch {
-    document.documentElement.setAttribute('data-theme', 'light');
-  }
-		</script>
+		<script is:inline src="/theme.js"></script>
 		<title>Blog - Patrik Alexits</title>
 	</head>
 	<body>
