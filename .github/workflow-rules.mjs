@@ -1,5 +1,6 @@
-// PR and issue rules shared by .github/workflows/pr-lint.yml (CI) and .claude/hooks/pr-gate.mjs (local).
-// tests/config/workflow-rules.spec.ts keeps the constants in sync with the GitHub templates.
+// PR, issue and plan rules shared by .github/workflows/pr-lint.yml (CI), .claude/hooks/pr-gate.mjs and
+// .claude/hooks/session-plan.mjs (local). tests/config/workflow-rules.spec.ts keeps the constants in sync
+// with the GitHub templates. The plan is the open issue tree: no plan files live in the repo.
 
 export const PR_SECTIONS = [
   'Summary & Motivation',
@@ -15,22 +16,22 @@ export const PR_CHECKLIST = [
   'FSD / Architectural boundaries respected',
   'No `any` / `unknown` introduced',
   'Modernization mandated (used latest HTML5/CSS3/TS)',
-  'Documentation updated (DevSpecs, Specs, Architecture)',
+  'Documentation updated (Task issue, Architecture, ADRs)',
 ];
 
-// Epic > Story > Task: every issue below an Epic names its parent.
+// Epic > Story > Task: Stories and Tasks hang below their parent as native GitHub sub-issues.
+const NEEDS_PARENT = ['story', 'task'];
+
 export const ISSUE_TEMPLATES = {
   epic: { prefix: '[Epic] ', label: 'epic', headings: ['High-Level Goal', 'Success Metrics'] },
-  story: { prefix: '[Story] ', label: 'story', headings: ['User Story', 'Acceptance Criteria', 'Parent Epic'] },
-  task: { prefix: '[Task] ', label: 'task', headings: ['Description', 'Requirements / Constraints', 'Parent Story/Epic'] },
+  story: { prefix: '[Story] ', label: 'story', headings: ['User Story', 'Acceptance Criteria'] },
+  task: { prefix: '[Task] ', label: 'task', headings: ['Description', 'Requirements / Constraints'] },
   bug: {
     prefix: '[Bug] ',
     label: 'bug',
     headings: ['Bug Description', 'Steps to Reproduce', 'Expected Behavior', 'Environment Details'],
   },
 };
-
-const PARENT_HEADINGS = ['Parent Epic', 'Parent Story/Epic'];
 
 /** @param {string} body @param {string} marker */
 const sectionsOf = (body, marker) =>
@@ -69,8 +70,8 @@ export const findPrBodyViolations = (body) => {
   return PR_RULES.flatMap((rule) => rule(body, sections));
 };
 
-/** @param {{ title: string, labels: string[], body: string }} issue @returns {string[]} */
-export const findIssueViolations = ({ title, labels, body }) => {
+/** @param {{ title: string, labels: string[], body: string, parent?: string }} issue @returns {string[]} */
+export const findIssueViolations = ({ title, labels, body, parent }) => {
   const rule = Object.values(ISSUE_TEMPLATES).find((t) => title.startsWith(t.prefix));
   if (!rule) {
     const prefixes = Object.values(ISSUE_TEMPLATES).map((t) => t.prefix.trim());
@@ -81,8 +82,58 @@ export const findIssueViolations = ({ title, labels, body }) => {
     .filter((h) => !sections.get(h))
     .map((h) => `Section "### ${h}" from .github/ISSUE_TEMPLATE is missing or empty.`);
   if (!labels.includes(rule.label)) violations.push(`Add the label "${rule.label}".`);
-  rule.headings
-    .filter((h) => PARENT_HEADINGS.includes(h) && sections.get(h) && !/#\d+/.test(sections.get(h) ?? ''))
-    .forEach((h) => violations.push(`"${h}" must reference the parent issue as #N.`));
+  if (NEEDS_PARENT.includes(rule.label) && !parent) {
+    violations.push('Set the parent issue with --parent <N>, so GitHub links it as a native sub-issue.');
+  }
   return violations;
+};
+
+/** @param {string} body @returns {number[]} */
+export const closedIssueNumbers = (body) =>
+  [...body.matchAll(/\b(?:Closes|Fixes|Resolves) #(\d+)/gi)].map((m) => Number(m[1]));
+
+export const LINKED_ISSUE_QUERY = `query($owner: String!, $repo: String!, $number: Int!) {
+  repository(owner: $owner, name: $repo) {
+    issue(number: $number) { state labels(first: 20) { nodes { name } } parent { number } }
+  }
+}`;
+
+/**
+ * A PR closes an open Story or Task that has a native parent. `issue` is null when #N is no issue.
+ * @param {number} number
+ * @param {{ state: string, labels: { nodes: Array<{ name: string }> }, parent: { number: number } | null } | null} issue
+ * @returns {string[]}
+ */
+export const findLinkedIssueViolations = (number, issue) => {
+  if (!issue) return [`#${number} is not an issue in this repository (a PR number?).`];
+  const labels = issue.labels.nodes.map((l) => l.name);
+  return [
+    ...(issue.state === 'OPEN' ? [] : [`#${number} is closed. Link the open Story or Task this PR ships.`]),
+    ...(labels.some((l) => NEEDS_PARENT.includes(l)) ? [] : [`#${number} is not labeled story or task.`]),
+    ...(issue.parent ? [] : [`#${number} has no native parent. Run: gh issue edit ${number} --parent <N>`]),
+  ];
+};
+
+export const OPEN_PLAN_QUERY = `query($owner: String!, $repo: String!) {
+  repository(owner: $owner, name: $repo) {
+    issues(states: OPEN, first: 100, orderBy: { field: CREATED_AT, direction: ASC }) {
+      nodes { number title parent { number } blockedBy(first: 10) { nodes { number state } } }
+    }
+  }
+}`;
+
+/**
+ * Renders the open issues as an indented Epic > Story > Task tree with open blockers.
+ * @param {Array<{ number: number, title: string, parent: { number: number } | null, blockedBy: { nodes: Array<{ number: number, state: string }> } }>} issues
+ * @returns {string}
+ */
+export const formatPlan = (issues) => {
+  const open = new Set(issues.map((i) => i.number));
+  const children = (parent) => issues.filter((i) => (i.parent && open.has(i.parent.number) ? i.parent.number : null) === parent);
+  const line = (issue, depth) => {
+    const blockers = issue.blockedBy.nodes.filter((b) => b.state === 'OPEN').map((b) => `#${b.number}`);
+    const blocked = blockers.length > 0 ? ` (blocked by ${blockers.join(', ')})` : '';
+    return [`${'  '.repeat(depth)}- #${issue.number} ${issue.title}${blocked}`, ...children(issue.number).flatMap((c) => line(c, depth + 1))];
+  };
+  return issues.length === 0 ? 'No open issues.' : children(null).flatMap((root) => line(root, 0)).join('\n');
 };

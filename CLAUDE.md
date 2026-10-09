@@ -2,7 +2,7 @@
 
 Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statichost.eu: vanilla CSS, Markdown content collections, Satori OG images, Vitest, Playwright, ESLint with Feature-Sliced Design rules.
 
-Current plan: `docs/exec-plans/modernization-and-security.plan.md`. Read it before starting a story.
+Plan: the open GitHub issues (Epic > Story > Task as native sub-issues, order as blocked-by links). `.claude/hooks/session-plan.mjs` loads the tree into context at session start. The repo has no plan files. If the hook prints `PLAN UNAVAILABLE`, stop and tell the user.
 
 ## Commands
 - `pnpm check`: lint + `astro check` + unit tests with coverage. Run it before every commit and show its result as evidence.
@@ -11,10 +11,10 @@ Current plan: `docs/exec-plans/modernization-and-security.plan.md`. Read it befo
 - pnpm only. `npm`, `npx` and `yarn` are denied in `.claude/settings.json`.
 
 ## Workflow
-1. Spec and devspec in `docs/exec-plans/` (format in `.claude/rules/docs.md`). Delete both in the PR that ships the feature; code and tests are the truth afterwards.
+1. Spec and devspec in the Task issue body (format in `.claude/rules/docs.md`), never as repo files. Code and tests are the truth once it ships.
 2. Failing test, then implementation until `pnpm check` passes.
-3. Open the issue before the branch: Epic > Story > Task, from `.github/ISSUE_TEMPLATE`, each naming its parent. One branch per Task (`feat/`, `fix/`, `chore/`), Conventional Commits (commitlint enforced).
-4. PR body follows `.github/PULL_REQUEST_TEMPLATE.md`, passed with `--body-file`. `Closes #N` references the Story or Task issue, never the PR. The PR title is the squash commit and must pass commitlint. Under "Unverified Risks" list real blind spots (screen readers, Safari, small viewports), because passing tests do not prove UX. `.claude/hooks/pr-gate.mjs` and CI `pr-lint` enforce this with `.github/workflow-rules.mjs`.
+3. Open the issue before the branch: Epic > Story > Task, from `.github/ISSUE_TEMPLATE`, created with `gh issue create --parent <N>` so the parent is a native sub-issue link. Encode order with `gh issue edit <N> --add-blocked-by <M>`. One branch per Task (`feat/`, `fix/`, `chore/`), Conventional Commits (commitlint enforced).
+4. PR body follows `.github/PULL_REQUEST_TEMPLATE.md`, passed with `--body-file`. `Closes #N` references the Story or Task issue, never the PR. The PR title is the squash commit and must pass commitlint. Under "Unverified Risks" list real blind spots (screen readers, Safari, small viewports), because passing tests do not prove UX. `.claude/hooks/pr-gate.mjs` and CI `pr-lint` enforce this with `.github/workflow-rules.mjs`, including that each closed issue is an open Story or Task with a native parent.
 
 Path-scoped rules in `.claude/rules/` load automatically when you touch matching files.
 
@@ -33,6 +33,6 @@ Applies to docs, commit messages, PR bodies and chat.
 - Act as a critical sparring partner: challenge weak ideas with evidence instead of agreeing.
 
 ## Context hygiene
-- Do not commit memory, session-log or scratch files to the repo. Durable knowledge goes into this file, `.claude/rules/`, or the relevant spec, by editing the existing text rather than appending.
+- Do not commit memory, session-log or scratch files to the repo. Durable knowledge goes into this file, `.claude/rules/`, an ADR, or the relevant issue, by editing the existing text rather than appending.
 - When compacting, keep: the current story, files modified so far, the last `pnpm check` result, and open decisions.
 - Before the session context reaches 150k tokens, stop and write a no-loss handover prompt (the status line in `.claude/settings.json` shows `HANDOVER NOW` from 130k) for the next session: branch and commits (git-verified), the last `pnpm check` result, files modified, open items in priority order, user decisions and pending approvals, sandbox notes, and cited sources with full URLs.

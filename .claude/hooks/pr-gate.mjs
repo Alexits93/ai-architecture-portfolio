@@ -4,7 +4,13 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { findIssueViolations, findPrBodyViolations } from '../../.github/workflow-rules.mjs';
+import {
+  LINKED_ISSUE_QUERY,
+  closedIssueNumbers,
+  findIssueViolations,
+  findLinkedIssueViolations,
+  findPrBodyViolations,
+} from '../../.github/workflow-rules.mjs';
 
 const projectDir = join(import.meta.dirname, '..', '..');
 
@@ -33,16 +39,45 @@ const lintTitle = (title) => {
   return result.status === 0 ? [] : [`The title is not a Conventional Commit:\n${result.stdout}${result.stderr}`];
 };
 
+// null: GitHub answered that #N is no issue. undefined: no usable answer.
+const parseIssue = (stdout) => {
+  try {
+    return JSON.parse(stdout).data?.repository?.issue ?? null;
+  } catch {
+    return undefined;
+  }
+};
+
+// Same check as CI pr-lint: each "Closes #N" is an open Story or Task with a native parent.
+// A failed lookup blocks, because the PR cannot be created offline anyway.
+const checkLinkedIssues = (body, cwd) =>
+  closedIssueNumbers(body).flatMap((number) => {
+    const result = spawnSync(
+      'gh',
+      ['api', 'graphql', '-f', `query=${LINKED_ISSUE_QUERY}`, '-F', 'owner={owner}', '-F', 'repo={repo}', '-F', `number=${number}`],
+      { cwd, encoding: 'utf8' },
+    );
+    if (result.error) return [`Cannot run gh to check #${number}: ${result.error.message}`];
+    const issue = parseIssue(result.stdout);
+    return issue === undefined ? [`Cannot check #${number}: ${result.stderr.trim()}`] : findLinkedIssueViolations(number, issue);
+  });
+
 const checkPr = (segment, cwd) => {
   const { body, error } = readBody(segment, cwd);
-  return [...lintTitle(flagValues(segment, ['--title', '-t'])[0]), ...(error ? [error] : findPrBodyViolations(body))];
+  const bodyViolations = error ? [error] : findPrBodyViolations(body);
+  return [
+    ...lintTitle(flagValues(segment, ['--title', '-t'])[0]),
+    ...bodyViolations,
+    ...(bodyViolations.length === 0 ? checkLinkedIssues(body, cwd) : []),
+  ];
 };
 
 const checkIssue = (segment, cwd) => {
   const { body, error } = readBody(segment, cwd);
   if (error) return [error];
   const labels = flagValues(segment, ['--label', '-l']).flatMap((value) => value.split(',').map((l) => l.trim()));
-  return findIssueViolations({ title: flagValues(segment, ['--title', '-t'])[0] ?? '', labels, body });
+  const [parent] = flagValues(segment, ['--parent']);
+  return findIssueViolations({ title: flagValues(segment, ['--title', '-t'])[0] ?? '', labels, body, parent });
 };
 
 // `gh` must start the segment (after env assignments or env/command/exec), so text that only

@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  issues: read
 
 jobs:
   pr-lint:
@@ -30,4 +31,17 @@ jobs:
           script: |
             const { findPrBodyViolations } = await import(`${process.env.GITHUB_WORKSPACE}/.github/workflow-rules.mjs`);
             const violations = findPrBodyViolations(context.payload.pull_request.body ?? '');
+            if (violations.length > 0) core.setFailed(violations.join('\n'));
+
+      # Each "Closes #N" is an open Story or Task with a native parent issue.
+      - name: Check linked issues
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const rules = await import(`${process.env.GITHUB_WORKSPACE}/.github/workflow-rules.mjs`);
+            const violations = [];
+            for (const number of rules.closedIssueNumbers(context.payload.pull_request.body ?? '')) {
+              const data = await github.graphql(rules.LINKED_ISSUE_QUERY, { ...context.repo, number }).catch(() => null);
+              violations.push(...rules.findLinkedIssueViolations(number, data?.repository?.issue ?? null));
+            }
             if (violations.length > 0) core.setFailed(violations.join('\n'));

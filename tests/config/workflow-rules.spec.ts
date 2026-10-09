@@ -5,8 +5,11 @@ import {
   ISSUE_TEMPLATES,
   PR_CHECKLIST,
   PR_SECTIONS,
+  closedIssueNumbers,
   findIssueViolations,
+  findLinkedIssueViolations,
   findPrBodyViolations,
+  formatPlan,
 } from '../../.github/workflow-rules.mjs';
 
 const read = (file: string): string => fs.readFileSync(path.join(process.cwd(), file), 'utf8');
@@ -48,7 +51,8 @@ describe('PR body rules', () => {
 const validTask = {
   title: '[Task] Gate PR creation',
   labels: ['task'],
-  body: '### Description\n\nGate it.\n\n### Requirements / Constraints\n\nTests.\n\n### Parent Story/Epic\n\n#35\n',
+  body: '### Description\n\nGate it.\n\n### Requirements / Constraints\n\nTests.\n',
+  parent: '35',
 };
 
 describe('issue rules', () => {
@@ -60,7 +64,7 @@ describe('issue rules', () => {
     ['an unknown title prefix', { ...validTask, title: 'Gate PR creation' }],
     ['a missing label', { ...validTask, labels: [] }],
     ['an empty required section', { ...validTask, body: validTask.body.replace('Gate it.', '') }],
-    ['no parent issue', { ...validTask, body: validTask.body.replace('#35', 'none') }],
+    ['no native parent', { ...validTask, parent: undefined }],
   ])('reject %s', (_label, issue) => {
     expect(findIssueViolations(issue).length).toBeGreaterThan(0);
   });
@@ -68,6 +72,49 @@ describe('issue rules', () => {
   it('do not require a parent for an Epic', () => {
     const epic = { title: '[Epic] X', labels: ['epic'], body: '### High-Level Goal\n\nA\n\n### Success Metrics\n\nB\n' };
     expect(findIssueViolations(epic)).toEqual([]);
+  });
+});
+
+describe('linked issue rules', () => {
+  const openTask = { state: 'OPEN', labels: { nodes: [{ name: 'task' }] }, parent: { number: 35 } };
+
+  it('read every closing keyword', () => {
+    expect(closedIssueNumbers('Closes #1, fixes #2 and Resolves #3. See #4.')).toEqual([1, 2, 3]);
+  });
+
+  it('accept an open Task with a native parent', () => {
+    expect(findLinkedIssueViolations(46, openTask)).toEqual([]);
+  });
+
+  it.each([
+    ['no issue (a PR number)', null],
+    ['a closed issue', { ...openTask, state: 'CLOSED' }],
+    ['an Epic', { ...openTask, labels: { nodes: [{ name: 'epic' }] } }],
+    ['no native parent', { ...openTask, parent: null }],
+  ])('reject %s', (_label, issue) => {
+    expect(findLinkedIssueViolations(46, issue).length).toBeGreaterThan(0);
+  });
+});
+
+describe('plan rendering', () => {
+  const issue = (number: number, parent: number | null, blockers: Array<[number, string]> = []) => ({
+    number,
+    title: `I${number}`,
+    parent: parent === null ? null : { number: parent },
+    blockedBy: { nodes: blockers.map(([n, state]) => ({ number: n, state })) },
+  });
+
+  it('nests children and shows only open blockers', () => {
+    const plan = formatPlan([issue(1, null), issue(2, 1, [[3, 'OPEN'], [9, 'CLOSED']]), issue(3, 1)]);
+    expect(plan).toBe('- #1 I1\n  - #2 I2 (blocked by #3)\n  - #3 I3');
+  });
+
+  it('shows an issue whose parent is closed at the top level', () => {
+    expect(formatPlan([issue(5, 99)])).toBe('- #5 I5');
+  });
+
+  it('says so when nothing is open', () => {
+    expect(formatPlan([])).toBe('No open issues.');
   });
 });
 

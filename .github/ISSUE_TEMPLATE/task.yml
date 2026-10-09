@@ -3,24 +3,20 @@ description: Define a specific technical or actionable task.
 title: "[Task] "
 labels: ["task"]
 body:
+  - type: markdown
+    attributes:
+      value: "Set the parent Story as a native sub-issue link (Relationships in the sidebar, or `gh issue create --parent N`). CI pr-lint fails a PR whose Task has no parent."
   - type: textarea
     id: description
     attributes:
       label: Description
-      description: Detailed explanation of what needs to be done.
+      description: "The spec: requirements, a mermaid flowchart TD of the DOM and state flow where it helps."
     validations:
       required: true
   - type: textarea
     id: requirements
     attributes:
       label: Requirements / Constraints
-      description: Technical constraints, FSD rules, or testing requirements.
-    validations:
-      required: true
-  - type: input
-    id: parent-link
-    attributes:
-      label: Parent Story/Epic
-      description: Link to the parent Story (or Epic) issue number (e.g., #123).
+      description: "The devspec: behavioral matrix (input, state, expected output), Security (XSS surface), Performance (LCP/CLS/INP), FSD boundaries, and the gate tests."
     validations:
       required: true
