@@ -86,19 +86,25 @@ describe('ESLint AI-prose gate', () => {
     ['an em-dash in a comment', '// fast — small\nexport const a = 1;\n', 'no-warning-comments'],
     ['a banned word in a string', 'export const a = "Moreover, yes";\n', 'no-restricted-syntax'],
     ['an emoji in a template', 'export const a = `shipped \u{1F680}`;\n', 'no-restricted-syntax'],
+    ['a text-style emoji in a string', 'export const a = "ok \u2764 yes";\n', 'no-restricted-syntax'],
+    ['an escaped em-dash in a template', 'export const a = `a \\u2014 b`;\n', 'no-restricted-syntax'],
   ])('flags %s', async (_label, code, ruleId) => {
     expect(await ruleIds(code)).toContain(ruleId);
   });
 
-  it('flags slop in Astro template text', async () => {
-    expect(await ruleIds('<p>A seamless site</p>\n', 'src/widgets/x/ui/X.astro')).toContain('no-restricted-syntax');
+  it.each([
+    ['template text', '<p>A seamless site</p>\n'],
+    ['an HTML comment', '<!-- a robust page -->\n<p>x</p>\n'],
+    ['a style comment', '<p>x</p>\n<style>\n/* a robust rule */\np { color: red; }\n</style>\n'],
+  ])('flags slop in Astro %s', async (_label, code) => {
+    expect(await ruleIds(code, 'src/widgets/x/ui/X.astro')).toContain('no-restricted-syntax');
   });
 
   it('keeps the type bans in files exempt from the prose gate', async () => {
     expect(await ruleIds('export const a = 1 as unknown as number;\n', 'tests/config/eslint.spec.ts')).toContain('no-restricted-syntax');
   });
 
-  it('allows plain text, derived words and the copyright sign', async () => {
-    expect(await ruleIds('// robustness tests\nexport const a = "© 2026";\n')).toEqual([]);
+  it('allows plain text, derived words and the copyright, registered and trademark signs', async () => {
+    expect(await ruleIds('// robustness tests\nexport const a = "© ® ™ 2026";\n')).toEqual([]);
   });
 });

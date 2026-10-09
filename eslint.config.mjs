@@ -4,8 +4,9 @@ import eslintPluginAstro from "eslint-plugin-astro";
 import fsd from "@conarti/eslint-plugin-feature-sliced";
 
 // AI-prose gate (CLAUDE.md writing rules), enforced in comments, strings and Astro template text.
+// Emoji class matches .claude/hooks/anti-slop.mjs: Extended_Pictographic minus the (c), (R) and TM signs.
 const BANNED_WORDS = ["delve", "robust", "seamless", "synergy", "tapestry", "cutting-edge", "leverage", "furthermore", "moreover", "ultimately", "in conclusion", "unlocking"];
-const SLOP = `/\\b(${BANNED_WORDS.join("|")})\\b|\\u2014|\\p{Emoji_Presentation}/iu`;
+const SLOP = `/\\b(${BANNED_WORDS.join("|")})\\b|\\u2014|(?![\\u00a9\\u00ae\\u2122])\\p{Extended_Pictographic}/iu`;
 const SLOP_MESSAGE = "AI prose: banned word, em-dash or emoji (see CLAUDE.md writing rules).";
 
 // Type and markup bans, kept apart from the prose selectors so the prose exemption below keeps them.
@@ -53,8 +54,12 @@ export default [
       "no-restricted-syntax": [
         "error",
         { "selector": `Literal[value=${SLOP}]`, "message": SLOP_MESSAGE },
-        { "selector": `TemplateElement[value.raw=${SLOP}]`, "message": SLOP_MESSAGE },
+        // cooked, not raw, so an escaped U+2014 in source is caught.
+        { "selector": `TemplateElement[value.cooked=${SLOP}]`, "message": SLOP_MESSAGE },
         { "selector": `JSXText[value=${SLOP}]`, "message": SLOP_MESSAGE },
+        // HTML comments and <style> or <script is:inline> bodies (https://github.com/ota-meshi/astro-eslint-parser/blob/main/docs/AST.md).
+        { "selector": `AstroHTMLComment[value=${SLOP}]`, "message": SLOP_MESSAGE },
+        { "selector": `AstroRawText[value=${SLOP}]`, "message": SLOP_MESSAGE },
         ...SYNTAX_BANS
       ]
     }
