@@ -6,6 +6,7 @@ const ROUTES = ['/', '/blog/', '/blog/ai-agent-harness/', '/cv/', '/cookie-discl
 declare global {
   interface Window {
     cspViolations: string[];
+    firstThemeWrite: string;
   }
 }
 
@@ -33,5 +34,24 @@ for (const route of ROUTES) {
     await expect(page.locator('iframe')).toHaveCount(0);
     await expect(page.locator('html')).toHaveAttribute('data-theme', /^(light|dark)$/);
     expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
+  });
+
+  test(`/theme.js applies the stored theme before module scripts on ${route}`, async ({ page }) => {
+    // Astro inlines bundled scripts as modules, which run only after parsing, so the first
+    // data-theme write while readyState is still "loading" can only come from the blocking /theme.js.
+    await page.addInitScript(() => {
+      localStorage.setItem('theme', 'dark');
+      window.firstThemeWrite = '';
+      new MutationObserver((_, observer) => {
+        window.firstThemeWrite = `${document.documentElement.dataset.theme} ${document.readyState}`;
+        observer.disconnect();
+      }).observe(document, { attributes: true, subtree: true, attributeFilter: ['data-theme'] });
+    });
+
+    const themeScript = page.waitForResponse('**/theme.js');
+    await page.goto(route);
+
+    expect((await themeScript).status()).toBe(200);
+    expect(await page.evaluate(() => window.firstThemeWrite)).toBe('dark loading');
   });
 }
