@@ -22,6 +22,7 @@ const SITE_WIDE = [
   'Strict-Transport-Security: max-age=63072000; includeSubDomains',
   'Cross-Origin-Opener-Policy: same-origin',
   'Cross-Origin-Resource-Policy: same-origin',
+  'Cross-Origin-Embedder-Policy: require-corp',
 ];
 
 const lines = (text: string): string[] => text.split('\n').map((line) => line.trim()).filter(Boolean);
