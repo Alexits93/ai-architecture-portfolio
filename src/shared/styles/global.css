@@ -27,6 +27,11 @@ a:hover { text-decoration: none; }
     --font-color-bold: hsl(200, 30%, 30%);
     --thumbnail-bg-color: hsl(200, 25%, 85%);
     --focus-color: hsl(0, 0%, 0%);
+    --code-comment: hsl(200, 10%, 38%);
+    --code-keyword: hsl(300, 60%, 32%);
+    --code-string: hsl(120, 60%, 24%);
+    --code-number: hsl(25, 90%, 30%);
+    --code-function: hsl(210, 80%, 35%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -39,6 +44,11 @@ a:hover { text-decoration: none; }
         --font-color-bold: hsl(200, 5%, 75%);
         --thumbnail-bg-color: hsl(200, 0%, 15%);
         --focus-color: hsl(0, 0%, 99%);
+        --code-comment: hsl(200, 8%, 62%);
+        --code-keyword: hsl(300, 50%, 75%);
+        --code-string: hsl(100, 45%, 65%);
+        --code-number: hsl(30, 80%, 68%);
+        --code-function: hsl(200, 80%, 72%);
     }
 }
 
@@ -51,6 +61,11 @@ a:hover { text-decoration: none; }
     --font-color-bold: hsl(200, 5%, 75%);
     --thumbnail-bg-color: hsl(200, 0%, 15%);
     --focus-color: hsl(0, 0%, 99%);
+    --code-comment: hsl(200, 8%, 62%);
+    --code-keyword: hsl(300, 50%, 75%);
+    --code-string: hsl(100, 45%, 65%);
+    --code-number: hsl(30, 80%, 68%);
+    --code-function: hsl(200, 80%, 72%);
 }
 
 /* style.css */

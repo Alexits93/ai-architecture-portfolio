@@ -71,7 +71,8 @@ Principle: fix the gates first (every later story relies on them), then the docs
 ### Story C (P2): CSP & security headers
 - [ ] Astro `security.csp` (hash-based `<meta>` tag): `default-src 'self'`, `frame-src 'none'`, `base-uri 'none'`, `object-src 'none'`, `require-trusted-types-for 'script'`, no `unsafe-inline`. The site embeds no third-party content; the Spotify iframe is removed, and `CookieDisclaimer`/`PrivacyPolicy` state that no cookies are set.
 - [ ] `public/_headers` in statichost.eu syntax (`*` is site-wide): `frame-ancestors 'none'`, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, HSTS two years with `includeSubDomains` (no preload submission: `.dev` is preloaded as a TLD), COOP and CORP `same-origin`, immutable one-year cache on `/_astro/*`. Gate: `tests/architecture/security-headers.spec.ts`.
-- [ ] e2e: no CSP violations and no iframes on every page (`e2e/csp.spec.ts`).
+- [ ] e2e: no CSP violations, no iframes and no inline `style` attributes on every page (`e2e/csp.spec.ts`).
+- [ ] Code blocks under CSP: `markdown.syntaxHighlight: 'prism'` (class-based; Shiki writes inline styles the hashed `style-src` blocks). `BlogPostReader` styles the token classes with `--code-*` tokens (WCAG AA in both themes). Gate: `CodeBlock.spec.ts`.
 - [ ] Hosting (owner): verify on statichost.eu that path rules (`/_astro/*`) work on the Hobby plan, and configure the apex `pa-tech.dev` 301 to `www`.
 
 ### Story Q: Quality gates that check what they claim (P0)

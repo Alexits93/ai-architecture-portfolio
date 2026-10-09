@@ -7,6 +7,11 @@ export default defineConfig({
   site: 'https://www.pa-tech.dev',
   // Legacy permalinks were `/blog/:slug/`. One policy, enforced, preserves link equity.
   trailingSlash: 'always',
+  // Shiki writes inline style attributes, which the hashed style-src blocks. Prism emits classes only;
+  // BlogPostReader styles the token classes (https://docs.astro.build/en/reference/configuration-reference/#securitycsp).
+  markdown: {
+    syntaxHighlight: 'prism',
+  },
   // Hash-based CSP emitted as a <meta> tag per page (https://docs.astro.build/en/reference/configuration-reference/#securitycsp).
   // frame-ancestors is ignored in <meta>, so it lives in public/_headers.
   security: {

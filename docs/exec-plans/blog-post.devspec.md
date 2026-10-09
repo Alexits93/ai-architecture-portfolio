@@ -36,6 +36,7 @@ The Blog Post view strictly follows FSD boundaries. It is orchestrated by a sing
 ## 3. Security & Performance (09-Manifesto)
 
 - **Security (XSS):** The Markdown content is parsed safely during Astro's build process via remark/rehype. No user-generated HTML is dangerously set on the client.
+- **Security (CSP):** Code fences highlight with Prism (`markdown.syntaxHighlight: 'prism'`), which emits token classes only. Shiki is not used: its inline `style` attributes are blocked by the hashed `style-src`. `.prose :global(...)` rules map the token classes to the `--code-*` theme tokens.
 - **Performance (INP):** Interaction with the navigator relies purely on native scrolling APIs (`scrollIntoView` or `window.scrollTo`) and lightweight IntersectionObservers, ensuring no main-thread blockage.
 - **Performance (CLS):** The hero image uses the `<Picture>` component with explicit `width` and `height` properties to reserve space before the image loads, preventing layout shifts.
 - **Performance (LCP):** The hero image must be configured with `loading="eager"` and `fetchpriority="high"` since it will be the LCP element on the page.
@@ -44,4 +45,5 @@ The Blog Post view strictly follows FSD boundaries. It is orchestrated by a sing
 
 - **Test Locations:**
   - `src/widgets/blog-post-reader/ui/BlogPostReader.spec.ts`: Utilize `experimental_AstroContainer` to mount the widget with a mock `CollectionEntry`. Assert that the title, metadata, tags, and content are structurally rendered, and that the `ArticleNavigator` receives the extracted headings.
+  - `src/widgets/blog-post-reader/ui/CodeBlock.spec.ts`: Render a Markdown fence through Astro's pipeline. Expect `pre.language-ts > code .token.keyword` and zero `[style]` elements.
   - Playwright E2E (`e2e/blog-post.spec.ts`): Verify that navigating to a specific `/blog/[slug]` route loads the page correctly and that clicking an Article Navigator link scrolls to the corresponding section.
