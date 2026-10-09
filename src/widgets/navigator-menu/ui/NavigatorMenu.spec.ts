@@ -15,10 +15,10 @@ describe('NavigatorMenu Widget (Astro)', () => {
     const dom = new JSDOM(html);
     const doc = dom.window.document;
     
-    const navMenu = doc.querySelector('#navigator-menu');
+    const navMenu = doc.querySelector('dialog#site-menu');
     expect(navMenu).not.toBeNull();
-    // Should not have the "open" class by default
-    expect(navMenu?.classList.contains('open')).toBe(false);
+    // Should not have the "open" attribute by default
+    expect(navMenu?.hasAttribute('open')).toBe(false);
   });
 
   it('should render the default navigation links', async () => {
@@ -26,7 +26,7 @@ describe('NavigatorMenu Widget (Astro)', () => {
     const dom = new JSDOM(html);
     const doc = dom.window.document;
     
-    const links = doc.querySelectorAll('#navigator-menu .navigator-menu-body ul li a');
+    const links = doc.querySelectorAll('dialog#site-menu .navigator-menu-body ul li a');
     expect(links.length).toBeGreaterThan(0);
     
     // Check if the home link exists
