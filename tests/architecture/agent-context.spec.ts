@@ -131,3 +131,14 @@ describe('Agent context truthfulness', () => {
     expect(scripts.filter((s) => !fs.existsSync(path.join(root, s)))).toEqual([]);
   });
 });
+
+// Lessons from agent mistakes become gates, not notes. The sandbox mounts gate configs such as
+// eslint.config.mjs read-only, so a stash cannot restore them and half-applies; commit by path.
+// `cmd *` also matches the bare command (https://code.claude.com/docs/en/sandboxing).
+describe('Learned agent guards', () => {
+  const settings: { permissions?: { deny?: string[] } } = JSON.parse(read('.claude/settings.json'));
+
+  it('denies git stash', () => {
+    expect(settings.permissions?.deny).toContain('Bash(git stash *)');
+  });
+});

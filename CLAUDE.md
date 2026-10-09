@@ -18,6 +18,12 @@ Plan: the open GitHub issues (Epic > Story > Task as native sub-issues, order as
 
 Path-scoped rules in `.claude/rules/` load automatically when you touch matching files.
 
+## Git and sandbox
+- Commit part of the tree by path: `git commit -- <paths>`. `git stash` is denied, because the sandbox mounts gate configs read-only and a stash cannot restore them.
+- Before a command that rewrites the worktree or index, or publishes: check which hooks it triggers (lint-staged stashes) and which paths are protected, and save `git diff > "$TMPDIR/wip.patch"` first.
+- `excludedCommands` in `.claude/settings.json` apply only to a standalone call: a `cd`, `;`, `&&`, redirect or `$(...)` keeps it sandboxed.
+- A sandboxed test that fails with ENOTDIR or EACCES on `.claude/*` or a shell startup file hit a protected-path placeholder: rerun it unsandboxed, never change the test.
+
 ## Engineering rules
 - Native and official solutions only: use the built-in capabilities of the tools in this stack (Astro, TypeScript, ESLint, Vitest, Playwright, pnpm, GitHub, Claude Code) as their docs describe. No custom scripts, workarounds or "creative" solutions. If no native option exists, stop and discuss alternatives with the user before building anything.
 - A new dependency needs evidence that no native option exists, and the user approves it.
@@ -34,6 +40,7 @@ Applies to docs, commit messages, PR bodies and chat.
 - Act as a critical sparring partner: challenge weak ideas with evidence instead of agreeing.
 
 ## Context hygiene
+- A mistake you make, or a correction from the user, becomes a gate in the same change: a `permissions.deny` rule, hook or test, pinned in `tests/architecture/agent-context.spec.ts`. Only when no gate can enforce it, write one concrete line in this file or the matching rule.
 - Do not commit memory, session-log or scratch files to the repo. Durable knowledge goes into this file, `.claude/rules/`, an ADR, or the relevant issue, by editing the existing text rather than appending.
 - When compacting, keep: the current story, files modified so far, the last `pnpm check` result, and open decisions.
 - Before the session context reaches 150k tokens, stop and post a no-loss handover (the status line in `.claude/settings.json` shows `HANDOVER NOW` from 130k) as a comment on the current Task with `gh issue comment <N> --body-file`, first line `<!-- handover -->`. Never paste it into chat. Contents: branch and commits (git-verified), the last `pnpm check` result, files modified, open items in priority order, user decisions and pending approvals, sandbox notes, and cited sources with full URLs.

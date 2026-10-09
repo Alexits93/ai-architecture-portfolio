@@ -145,6 +145,7 @@
       "Bash(git commit -n *)",
       "Bash(git push --no-verify *)",
       "Bash(git clean *)",
+      "Bash(git stash *)",
       "Edit(./CHANGELOG.md)"
     ]
   },
