@@ -30,7 +30,10 @@ describe('Supply chain settings', () => {
   it('fails installs on trust downgrades and excludes only exact versions', () => {
     expect(workspace).toMatch(/^trustPolicy: no-downgrade$/m);
     expect(workspace).toMatch(/^trustPolicyExcludePrune: true$/m);
-    const excludes = workspace.match(/^trustPolicyExclude:\n((?: {2}- .*\n)*)/m)?.[1] ?? '';
+    // Every indented line under the key must be an exact-version entry. A flow list such as
+    // `[chokidar]` or deeper indentation fails here instead of skipping the check.
+    const [, inline = '', excludes = ''] = workspace.match(/^trustPolicyExclude:(.*)\n((?:[ \t].*\n)*)/m) ?? [];
+    expect(inline).toBe('');
     for (const entry of excludes.split('\n').filter(Boolean)) {
       expect(entry).toMatch(/^ {2}- (?:@[\w.-]+\/)?[\w.-]+@\d+\.\d+\.\d+$/);
     }
