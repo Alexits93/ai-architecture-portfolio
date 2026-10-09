@@ -30,6 +30,7 @@
   "sandbox": {
     "enabled": true,
     "autoAllowBashIfSandboxed": true,
+    "excludedCommands": ["gh issue *", "gh pr *", "gh run *", "git push *"],
     "filesystem": {
       "allowWrite": ["~/.local/share/pnpm", "~/.cache/pnpm"],
       "denyWrite": [
@@ -45,7 +46,6 @@
         "./package.json",
         "./pnpm-lock.yaml",
         "./pnpm-workspace.yaml",
-        "./.npmrc",
         "./.commitlintrc.json",
         "./.releaserc.json",
         "./public/_headers"
