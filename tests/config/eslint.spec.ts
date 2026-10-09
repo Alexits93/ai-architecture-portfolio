@@ -63,6 +63,24 @@ describe('ESLint XSS gate', () => {
   });
 });
 
+describe('ESLint cast and debug bans', () => {
+  // https://typescript-eslint.io/rules/consistent-type-assertions/ (typescript-eslint 8.71.1): const assertions stay allowed.
+  it.each([
+    ['src/shared/lib/x.ts', 'const a = b as string; const c = <string>b; const d = [1] as const;\n'],
+    ['src/widgets/x/ui/X.astro', '<script>const a = b as string; const d = [1] as const;</script>\n'],
+  ])('bans every type assertion but as const in %s', async (filePath, code) => {
+    const messages = (await new ESLint().lintText(code, { filePath }))[0].messages;
+    const casts = messages.filter((m) => m.ruleId === '@typescript-eslint/consistent-type-assertions');
+    expect(casts).toHaveLength(code.includes('<string>') ? 2 : 1);
+  });
+
+  // https://eslint.org/docs/latest/rules/no-console (ESLint 10.12.0)
+  it('bans console calls', async () => {
+    const messages = (await new ESLint().lintText('console.log(1);\n', { filePath: 'src/shared/lib/x.ts' }))[0].messages;
+    expect(messages.map((m) => m.ruleId)).toContain('no-console');
+  });
+});
+
 describe('ESLint CSP gate', () => {
   const ruleIds = async (code: string) =>
     (await new ESLint().lintText(code, { filePath: 'src/widgets/x/ui/X.astro' }))[0].messages.map(m => m.ruleId);

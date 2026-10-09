@@ -50,6 +50,9 @@ export default [
       "max-params": ["error", 3],
       "complexity": ["error", 5],
       "@typescript-eslint/no-explicit-any": "error",
+      // Every `as` cast except `as const`: narrow with instanceof or typed generics instead.
+      "@typescript-eslint/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
+      "no-console": "error",
       "no-warning-comments": ["error", { "terms": [...BANNED_WORDS, "—"], "location": "anywhere" }],
       "no-restricted-syntax": [
         "error",

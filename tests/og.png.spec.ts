@@ -1,4 +1,3 @@
-import type { APIContext } from 'astro';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from '@/pages/og.png';
 import * as ogModule from '@/shared/lib/og/generate-og-image';
@@ -12,8 +11,7 @@ describe('og.png endpoint', () => {
     const mockBuffer = Buffer.from('89504e470d0a1a0a', 'hex');
     vi.spyOn(ogModule, 'generateOgImage').mockResolvedValue(mockBuffer);
 
-    const context = {} as APIContext;
-    const response = await GET(context);
+    const response = await GET();
 
     expect(response.status).toBe(200);
     expect(response.headers.get('Content-Type')).toBe('image/png');
@@ -27,8 +25,7 @@ describe('og.png endpoint', () => {
   it('should return a 500 response on error', async () => {
     vi.spyOn(ogModule, 'generateOgImage').mockRejectedValue(new Error('Test error'));
 
-    const context = {} as APIContext;
-    const response = await GET(context);
+    const response = await GET();
 
     expect(response.status).toBe(500);
     const text = await response.text();

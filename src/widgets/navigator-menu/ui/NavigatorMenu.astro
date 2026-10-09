@@ -28,9 +28,9 @@ const { menuItems = defaultMenuItems } = Astro.props;
     const setupMenu = () => {
         const openBtn = document.getElementById('site-menu-open-btn');
         const closeBtn = document.getElementById('site-menu-close-btn');
-        const dialog = document.getElementById('site-menu') as HTMLDialogElement;
-        
-        if (!openBtn || !closeBtn || !dialog) return;
+        const dialog = document.getElementById('site-menu');
+
+        if (!openBtn || !closeBtn || !(dialog instanceof HTMLDialogElement)) return;
 
         openBtn.addEventListener('click', () => {
             const rect = openBtn.getBoundingClientRect();

@@ -7,8 +7,7 @@ const verifyPostVisibility = async (page: Page, expectedTag: string | null, wrap
     const dataTags = await wrapper.getAttribute('data-tags');
     const tags = dataTags ? dataTags.split(',') : [];
     const hasTag = expectedTag ? tags.includes(expectedTag) : false;
-    const isHidden = await wrapper.evaluate((el) => (el as HTMLElement).hidden);
-    expect(isHidden).toBe(!hasTag);
+    await expect(wrapper).toHaveJSProperty('hidden', !hasTag);
   }
 };
 

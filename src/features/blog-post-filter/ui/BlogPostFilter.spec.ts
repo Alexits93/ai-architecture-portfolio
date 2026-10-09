@@ -28,7 +28,7 @@ describe('BlogPostFilter - Initial Render', () => {
 
     // Verify first tag
     expect(inputs[0].getAttribute('value')).toBe('Astro');
-    expect((inputs[0] as HTMLInputElement).checked).toBe(false);
+    expect(inputs[0]).toHaveProperty('checked', false);
     expect(inputs[0].hasAttribute('checked')).toBe(false);
   });
 });

@@ -11,8 +11,6 @@ describe('Header Widget (Astro)', () => {
   });
 
   it('should render the primary logo linked to the home route', async () => {
-    console.log("Header object:", Header);
-    console.log("Header keys:", Object.keys(Header));
     const html = await container.renderToString(Header);
     const dom = new JSDOM(html);
     const doc = dom.window.document;

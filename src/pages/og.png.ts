@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { generateOgImage } from '@/shared/lib/og/generate-og-image';
 
-export const GET: APIRoute = async () => {
+export const GET = (async () => {
   try {
     const title = 'Patrika | AI Architecture Portfolio';
     const description = 'Exploring AI Architecture, Modern Web Development, and the Future of Engineering.';
@@ -17,4 +17,4 @@ export const GET: APIRoute = async () => {
   } catch {
     return new Response('Error generating OG image', { status: 500 });
   }
-};
+}) satisfies APIRoute;

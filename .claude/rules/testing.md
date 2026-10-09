@@ -25,7 +25,7 @@ Write the failing test first, then the code (TDD). While a feature is in progres
 - `vi.mock()` for modules, `vi.fn()` for spies, `vi.clearAllMocks()` in `beforeEach`.
 
 ## Coverage
-Per-file 100% lines, branches, functions and statements on `src/**/*.ts`. v8 does not measure `.astro` files; container tests and e2e cover those.
+Per-file 100% lines, branches, functions and statements on `src/**` except `src/pages/` (see `vitest.config.ts`). v8 measures `.astro` frontmatter and template expressions through container renders. A fallback for a value the content schema guarantees is a dead branch: remove it, never fake a fixture to cover it.
 
 ## Visual check
 Run `pnpm build`, then a short Playwright script that saves a screenshot, then read the PNG.
