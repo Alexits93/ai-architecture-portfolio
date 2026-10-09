@@ -47,6 +47,7 @@ describe('PR body rules', () => {
     ['an empty section', validPrBody.replace('Unit tests for the rules.', '')],
     ['a missing section', validPrBody.replace('## Screenshots/Gifs\nNone: no UI change.', '')],
     ['no closing keyword', validPrBody.replace('Closes #44', 'See #44')],
+    ['a cross-repo closing reference', validPrBody.replace('Closes #44', 'Closes #44, fixes o/r#9')],
   ])('reject %s', (_label, body) => {
     expect(findPrBodyViolations(body).length).toBeGreaterThan(0);
   });
@@ -84,8 +85,13 @@ describe('linked issue rules', () => {
 
   // https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue
   it('read every closing keyword GitHub honors', () => {
-    const body = 'Closes #1, fixes #2, Resolves #3, close #4, CLOSED: #5, fix #6, fixed #7, resolve #8, resolved o/r#9. See #10.';
+    const body = 'Closes #1, fixes #2, Resolves #3, close #4, CLOSED: #5, fix #6, fixed #7, resolve #8, resolved #9. See #10.';
     expect(closedIssueNumbers(body)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  });
+
+  // o/r#9 is issue 9 of another repo, so it must never resolve to this repo's #9.
+  it('never resolve a cross-repo reference to a local issue', () => {
+    expect(closedIssueNumbers('Closes #1, fixes o/r#9, resolves: owner/repo#10')).toEqual([1]);
   });
 
   it('accept an open Task with a native parent', () => {

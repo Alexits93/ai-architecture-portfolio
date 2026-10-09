@@ -15,11 +15,12 @@ import {
 const projectDir = join(import.meta.dirname, '..', '..');
 
 // Values of a flag in any form: --name value, --name=value, -n value, quoted or bare.
+// The scan consumes other quoted strings whole, so flag text inside another flag's value never matches.
 // gh keeps the last value of a repeated single-value flag, so checks read `.at(-1)`.
 const flagValues = (segment, names) =>
-  [...segment.matchAll(new RegExp(`(?:^|\\s)(?:${names.join('|')})(?:=|\\s+)(?:"([^"]*)"|'([^']*)'|(\\S+))`, 'g'))].map(
-    (m) => m[1] ?? m[2] ?? m[3] ?? '',
-  );
+  [...segment.matchAll(new RegExp(`(?:^|\\s)(${names.join('|')})(?:=|\\s+)(?:"([^"]*)"|'([^']*)'|(\\S+))|"[^"]*"|'[^']*'`, 'g'))]
+    .filter((m) => m[1])
+    .map((m) => m[2] ?? m[3] ?? m[4] ?? '');
 
 const readBody = (segment, cwd) => {
   if (flagValues(segment, ['--body', '-b']).length > 0) return { error: 'Pass the body with --body-file <path>, not --body.' };

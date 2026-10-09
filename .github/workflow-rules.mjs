@@ -45,6 +45,10 @@ const sectionsOf = (body, marker) =>
       }),
   );
 
+// Every keyword GitHub closes an issue on, with an optional colon:
+// https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue
+const CLOSING = String.raw`\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?):?\s+`;
+
 /** @type {Array<(body: string, sections: Map<string, string>) => string[]>} */
 const PR_RULES = [
   (_body, sections) => PR_SECTIONS.filter((s) => !sections.get(s)).map((s) => `Section "${s}" is missing or empty.`),
@@ -61,6 +65,10 @@ const PR_RULES = [
     /\b(Closes|Fixes|Resolves) #\d+/i.test(body)
       ? []
       : ['Link the Story or Task issue with "Closes #N" (never the PR number).'],
+  (body) =>
+    new RegExp(`${CLOSING}[\\w.-]+/[\\w.-]+#\\d+`, 'i').test(body)
+      ? ['Close only issues of this repo, with "Closes #N" and no owner/repo prefix.']
+      : [],
 ];
 
 /** @param {string} body @returns {string[]} */
@@ -88,11 +96,10 @@ export const findIssueViolations = ({ title, labels, body, parent }) => {
   return violations;
 };
 
-// Every keyword GitHub closes an issue on, with an optional colon and owner/repo prefix:
-// https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue
+// Local references only: owner/repo#N is an issue of another repo and is rejected by PR_RULES.
 /** @param {string} body @returns {number[]} */
 export const closedIssueNumbers = (body) =>
-  [...body.matchAll(/\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?):?\s+(?:[\w.-]+\/[\w.-]+)?#(\d+)/gi)].map((m) => Number(m[1]));
+  [...body.matchAll(new RegExp(`${CLOSING}#(\\d+)`, 'gi'))].map((m) => Number(m[1]));
 
 export const LINKED_ISSUE_QUERY = `query($owner: String!, $repo: String!, $number: Int!) {
   repository(owner: $owner, name: $repo) {

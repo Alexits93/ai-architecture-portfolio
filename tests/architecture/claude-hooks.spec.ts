@@ -168,6 +168,11 @@ describe('pr-gate hook', () => {
       'repeated flags whose last value breaks the rules, because gh uses the last one',
       'gh pr create --title "chore: x" --body-file good-pr.md --title "Add gates" --body-file bad-pr.md',
     ],
+    [
+      'a body file flag hidden in a quoted title',
+      'gh pr create --body-file bad-pr.md --title "chore: pass -F good-pr.md once"',
+    ],
+    ['a parent hidden in a quoted title', `gh issue create --title '[Task] X --parent 35' --label task --body-file good-issue.md`],
   ])('blocks %s', (_label, command) => {
     expectBlocked(gate(command));
   });
