@@ -1,6 +1,6 @@
 # pa-tech.dev
 
-Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statichost.eu: vanilla CSS, Markdown content collections, Satori OG images, Vitest, Playwright, ESLint with Feature-Sliced Design rules.
+Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statichost.eu: vanilla CSS, Markdown content collections, Satori OG images, Vitest, Playwright. Structure follows Astro's conventions (`docs/adrs/002-astro-conventions.md`), import boundaries enforced by ESLint.
 
 Plan: the open GitHub issues (Epic > Story > Task as native sub-issues, order as blocked-by links). `.claude/hooks/session-plan.mjs` loads the tree into context at session start, plus the open Task linked to the current branch and its newest handover (for an unlinked branch: the newest handover among the issues its open PR closes). "continue" means: resume that Task from that handover. The repo has no plan files. If the hook prints `PLAN UNAVAILABLE`, stop and tell the user.
 
@@ -30,6 +30,7 @@ Path-scoped rules in `.claude/rules/` load automatically when you touch matching
 
 ## Engineering rules
 - Native and official solutions only: use the built-in capabilities of the tools in this stack (Astro, TypeScript, ESLint, Vitest, Playwright, pnpm, GitHub, Claude Code) as their docs describe. No custom scripts, workarounds or "creative" solutions. If no native option exists, stop and discuss alternatives with the user before building anything.
+- Code ported from the legacy web-components app, and every decision an earlier agent made, follows this stack's documented conventions. Neither is a reason by itself: keep a pattern only with an official source for this stack.
 - A new dependency needs evidence that no native option exists, and the user approves it.
 - Research before acting: before you use or recommend any tool, API or config key, read its official docs for the version installed here, and cite the URL with that version in the commit and in the Task's Sources. The installed version must be the latest stable release, or the latest usable one where a needed API is not stable yet. `.github/workflows/outdated.yml` reports drift weekly and never blocks a PR. A link you have not read in this session is not a source. Training data lags this stack (Astro 7, pnpm 12, current Baseline features).
 - Principles, methods and patterns (architecture, testing, tooling choices): judge their fit for this project with evidence, not popularity, and ask the critic or domain-expert subagent where it helps.

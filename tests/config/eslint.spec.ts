@@ -21,22 +21,6 @@ describe('ESLint Configuration (Deterministic Enforcement)', () => {
     expect(ruleIds).toContain('no-restricted-syntax');
   });
 
-  it('should enforce Feature-Sliced Design (FSD) architecture boundaries', async () => {
-    const eslint = new ESLint();
-    
-    // Simulate a file inside 'shared' improperly trying to import from 'features' (Upward dependency)
-    const results = await eslint.lintText(
-      "import { someFeature } from '@/features/auth';", 
-      { filePath: "src/shared/ui/button.ts" }
-    );
-    
-    const messages = results[0].messages;
-    const ruleIds = messages.map(m => m.ruleId);
-    
-    // Layers-slices rule should catch the boundary violation
-    expect(ruleIds).toContain('@conarti/feature-sliced/layers-slices');
-  });
-
   it('should enforce strict complexity metrics natively', async () => {
     const eslint = new ESLint();
     
@@ -46,6 +30,33 @@ describe('ESLint Configuration (Deterministic Enforcement)', () => {
     const ruleIds = messages.map(m => m.ruleId);
     
     expect(ruleIds).toContain('max-params');
+  });
+});
+
+// ADR 002: Astro conventions (https://docs.astro.build/en/basics/project-structure/, Astro 7.3.8).
+// https://eslint.org/docs/latest/rules/no-restricted-imports (ESLint 10.12.0), scoped per folder with flat-config `files`.
+describe('ESLint import-boundary gate', () => {
+  const restricted = async (code: string, filePath: string) =>
+    (await new ESLint().lintText(code, { filePath }))[0].messages.filter((m) => m.ruleId === 'no-restricted-imports');
+
+  it.each([
+    ['src/components/X.astro', "---\nimport P from '@/pages/index.astro';\n---\n"],
+    ['src/components/X.astro', "---\nimport L from '@/layouts/BaseLayout.astro';\n---\n"],
+    ['src/components/ui/X.ts', "import P from '../../pages/index.astro';\n"],
+    ['src/layouts/X.astro', "---\nimport P from '@/pages/index.astro';\n---\n"],
+    ['src/lib/x.ts', "import C from '@/components/X.astro';\n"],
+    ['src/lib/x.ts', "import L from '../layouts/BaseLayout.astro';\n"],
+  ])('blocks an upward import in %s: %j', async (filePath, code) => {
+    expect(await restricted(code, filePath)).not.toEqual([]);
+  });
+
+  it.each([
+    ['src/pages/x.astro', "---\nimport L from '@/layouts/BaseLayout.astro';\nimport C from '@/components/X.astro';\n---\n"],
+    ['src/layouts/X.astro', "---\nimport C from '@/components/X.astro';\nimport { a } from '@/lib/a';\n---\n"],
+    ['src/components/X.astro', "---\nimport T from './ui/Tag.astro';\nimport { a } from '@/lib/a';\n---\n"],
+    ['src/lib/x.ts', "import { getCollection } from 'astro:content';\nimport { b } from './b';\n"],
+  ])('allows a downward import in %s', async (filePath, code) => {
+    expect(await restricted(code, filePath)).toEqual([]);
   });
 });
 

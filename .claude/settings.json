@@ -99,8 +99,7 @@
       "WebFetch(domain:pnpm.io)",
       "WebFetch(domain:typescriptlang.org)",
       "WebFetch(domain:www.statichost.eu)",
-      "WebFetch(domain:code.claude.com)",
-      "WebFetch(domain:feature-sliced.design)"
+      "WebFetch(domain:code.claude.com)"
     ],
     "ask": [
       "Bash(dangerouslyDisableSandbox:true)",

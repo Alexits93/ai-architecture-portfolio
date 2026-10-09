@@ -17,6 +17,6 @@ body:
     id: requirements
     attributes:
       label: Requirements / Constraints
-      description: "The devspec: behavioral matrix (input, state, expected output), Security (XSS surface), Performance (LCP/CLS/INP), FSD boundaries, and the gate tests."
+      description: "The devspec: behavioral matrix (input, state, expected output), Security (XSS surface), Performance (LCP/CLS/INP), import boundaries (ADR 002), and the gate tests."
     validations:
       required: true

@@ -1,13 +1,16 @@
 import js from "@eslint/js";
 import tsEslint from "typescript-eslint";
 import eslintPluginAstro from "eslint-plugin-astro";
-import fsd from "@conarti/eslint-plugin-feature-sliced";
 
 // AI-prose gate (CLAUDE.md writing rules), enforced in comments, strings and Astro template text.
 // Emoji class matches .claude/hooks/anti-slop.mjs: Extended_Pictographic minus the (c), (R) and TM signs.
 const BANNED_WORDS = ["delve", "robust", "seamless", "synergy", "tapestry", "cutting-edge", "leverage", "furthermore", "moreover", "ultimately", "in conclusion", "unlocking"];
 const SLOP = `/\\b(${BANNED_WORDS.join("|")})\\b|\\u2014|(?![\\u00a9\\u00ae\\u2122])\\p{Extended_Pictographic}/iu`;
 const SLOP_MESSAGE = "AI prose: banned word, em-dash or emoji (see CLAUDE.md writing rules).";
+
+// no-restricted-imports pattern for an import into one of `folders` through the `@/` alias or a `../` climb
+// (https://eslint.org/docs/latest/rules/no-restricted-imports, ESLint 10.12.0).
+const boundary = (folders, message) => ({ regex: `^(@/|(\\.\\./)+)(${folders})/`, message });
 
 // Type and markup bans, kept apart from the prose selectors so the prose exemption below keeps them.
 const SYNTAX_BANS = [
@@ -38,7 +41,6 @@ export default [
   ...tsEslint.configs.recommended,
   ...eslintPluginAstro.configs.recommended,
   ...eslintPluginAstro.configs["jsx-a11y-strict"],
-  fsd(),
   {
     ignores: ["dist/**", ".astro/**", "coverage/**", "playwright-report/**"]
   },
@@ -102,12 +104,28 @@ export default [
       globals: { process: "readonly" }
     }
   },
+  // Import boundaries (ADR 002): pages > layouts > components > lib. Matches `@/` and `../` specifiers.
   {
-    // Astro pages are handled dynamically by the framework, FSD public API doesn't apply
-    files: ["src/pages/**", "eslint.config.mjs"],
+    files: ["src/layouts/**"],
     rules: {
-      "@conarti/feature-sliced/public-api": "off",
-      "@conarti/feature-sliced/import-order": "off"
+      "no-restricted-imports": ["error", { patterns: [boundary("pages", "Layouts must not import pages (ADR 002).")] }]
+    }
+  },
+  {
+    files: ["src/components/**"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [boundary("pages|layouts", "Components must not import pages or layouts (ADR 002).")] }]
+    }
+  },
+  {
+    files: ["src/lib/**"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        patterns: [
+          boundary("pages|layouts|components", "lib must not import pages, layouts or components (ADR 002)."),
+          { regex: "\\.astro$", message: "lib is framework-free TypeScript and must not import .astro files (ADR 002)." }
+        ]
+      }]
     }
   },
   {
