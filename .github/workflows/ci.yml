@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Environment
         uses: ./.github/actions/setup-pnpm-env
@@ -40,14 +40,14 @@ jobs:
 
       - name: Report Coverage
         if: always()
-        uses: davelosert/vitest-coverage-report-action@c4bbc33a89b7ace0e63d35f1f7d4bcee31155a73 # v2
+        uses: davelosert/vitest-coverage-report-action@c4bbc33a89b7ace0e63d35f1f7d4bcee31155a73 # v2.13.0
         with:
           name: 'Vitest Coverage'
           json-summary-path: 'coverage/coverage-summary.json'
           json-final-path: 'coverage/coverage-final.json'
 
       - name: Publish Test Results
-        uses: dorny/test-reporter@3eeb9fc888e82e8be2fb356bbeec2750231672bc # v1
+        uses: dorny/test-reporter@d1b5dff021aa968b288b02285a8bf47471c5928a # v3.2.0
         if: always()
         with:
           name: Unit Tests Report
@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Environment
         uses: ./.github/actions/setup-pnpm-env
@@ -74,7 +74,7 @@ jobs:
     needs: [quality-gate, security-gate]
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Environment
         uses: ./.github/actions/setup-pnpm-env
@@ -91,7 +91,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Environment
         uses: ./.github/actions/setup-pnpm-env

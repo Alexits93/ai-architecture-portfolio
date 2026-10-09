@@ -57,3 +57,41 @@ describe('Supply chain settings', () => {
     expect(action).not.toMatch(/^\s+version:/m);
   });
 });
+
+// Drift is reported weekly by outdated.yml and never blocks a PR.
+// https://pnpm.io/cli/outdated (pnpm 12.10.1), https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
+const actionFiles = [
+  ...fs.readdirSync(path.join(root, '.github/workflows')).map((file) => `.github/workflows/${file}`),
+  '.github/actions/setup-pnpm-env/action.yml',
+];
+
+describe('Version drift report', () => {
+  const outdated = read('.github/workflows/outdated.yml');
+
+  it('runs weekly and on demand', () => {
+    expect(outdated).toMatch(/^on:\n {2}schedule:\n {4}- cron: '[\d*]+ [\d*]+ \* \* [0-6]'\n {2}workflow_dispatch:$/m);
+  });
+
+  it('has read-only contents permission and no secrets', () => {
+    expect(outdated).toMatch(/^permissions:\n {2}contents: read\n\n/m);
+    expect(outdated).not.toMatch(/secrets\./);
+  });
+
+  it('checks packages and GitHub Actions and writes the table to the job summary', () => {
+    expect(outdated).toMatch(/pnpm outdated --include-github-actions .*\$GITHUB_STEP_SUMMARY/);
+    // Without pipefail the exit code of tee would hide the failing pnpm outdated.
+    expect(outdated).toMatch(/^\s+shell: bash$/m);
+  });
+
+  it.each(actionFiles.filter((file) => !file.endsWith('outdated.yml')))('%s never runs pnpm outdated', (file) => {
+    expect(read(file)).not.toMatch(/pnpm outdated/);
+  });
+
+  // pnpm outdated skipped dorny/test-reporter pinned at the moving tag v1, so a pin names its exact release.
+  it.each(actionFiles)('%s pins every remote action to a SHA and an exact release', (file) => {
+    const uses = [...read(file).matchAll(/^\s+(?:- )?uses: (?!\.\/)(.+)$/gm)].map((match) => match[1]);
+    for (const ref of uses) {
+      expect(ref).toMatch(/^[\w.-]+\/[\w./-]+@[0-9a-f]{40} # v\d+\.\d+\.\d+$/);
+    }
+  });
+});
