@@ -1,7 +1,10 @@
+import { globSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 
-// Every page must load under its CSP with zero violations, and the theme script must still run.
-const ROUTES = ['/', '/blog/', '/blog/ai-agent-harness/', '/cv/', '/cookie-disclaimer/', '/privacy-policy/'];
+// Every built page must load under its CSP with zero violations, and the theme script must still run.
+// Read from dist/ so new pages, such as a post with a code fence, are checked without a list edit.
+const ROUTES = globSync('**/index.html', { cwd: 'dist' }).map((file) => `/${file.replace(/index\.html$/, '')}`);
+test('finds the built pages', () => expect(ROUTES.length).toBeGreaterThan(5));
 
 declare global {
   interface Window {
