@@ -10,7 +10,7 @@ export default [
   ...eslintPluginAstro.configs["jsx-a11y-strict"],
   fsd(),
   {
-    ignores: [".agents/**", "dist/**", ".astro/**"]
+    ignores: ["dist/**", ".astro/**", "coverage/**", "playwright-report/**"]
   },
   {
     files: ["**/*.{ts,js,mjs,cjs,astro}"],

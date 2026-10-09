@@ -7,7 +7,7 @@ export const GET: APIRoute = async () => {
     const description = 'Exploring AI Architecture, Modern Web Development, and the Future of Engineering.';
     const pngBuffer = await generateOgImage(title, description);
 
-    return new Response(pngBuffer, {
+    return new Response(new Uint8Array(pngBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'image/png',

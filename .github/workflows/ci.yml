@@ -33,7 +33,7 @@ jobs:
         run: pnpm exec eslint .
 
       - name: Typecheck
-        run: pnpm exec tsc --noEmit
+        run: pnpm typecheck
 
       - name: Unit Tests
         run: pnpm exec vitest run --coverage --passWithNoTests --reporter=default --reporter=junit --outputFile=test-results/junit.xml

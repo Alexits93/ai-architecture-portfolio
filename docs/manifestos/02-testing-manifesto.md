@@ -27,7 +27,11 @@ Code is written only to satisfy a failing test, following the **Testing Trophy**
 To perform in-browser visual verifications without installing OS-level browsers or using external MCPs, the AI must use the natively installed `playwright` package.
 - Start the Astro dev server (`pnpm dev`).
 - Run a short Playwright script to capture screenshots (`page.screenshot()`).
-- Use the native `view_file` tool to inspect the image.
+- Read the screenshot file to inspect it.
+
+## 5b. Tool Split
+- Vitest + AstroContainer: component rendering and unit logic (`src/**/*.spec.ts`). Never use Playwright for isolated component state.
+- Playwright: multi-page user journeys and client-script behaviour (`e2e/`, `tests/pages/`).
 
 ## 6. Testing & FSD Boundaries
 - **Page Tests:** To prevent FSD `layers-slices` eslint errors without using `eslint-disable` bypasses, tests for `src/pages/` components must be placed in the root `tests/` directory instead of co-locating them in `src/pages/`.

@@ -84,6 +84,6 @@
 - [ ] Keep `placeholder.webp` as the fallback.
 
 ## Open product decisions (owner)
-- Hosting: Cloudflare Pages (per AI_INSTRUCTIONS.md). Headers live in `public/_headers`.
+- Hosting: Cloudflare Pages (per CLAUDE.md). Headers live in `public/_headers`.
 - Public repo vs GitHub Pro.
 - i18n strategy, RSS feed, 404 page.

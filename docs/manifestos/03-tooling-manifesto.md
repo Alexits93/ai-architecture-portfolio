@@ -10,13 +10,8 @@ Do not rely on the LLM "remembering" to write good code. Enforce it at the syste
 - GitHub Actions must run the full Vitest/Playwright suite and ESLint checks on every Pull Request.
 - Deployments to Cloudflare Pages only occur if the CI pipeline passes.
 
-## 3. Deterministic AI Safeguards (Anti-Slop Hook)
-To prevent the AI from bypassing prose-only instructions, we implement **Hard System-Level Guardrails** using Antigravity lifecycle hooks.
-
-- **Location:** `.agents/hooks.json`
-- **Implementation:** `PreToolUse` hook targeting `write_to_file` and `replace_file_content`.
-- **Script:** `.agents/scripts/anti-slop-guard.js`
-- **Mechanism:** Before any code or documentation is physically written to the disk, this script parses the output payload. If a banned word (e.g., 'delve', 'robust') is detected, it returns a `"deny"` signal. This hard-blocks the tool call and forces the AI to regenerate its output without the slop.
+## 3. AI Guardrails
+Agent-side hooks are nudges, not controls. Enforcement lives in ESLint, `astro check`, Vitest coverage thresholds, `pr-lint.yml`, and server-side branch protection.
 
 ## 4. Native-First Principle
 Adding third-party packages and custom scripts is a last resort. We enforce a "Native-First" approach:
