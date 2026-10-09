@@ -34,8 +34,9 @@ src/
   content/    blog posts (Markdown)
 e2e/          Playwright journeys
 tests/        page-level and architecture tests
-docs/         manifestos, specs, execution plans
+docs/         specs, execution plans, ADRs, architecture map
+.claude/      Claude Code rules, hooks, skills, permissions
 ```
 
 ## Contributing
-Conventional Commits, one branch per change, PRs follow `.github/PULL_REQUEST_TEMPLATE.md`. Rules for humans and agents: `CLAUDE.md` and `docs/manifestos/`.
+Conventional Commits, one branch per change, PRs follow `.github/PULL_REQUEST_TEMPLATE.md`. Rules for humans and agents: `CLAUDE.md` and `.claude/rules/`.

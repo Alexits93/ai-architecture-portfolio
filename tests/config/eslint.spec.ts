@@ -48,3 +48,17 @@ describe('ESLint Configuration (Deterministic Enforcement)', () => {
     expect(ruleIds).toContain('max-params');
   });
 });
+
+describe('ESLint XSS gate', () => {
+  const html = '---\nconst x = "<b>hi</b>";\n---\n<div set:html={x} />\n';
+  const ruleIds = async (filePath: string) =>
+    (await new ESLint().lintText(html, { filePath }))[0].messages.map(m => m.ruleId);
+
+  it('bans set:html in Astro components', async () => {
+    expect(await ruleIds('src/widgets/x/ui/X.astro')).toContain('astro/no-set-html-directive');
+  });
+
+  it('allows set:html only in SeoHead (JSON-LD)', async () => {
+    expect(await ruleIds('src/shared/ui/seo-head/SeoHead.astro')).not.toContain('astro/no-set-html-directive');
+  });
+});

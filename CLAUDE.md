@@ -1,48 +1,36 @@
-# Project: AI Architecture Portfolio
+# pa-tech.dev
 
-Personal portfolio and blog. Static Astro site (`output: 'static'`) on Cloudflare Pages. Stack: Astro, vanilla CSS, Satori (OG images), Nano Stores, Vitest, Playwright, ESLint (FSD boundaries).
+Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on Cloudflare Pages: vanilla CSS, Markdown content collections, Satori OG images, Vitest, Playwright, ESLint with Feature-Sliced Design rules.
 
-Legacy source being migrated: `/home/patrika/Documents/projects/web-components/` (outside this repo). Migration workflow: `docs/skills/legacy-migration-protocol.md`.
-
-Current plan (source of truth): `docs/exec-plans/modernization-and-security.plan.md`. Rationale: `docs/exec-plans/plan-and-security-review.md`. Read both before starting a story. Tick items only when merged to `master`.
+Current plan: `docs/exec-plans/modernization-and-security.plan.md`. Read it before starting a story.
 
 ## Commands
-- `pnpm check` runs lint, `astro check`, and unit tests with coverage. Run it before every commit.
-- `pnpm lint` / `pnpm typecheck` / `pnpm test` / `pnpm test:e2e` / `pnpm build`
+- `pnpm check`: lint + `astro check` + unit tests with coverage. Run it before every commit and show its result as evidence.
+- `pnpm exec vitest run <path>` for one test file while iterating (no coverage, so per-file thresholds do not fail). `pnpm test:e2e` needs `pnpm build` first.
 - `pnpm astro sync` after editing `src/content.config.ts`.
+- pnpm only. `npm`, `npx` and `yarn` are denied in `.claude/settings.json`.
 
-## Role
-Act as a critical sparring partner for a Lead AI Engineer. Challenge weak ideas. Verify framework APIs against current official docs, not memory.
+## Workflow
+1. Spec and devspec in `docs/exec-plans/` (format in `.claude/rules/docs.md`).
+2. Failing test, then implementation until `pnpm check` passes.
+3. One branch per change (`feat/`, `fix/`, `chore/`), Conventional Commits (commitlint enforced).
+4. PR body follows `.github/PULL_REQUEST_TEMPLATE.md`. `Closes #N` references the Story or Task issue, never the PR. Under "Unverified Risks" list real blind spots (screen readers, Safari, small viewports), because passing tests do not prove UX.
 
-## Writing rules
+Path-scoped rules in `.claude/rules/` load automatically when you touch matching files. Legacy component migration: `/migrate-legacy <name>`.
+
+## Engineering rules
+- Native first: solve with Astro, TypeScript, Vitest, Node or the platform before adding a dependency. A new dependency needs evidence that no native option exists, and the user approves it.
+- Verify framework and browser APIs against current official docs before using them. Training data lags Astro 7 and current Baseline features.
+- No `any`, no `unknown`, no `as` casts to bypass types (ESLint enforced).
+- A new architectural rule ships with the ESLint, TypeScript or test gate that enforces it. A rule that exists only in Markdown is a suggestion.
+- Keep changes minimal: no refactors, abstractions or defensive code beyond the task.
+
+## Writing style
+Applies to docs, commit messages, PR bodies and chat.
 - Banned words: delve, robust, seamless, synergy, tapestry, cutting-edge, leverage, furthermore, moreover, ultimately, in conclusion, unlocking.
-- No emojis. No em-dashes.
-- Active voice, short sentences, no flattery.
-
-## Workflow (SDD + TDD)
-1. Spec: `docs/exec-plans/<name>.spec.md`
-2. DevSpec (behavioral matrix): `<name>.devspec.md`
-3. Failing test (Vitest `*.spec.ts` co-located; page tests in `tests/`; journeys in `e2e/`)
-4. Implement until green.
-
-Branch per change (`feat/`, `fix/`, `chore/`). Conventional Commits (commitlint enforced). PRs follow `.github/PULL_REQUEST_TEMPLATE.md`, `Closes #N` must reference the Story/Task issue. `pr-lint.yml` enforces this. Fill "Unverified Risks" with real blind spots (a11y, Safari, small viewports).
-
-## Architecture rules
-- Feature-Sliced Design: `app > pages > widgets > features > entities > shared`. Import slices only through their `index.ts` via `@/` paths.
-- Global tokens and layout CSS live in `src/shared/styles/` (pages may not import `app`).
-- HTML-first: if native HTML/CSS (`<dialog>`, `:checked`, `:target`, `:has()`) can hold the state, no `<script>`.
-- No `any`, no `unknown`, no `as` casts to bypass types.
-- Native-first: no new dependency without proof that Astro/TS/Vitest/Node cannot do it.
-- A new architectural rule ships with the ESLint/TS/test gate that enforces it. Prose is not enforcement.
-
-Detailed rules: `docs/manifestos/` (read the relevant one before structural changes).
-
-## Testing notes
-- Astro components: `experimental_AstroContainer` in Vitest with `environment: 'node'`, parse output with JSDOM.
-- AstroContainer inherits `site` from `astro.config.mjs`. Do not test for an undefined `site`.
-- Client `<script>` behaviour is only testable in Playwright.
+- No emojis, no em-dashes. Active voice, short sentences, no flattery.
+- Act as a critical sparring partner: challenge weak ideas with evidence instead of agreeing.
 
 ## Context hygiene
-- Do not create `MEMORY.md`, `.claudememory`, or chronological log files.
-- Do not write raw JSON dumps, terminal traces, or debugging narratives to any file.
-- Update docs by overwriting and compressing. See `docs/manifestos/10-memory-and-context-manifesto.md`.
+- Do not commit memory, session-log or scratch files to the repo. Durable knowledge goes into this file, `.claude/rules/`, or the relevant spec, by editing the existing text rather than appending.
+- When compacting, keep: the current story, files modified so far, the last `pnpm check` result, and open decisions.

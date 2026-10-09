@@ -2,14 +2,93 @@
   "permissions": {
     "allow": [
       "Bash(pnpm check)",
-      "Bash(pnpm lint)",
-      "Bash(pnpm typecheck)",
-      "Bash(pnpm test)",
-      "Bash(pnpm test:e2e)",
+      "Bash(pnpm lint *)",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm test *)",
+      "Bash(pnpm test:e2e *)",
       "Bash(pnpm build)",
+      "Bash(pnpm preview)",
       "Bash(pnpm astro sync)",
-      "Bash(pnpm exec vitest run:*)",
-      "Bash(pnpm exec playwright test:*)"
+      "Bash(pnpm audit *)",
+      "Bash(pnpm exec eslint *)",
+      "Bash(pnpm exec vitest run *)",
+      "Bash(pnpm exec playwright test *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git switch *)",
+      "Bash(git fetch *)",
+      "Bash(gh issue view *)",
+      "Bash(gh issue list *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh run view *)",
+      "Bash(gh run list *)",
+      "WebFetch(domain:docs.astro.build)",
+      "WebFetch(domain:developer.mozilla.org)",
+      "WebFetch(domain:web.dev)",
+      "WebFetch(domain:vitest.dev)",
+      "WebFetch(domain:playwright.dev)",
+      "WebFetch(domain:eslint.org)",
+      "WebFetch(domain:pnpm.io)",
+      "WebFetch(domain:typescriptlang.org)",
+      "WebFetch(domain:developers.cloudflare.com)",
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:feature-sliced.design)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(git rebase *)",
+      "Bash(git reset *)",
+      "Bash(git branch -D *)",
+      "Bash(gh pr create *)",
+      "Bash(gh pr merge *)",
+      "Bash(gh issue create *)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm remove *)",
+      "Bash(pnpm update *)",
+      "Bash(pnpm dlx *)",
+      "Edit(./.github/**)",
+      "Edit(./.husky/**)",
+      "Edit(./.claude/settings.json)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./.dev.vars)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(yarn *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git commit --no-verify *)",
+      "Bash(git commit -n *)",
+      "Bash(git push --no-verify *)",
+      "Bash(git clean *)",
+      "Edit(./pnpm-lock.yaml)",
+      "Edit(./CHANGELOG.md)",
+      "Edit(./dist/**)",
+      "Edit(./.astro/**)",
+      "Edit(./coverage/**)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/anti-slop.mjs", "timeout": 10 }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/lint-feedback.mjs", "timeout": 60 }
+        ]
+      }
     ]
   }
 }

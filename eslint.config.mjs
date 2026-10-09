@@ -42,6 +42,21 @@ export default [
     }
   },
   {
+    // XSS: raw HTML injection is banned. SeoHead's JSON-LD (serializeJsonLd) is the single exception.
+    files: ["**/*.astro"],
+    ignores: ["src/shared/ui/seo-head/SeoHead.astro"],
+    rules: {
+      "astro/no-set-html-directive": "error"
+    }
+  },
+  {
+    // Claude Code hook scripts run directly in Node.
+    files: [".claude/hooks/**/*.mjs"],
+    languageOptions: {
+      globals: { process: "readonly" }
+    }
+  },
+  {
     // Astro pages are handled dynamically by the framework, FSD public API doesn't apply
     files: ["src/pages/**", "eslint.config.mjs"],
     rules: {

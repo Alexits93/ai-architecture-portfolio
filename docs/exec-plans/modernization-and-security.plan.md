@@ -18,7 +18,7 @@ Principle: fix the gates first (every later story relies on them), then the docs
 1. ~~Story S (security quick wins)~~ done
 2. ~~Story D (docs truthfulness)~~ done
 3. **P0** Story Q (quality gates that check what they claim)
-4. **P1** Story D2 (manifesto contradictions and consolidation)
+4. **P1** Story D2 (agent context architecture)
 5. **P1** Story B (bug fixes found in the 2026-10-09 audit)
 6. **P2** Story A (native dialog menu)
 7. **P2** Story L (BaseLayout + SEO + theme)
@@ -87,15 +87,14 @@ Principle: fix the gates first (every later story relies on them), then the docs
 - [ ] Enable `@conarti/feature-sliced/public-api` for `src/pages/**` (it is switched off, which let deep imports through in `blog/[slug].astro`). Keep only `import-order` off if needed.
 - [ ] e2e link checker: every internal `href` returns 200.
 
-### Story D2: Manifesto contradictions and consolidation (P1)
-- [ ] 05 says "type unknown structures as `unknown` and parse with Zod"; ESLint bans `unknown`. Pick one rule (recommended: allow `unknown` only at parse boundaries, enforce with a scoped ESLint override).
-- [ ] 05 §9 says suppress `any` with `eslint-disable`; 02 bans `any` in tests. Remove the 05 escape hatch or scope it.
-- [ ] 02 mandates MSW and Vitest browser mode; neither is installed. Remove both mandates until a test needs them (no network calls exist).
-- [ ] 04 says MDX/Markdoc and SCSS; the repo uses Markdown and CSS. Correct it.
-- [ ] 05 §10 prescribes `getBoundingClientRect()` JS for menu alignment; this conflicts with Story A and the HTML-first rule. Delete it.
-- [ ] 09 bans `set:html` outright; `SeoHead` uses it for JSON-LD via `serializeJsonLd`. Document the single allowed exception and enforce it with `no-restricted-syntax` scoped to everything except `SeoHead.astro`.
-- [ ] Merge the 10 manifestos into 3 (`architecture.md`, `testing.md`, `process.md`). Remove rules already enforced by ESLint/TS (the gate is the documentation).
-- [ ] Archive specs, devspecs and `*-pathology.md` for shipped components (manifesto 10 §3). Git history keeps them.
+### Story D2: Agent context architecture (P1)
+Resolved in `chore/claude-code-setup` (tick on merge):
+- [ ] Manifestos replaced by path-scoped `.claude/rules/` (load on matching files) and the `/migrate-legacy` skill. Contradictions resolved: `unknown` stays banned (ESLint wins), no `eslint-disable` escape hatch for `any`, MSW and Vitest browser-mode mandates dropped, MDX/SCSS claims corrected, `getBoundingClientRect` menu rule dropped (conflicts with Story A).
+- [ ] `set:html` banned by `astro/no-set-html-directive`, with `SeoHead.astro` (JSON-LD) as the only exception.
+- [ ] Hooks: anti-slop block on Markdown writes, ESLint feedback after each edit.
+- [ ] `tests/architecture/agent-context.spec.ts`: fails when CLAUDE.md exceeds its budget, a rule glob matches no file, or agent docs reference a missing path.
+Still open:
+- [ ] Archive specs, devspecs and `*-pathology.md` for shipped components. Git history keeps them.
 
 ### Story B: Bug fixes from the 2026-10-09 audit (P1)
 - [ ] `src/pages/blog/[slug].astro`: import `BlogPostReader` and `SeoHead` through their `index.ts` (add the missing `widgets/blog-post-reader/index.ts`).
