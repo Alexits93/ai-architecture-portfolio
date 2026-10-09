@@ -91,6 +91,8 @@ Resolved in `chore/claude-code-setup` (tick on merge):
 - [ ] `set:html` banned by `astro/no-set-html-directive`, with `SeoHead.astro` (JSON-LD) as the only exception.
 - [ ] Hooks: anti-slop block on Markdown writes, ESLint feedback after each edit.
 - [ ] `tests/architecture/agent-context.spec.ts`: fails when CLAUDE.md exceeds its budget, a rule glob matches no file, or agent docs reference a missing path.
+Resolved in `chore/agent-workflow-gates` (tick on merge):
+- [ ] `.github/workflow-rules.mjs` holds the PR and issue rules. CI `pr-lint` and the PreToolUse hook `.claude/hooks/pr-gate.mjs` both import it: every template section filled, every checklist box ticked, a risk bullet, `Closes #N`, a commitlint-valid PR title, issues with template prefix, label, sections and parent `#N`. Gates: `tests/config/workflow-rules.spec.ts`, `tests/architecture/claude-hooks.spec.ts`.
 Still open:
 - [ ] Archive specs, devspecs and `*-pathology.md` for shipped components. Git history keeps them.
 

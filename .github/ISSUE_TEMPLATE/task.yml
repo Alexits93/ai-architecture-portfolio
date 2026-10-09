@@ -21,6 +21,6 @@ body:
     id: parent-link
     attributes:
       label: Parent Story/Epic
-      description: Link to the parent issue if applicable.
+      description: Link to the parent Story (or Epic) issue number (e.g., #123).
     validations:
-      required: false
+      required: true

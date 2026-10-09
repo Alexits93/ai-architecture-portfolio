@@ -13,8 +13,8 @@ Current plan: `docs/exec-plans/modernization-and-security.plan.md`. Read it befo
 ## Workflow
 1. Spec and devspec in `docs/exec-plans/` (format in `.claude/rules/docs.md`).
 2. Failing test, then implementation until `pnpm check` passes.
-3. One branch per change (`feat/`, `fix/`, `chore/`), Conventional Commits (commitlint enforced).
-4. PR body follows `.github/PULL_REQUEST_TEMPLATE.md`. `Closes #N` references the Story or Task issue, never the PR. Under "Unverified Risks" list real blind spots (screen readers, Safari, small viewports), because passing tests do not prove UX.
+3. Open the issue before the branch: Epic > Story > Task, from `.github/ISSUE_TEMPLATE`, each naming its parent. One branch per Task (`feat/`, `fix/`, `chore/`), Conventional Commits (commitlint enforced).
+4. PR body follows `.github/PULL_REQUEST_TEMPLATE.md`, passed with `--body-file`. `Closes #N` references the Story or Task issue, never the PR. The PR title is the squash commit and must pass commitlint. Under "Unverified Risks" list real blind spots (screen readers, Safari, small viewports), because passing tests do not prove UX. `.claude/hooks/pr-gate.mjs` and CI `pr-lint` enforce this with `.github/workflow-rules.mjs`.
 
 Path-scoped rules in `.claude/rules/` load automatically when you touch matching files. Legacy component migration: `/migrate-legacy <name>`.
 

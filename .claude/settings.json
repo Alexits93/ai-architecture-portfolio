@@ -132,6 +132,12 @@
         "hooks": [
           { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/anti-slop.mjs", "timeout": 10 }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pr-gate.mjs", "timeout": 30 }
+        ]
       }
     ],
     "PostToolUse": [

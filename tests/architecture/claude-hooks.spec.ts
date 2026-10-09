@@ -1,7 +1,11 @@
 import { spawnSync } from 'child_process';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { PR_CHECKLIST, PR_SECTIONS } from '../../.github/workflow-rules.mjs';
+
+const read = (file: string): string => fs.readFileSync(path.join(process.cwd(), file), 'utf8');
 
 interface ToolInput {
   file_path: string;
@@ -37,6 +41,48 @@ describe('anti-slop hook', () => {
     ['the copyright sign', 'docs/x.md', '© 2026'],
   ])('allows %s', (_label, file_path, content) => {
     expect(runHook('anti-slop.mjs', { file_path, content })).toBe(0);
+  });
+});
+
+describe('pr-gate hook', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pr-gate-'));
+  const goodPr = path.join(dir, 'good-pr.md');
+  const badPr = path.join(dir, 'bad-pr.md');
+  const goodIssue = path.join(dir, 'good-issue.md');
+  beforeAll(() => {
+    const checklist = PR_CHECKLIST.map((item) => `- [x] ${item}`).join('\n');
+    fs.writeFileSync(goodPr, PR_SECTIONS.map((s) => `## ${s}\n${s === 'Pre-Merge Checklist' ? checklist : '- Closes #44'}`).join('\n'));
+    fs.writeFileSync(badPr, read('.github/PULL_REQUEST_TEMPLATE.md'));
+    fs.writeFileSync(goodIssue, '### Description\n\nA\n\n### Requirements / Constraints\n\nB\n\n### Parent Story/Epic\n\n#35\n');
+  });
+  afterAll(() => fs.rmSync(dir, { recursive: true, force: true }));
+
+  const gate = (command: string): number | null =>
+    spawnSync('node', [path.join(process.cwd(), '.claude/hooks/pr-gate.mjs')], {
+      input: JSON.stringify({ cwd: dir, tool_input: { command } }),
+      encoding: 'utf8',
+    }).status;
+
+  it.each([
+    ['a body passed inline', 'gh pr create --title "chore: x" --body "hi"'],
+    ['a body file that breaks the rules', 'gh pr create --title "chore: x" --body-file bad-pr.md'],
+    ['a title that is no Conventional Commit', 'gh pr create --title "Add gates" --body-file good-pr.md'],
+    ['a missing title', 'gh pr create --body-file good-pr.md'],
+    ['a missing body file', 'gh pr create --title "chore: x" --body-file nope.md'],
+    ['an issue without label', 'gh issue create --title "[Task] X" --body-file good-issue.md'],
+    ['an issue body that misses sections', 'gh issue create -t "[Task] X" -l task -F bad-pr.md'],
+    ['a prefixed call', 'cd /x; GH_PAGER= env gh pr create --title "chore: x"'],
+  ])('blocks %s', (_label, command) => {
+    expect(gate(command)).toBe(2);
+  });
+
+  it.each([
+    ['a valid PR', `git push && gh pr create --base master --title 'chore(claude): gate PRs' --body-file good-pr.md`],
+    ['a valid issue', 'gh issue create --title "[Task] X" --label task --body-file good-issue.md'],
+    ['other commands', 'gh pr view 44'],
+    ['text that mentions the command', "git commit -F - <<'EOF'\nchore: gate gh pr create\nEOF"],
+  ])('allows %s', (_label, command) => {
+    expect(gate(command)).toBe(0);
   });
 });
 

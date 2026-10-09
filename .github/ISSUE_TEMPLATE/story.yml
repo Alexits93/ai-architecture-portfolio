@@ -28,4 +28,4 @@ body:
       label: Parent Epic
       description: Link to the parent epic issue number (e.g., #123)
     validations:
-      required: false
+      required: true
