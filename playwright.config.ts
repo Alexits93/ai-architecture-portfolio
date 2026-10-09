@@ -9,7 +9,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:4321',
+    baseURL: 'http://localhost:4322',
     trace: 'on-first-retry',
   },
   projects: [
@@ -18,9 +18,13 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
+  // Always a fresh foreground `astro preview` of dist/ on its own port: a reused dev server on 4321
+  // has no CSP (https://docs.astro.build/en/reference/configuration-reference/#securitycsp), and
+  // Astro detaches preview when it detects an agent (https://docs.astro.build/en/guides/build-with-ai/).
   webServer: {
-    command: 'pnpm preview',
-    url: 'http://localhost:4321',
-    reuseExistingServer: !process.env.CI,
+    command: 'pnpm preview --port 4322 --ignore-lock',
+    url: 'http://localhost:4322',
+    reuseExistingServer: false,
+    env: { ASTRO_PREVIEW_BACKGROUND: '0' },
   },
 });
