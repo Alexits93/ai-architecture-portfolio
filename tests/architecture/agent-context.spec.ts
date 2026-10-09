@@ -136,9 +136,21 @@ describe('Agent context truthfulness', () => {
 // eslint.config.mjs read-only, so a stash cannot restore them and half-applies; commit by path.
 // `cmd *` also matches the bare command (https://code.claude.com/docs/en/sandboxing).
 describe('Learned agent guards', () => {
-  const settings: { permissions?: { deny?: string[] } } = JSON.parse(read('.claude/settings.json'));
+  const settings: { autoMemoryEnabled?: boolean; permissions?: { deny?: string[] } } = JSON.parse(
+    read('.claude/settings.json'),
+  );
 
   it('denies git stash', () => {
     expect(settings.permissions?.deny).toContain('Bash(git stash *)');
+  });
+
+  // Knowledge lives in git history and GitHub issues, never in machine-local notes
+  // (https://code.claude.com/docs/en/memory).
+  it('turns auto memory off', () => {
+    expect(settings.autoMemoryEnabled).toBe(false);
+  });
+
+  it('registers the sandbox gate hook', () => {
+    expect(read('.claude/settings.json')).toContain('.claude/hooks/sandbox-gate.mjs');
   });
 });

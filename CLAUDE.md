@@ -4,6 +4,10 @@ Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statich
 
 Plan: the open GitHub issues (Epic > Story > Task as native sub-issues, order as blocked-by links). `.claude/hooks/session-plan.mjs` loads the tree into context at session start, plus the open Task linked to the current branch and its newest handover. "continue" means: resume that Task from that handover. The repo has no plan files. If the hook prints `PLAN UNAVAILABLE`, stop and tell the user.
 
+## Base rules
+1. You run inside VS Code. Use its tools to check and improve your work: the Problems panel through `mcp__ide__getDiagnostics` (CLI) or `mcp__claude-vscode__getDiagnostics` (chat panel), and the installed extensions (`code --list-extensions --show-versions`, unsandboxed). If the `ide` server is not connected, tell the user to run `/ide` or reload the window.
+2. Auto memory is off (`autoMemoryEnabled: false`). Repository history and knowledge live only in git history (`git log -S`, `git show`) and GitHub issues and PRs (`gh issue view`, `gh pr view`). Never work from memory, training data or assumption: before starting a task, read the relevant history, issues, code and official docs, and say what you verified.
+
 ## Commands
 - `pnpm check`: lint + `astro check` + unit tests with coverage. Run it before every commit and show its result as evidence.
 - `pnpm exec vitest run <path>` for one test file while iterating (no coverage, so per-file thresholds do not fail). `pnpm test:e2e` needs `pnpm build` first.

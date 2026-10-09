@@ -192,6 +192,39 @@ describe('pr-gate hook', () => {
   });
 });
 
+// sandbox.excludedCommands apply only to a standalone call; a cd, chain, pipe, redirect or
+// substitution keeps it sandboxed, and the unsandboxed retry then widens far more than the one command.
+const sandboxGate = (command: string): { status: number | null; stderr: string } =>
+  spawnSync('node', [path.join(process.cwd(), '.claude/hooks/sandbox-gate.mjs')], {
+    input: JSON.stringify({ tool_input: { command } }),
+    encoding: 'utf8',
+  });
+
+describe('sandbox-gate hook', () => {
+  it.each([
+    ['a redirect', 'git push origin main > /tmp/push.log 2>&1'],
+    ['a chain', 'git push origin main && echo done'],
+    ['a leading cd', 'cd /x && gh issue view 63'],
+    ['a semicolon', 'gh issue view 63; git log'],
+    ['a pipe', 'gh pr view 46 | head'],
+    ['a substitution', 'gh issue comment 63 --body "$(cat x.md)"'],
+    ['a backtick substitution', 'gh run view `cat id`'],
+  ])('blocks an excluded command with %s', (_label, command) => {
+    const result = sandboxGate(command);
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('Blocked by .claude/hooks/sandbox-gate.mjs');
+  });
+
+  it.each([
+    ['a standalone push', 'git push origin chore/x:chore/y'],
+    ['a pipe inside a quoted jq filter', `gh issue view 63 --json comments --jq '.comments[] | .body'`],
+    ['other chained commands', 'git status && git log --oneline -1 > /tmp/x'],
+    ['quoted text that mentions an excluded command', 'git commit -m "docs: run git push; then gh pr view"'],
+  ])('allows %s', (_label, command) => {
+    expect(sandboxGate(command).status).toBe(0);
+  });
+});
+
 describe('lint-feedback hook', () => {
   // Created at runtime so the repo itself never contains a lint error.
   const brokenFile = path.join(process.cwd(), 'tests/architecture/tmp-lint-error.ts');
