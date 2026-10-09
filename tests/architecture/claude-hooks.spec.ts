@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { PR_CHECKLIST, PR_SECTIONS } from '../../.github/workflow-rules.mjs';
+import { HANDOVER_MARKER, PR_CHECKLIST, PR_SECTIONS } from '../../.github/workflow-rules.mjs';
 
 const read = (file: string): string => fs.readFileSync(path.join(process.cwd(), file), 'utf8');
 
@@ -44,11 +44,12 @@ describe('anti-slop hook', () => {
   });
 });
 
-// Puts a fake `gh` first on PATH that prints `answer` and exits with `status`.
-const fakeGh = (answer: string, status: number): { PATH: string } => {
+// Puts a fake `gh` first on PATH that prints `answer` and exits with `status`, and a fake `git` on `branch`.
+const fakeGh = (answer: string, status: number, branch = 'master'): { PATH: string } => {
   const bin = fs.mkdtempSync(path.join(os.tmpdir(), 'fake-gh-'));
   fs.writeFileSync(path.join(bin, 'answer.json'), answer);
   fs.writeFileSync(path.join(bin, 'gh'), `#!/bin/sh\ncat "${bin}/answer.json"\nexit ${status}\n`, { mode: 0o755 });
+  fs.writeFileSync(path.join(bin, 'git'), `#!/bin/sh\necho ${branch}\n`, { mode: 0o755 });
   return { PATH: `${bin}${path.delimiter}${process.env.PATH ?? ''}` };
 };
 
@@ -59,13 +60,39 @@ describe('session-plan hook', () => {
       encoding: 'utf8',
     }).stdout;
 
+  // One fake answer serves both queries: the plan reads `issues`, the handover lookup reads `issue`.
+  const answer = JSON.stringify({
+    data: {
+      repository: {
+        issues: {
+          nodes: [
+            { number: 32, title: '[Epic] E', parent: null, blockedBy: { nodes: [] }, linkedBranches: { nodes: [] } },
+            {
+              number: 63,
+              title: '[Task] T',
+              parent: { number: 32 },
+              blockedBy: { nodes: [] },
+              linkedBranches: { nodes: [{ ref: { name: 'chore/t' } }] },
+            },
+          ],
+        },
+        issue: { comments: { nodes: [{ body: `${HANDOVER_MARKER}\nNext: tests` }, { body: 'Measured' }] } },
+      },
+    },
+  });
+
   it('prints the open issue tree', () => {
-    const issues = [
-      { number: 32, title: '[Epic] E', parent: null, blockedBy: { nodes: [] } },
-      { number: 35, title: '[Story] S', parent: { number: 32 }, blockedBy: { nodes: [] } },
-    ];
-    const answer = JSON.stringify({ data: { repository: { issues: { nodes: issues } } } });
-    expect(run(fakeGh(answer, 0))).toContain('- #32 [Epic] E\n  - #35 [Story] S');
+    expect(run(fakeGh(answer, 0))).toContain('- #32 [Epic] E\n  - #63 [Task] T');
+  });
+
+  it('prints the current Task and its newest handover', () => {
+    expect(run(fakeGh(answer, 0, 'chore/t'))).toContain(
+      `Current Task: #63 [Task] T (branch chore/t)\nHandover:\n${HANDOVER_MARKER}\nNext: tests`,
+    );
+  });
+
+  it('says when no Task is linked to the branch', () => {
+    expect(run(fakeGh(answer, 0))).toContain('No open Task is linked to branch master.');
   });
 
   it.each([

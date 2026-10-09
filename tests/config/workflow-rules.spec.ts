@@ -9,7 +9,11 @@ import {
   findIssueViolations,
   findLinkedIssueViolations,
   findPrBodyViolations,
+  formatCurrentTask,
   formatPlan,
+  HANDOVER_MARKER,
+  latestHandover,
+  linkedTask,
 } from '../../.github/workflow-rules.mjs';
 
 const read = (file: string): string => fs.readFileSync(path.join(process.cwd(), file), 'utf8');
@@ -102,6 +106,7 @@ describe('plan rendering', () => {
     title: `I${number}`,
     parent: parent === null ? null : { number: parent },
     blockedBy: { nodes: blockers.map(([n, state]) => ({ number: n, state })) },
+    linkedBranches: { nodes: [] },
   });
 
   it('nests children and shows only open blockers', () => {
@@ -115,6 +120,56 @@ describe('plan rendering', () => {
 
   it('says so when nothing is open', () => {
     expect(formatPlan([])).toBe('No open issues.');
+  });
+});
+
+describe('current Task and handover', () => {
+  const task = (number: number, branches: string[]) => ({
+    number,
+    title: `[Task] T${number}`,
+    parent: { number: 35 },
+    blockedBy: { nodes: [] },
+    linkedBranches: { nodes: branches.map((name) => ({ ref: { name } })) },
+  });
+  const comment = (body: string) => ({ body });
+
+  it('finds the open Task linked to the branch', () => {
+    expect(linkedTask([task(62, []), task(63, ['chore/a'])], 'chore/a')?.number).toBe(63);
+  });
+
+  it('finds nothing for an unlinked branch', () => {
+    expect(linkedTask([task(63, ['chore/a'])], 'master')).toBeUndefined();
+  });
+
+  it('picks the newest marked comment and ignores unmarked ones', () => {
+    const comments = [
+      comment(`${HANDOVER_MARKER}\nold`),
+      comment(`${HANDOVER_MARKER}\nnew`),
+      comment('Measured saving'),
+    ];
+    expect(latestHandover(comments)).toBe(`${HANDOVER_MARKER}\nnew`);
+  });
+
+  it('returns null without a marked comment', () => {
+    expect(latestHandover([comment('Measured saving')])).toBeNull();
+  });
+
+  it('prints the Task and its handover', () => {
+    expect(formatCurrentTask('chore/a', task(63, ['chore/a']), 'Next: tests')).toBe(
+      'Current Task: #63 [Task] T63 (branch chore/a)\nHandover:\nNext: tests',
+    );
+  });
+
+  it('says when the Task has no handover yet', () => {
+    expect(formatCurrentTask('chore/a', task(63, ['chore/a']), null)).toBe(
+      'Current Task: #63 [Task] T63 (branch chore/a)\nNo handover yet.',
+    );
+  });
+
+  it('says when no Task is linked to the branch', () => {
+    expect(formatCurrentTask('master', undefined, null)).toBe(
+      'No open Task is linked to branch master. Create Task branches with `gh issue develop <N> --checkout`.',
+    );
   });
 });
 

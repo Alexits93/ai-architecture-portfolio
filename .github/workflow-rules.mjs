@@ -114,17 +114,53 @@ export const findLinkedIssueViolations = (number, issue) => {
   ];
 };
 
+// A handover is a Task comment whose first line is this marker. Session start loads only the newest one.
+export const HANDOVER_MARKER = '<!-- handover -->';
+
+export const HANDOVER_QUERY = `query($owner: String!, $repo: String!, $number: Int!) {
+  repository(owner: $owner, name: $repo) { issue(number: $number) { comments(last: 50) { nodes { body } } } }
+}`;
+
+/**
+ * The open issue linked to `branch` (created with `gh issue develop`).
+ * @param {PlanIssue[]} issues @param {string} branch @returns {PlanIssue | undefined}
+ */
+export const linkedTask = (issues, branch) =>
+  issues.find((i) => i.linkedBranches.nodes.some((b) => b.ref?.name === branch));
+
+/** @param {Array<{ body: string }>} comments oldest first @returns {string | null} */
+export const latestHandover = (comments) =>
+  comments.findLast((c) => c.body.startsWith(HANDOVER_MARKER))?.body ?? null;
+
+/** @param {string} branch @param {PlanIssue | undefined} task @param {string | null} handover @returns {string} */
+export const formatCurrentTask = (branch, task, handover) => {
+  if (!task) {
+    return `No open Task is linked to branch ${branch}. Create Task branches with \`gh issue develop <N> --checkout\`.`;
+  }
+  const head = `Current Task: #${task.number} ${task.title} (branch ${branch})`;
+  return handover === null ? `${head}\nNo handover yet.` : `${head}\nHandover:\n${handover}`;
+};
+
 export const OPEN_PLAN_QUERY = `query($owner: String!, $repo: String!) {
   repository(owner: $owner, name: $repo) {
     issues(states: OPEN, first: 100, orderBy: { field: CREATED_AT, direction: ASC }) {
-      nodes { number title parent { number } blockedBy(first: 10) { nodes { number state } } }
+      nodes {
+        number title parent { number } blockedBy(first: 10) { nodes { number state } }
+        linkedBranches(first: 10) { nodes { ref { name } } }
+      }
     }
   }
 }`;
 
 /**
+ * @typedef {{ number: number, title: string, parent: { number: number } | null,
+ *   blockedBy: { nodes: Array<{ number: number, state: string }> },
+ *   linkedBranches: { nodes: Array<{ ref: { name: string } | null }> } }} PlanIssue
+ */
+
+/**
  * Renders the open issues as an indented Epic > Story > Task tree with open blockers.
- * @param {Array<{ number: number, title: string, parent: { number: number } | null, blockedBy: { nodes: Array<{ number: number, state: string }> } }>} issues
+ * @param {PlanIssue[]} issues
  * @returns {string}
  */
 export const formatPlan = (issues) => {
