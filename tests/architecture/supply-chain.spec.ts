@@ -27,6 +27,15 @@ describe('Supply chain settings', () => {
     expect(workspace).not.toMatch(/onlyBuiltDependencies/);
   });
 
+  it('fails installs on trust downgrades and excludes only exact versions', () => {
+    expect(workspace).toMatch(/^trustPolicy: no-downgrade$/m);
+    expect(workspace).toMatch(/^trustPolicyExcludePrune: true$/m);
+    const excludes = workspace.match(/^trustPolicyExclude:\n((?: {2}- .*\n)*)/m)?.[1] ?? '';
+    for (const entry of excludes.split('\n').filter(Boolean)) {
+      expect(entry).toMatch(/^ {2}- (?:@[\w.-]+\/)?[\w.-]+@\d+\.\d+\.\d+$/);
+    }
+  });
+
   it('applies the fflate override in the lockfile', () => {
     expect(lockfile).toMatch(/^overrides:\n(?: {2}.*\n)*? {2}fflate: '>=0\.7\.5'$/m);
     expect(lockfile).not.toMatch(/^ {2}fflate@0\.7\.[0-4]:$/m);
