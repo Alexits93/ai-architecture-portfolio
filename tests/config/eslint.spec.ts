@@ -79,6 +79,16 @@ describe('ESLint cast and debug bans', () => {
     const messages = (await new ESLint().lintText('console.log(1);\n', { filePath: 'src/shared/lib/x.ts' }))[0].messages;
     expect(messages.map((m) => m.ruleId)).toContain('no-console');
   });
+
+  // https://eslint.org/docs/latest/use/configure/configuration-files (ESLint 10.12.0): linterOptions.noInlineConfig
+  it.each([
+    '// eslint-disable-next-line no-console\nconsole.log(1);\n',
+    '/* eslint-disable */\nconsole.log(1);\n',
+    '/* eslint no-console: "off" */\nconsole.log(1);\n',
+  ])('ignores inline config comments: %j', async (code) => {
+    const messages = (await new ESLint().lintText(code, { filePath: 'src/shared/lib/x.ts' }))[0].messages;
+    expect(messages.map((m) => m.ruleId)).toContain('no-console');
+  });
 });
 
 describe('ESLint CSP gate', () => {

@@ -43,6 +43,10 @@ export default [
     ignores: ["dist/**", ".astro/**", "coverage/**", "playwright-report/**"]
   },
   {
+    // Inline eslint-disable and rule comments cannot switch a gate off.
+    linterOptions: { noInlineConfig: true }
+  },
+  {
     files: ["**/*.{ts,js,mjs,cjs,astro}"],
     rules: {
       "max-lines": ["error", 250],
