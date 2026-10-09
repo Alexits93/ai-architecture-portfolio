@@ -25,7 +25,7 @@ describe('CookieDisclaimer Widget (Astro)', () => {
     const dom = new JSDOM(html);
     const doc = dom.window.document;
 
-    const link = doc.querySelector('a[href="/privacy-policy"]');
+    const link = doc.querySelector('a[href="/privacy-policy/"]');
     expect(link).not.toBeNull();
     expect(link?.textContent?.trim()).toContain('Privacy Policy');
   });

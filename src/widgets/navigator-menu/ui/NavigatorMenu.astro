@@ -28,52 +28,46 @@ const { menuItems = defaultMenuItems } = Astro.props;
 </section>
 
 <style>
+    /*
+     * Closed state is rendered but clipped + visibility:hidden, so links are not focusable
+     * and transitions can run in both directions (display:none cannot be transitioned).
+     * The reveal origin is the centre of the hamburger icon in the header.
+     */
     section#navigator-menu {
-        display: block;
-        pointer-events: none; /* Let clicks pass through when closed */
+        --menu-origin: 2.5rem 2.6rem;
+        --menu-ease: cubic-bezier(0.76, 0, 0.24, 1);
+        --menu-duration: 0.6s;
         position: fixed;
-        z-index: 9999;
-    }
-
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu, body.is-menu-open section#navigator-menu {
-        pointer-events: auto; /* Enable clicks when open */
-    }
-
-    section#navigator-menu .navigator-menu-body {
-        display: none;
-    }
-
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-overlay, body.is-menu-open section#navigator-menu .navigator-menu-overlay {
-        display: flex;
-        position: fixed;
-        flex-direction: column;
-        width: 100vw;
-        height: 100vh;
-        top: 0;
-        left: 0;
-        backdrop-filter: blur(35px);
-        -webkit-backdrop-filter: blur(35px);
-        background: rgba(0, 0, 0, 0.4);
-        justify-content: center;
-        align-items: center;
-        z-index: 9998;
-    }
-
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body, body.is-menu-open section#navigator-menu .navigator-menu-body {
-        display: flex;
-        position: fixed;
-        flex-direction: column;
-        width: 100vw;
-        height: 100vh;
-        top: 0;
-        left: 0;
-        justify-content: center;
-        align-items: center;
+        inset: 0;
         z-index: 9999;
         pointer-events: none;
     }
 
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul, body.is-menu-open section#navigator-menu .navigator-menu-body ul {
+    section#navigator-menu .navigator-menu-overlay,
+    section#navigator-menu .navigator-menu-body {
+        position: fixed;
+        inset: 0;
+        visibility: hidden;
+        transition: visibility 0s linear var(--menu-duration);
+    }
+
+    section#navigator-menu .navigator-menu-overlay {
+        z-index: 9998;
+        background-color: var(--body-background);
+        clip-path: circle(0 at var(--menu-origin));
+        transition:
+            clip-path var(--menu-duration) var(--menu-ease),
+            visibility 0s linear var(--menu-duration);
+    }
+
+    section#navigator-menu .navigator-menu-body {
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    section#navigator-menu .navigator-menu-body ul {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -81,27 +75,71 @@ const { menuItems = defaultMenuItems } = Astro.props;
         list-style: none;
         padding: 0;
         margin: 0;
-        pointer-events: auto;
     }
 
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a, body.is-menu-open section#navigator-menu .navigator-menu-body ul li a {
+    section#navigator-menu .navigator-menu-body li {
+        opacity: 0;
+        translate: 0 1.5rem;
+        transition:
+            opacity 0.25s ease,
+            translate 0.25s ease;
+    }
+
+    section#navigator-menu .navigator-menu-body ul li a {
         display: flex;
         color: var(--font-color);
         text-decoration: none;
     }
 
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a:active, body.is-menu-open section#navigator-menu .navigator-menu-body ul li a:active,
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a:focus, body.is-menu-open section#navigator-menu .navigator-menu-body ul li a:focus,
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a:focus-visible, body.is-menu-open section#navigator-menu .navigator-menu-body ul li a:focus-visible {
+    section#navigator-menu .navigator-menu-body ul li a:focus-visible {
         outline: 2px solid var(--focus-color);
         outline-offset: 4px;
     }
 
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a h2, body.is-menu-open section#navigator-menu .navigator-menu-body ul li a h2 {
+    section#navigator-menu .navigator-menu-body ul li a h2 {
         display: inline-block;
         margin: 0;
         font-size: 48px;
         line-height: 1.2;
         color: var(--font-color-bold);
+    }
+
+    /* Open state */
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu,
+    body.is-menu-open section#navigator-menu {
+        pointer-events: auto;
+    }
+
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-overlay,
+    body.is-menu-open section#navigator-menu .navigator-menu-overlay,
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body,
+    body.is-menu-open section#navigator-menu .navigator-menu-body {
+        visibility: visible;
+        transition-delay: 0s;
+    }
+
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-overlay,
+    body.is-menu-open section#navigator-menu .navigator-menu-overlay {
+        clip-path: circle(150vmax at var(--menu-origin));
+    }
+
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body li,
+    body.is-menu-open section#navigator-menu .navigator-menu-body li {
+        opacity: 1;
+        translate: 0 0;
+        transition:
+            opacity 0.4s ease,
+            translate 0.4s var(--menu-ease);
+        transition-delay: 0.25s;
+    }
+
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body li:nth-child(2),
+    body.is-menu-open section#navigator-menu .navigator-menu-body li:nth-child(2) {
+        transition-delay: 0.33s;
+    }
+
+    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body li:nth-child(3),
+    body.is-menu-open section#navigator-menu .navigator-menu-body li:nth-child(3) {
+        transition-delay: 0.41s;
     }
 </style>

@@ -47,5 +47,10 @@
   },
   "lint-staged": {
     "*.{js,ts,mjs,cjs,astro}": "eslint --fix"
+  },
+  "pnpm": {
+    "overrides": {
+      "fflate": ">=0.7.5"
+    }
   }
 }

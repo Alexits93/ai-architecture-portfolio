@@ -51,7 +51,7 @@ a:hover { text-decoration: none; }
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme]) {
         color-scheme: dark;
         --body-background: hsl(200, 10%, 15%);
         --theme-primary: hsl(200, 50%, 35%);
@@ -99,6 +99,7 @@ a:hover { text-decoration: none; }
 /* style.css */
 html {
     background-color: var(--body-background);
+    scrollbar-gutter: stable;
     scroll-behavior: smooth;
     line-height: 1.5;
     -webkit-text-size-adjust: 100%;
