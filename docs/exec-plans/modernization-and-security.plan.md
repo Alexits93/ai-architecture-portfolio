@@ -6,21 +6,25 @@
 
 ## Status of the old epic (UX Modernization & A11y)
 - [x] Native CSS view transitions (`@view-transition { navigation: auto; }`). Astro `<ViewTransitions />` / `ClientRouter` / `transition:persist` are **rejected**. Do not reintroduce them.
-- [x] Theme switcher fixed. The OS dark-mode fallback is scoped to `:root:not([data-theme])`.
+- [x] Theme switcher fixed. The OS dark-mode fallback is scoped to `:root:not([data-theme])`. (The inline script still always sets `data-theme`, so the fallback is dead. See Story L.)
 - [x] `scrollbar-gutter: stable` on `html` (no header shift on scroll lock).
 - [x] Opaque menu backdrop with a CSS `clip-path` circle reveal and staggered links.
 - [~] Old Story 2 (JS `aria-expanded` sync) and old Story 3 (`:has()` polyfill): **cancelled**, replaced by Story A.
 
 ## Order of work
+Principle: fix the gates first (every later story relies on them), then the docs (agents treat docs as truth), then cheap bugs, then features. Items marked **(research)** need a check against current official docs before coding.
+
 0. **Owner action (not code):** make the repo public (or upgrade to Pro) and enable branch protection on `master`: require PR, require the status checks `quality-gate`, `security-gate`, `build-gate`, `pr-lint`, block force-push and deletion. Until then, every gate below is advisory.
-1. Story S (security quick wins)
-2. Story D (docs truthfulness)
-3. Story A (native dialog menu)
-4. Story L (BaseLayout + SEO)
-5. Story P (Spotify consent facade)
-6. Story C (CSP + headers)
-7. Story Q (quality gates)
-8. Story 4 (image pipeline)
+1. ~~Story S (security quick wins)~~ done
+2. ~~Story D (docs truthfulness)~~ done
+3. **P0** Story Q (quality gates that check what they claim)
+4. **P1** Story D2 (manifesto contradictions and consolidation)
+5. **P1** Story B (bug fixes found in the 2026-10-09 audit)
+6. **P2** Story A (native dialog menu)
+7. **P2** Story L (BaseLayout + SEO + theme)
+8. **P2** Story C (CSP + headers)
+9. **P3** Story P (Spotify consent facade)
+10. **P3** Story 4 (image pipeline)
 
 ---
 
@@ -45,7 +49,7 @@
   - state CSP = Astro `security.csp` hashes (meta tag) + host headers.
 - [x] Fix the PR linkage convention: `Closes #N` must reference the Story/Task issue, never the PR itself.
 
-### Story A: Native `<dialog>` menu, no JavaScript (replaces old Stories 2 + 3)
+### Story A (P2): Native `<dialog>` menu, no JavaScript (replaces old Stories 2 + 3)
 **Before coding:** check current Baseline status on MDN/web.dev for Invoker Commands (`commandfor`/`command`), `closedby`, `@starting-style`, `transition-behavior: allow-discrete`. If they are not Baseline, the fallback is ~3 lines of JS calling `showModal()`/`close()`.
 - [ ] Hamburger: `<button commandfor="site-menu" command="show-modal" aria-label="Open menu">`.
 - [ ] `<dialog id="site-menu" closedby="closerequest">`: Esc closes it, backdrop clicks do not.
@@ -57,26 +61,49 @@
   - unit: the button has `commandfor`/`command`, the dialog has `closedby`;
   - e2e: open, Esc closes, backdrop click does NOT close, X closes, focus returns to the hamburger.
 
-### Story L: Shared BaseLayout + SEO
+### Story L (P2): Shared BaseLayout + SEO
 - [ ] `src/app/layouts/BaseLayout.astro` (or the FSD-appropriate location): one `<head>` with favicons, manifest, viewport, theme script and `SeoHead`.
 - [ ] All 6 pages use it. Every page gets a title, description, canonical and OG tags (today only the blog post page has them).
-- [ ] Replace the hand-written `public/sitemap.xml` with `@astrojs/sitemap`.
+- [ ] Replace the hand-written `public/sitemap.xml` (dated 2024, no blog posts) with `@astrojs/sitemap`. **(research: native endpoint vs integration, per Native-First)**
+- [ ] One theme script, in the layout only (today duplicated in `index.astro` and `SeoHead`). Without a stored choice it must not set `data-theme`, so the `prefers-color-scheme` fallback in `global.css` applies. Today it forces `light`.
+- [ ] Evaluate dropping `nanostores` + `@nanostores/persistent`: one toggle reads and writes one `localStorage` key. **(research: cross-tab sync need, `storage` event)**
 
-### Story P: Spotify consent facade (GDPR/ePrivacy + performance)
+### Story P (P3): Spotify consent facade (GDPR/ePrivacy + performance)
 - [ ] Render a static button (track title + play icon). Insert the iframe only after the user clicks.
 - [ ] Rewrite `CookieDisclaimer` / `PrivacyPolicy`: no third-party content loads without action; remove "do not track" and "by continuing you agree".
 
-### Story C: CSP & security headers
+### Story C (P2): CSP & security headers
 - [ ] Enable Astro `security.csp` (hash-based, emitted as a meta tag). Directives: `default-src 'self'`; `frame-src https://open.spotify.com`; `img-src 'self' data:`; no `unsafe-inline`.
 - [ ] Host headers (needs the hosting decision): `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, HSTS.
 - [ ] e2e: no CSP violations in the console on every page.
 
-### Story Q: Quality gates that check what they claim
-- [ ] `astro check` (`@astrojs/check`) in pre-commit and CI (`tsc` skips `.astro` files).
-- [ ] Run Playwright in CI (`--reporter=line` locally, `github` in CI).
+### Story Q: Quality gates that check what they claim (P0)
+- [ ] `astro check` (`@astrojs/check`) in pre-commit, pre-push and CI (`tsc` skips `.astro` files). Done in `chore/claude-code-setup`.
+- [ ] Bump pnpm from `10.0.0` to the latest 10.x in `packageManager` and `.github/actions/setup-pnpm-env`. `minimum-release-age` needs pnpm >= 10.16, so the supply-chain delay is a no-op today. **(research: exact version, whether to move settings to `pnpm-workspace.yaml`)**
+- [ ] Run Playwright in CI (`--reporter=line` locally, `github` in CI). Add a `e2e-gate` job and require it.
+- [ ] Coverage honesty: v8 skips all `.astro` files ("empty files skipped"), so "100%" covers only `.ts`. Either exclude `**/*.astro` explicitly and document that components are gated by AstroContainer + e2e, or find a working instrumentation. **(research)**
+- [ ] `eslint-plugin-jsx-a11y` declares peer `eslint <= 9`; the repo runs ESLint 10. Verify the a11y rules actually fire (add a failing fixture test in `tests/config/eslint.spec.ts`), or switch plugin. **(research)**
+- [ ] Import `z` from `astro/zod` instead of `astro:content` (deprecated). **(research: confirm Astro 7 guidance)**
+- [ ] Enable `@conarti/feature-sliced/public-api` for `src/pages/**` (it is switched off, which let deep imports through in `blog/[slug].astro`). Keep only `import-order` off if needed.
 - [ ] e2e link checker: every internal `href` returns 200.
 
-### Story 4: Image optimization pipeline
+### Story D2: Manifesto contradictions and consolidation (P1)
+- [ ] 05 says "type unknown structures as `unknown` and parse with Zod"; ESLint bans `unknown`. Pick one rule (recommended: allow `unknown` only at parse boundaries, enforce with a scoped ESLint override).
+- [ ] 05 §9 says suppress `any` with `eslint-disable`; 02 bans `any` in tests. Remove the 05 escape hatch or scope it.
+- [ ] 02 mandates MSW and Vitest browser mode; neither is installed. Remove both mandates until a test needs them (no network calls exist).
+- [ ] 04 says MDX/Markdoc and SCSS; the repo uses Markdown and CSS. Correct it.
+- [ ] 05 §10 prescribes `getBoundingClientRect()` JS for menu alignment; this conflicts with Story A and the HTML-first rule. Delete it.
+- [ ] 09 bans `set:html` outright; `SeoHead` uses it for JSON-LD via `serializeJsonLd`. Document the single allowed exception and enforce it with `no-restricted-syntax` scoped to everything except `SeoHead.astro`.
+- [ ] Merge the 10 manifestos into 3 (`architecture.md`, `testing.md`, `process.md`). Remove rules already enforced by ESLint/TS (the gate is the documentation).
+- [ ] Archive specs, devspecs and `*-pathology.md` for shipped components (manifesto 10 §3). Git history keeps them.
+
+### Story B: Bug fixes from the 2026-10-09 audit (P1)
+- [ ] `src/pages/blog/[slug].astro`: import `BlogPostReader` and `SeoHead` through their `index.ts` (add the missing `widgets/blog-post-reader/index.ts`).
+- [ ] Remove the dead `astro:page-load` listener in `Header.astro` (ClientRouter is rejected, the event never fires).
+- [ ] OG image: wrong site name ("Patrika"). Read title/description from `SITE` config.
+- [ ] Pass `publishedTime={post.data.publishDate}` and `BlogPosting` JSON-LD to `SeoHead` on blog posts.
+
+### Story 4 (P3): Image optimization pipeline
 - [ ] Recreate `feat/image-optimization-pipeline` from current `master`. The existing branch predates the asset cleanup.
 - [ ] Blog images live in `src/assets/images/`, referenced via the content collection `image()` schema helper.
 - [ ] `<Picture formats={['avif','webp']}>` with explicit `width`/`height`.
