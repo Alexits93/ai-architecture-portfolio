@@ -1,8 +1,8 @@
 ## Summary & Motivation
-This PR addresses baseline fixes for UX modernization and accessibility. It solves the layout scatter, ViewTransitions routing crash, and dark-mode flash by explicitly removing Astro's JS-heavy router in favor of lightweight Native CSS View Transitions (`@view-transition { navigation: auto; }`). It also integrates a mobile menu scroll-lock and accessibility fallbacks. The FOUC (Flash of Unstyled Content) issues are fully resolved without relying on complex framework hooks. Documentation (`docs/manifestos/10-memory-and-context-manifesto.md`) has been updated to ban framework assumptions and mandate `search_web` for API implementations. View Transition specs were comprehensively rewritten to document the Native CSS approach without relying on `eslint-disable` suppressions for inline scripts.
+This PR addresses baseline fixes for UX modernization and accessibility. It solves the layout scatter, ViewTransitions routing crash, and dark-mode flash by explicitly removing Astro's JS-heavy router in favor of lightweight Native CSS View Transitions (`@view-transition { navigation: auto; }`). It introduces a native `<dialog>` element for the mobile menu, removing legacy checkbox hacks and JS polyfills, while preserving the circle reveal animation and scroll lock natively. The FOUC issues are fully resolved. Documentation has been updated to reflect these changes.
 
 ## Linked Tickets/Issues
-Closes #30
+Ref #2
 
 ## Testing Strategy
 All 58 files, including tests and documentation, have been rigorously audited. `vitest` passes as tests verify rendered output and accessibility attributes rather than internal Astro routing mechanics. Confirmed removal of `ClientRouter`, `astro:page-load`, and `astro:after-swap` hooks across the codebase and validated native HTML5/CSS3 zero-JS behaviors.
