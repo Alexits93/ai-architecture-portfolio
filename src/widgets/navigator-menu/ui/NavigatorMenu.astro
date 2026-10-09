@@ -11,12 +11,10 @@ const { menuItems = defaultMenuItems } = Astro.props;
 ---
 <dialog id="site-menu" aria-label="Site navigation">
     <div class="navigator-menu-overlay" aria-hidden="true"></div>
-    <div class="dialog-header">
-        <button id="site-menu-close-btn" class="navigator-menu-opener" aria-label="Close menu">
-            <span></span>
-            <span></span>
-        </button>
-    </div>
+    <button id="site-menu-close-btn" class="navigator-menu-opener" aria-label="Close menu">
+        <span></span>
+        <span></span>
+    </button>
     <div class="navigator-menu-body">
         <ul>
             {menuItems.map(item => (
@@ -73,17 +71,10 @@ const { menuItems = defaultMenuItems } = Astro.props;
         dialog#site-menu[open] .navigator-menu-overlay { clip-path: circle(0 at var(--menu-origin)); }
     }
 
-    .dialog-header {
-        position: absolute; top: 0; left: 0; width: 100%;
-        display: flex; justify-content: flex-start; align-items: center;
-        height: calc(50px + 2rem);
-        padding: 1rem; box-sizing: border-box; z-index: 3;
-    }
-
     .navigator-menu-opener {
+        position: absolute; top: calc(1rem + 1px); left: 1rem; z-index: 3;
         display: flex; flex-direction: column; justify-content: center; cursor: pointer;
         padding: 0 .5rem; width: 3rem; height: 3rem; gap: .5rem; background: none; border: none;
-        position: relative;
         transition: gap 0.3s ease-in-out;
     }
     .navigator-menu-opener span {
