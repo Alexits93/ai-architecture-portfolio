@@ -36,22 +36,25 @@ for (const route of ROUTES) {
     expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
   });
 
-  test(`/theme.js applies the stored theme before module scripts on ${route}`, async ({ page }) => {
-    // Astro inlines bundled scripts as modules, which run only after parsing, so the first
-    // data-theme write while readyState is still "loading" can only come from the blocking /theme.js.
-    await page.addInitScript(() => {
-      localStorage.setItem('theme', 'dark');
-      window.firstThemeWrite = '';
-      new MutationObserver((_, observer) => {
-        window.firstThemeWrite = `${document.documentElement.dataset.theme} ${document.readyState}`;
-        observer.disconnect();
-      }).observe(document, { attributes: true, subtree: true, attributeFilter: ['data-theme'] });
+  // An invalid stored value falls back to light.
+  for (const [stored, expected] of [['dark', 'dark'], ['light', 'light'], ['bogus', 'light']]) {
+    test(`/theme.js applies stored "${stored}" before module scripts on ${route}`, async ({ page }) => {
+      // Astro inlines bundled scripts as modules, which run only after parsing, so the first
+      // data-theme write while readyState is still "loading" can only come from the blocking /theme.js.
+      await page.addInitScript((value) => {
+        localStorage.setItem('theme', value);
+        window.firstThemeWrite = '';
+        new MutationObserver((_, observer) => {
+          window.firstThemeWrite = `${document.documentElement.dataset.theme} ${document.readyState}`;
+          observer.disconnect();
+        }).observe(document, { attributes: true, subtree: true, attributeFilter: ['data-theme'] });
+      }, stored);
+
+      const themeScript = page.waitForResponse('**/theme.js');
+      await page.goto(route);
+
+      expect((await themeScript).status()).toBe(200);
+      expect(await page.evaluate(() => window.firstThemeWrite)).toBe(`${expected} loading`);
     });
-
-    const themeScript = page.waitForResponse('**/theme.js');
-    await page.goto(route);
-
-    expect((await themeScript).status()).toBe(200);
-    expect(await page.evaluate(() => window.firstThemeWrite)).toBe('dark loading');
-  });
+  }
 }
