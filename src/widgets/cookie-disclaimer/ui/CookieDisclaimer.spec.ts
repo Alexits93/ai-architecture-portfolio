@@ -20,6 +20,15 @@ describe('CookieDisclaimer Widget (Astro)', () => {
     expect(heading?.textContent?.trim()).toBe('Cookie Disclaimer');
   });
 
+  it('states that no cookies are set and claims no implied consent', async () => {
+    const html = await container.renderToString(CookieDisclaimer);
+    const text = new JSDOM(html).window.document.body.textContent ?? '';
+
+    expect(text).toContain('This site sets no cookies');
+    expect(text).toContain('localStorage');
+    expect(text).not.toMatch(/spotify|by continuing/i);
+  });
+
   it('should render the privacy policy link correctly', async () => {
     const html = await container.renderToString(CookieDisclaimer);
     const dom = new JSDOM(html);

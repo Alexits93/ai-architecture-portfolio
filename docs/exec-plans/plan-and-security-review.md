@@ -62,7 +62,7 @@ The platform now does everything the checkbox, z-index juggling and JS are emula
 1. **A shared `BaseLayout.astro`.** Six pages copy-paste the full `<head>`, and the theme script now exists in six places. Only the blog post page uses `SeoHead`, so the other pages have **no canonical, description or OG tags**. This is an SEO bug, not just tidiness.
 2. **Generate the sitemap at build time** (`@astrojs/sitemap`) instead of the hand-written `public/sitemap.xml`. It already drifted once; a generated sitemap can't.
 3. **CSP and hosting headers** (see Part 2).
-4. **A Spotify click-to-load facade** (see Part 2). This is privacy compliance and LCP at the same time.
+4. **Remove the Spotify embed** (see Part 2). Resolved by deletion, not by a facade.
 5. A 404 page, an RSS feed and an i18n decision. These are product calls for you to make.
 
 ---
@@ -74,7 +74,6 @@ The platform now does everything the checkbox, z-index juggling and JS are emula
 - **Every `set:html` is safe.** The only one is JSON-LD, and `serializeJsonLd` escapes `<` so a value can't break out with `</script>`.
 - **`pr-lint.yml` reads the PR body safely.** It uses `context.payload` in JS rather than `${{ }}` string interpolation, so it is not script-injectable.
 - **External links** all have `rel="noopener noreferrer"`.
-- **The Spotify track ID** is checked against `^[a-zA-Z0-9]+$`.
 - **Satori/OG input** is build-time and comes from constants only. Nothing at runtime can reach it.
 - It is a **static site** with no server, forms, auth or API, so OWASP risks like injection, CSRF and broken auth don't apply.
 
@@ -96,13 +95,12 @@ The platform now does everything the checkbox, z-index juggling and JS are emula
 3. **The privacy and cookie text makes a false legal claim.**
    - `CookieDisclaimer.astro` says the Spotify cookies "do not track personal information" and that "by continuing to use our website, you agree".
    - The Spotify embed loads third-party cookies from a US company **before any consent**. Under GDPR/ePrivacy (CJEU *Planet49*), implied "by continuing" consent is not valid, and those cookies are not "essential".
-   - Fix: a click-to-load facade. Show a static button/thumbnail and only insert the iframe after the click. That also takes a heavy third-party iframe off the initial page load (better LCP/INP). Then rewrite the text to be accurate.
+   - Fix: the Spotify embed is removed, the site embeds no third-party content, and both texts state that no cookies are set. CSP `frame-src 'none'` enforces it.
 
 #### Medium
 4. **No CSP and no security headers at all.**
    - There is no hosting config (`_headers`, `vercel.json`, …) in the repo, and manifesto 09 says CSP is "non-negotiable".
    - Astro 6+ has `security.csp`, which hashes every bundled and inline script/style into a `<meta http-equiv="content-security-policy">` tag. That fits a static site, and the 6 inline theme scripts get hashed automatically.
-   - Allow `frame-src https://open.spotify.com` for the embed.
    - A `<meta>` CSP cannot set `frame-ancestors` (clickjacking protection) or reporting. Those, plus `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` and HSTS, have to come from the host as headers. **Which host do you deploy to?** That decides where they go.
 5. **Supply chain hardening.** The current risk to a frontend repo is malicious package releases (worms that publish poisoned versions), not CVEs.
    - **pnpm 9.0.0 → pnpm 10.**
@@ -141,7 +139,7 @@ Agents treat these docs as the truth, so every false claim here turns into a bug
 
 ## Suggested order
 1. Decide public repo vs Pro, then turn on branch protection with required checks. *(5 min, you)*
-2. Fix the plan: delete Stories 1 and 3, replace Story 2 with the native `<dialog>` story, add BaseLayout, Spotify facade, CSP and the generated sitemap. Move the plan into the repo.
+2. Fix the plan: delete Stories 1 and 3, replace Story 2 with the native `<dialog>` story, add BaseLayout, CSP and the generated sitemap. Move the plan into the repo.
 3. Quick security PR: fflate override, SHA-pinned actions, drop `id-token`/`npx only-allow`, pnpm 10 + `minimumReleaseAge`, fix the privacy-policy link.
 4. Rewrite manifesto 09 to match the static architecture. Fix ARCHITECTURE.md and the stale specs.
 5. Add `astro check` and Playwright to CI.

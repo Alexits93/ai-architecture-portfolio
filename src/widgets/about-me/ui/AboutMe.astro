@@ -3,7 +3,6 @@ interface Props {
   name?: string;
   profession?: string;
   text?: string;
-  spotifyTrackId?: string;
   githubUrl?: string;
   linkedinUrl?: string;
   instagramUrl?: string;
@@ -14,16 +13,11 @@ const {
   name = "John Doe",
   profession = "Jedi Council Member (Not Master though)",
   text = "I don't like sand. It's coarse and rough and irritating, and it gets everywhere.",
-  spotifyTrackId = "",
   githubUrl = "",
   linkedinUrl = "",
   instagramUrl = "",
   stackoverflowUrl = ""
 } = Astro.props;
-
-// OWASP XSS prevention: Only allow Spotify track IDs, which are alphanumeric.
-const isValidSpotifyTrack = /^[a-zA-Z0-9]+$/.test(spotifyTrackId);
-const sanitizedSpotifyTrackId = isValidSpotifyTrack ? spotifyTrackId : "";
 
 const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackoverflowUrl);
 ---
@@ -33,17 +27,6 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
     <div class="introduction-wrapper">
       <h1>{name}</h1>
       <h2>{profession}</h2>
-      {sanitizedSpotifyTrackId && (
-        <iframe
-          title="Spotify"
-          class="spotify-iframe"
-          src={`https://open.spotify.com/embed/track/${sanitizedSpotifyTrackId}?utm_source=generator&theme=0`}
-          width="100%"
-          height="152"
-          loading="lazy"
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        ></iframe>
-      )}
     </div>
     <div class="about-wrapper">
       <h3>About</h3>
@@ -155,11 +138,6 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
     width: 25px;
     height: 25px;
     transition: .3s;
-  }
-
-  .spotify-iframe {
-    border-radius: 15px;
-    border: none;
   }
 
   .sr-only {

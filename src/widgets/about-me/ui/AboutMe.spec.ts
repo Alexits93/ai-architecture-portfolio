@@ -46,44 +46,6 @@ describe('AboutMe Widget (Astro) - Content', () => {
   });
 });
 
-describe('AboutMe Widget (Astro) - Spotify Iframe', () => {
-  let container: AstroContainer;
-
-  beforeEach(async () => {
-    container = await AstroContainer.create();
-  });
-
-  it('should not render Spotify iframe if no track ID is provided', async () => {
-    const html = await container.renderToString(AboutMe);
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-
-    const iframe = doc.querySelector('iframe');
-    expect(iframe).toBeNull();
-  });
-
-  it('should render Spotify iframe if track ID is provided and alphanumeric', async () => {
-    const props = { spotifyTrackId: '1234abc' };
-    const html = await container.renderToString(AboutMe, { props });
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-
-    const iframe = doc.querySelector('iframe');
-    expect(iframe).not.toBeNull();
-    expect(iframe?.getAttribute('src')).toBe('https://open.spotify.com/embed/track/1234abc?utm_source=generator&theme=0');
-  });
-
-  it('should NOT render Spotify iframe if track ID is malicious (XSS prevention)', async () => {
-    const props = { spotifyTrackId: '123" onload="alert(1)"' };
-    const html = await container.renderToString(AboutMe, { props });
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-
-    const iframe = doc.querySelector('iframe');
-    expect(iframe).toBeNull();
-  });
-});
-
 describe('AboutMe Widget (Astro) - Social Links', () => {
   let container: AstroContainer;
 

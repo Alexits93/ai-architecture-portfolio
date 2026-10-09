@@ -23,7 +23,7 @@ Principle: fix the gates first (every later story relies on them), then the docs
 6. **P2** Story A (native dialog menu)
 7. **P2** Story L (BaseLayout + SEO + theme)
 8. **P2** Story C (CSP + headers)
-9. **P3** Story P (Spotify consent facade)
+9. ~~Story P (Spotify consent facade)~~ dropped: the Spotify embed is removed (see Story C)
 10. **P3** Story 4 (image pipeline)
 
 ---
@@ -68,14 +68,11 @@ Principle: fix the gates first (every later story relies on them), then the docs
 - [ ] One theme script, in the layout only (today duplicated in `index.astro` and `SeoHead`). Without a stored choice it must not set `data-theme`, so the `prefers-color-scheme` fallback in `global.css` applies. Today it forces `light`.
 - [ ] Evaluate dropping `nanostores` + `@nanostores/persistent`: one toggle reads and writes one `localStorage` key. **(research: cross-tab sync need, `storage` event)**
 
-### Story P (P3): Spotify consent facade (GDPR/ePrivacy + performance)
-- [ ] Render a static button (track title + play icon). Insert the iframe only after the user clicks.
-- [ ] Rewrite `CookieDisclaimer` / `PrivacyPolicy`: no third-party content loads without action; remove "do not track" and "by continuing you agree".
-
 ### Story C (P2): CSP & security headers
-- [ ] Enable Astro `security.csp` (hash-based, emitted as a meta tag). Directives: `default-src 'self'`; `frame-src https://open.spotify.com`; `img-src 'self' data:`; no `unsafe-inline`.
-- [ ] Host headers (needs the hosting decision): `frame-ancestors 'none'`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, HSTS.
-- [ ] e2e: no CSP violations in the console on every page.
+- [ ] Astro `security.csp` (hash-based `<meta>` tag): `default-src 'self'`, `frame-src 'none'`, `base-uri 'none'`, `object-src 'none'`, `require-trusted-types-for 'script'`, no `unsafe-inline`. The site embeds no third-party content; the Spotify iframe is removed, and `CookieDisclaimer`/`PrivacyPolicy` state that no cookies are set.
+- [ ] `public/_headers` in statichost.eu syntax (`*` is site-wide): `frame-ancestors 'none'`, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, HSTS two years with `includeSubDomains` (no preload submission: `.dev` is preloaded as a TLD), COOP and CORP `same-origin`, immutable one-year cache on `/_astro/*`. Gate: `tests/architecture/security-headers.spec.ts`.
+- [ ] e2e: no CSP violations and no iframes on every page (`e2e/csp.spec.ts`).
+- [ ] Hosting (owner): verify on statichost.eu that path rules (`/_astro/*`) work on the Hobby plan, and configure the apex `pa-tech.dev` 301 to `www`.
 
 ### Story Q: Quality gates that check what they claim (P0)
 - [ ] `astro check` (`@astrojs/check`) in pre-commit, pre-push and CI (`tsc` skips `.astro` files). Done in `chore/claude-code-setup`.

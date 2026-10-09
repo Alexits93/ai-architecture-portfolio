@@ -24,6 +24,10 @@ for (const route of ROUTES) {
     const csp = page.locator('meta[http-equiv="content-security-policy"]');
     await expect(csp).toHaveAttribute('content', /script-src 'self' 'sha256-/);
     await expect(csp).not.toHaveAttribute('content', /unsafe-inline/);
+    await expect(csp).toHaveAttribute('content', /require-trusted-types-for 'script'/);
+    await expect(csp).toHaveAttribute('content', /frame-src 'none'/);
+    await expect(csp).toHaveAttribute('content', /base-uri 'none'/);
+    await expect(page.locator('iframe')).toHaveCount(0);
     await expect(page.locator('html')).toHaveAttribute('data-theme', /^(light|dark)$/);
     expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
   });
