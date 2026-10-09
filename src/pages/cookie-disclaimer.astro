@@ -16,8 +16,13 @@ import '@/shared/styles/global.css';
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<script is:inline>
-			const localTheme = localStorage.getItem('theme') || 'light';
-			document.documentElement.setAttribute('data-theme', localTheme);
+			try {
+    const localTheme = localStorage.getItem('theme');
+    const theme = (localTheme === 'dark' || localTheme === 'light') ? localTheme : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+  } catch {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
 		</script>
 		<title>Cookie Disclaimer</title>
 	</head>

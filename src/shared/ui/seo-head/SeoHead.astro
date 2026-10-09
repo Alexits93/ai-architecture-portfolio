@@ -33,8 +33,13 @@ const ogImageUrl = new URL(ogImagePath, Astro.site).href;
 ---
 
 <script is:inline>
-  const localTheme = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', localTheme);
+  try {
+    const localTheme = localStorage.getItem('theme');
+    const theme = (localTheme === 'dark' || localTheme === 'light') ? localTheme : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+  } catch {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
 </script>
 <title>{title}</title>
 <meta name="description" content={description} />

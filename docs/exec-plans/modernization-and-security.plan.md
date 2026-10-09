@@ -28,13 +28,13 @@
 - [x] Remove `id-token: write` from `release.yml` (the package is private and never published).
 - [x] Fix the broken `/privacy-policy` link (trailing slash).
 - [x] `pnpm.overrides` `fflate >=0.7.5` (build-time only, but keeps audit green).
-- [ ] Pin third-party GitHub Actions to full commit SHAs (`davelosert/vitest-coverage-report-action`, `dorny/test-reporter`, and ideally the `actions/*` and `pnpm/action-setup` ones too).
-- [ ] Remove `"preinstall": "npx only-allow pnpm"`. The `packageManager` field + Corepack already enforces pnpm.
-- [ ] Upgrade pnpm 9 → 10. Add `onlyBuiltDependencies` (allowlist, e.g. `@resvg/resvg-js`, `esbuild`) and `minimumReleaseAge: 1440`. **Move `pnpm.overrides` from `package.json` to `pnpm-workspace.yaml`**: pnpm 10+ ignores the `package.json` field (the local global pnpm already warns about it).
+- [x] Pin third-party GitHub Actions to full commit SHAs (`davelosert/vitest-coverage-report-action`, `dorny/test-reporter`, and ideally the `actions/*` and `pnpm/action-setup` ones too).
+- [x] Remove `"preinstall": "npx only-allow pnpm"`. The `packageManager` field + Corepack already enforces pnpm.
+- [x] Upgrade pnpm 9 → 10. Add `onlyBuiltDependencies` (allowlist, e.g. `@resvg/resvg-js`, `esbuild`) and `minimumReleaseAge: 1440`. **Move `pnpm.overrides` from `package.json` to `pnpm-workspace.yaml`**: pnpm 10+ ignores the `package.json` field (the local global pnpm already warns about it).
 - [x] Cloudflare Pages security headers in `public/_headers`: `frame-ancestors 'none'`, nosniff, Referrer-Policy, Permissions-Policy, HSTS, COOP. The script/style CSP comes in Story C.
-- [ ] `release.yml`: drop the duplicate `pnpm install` (the composite action already installs).
-- [ ] Agent hooks (`.agents/hooks.json`): verify the working directory hooks run in and fix the script paths (`scripts/…` vs `.agents/scripts/…`). Make `anti-slop-guard.js` block (deny) when it errors. Document that hooks are nudges; server-side branch protection is the real control.
-- [ ] Inline theme script: wrap in `try`, accept only `'light' | 'dark'`.
+- [x] `release.yml`: drop the duplicate `pnpm install` (the composite action already installs).
+- [x] Agent hooks (`.agents/hooks.json`): verify the working directory hooks run in and fix the script paths (`scripts/…` vs `.agents/scripts/…`). Make `anti-slop-guard.js` block (deny) when it errors. Document that hooks are nudges; server-side branch protection is the real control.
+- [x] Inline theme script: wrap in `try`, accept only `'light' | 'dark'`.
 
 ### Story D: Make the docs true (agents treat docs as truth)
 - [ ] `docs/ARCHITECTURE.md`: remove the nonexistent `isMenuOpen` store; show all pages; nothing but `Header` reads `themeStore`.
