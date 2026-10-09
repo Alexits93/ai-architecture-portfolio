@@ -35,3 +35,4 @@ To perform in-browser visual verifications without installing OS-level browsers 
 ## 7. E2E Testing for Astro Pages
 - **Script Execution:** `experimental_AstroContainer` does not bundle or execute client-side `<script>` blocks (e.g., custom elements). To physically simulate user interactions that rely on client JS, always write a **Playwright E2E test**.
 - **Page Test Location:** If a Playwright test must reside in `tests/pages/` to satisfy FSD rules, update `vitest.config.ts` to `exclude: ['tests/pages/**']` so Vitest's Node runner doesn't crash trying to execute a browser-native Playwright test file.
+- **Astro Component Testing:** When testing parent components via Astro Container, always assert against the precise CSS classes rendered by child components (e.g., `.skill-tag`), not semantic abstractions, to avoid false negatives.

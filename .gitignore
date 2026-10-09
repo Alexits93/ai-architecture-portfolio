@@ -4,3 +4,7 @@ coverage/
 dist/
 .astro/
 .vscode/
+
+playwright-report/
+test-results/
+pr-body.md

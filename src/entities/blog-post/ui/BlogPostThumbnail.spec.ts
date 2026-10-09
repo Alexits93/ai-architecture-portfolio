@@ -27,7 +27,7 @@ describe('BlogPostThumbnail Entity (Astro)', () => {
 
   it('renders the tags', async () => {
     const doc = await render();
-    const tags = [...doc.querySelectorAll('.tag')].map((t) => t.textContent);
-    expect(tags).toEqual(['test', 'astro']);
+    const tags = [...doc.querySelectorAll('.skill-tag')].map((t) => t.textContent?.trim());
+    expect(tags).toEqual(['#test', '#astro']);
   });
 });

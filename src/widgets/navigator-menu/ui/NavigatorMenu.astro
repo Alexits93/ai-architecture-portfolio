@@ -2,103 +2,134 @@
 export interface Props {
     menuItems?: { name: string; path: string }[];
 }
-
 const defaultMenuItems = [
     { name: 'Home', path: '/' },
-    { name: 'Blog', path: '/blog' },
-    { name: 'CV', path: '/cv' }
+    { name: 'Blog', path: '/blog/' },
+    { name: 'CV', path: '/cv/' }
 ];
-
 const { menuItems = defaultMenuItems } = Astro.props;
 ---
-
-<section id="navigator-menu">
-    <div class="navigator-menu-overlay"></div>
+<dialog id="site-menu" aria-label="Site navigation">
+    <div class="navigator-menu-overlay" aria-hidden="true"></div>
+    <button id="site-menu-close-btn" class="navigator-menu-opener" aria-label="Close menu">
+        <span></span>
+        <span></span>
+    </button>
     <div class="navigator-menu-body">
         <ul>
             {menuItems.map(item => (
-                <li>
-                    <a href={item.path}>
-                        <h2>{item.name}</h2>
-                    </a>
-                </li>
+                <li><a href={item.path}><h2>{item.name}</h2></a></li>
             ))}
         </ul>
     </div>
-</section>
+</dialog>
+
+<script>
+    const setupMenu = () => {
+        const openBtn = document.getElementById('site-menu-open-btn');
+        const closeBtn = document.getElementById('site-menu-close-btn');
+        const dialog = document.getElementById('site-menu') as HTMLDialogElement;
+        
+        if (!openBtn || !closeBtn || !dialog) return;
+
+        openBtn.addEventListener('click', () => {
+            const rect = openBtn.getBoundingClientRect();
+            closeBtn.style.top = `${rect.top}px`;
+            closeBtn.style.left = `${rect.left}px`;
+            dialog.showModal();
+        });
+        closeBtn.addEventListener('click', () => dialog.close());
+        dialog.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => dialog.close());
+        });
+    };
+    document.addEventListener('astro:page-load', setupMenu);
+    setupMenu();
+</script>
 
 <style>
-    section#navigator-menu {
-        display: block;
-        pointer-events: none; /* Let clicks pass through when closed */
-        position: fixed;
-        z-index: 9999;
-    }
-
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu {
-        pointer-events: auto; /* Enable clicks when open */
-    }
-
-    section#navigator-menu .navigator-menu-body {
-        display: none;
-    }
-
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-overlay {
-        display: flex;
-        position: fixed;
-        flex-direction: column;
-        width: 100vw;
-        height: 100vh;
-        top: 0;
-        left: 0;
-        backdrop-filter: blur(35px);
-        -webkit-backdrop-filter: blur(35px);
-        background: rgba(0, 0, 0, 0.4);
-        justify-content: center;
-        align-items: center;
-        z-index: 9998;
-    }
-
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body {
-        display: flex;
-        position: fixed;
-        flex-direction: column;
-        width: 100vw;
-        height: 100vh;
-        top: 0;
-        left: 0;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-    }
-
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a {
-        display: flex;
+    dialog#site-menu {
+        --menu-origin: 2.5rem 2.6rem;
+        --menu-ease: cubic-bezier(0.76, 0, 0.24, 1);
+        --menu-duration: 0.6s;
+        margin: 0; padding: 0;
+        width: 100vw; height: 100vh;
+        max-width: 100vw; max-height: 100vh;
+        border: none; background: transparent;
         color: var(--font-color);
-        text-decoration: none;
+        display: none;
+        transition: display var(--menu-duration) allow-discrete, overlay var(--menu-duration) allow-discrete;
+    }
+    
+    dialog#site-menu::backdrop { background: transparent; }
+    dialog#site-menu[open] { display: block; }
+
+    .navigator-menu-overlay {
+        position: absolute; inset: 0; z-index: 1;
+        background-color: var(--body-background);
+        clip-path: circle(0 at var(--menu-origin));
+        transition: clip-path var(--menu-duration) var(--menu-ease);
+    }
+    dialog#site-menu[open] .navigator-menu-overlay { clip-path: circle(150vmax at var(--menu-origin)); }
+    
+    @starting-style {
+        dialog#site-menu[open] .navigator-menu-overlay { clip-path: circle(0 at var(--menu-origin)); }
     }
 
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a:active,
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a:focus,
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a:focus-visible {
-        outline: 2px solid var(--focus-color);
-        outline-offset: 4px;
+    .navigator-menu-opener {
+        position: absolute; z-index: 3;
+        display: flex; flex-direction: column; justify-content: center; cursor: pointer;
+        padding: 0 .5rem; width: 3rem; height: 3rem; gap: .5rem; background: none; border: none;
+        transition: gap 0.3s ease-in-out;
+    }
+    .navigator-menu-opener span {
+        display: block; transition: all 0.3s ease-in-out;
+        height: .2rem; width: 2rem; background-color: var(--font-color-bold);
+        border-radius: 2px; transform: translateY(0) rotate(0deg);
+    }
+    .navigator-menu-opener:focus-visible { outline: 2px solid var(--focus-color); }
+
+    dialog#site-menu[open] .navigator-menu-opener { gap: 0; }
+    dialog#site-menu[open] .navigator-menu-opener span { background-color: #ffffff; }
+    dialog#site-menu[open] .navigator-menu-opener span:first-of-type { transform: translateY(0.1rem) rotate(45deg); }
+    dialog#site-menu[open] .navigator-menu-opener span:last-of-type { transform: translateY(-0.1rem) rotate(-45deg); }
+
+    @starting-style {
+        dialog#site-menu[open] .navigator-menu-opener { gap: .5rem; }
+        dialog#site-menu[open] .navigator-menu-opener span { background-color: var(--font-color-bold); }
+        dialog#site-menu[open] .navigator-menu-opener span:first-of-type { transform: translateY(0) rotate(0deg); }
+        dialog#site-menu[open] .navigator-menu-opener span:last-of-type { transform: translateY(0) rotate(0deg); }
     }
 
-    body:has(#mobile-menu-toggle:checked) section#navigator-menu .navigator-menu-body ul li a h2 {
-        display: inline-block;
-        margin: 0;
-        font-size: 48px;
-        color: var(--font-color-bold);
+    .navigator-menu-body {
+        position: relative; z-index: 2; width: 100%; height: 100%;
+        display: flex; justify-content: center; align-items: center;
+    }
+    .navigator-menu-body ul {
+        display: flex; flex-direction: column; align-items: center;
+        gap: 3rem; list-style: none; padding: 0; margin: 0;
+    }
+    .navigator-menu-body li {
+        opacity: 0; translate: 0 1.5rem;
+        transition: opacity 0.25s ease, translate 0.25s ease;
+    }
+
+    dialog#site-menu[open] .navigator-menu-body li {
+        opacity: 1; translate: 0 0;
+        transition: opacity 0.4s ease, translate 0.4s var(--menu-ease);
+        transition-delay: 0.25s;
+    }
+    
+    @starting-style {
+        dialog#site-menu[open] .navigator-menu-body li { opacity: 0; translate: 0 1.5rem; }
+    }
+    dialog#site-menu[open] .navigator-menu-body li:nth-child(2) { transition-delay: 0.33s; }
+    dialog#site-menu[open] .navigator-menu-body li:nth-child(3) { transition-delay: 0.41s; }
+
+    .navigator-menu-body ul li a { display: flex; color: var(--font-color); text-decoration: none; }
+    .navigator-menu-body ul li a:focus-visible { outline: 2px solid var(--focus-color); outline-offset: 4px; }
+    .navigator-menu-body ul li a h2 {
+        display: inline-block; margin: 0; font-size: 48px;
+        line-height: 1.2; color: var(--font-color-bold);
     }
 </style>

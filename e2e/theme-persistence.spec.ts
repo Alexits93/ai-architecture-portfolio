@@ -5,7 +5,7 @@ test('Theme preference is preserved across page navigations', async ({ page }) =
   await page.goto('/');
 
   // Check initial theme state (assuming light is default)
-  const body = page.locator('body');
+  const body = page.locator('html');
   await expect(body).toHaveAttribute('data-theme', 'light');
 
   // Click the theme toggle
@@ -16,7 +16,7 @@ test('Theme preference is preserved across page navigations', async ({ page }) =
   await expect(body).toHaveAttribute('data-theme', 'dark');
 
   // Navigate to another page (e.g. Privacy Policy) directly
-  await page.goto('/cookie-disclaimer');
+  await page.goto('/cookie-disclaimer/');
 
   // The theme should STILL be dark
   await expect(body).toHaveAttribute('data-theme', 'dark');

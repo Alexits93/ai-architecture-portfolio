@@ -8,6 +8,7 @@ We explicitly define what AI agents are **NOT** allowed to do regarding memory a
 
 To prevent context poisoning and auto-memory bloats, the following actions are strictly banned for any AI agent interacting with this repository:
 
+- **BANNED: Memory-Driven Framework Solutions.** Do not rely on LLM pre-training memory for framework-specific lifecycle APIs, transition behaviors, or integration mechanisms (e.g., Astro `ClientRouter` events, React hydration). Every framework API implementation MUST be backed by a current web search (`search_web`) against official documentation to ensure accuracy and prevent deprecated or non-standard solutions.
 - **BANNED: Chronological Log Files.** Do not create or append to files like `MEMORY.md`, `.claudememory`, or `session-logs.md`. Memory must be topic-based and stateful, not chronological.
 - **BANNED: JSON Blobbing.** Never store raw JSON API responses, verbose terminal outputs, or full test execution traces in documentation or context files. Extract only the deterministic facts.
 - **BANNED: Narrative Debugging.** Do not write conversational debugging steps into rules or manifestos (e.g., "We tried X and it failed with Y, so we did Z"). Write the final deterministic rule only (e.g., "Use configuration Z").

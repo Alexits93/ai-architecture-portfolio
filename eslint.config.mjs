@@ -43,7 +43,7 @@ export default [
   },
   {
     // Astro pages are handled dynamically by the framework, FSD public API doesn't apply
-    files: ["src/pages/**/*.astro", "eslint.config.mjs"],
+    files: ["src/pages/**", "eslint.config.mjs"],
     rules: {
       "@conarti/feature-sliced/public-api": "off",
       "@conarti/feature-sliced/import-order": "off"

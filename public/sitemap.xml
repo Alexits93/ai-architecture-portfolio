@@ -1,0 +1,22 @@
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+    <url>
+        <loc>https://www.pa-tech.dev/</loc>
+        <lastmod>2024-03-16T13:20:18+00:00</lastmod>
+    </url>
+    <url>
+        <loc>https://www.pa-tech.dev/blog/</loc>
+        <lastmod>2024-03-16T13:22:08+00:00</lastmod>
+    </url>
+    <url>
+        <loc>https://www.pa-tech.dev/cv/</loc>
+        <lastmod>2024-03-16T13:22:30+00:00</lastmod>
+    </url>
+    <url>
+        <loc>https://www.pa-tech.dev/cookie-disclaimer/</loc>
+        <lastmod>2024-03-22T09:22:30+00:00</lastmod>
+    </url>
+    <url>
+        <loc>https://www.pa-tech.dev/privacy-policy/</loc>
+        <lastmod>2024-03-22T09:22:30+00:00</lastmod>
+    </url>
+</urlset>

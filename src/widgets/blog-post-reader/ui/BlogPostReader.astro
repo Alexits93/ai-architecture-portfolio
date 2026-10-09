@@ -1,5 +1,5 @@
 ---
-import { Picture } from 'astro:assets';
+
 import { render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import ArticleNavigator from '@/shared/ui/article-navigator/ArticleNavigator.astro';
@@ -21,7 +21,7 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
 ---
 
 <div class="blog-post-layout">
-  <main class="blog-post-reader">
+  <div class="blog-post-reader">
     <header class="wrapper-top">
       <div class="wrapper-top-heading">
         <h1>{post.data.title}</h1>
@@ -43,16 +43,14 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
       </div>
 
       <figure>
-        <!-- Using a static path for the hero image. In a real scenario we might use Astro.glob or Image component -->
-        <Picture 
-          src={`/assets/images/${post.id}.webp`}
-          alt={post.data.title}
-          width={728}
-          height={364}
-          formats={['avif', 'webp']}
-          loading="eager"
-          fetchpriority="high"
-        />
+        <picture>
+          <img src="/assets/images/placeholder.webp"
+               alt={post.data.title}
+               width="728"
+               height="364"
+               loading="eager"
+               fetchpriority="high" />
+        </picture>
         <figcaption class="sr-only">{post.data.title}</figcaption>
       </figure>
     </header>
@@ -68,7 +66,7 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
         ))}
       </div>
     )}
-  </main>
+  </div>
 
   <aside class="navigator-sidebar">
     <ArticleNavigator headings={headings} />
@@ -168,10 +166,10 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
   @media (min-width: 1024px) {
     .blog-post-layout {
       display: grid;
-      grid-template-columns: 90% 10%;
-      gap: 1rem;
-      max-width: calc(100% - (12rem - 150px));
-      margin-right: 150px;
+      grid-template-columns: 1fr 230px;
+      gap: 3rem;
+      width: 100%;
+      margin: 0;
     }
 
     .navigator-sidebar {
@@ -179,13 +177,6 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
       position: sticky;
       top: 6rem;
       height: max-content;
-    }
-  }
-
-  @media (min-width: 1200px) {
-    .blog-post-layout {
-      margin: 0 0 auto 0;
-      max-width: 880px;
     }
   }
 </style>

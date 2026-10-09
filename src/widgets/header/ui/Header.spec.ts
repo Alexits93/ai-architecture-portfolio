@@ -45,7 +45,7 @@ describe('Header Widget (Astro)', () => {
     const dom = new JSDOM(html);
     const doc = dom.window.document;
     
-    const menuBtn = doc.querySelector('label.menu-toggle');
+    const menuBtn = doc.querySelector('button#site-menu-open-btn');
     expect(menuBtn).not.toBeNull();
     
   });

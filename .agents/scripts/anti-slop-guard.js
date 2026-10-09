@@ -60,5 +60,5 @@ try {
     
     console.log(JSON.stringify({ decision: 'allow' }));
 } catch (e) {
-    console.log(JSON.stringify({ decision: 'allow', reason: "Hook error: " + e.message }));
+    console.log(JSON.stringify({ decision: 'deny', reason: "Hook error: " + e.message }));
 }
