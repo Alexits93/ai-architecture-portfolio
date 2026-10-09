@@ -1,6 +1,6 @@
 # pa-tech.dev
 
-Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on Cloudflare Pages: vanilla CSS, Markdown content collections, Satori OG images, Vitest, Playwright, ESLint with Feature-Sliced Design rules.
+Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statichost.eu: vanilla CSS, Markdown content collections, Satori OG images, Vitest, Playwright, ESLint with Feature-Sliced Design rules.
 
 Current plan: `docs/exec-plans/modernization-and-security.plan.md`. Read it before starting a story.
 
@@ -11,12 +11,12 @@ Current plan: `docs/exec-plans/modernization-and-security.plan.md`. Read it befo
 - pnpm only. `npm`, `npx` and `yarn` are denied in `.claude/settings.json`.
 
 ## Workflow
-1. Spec and devspec in `docs/exec-plans/` (format in `.claude/rules/docs.md`).
+1. Spec and devspec in `docs/exec-plans/` (format in `.claude/rules/docs.md`). Delete both in the PR that ships the feature; code and tests are the truth afterwards.
 2. Failing test, then implementation until `pnpm check` passes.
 3. Open the issue before the branch: Epic > Story > Task, from `.github/ISSUE_TEMPLATE`, each naming its parent. One branch per Task (`feat/`, `fix/`, `chore/`), Conventional Commits (commitlint enforced).
 4. PR body follows `.github/PULL_REQUEST_TEMPLATE.md`, passed with `--body-file`. `Closes #N` references the Story or Task issue, never the PR. The PR title is the squash commit and must pass commitlint. Under "Unverified Risks" list real blind spots (screen readers, Safari, small viewports), because passing tests do not prove UX. `.claude/hooks/pr-gate.mjs` and CI `pr-lint` enforce this with `.github/workflow-rules.mjs`.
 
-Path-scoped rules in `.claude/rules/` load automatically when you touch matching files. Legacy component migration: `/migrate-legacy <name>`.
+Path-scoped rules in `.claude/rules/` load automatically when you touch matching files.
 
 ## Engineering rules
 - Native and official solutions only: use the built-in capabilities of the tools in this stack (Astro, TypeScript, ESLint, Vitest, Playwright, pnpm, GitHub, Claude Code) as their docs describe. No custom scripts, workarounds or "creative" solutions. If no native option exists, stop and discuss alternatives with the user before building anything.

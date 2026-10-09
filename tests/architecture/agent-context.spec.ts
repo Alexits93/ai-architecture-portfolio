@@ -11,9 +11,10 @@ const CLAUDE_MD_MAX_LINES = 100;
 const RULE_MAX_LINES = 60;
 
 const ruleFiles = fs.readdirSync(path.join(root, '.claude/rules')).map((f) => `.claude/rules/${f}`);
-const skillFiles = fs
-  .readdirSync(path.join(root, '.claude/skills'))
-  .map((dir) => `.claude/skills/${dir}/SKILL.md`);
+const skillsDir = path.join(root, '.claude/skills');
+const skillFiles = fs.existsSync(skillsDir)
+  ? fs.readdirSync(skillsDir).map((dir) => `.claude/skills/${dir}/SKILL.md`)
+  : [];
 const agentDocs = ['CLAUDE.md', ...ruleFiles, ...skillFiles];
 
 const read = (file: string): string => fs.readFileSync(path.join(root, file), 'utf8');

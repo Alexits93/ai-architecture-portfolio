@@ -1,7 +1,7 @@
 # Execution Plan: Modernization, Security Hardening & Images
 
 > Source of truth for upcoming iterations. It supersedes the old `modernization-plan.md`, which lived outside the repo and is now obsolete.
-> The reasons behind every item are in [`plan-and-security-review.md`](./plan-and-security-review.md).
+> The reasons behind each item are in the item text and in the linked GitHub issues (Epic #32).
 > Keep this file in sync: tick items only when they are merged to `master`.
 
 ## Status of the old epic (UX Modernization & A11y)
@@ -35,7 +35,7 @@ Principle: fix the gates first (every later story relies on them), then the docs
 - [x] Pin third-party GitHub Actions to full commit SHAs (`davelosert/vitest-coverage-report-action`, `dorny/test-reporter`, and ideally the `actions/*` and `pnpm/action-setup` ones too).
 - [x] Remove `"preinstall": "npx only-allow pnpm"`. The `packageManager` field + Corepack already enforces pnpm.
 - [x] Upgrade pnpm 9 → 10. Add `onlyBuiltDependencies` (allowlist, e.g. `@resvg/resvg-js`, `esbuild`) and `minimumReleaseAge: 1440`. **Move `pnpm.overrides` from `package.json` to `pnpm-workspace.yaml`**: pnpm 10+ ignores the `package.json` field (the local global pnpm already warns about it).
-- [x] Cloudflare Pages security headers in `public/_headers`: `frame-ancestors 'none'`, nosniff, Referrer-Policy, Permissions-Policy, HSTS, COOP. The script/style CSP comes in Story C.
+- [x] Host security headers in `public/_headers`: `frame-ancestors 'none'`, nosniff, Referrer-Policy, Permissions-Policy, HSTS, COOP. The script/style CSP comes in Story C.
 - [x] `release.yml`: drop the duplicate `pnpm install` (the composite action already installs).
 - [x] Agent hooks (`.agents/hooks.json`): verify the working directory hooks run in and fix the script paths (`scripts/…` vs `.agents/scripts/…`). Make `anti-slop-guard.js` block (deny) when it errors. Document that hooks are nudges; server-side branch protection is the real control.
 - [x] Inline theme script: wrap in `try`, accept only `'light' | 'dark'`.
@@ -87,14 +87,14 @@ Principle: fix the gates first (every later story relies on them), then the docs
 
 ### Story D2: Agent context architecture (P1)
 Resolved in `chore/claude-code-setup` (tick on merge):
-- [ ] Manifestos replaced by path-scoped `.claude/rules/` (load on matching files) and the `/migrate-legacy` skill. Contradictions resolved: `unknown` stays banned (ESLint wins), no `eslint-disable` escape hatch for `any`, MSW and Vitest browser-mode mandates dropped, MDX/SCSS claims corrected, `getBoundingClientRect` menu rule dropped (conflicts with Story A).
+- [ ] Manifestos replaced by path-scoped `.claude/rules/` (load on matching files). Contradictions resolved: `unknown` stays banned (ESLint wins), no `eslint-disable` escape hatch for `any`, MSW and Vitest browser-mode mandates dropped, MDX/SCSS claims corrected, `getBoundingClientRect` menu rule dropped (conflicts with Story A).
 - [ ] `set:html` banned by `astro/no-set-html-directive`, with `SeoHead.astro` (JSON-LD) as the only exception.
 - [ ] Hooks: anti-slop block on Markdown writes, ESLint feedback after each edit.
 - [ ] `tests/architecture/agent-context.spec.ts`: fails when CLAUDE.md exceeds its budget, a rule glob matches no file, or agent docs reference a missing path.
 Resolved in `chore/agent-workflow-gates` (tick on merge):
 - [ ] `.github/workflow-rules.mjs` holds the PR and issue rules. CI `pr-lint` and the PreToolUse hook `.claude/hooks/pr-gate.mjs` both import it: every template section filled, every checklist box ticked, a risk bullet, `Closes #N`, a commitlint-valid PR title, issues with template prefix, label, sections and parent `#N`. Gates: `tests/config/workflow-rules.spec.ts`, `tests/architecture/claude-hooks.spec.ts`.
-Still open:
-- [ ] Archive specs, devspecs and `*-pathology.md` for shipped components. Git history keeps them.
+Resolved in `chore/remove-stale-docs` (tick on merge):
+- [ ] Specs, devspecs and `*-pathology.md` of shipped components, the review doc and the `migrate-legacy` skill deleted. The PR that ships a feature deletes its spec and devspec. `docs/ARCHITECTURE.md` matches the import graph. Hosting docs name statichost.eu.
 
 ### Story B: Bug fixes from the 2026-10-09 audit (P1)
 - [ ] `src/pages/blog/[slug].astro`: import `BlogPostReader` and `SeoHead` through their `index.ts` (add the missing `widgets/blog-post-reader/index.ts`).
@@ -103,13 +103,13 @@ Still open:
 - [ ] Pass `publishedTime={post.data.publishDate}` and `BlogPosting` JSON-LD to `SeoHead` on blog posts.
 
 ### Story 4 (P3): Image optimization pipeline
-- [ ] Recreate `feat/image-optimization-pipeline` from current `master`. The existing branch predates the asset cleanup.
+- [ ] Create `feat/image-optimization-pipeline` from current `master`.
 - [ ] Blog images live in `src/assets/images/`, referenced via the content collection `image()` schema helper.
 - [ ] `<Picture formats={['avif','webp']}>` with explicit `width`/`height`.
 - [ ] The featured/LCP image: `loading="eager" fetchpriority="high"`; everything else lazy.
 - [ ] Keep `placeholder.webp` as the fallback.
 
 ## Open product decisions (owner)
-- Hosting: Cloudflare Pages (per CLAUDE.md). Headers live in `public/_headers`.
+- Hosting: statichost.eu Hobby plan, `www` canonical, 301 from the apex. Headers live in `public/_headers`.
 - Public repo vs GitHub Pro.
 - i18n strategy, RSS feed, 404 page.

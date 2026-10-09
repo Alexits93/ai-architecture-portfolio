@@ -75,7 +75,7 @@
       "WebFetch(domain:eslint.org)",
       "WebFetch(domain:pnpm.io)",
       "WebFetch(domain:typescriptlang.org)",
-      "WebFetch(domain:developers.cloudflare.com)",
+      "WebFetch(domain:www.statichost.eu)",
       "WebFetch(domain:code.claude.com)",
       "WebFetch(domain:feature-sliced.design)"
     ],

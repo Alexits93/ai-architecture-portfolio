@@ -1,6 +1,6 @@
 # pa-tech.dev
 
-Personal portfolio and blog of Patrik Alexits. Static Astro site deployed to Cloudflare Pages.
+Personal portfolio and blog of Patrik Alexits. Static Astro site hosted on statichost.eu.
 
 ## Stack
 - Astro (`output: 'static'`), vanilla CSS, Markdown content collections
