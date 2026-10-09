@@ -7,7 +7,8 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  // https://playwright.dev/docs/test-reporters#github-actions-annotations
+  reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'html',
   use: {
     baseURL: 'http://localhost:4322',
     trace: 'on-first-retry',
@@ -16,6 +17,15 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+    },
+    // Trusted Types and the hash-based CSP must hold in every engine, not only Chromium.
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
     },
   ],
   // Always a fresh foreground `astro preview` of dist/ on its own port: a reused dev server on 4321
