@@ -81,10 +81,10 @@ const { menuItems = defaultMenuItems } = Astro.props;
     }
 
     .navigator-menu-opener {
-        display: flex; flex-direction: column; cursor: pointer;
-        padding: .5rem; gap: .5rem; background: none; border: none;
+        display: flex; flex-direction: column; justify-content: center; cursor: pointer;
+        padding: 0 .5rem; width: 3rem; height: 3rem; gap: .5rem; background: none; border: none;
         position: relative;
-        transition: padding 0.3s ease-in-out, gap 0.3s ease-in-out;
+        transition: gap 0.3s ease-in-out;
     }
     .navigator-menu-opener span {
         display: block; transition: all 0.3s ease-in-out;
@@ -93,13 +93,13 @@ const { menuItems = defaultMenuItems } = Astro.props;
     }
     .navigator-menu-opener:focus-visible { outline: 2px solid var(--focus-color); }
 
-    dialog#site-menu[open] .navigator-menu-opener { padding: 1rem .5rem; gap: 0; }
+    dialog#site-menu[open] .navigator-menu-opener { gap: 0; }
     dialog#site-menu[open] .navigator-menu-opener span { background-color: #ffffff; }
     dialog#site-menu[open] .navigator-menu-opener span:first-of-type { transform: translateY(0.1rem) rotate(45deg); }
     dialog#site-menu[open] .navigator-menu-opener span:last-of-type { transform: translateY(-0.1rem) rotate(-45deg); }
 
     @starting-style {
-        dialog#site-menu[open] .navigator-menu-opener { padding: .5rem; gap: .5rem; }
+        dialog#site-menu[open] .navigator-menu-opener { gap: .5rem; }
         dialog#site-menu[open] .navigator-menu-opener span { background-color: var(--font-color-bold); }
         dialog#site-menu[open] .navigator-menu-opener span:first-of-type { transform: translateY(0) rotate(0deg); }
         dialog#site-menu[open] .navigator-menu-opener span:last-of-type { transform: translateY(0) rotate(0deg); }
