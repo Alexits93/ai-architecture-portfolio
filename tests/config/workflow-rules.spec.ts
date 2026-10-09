@@ -11,6 +11,7 @@ import {
   findPrBodyViolations,
   formatCurrentTask,
   formatPlan,
+  formatPrHandover,
   HANDOVER_MARKER,
   latestHandover,
   linkedTask,
@@ -178,6 +179,37 @@ describe('current Task and handover', () => {
     expect(formatCurrentTask('master', undefined, null)).toBe(
       'No open Task is linked to branch master. Create Task branches with `gh issue develop <N> --checkout`.',
     );
+  });
+});
+
+describe('handover from the open PR of an unlinked branch', () => {
+  const issue = (number: number, comments: Array<[string, string]>) => ({
+    number,
+    title: `[Task] T${number}`,
+    comments: { nodes: comments.map(([createdAt, body]) => ({ createdAt, body })) },
+  });
+  const pr = (...issues: Array<ReturnType<typeof issue>>) => ({ number: 46, closingIssuesReferences: { nodes: issues } });
+
+  it('loads the newest handover by createdAt across the closing issues', () => {
+    const open = pr(
+      issue(63, [['2026-10-09T21:00:00Z', `${HANDOVER_MARKER}\nnewest`], ['2026-10-09T22:00:00Z', 'Measured']]),
+      issue(62, [['2026-10-09T20:00:00Z', `${HANDOVER_MARKER}\nolder`]]),
+      issue(33, []),
+    );
+    expect(formatPrHandover('chore/x', open)).toBe(
+      'Branch chore/x is not linked to a Task. Open PR #46 closes #63, #62, #33.\n' +
+        `Current Task: #63 [Task] T63 (newest handover in PR #46)\nHandover:\n${HANDOVER_MARKER}\nnewest`,
+    );
+  });
+
+  it('names the PR when no closing issue has a handover', () => {
+    expect(formatPrHandover('chore/x', pr(issue(33, [['2026-10-09T20:00:00Z', 'Measured']])))).toBe(
+      'Branch chore/x is not linked to a Task. Open PR #46 closes #33.\nNo handover yet.',
+    );
+  });
+
+  it('falls back to the unlinked message without an open PR', () => {
+    expect(formatPrHandover('master', undefined)).toBe(formatCurrentTask('master', undefined, null));
   });
 });
 

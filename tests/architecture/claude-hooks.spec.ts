@@ -71,27 +71,22 @@ const run = (env: { PATH: string }): string =>
     encoding: 'utf8',
   }).stdout;
 
-// One fake answer serves both queries: the plan reads `issues`, the handover lookup reads `issue`.
-const answer = JSON.stringify({
-  data: {
-    repository: {
-      issues: {
-        pageInfo: { hasNextPage: false },
-        nodes: [
-          { number: 32, title: '[Epic] E', parent: null, blockedBy: { nodes: [] }, linkedBranches: { nodes: [] } },
-          {
-            number: 63,
-            title: '[Task] T',
-            parent: { number: 32 },
-            blockedBy: { nodes: [] },
-            linkedBranches: { nodes: [{ ref: { name: 'chore/t' } }] },
-          },
-        ],
-      },
-      issue: { comments: { nodes: [{ body: `${HANDOVER_MARKER}\nNext: tests` }, { body: 'Measured' }] } },
-    },
+// One fake answer serves every query: the plan reads `issues`, the handover lookup reads `issue`,
+// the open-PR fallback for an unlinked branch reads `pullRequests`.
+const repository = {
+  issues: {
+    pageInfo: { hasNextPage: false },
+    nodes: [
+      { number: 32, title: '[Epic] E', parent: null, blockedBy: { nodes: [] }, linkedBranches: { nodes: [] } },
+      { number: 63, title: '[Task] T', parent: { number: 32 }, blockedBy: { nodes: [] }, linkedBranches: { nodes: [{ ref: { name: 'chore/t' } }] } },
+    ],
   },
-});
+  issue: { comments: { nodes: [{ body: `${HANDOVER_MARKER}\nNext: tests` }, { body: 'Measured' }] } },
+};
+const prComment = { createdAt: '2026-10-10T00:00:00Z', body: `${HANDOVER_MARKER}\nFrom PR` };
+const pr = { number: 46, closingIssuesReferences: { nodes: [{ number: 63, title: '[Task] T', comments: { nodes: [prComment] } }] } };
+const withPr = (pullRequests: { nodes: Array<typeof pr> } | null): string => JSON.stringify({ data: { repository: { ...repository, pullRequests } } });
+const answer = withPr({ nodes: [] });
 
 describe('session-plan hook', () => {
   it('prints the open issue tree', () => {
@@ -108,7 +103,14 @@ describe('session-plan hook', () => {
     expect(run(fakeGh(answer, 0))).toContain('No open Task is linked to branch master.');
   });
 
+  it('loads the newest handover of the open PR for an unlinked branch', () => {
+    expect(run(fakeGh(withPr({ nodes: [pr] }), 0))).toContain(
+      `Current Task: #63 [Task] T (newest handover in PR #46)\nHandover:\n${HANDOVER_MARKER}\nFrom PR`,
+    );
+  });
+
   it.each([
+    ['the open-PR lookup answers without pullRequests', fakeGh(withPr(null), 0)],
     ['gh fails', fakeGh('', 1)],
     ['gh answers garbage', fakeGh('not json', 0)],
     ['gh is missing', { PATH: '' }],

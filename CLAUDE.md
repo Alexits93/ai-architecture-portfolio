@@ -2,7 +2,7 @@
 
 Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statichost.eu: vanilla CSS, Markdown content collections, Satori OG images, Vitest, Playwright, ESLint with Feature-Sliced Design rules.
 
-Plan: the open GitHub issues (Epic > Story > Task as native sub-issues, order as blocked-by links). `.claude/hooks/session-plan.mjs` loads the tree into context at session start, plus the open Task linked to the current branch and its newest handover. "continue" means: resume that Task from that handover. The repo has no plan files. If the hook prints `PLAN UNAVAILABLE`, stop and tell the user.
+Plan: the open GitHub issues (Epic > Story > Task as native sub-issues, order as blocked-by links). `.claude/hooks/session-plan.mjs` loads the tree into context at session start, plus the open Task linked to the current branch and its newest handover (for an unlinked branch: the newest handover among the issues its open PR closes). "continue" means: resume that Task from that handover. The repo has no plan files. If the hook prints `PLAN UNAVAILABLE`, stop and tell the user.
 
 ## Base rules
 1. You run inside VS Code. Use its tools to check and improve your work: the Problems panel through `mcp__ide__getDiagnostics` (CLI) or `mcp__claude-vscode__getDiagnostics` (chat panel), and the installed extensions (`code --list-extensions --show-versions`, unsandboxed). If the `ide` server is not connected, tell the user to run `/ide` or reload the window.

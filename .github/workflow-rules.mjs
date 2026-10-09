@@ -150,6 +150,39 @@ export const formatCurrentTask = (branch, task, handover) => {
   return handover === null ? `${head}\nNo handover yet.` : `${head}\nHandover:\n${handover}`;
 };
 
+// Fallback for a branch no Task is linked to: the open PR with this head branch and the issues it closes.
+export const PR_HANDOVER_QUERY = `query($owner: String!, $repo: String!, $branch: String!) {
+  repository(owner: $owner, name: $repo) {
+    pullRequests(headRefName: $branch, states: OPEN, first: 1) {
+      nodes {
+        number
+        closingIssuesReferences(first: 50) { nodes { number title comments(last: 50) { nodes { createdAt body } } } }
+      }
+    }
+  }
+}`;
+
+/**
+ * @typedef {{ number: number, closingIssuesReferences: { nodes: Array<{ number: number, title: string,
+ *   comments: { nodes: Array<{ createdAt: string, body: string }> } }> } }} OpenPr
+ */
+
+/**
+ * The newest handover by createdAt among the issues the branch's open PR closes.
+ * @param {string} branch @param {OpenPr | undefined} pr @returns {string}
+ */
+export const formatPrHandover = (branch, pr) => {
+  if (!pr) return formatCurrentTask(branch, undefined, null);
+  const issues = pr.closingIssuesReferences.nodes;
+  const [newest] = issues
+    .flatMap((issue) => issue.comments.nodes.filter((c) => c.body.startsWith(HANDOVER_MARKER)).map((c) => ({ issue, ...c })))
+    .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const head = `Branch ${branch} is not linked to a Task. Open PR #${pr.number} closes ${issues.map((i) => `#${i.number}`).join(', ')}.`;
+  return newest
+    ? `${head}\nCurrent Task: #${newest.issue.number} ${newest.issue.title} (newest handover in PR #${pr.number})\nHandover:\n${newest.body}`
+    : `${head}\nNo handover yet.`;
+};
+
 export const OPEN_PLAN_QUERY = `query($owner: String!, $repo: String!) {
   repository(owner: $owner, name: $repo) {
     issues(states: OPEN, first: 100, orderBy: { field: CREATED_AT, direction: ASC }) {

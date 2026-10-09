@@ -1,13 +1,16 @@
 // SessionStart hook: prints the open GitHub issue tree, the only plan this repo has, then the open Task
-// linked to the current branch (via `gh issue develop`) with its newest handover comment.
+// linked to the current branch (via `gh issue develop`) with its newest handover comment. For an unlinked
+// branch it falls back to the newest handover among the issues the branch's open PR closes.
 // Claude Code adds plain SessionStart stdout to Claude's context. Exit codes cannot block SessionStart
 // (exit 2 reaches only the user), so a failure prints a stop notice to stdout instead of passing silently.
 import { spawnSync } from 'node:child_process';
 import {
   HANDOVER_QUERY,
   OPEN_PLAN_QUERY,
+  PR_HANDOVER_QUERY,
   formatCurrentTask,
   formatPlan,
+  formatPrHandover,
   latestHandover,
   linkedTask,
 } from '../../.github/workflow-rules.mjs';
@@ -31,12 +34,11 @@ try {
   if (pageInfo.hasNextPage) throw new Error('more than 100 open issues, so the tree would be incomplete');
   const branch = run('git', ['branch', '--show-current']).trim();
   const task = linkedTask(issues, branch);
-  const handover = task
-    ? latestHandover(graphql(HANDOVER_QUERY, ['-F', `number=${task.number}`]).issue.comments.nodes)
-    : null;
+  const current = task
+    ? formatCurrentTask(branch, task, latestHandover(graphql(HANDOVER_QUERY, ['-F', `number=${task.number}`]).issue.comments.nodes))
+    : formatPrHandover(branch, graphql(PR_HANDOVER_QUERY, ['-f', `branch=${branch}`]).pullRequests.nodes[0]);
   process.stdout.write(
-    `Plan: open GitHub issues (Epic > Story > Task, native sub-issues):\n${formatPlan(issues)}\n\n` +
-      `${formatCurrentTask(branch, task, handover)}\n`,
+    `Plan: open GitHub issues (Epic > Story > Task, native sub-issues):\n${formatPlan(issues)}\n\n${current}\n`,
   );
 } catch (error) {
   process.stdout.write(
