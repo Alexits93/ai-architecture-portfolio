@@ -155,11 +155,11 @@ describe('Learned agent guards', () => {
   });
 
   // Owner correction 2026-10-10: the structure follows Astro's conventions, not Feature-Sliced Design
-  // (docs/adrs/002-astro-conventions.md, the one file that names it). Task #78 drops the article exception.
+  // (docs/adrs/002-astro-conventions.md, the one file that names it). Covers blog posts too (#78).
   it('keeps Feature-Sliced Design out of agent context, config and source', () => {
     const files = fs.globSync(
       ['CLAUDE.md', 'README.md', 'package.json', 'eslint.config.mjs', '.claude/settings.json', '.claude/rules/*', '.github/**/*', 'docs/**/*.md', 'src/**/*'],
-      { cwd: root, exclude: ['docs/adrs/002-astro-conventions.md', 'src/content/blog/feature-sliced-design-astro.md'] },
+      { cwd: root, exclude: ['docs/adrs/002-astro-conventions.md'] },
     ).filter((f) => fs.statSync(path.join(root, f)).isFile());
     expect(files.filter((f) => /feature-sliced|\bFSD\b/i.test(read(f)))).toEqual([]);
   });
