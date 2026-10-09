@@ -7,12 +7,12 @@ This matrix dictates the Test-Driven Development (TDD) parameters for the Header
 | :--- | :--- | :--- |
 | **Initialize** | Page Load | Render logo, theme toggle, and menu button. |
 | **Theme Toggle** | Click `.theme-toggle` button | Dispatches theme change event or updates `themeStore`. |
-| **Menu Toggle** | Click `.menu-toggle` button | Toggles the `$isMenuOpen` Nano Store boolean. |
+| **Menu Toggle** | Click `.menu-toggle` button | Triggers native `<dialog>` toggle via Invoker Commands (or `showModal()` fallback). |
 
 ## 2. Accessibility (a11y) Constraints
 - The logo link must contain `<span class="sr-only">Back to Home page</span>`.
 - The theme toggle must have an explicit `aria-label` or `alt` text on the icon declaring the current mode.
-- The menu toggle must dynamically update `aria-expanded="true/false"` based on `$isMenuOpen`.
+- The menu toggle must dynamically update `aria-expanded="true/false"` based on native `<dialog>` state.
 
 ## 3. Structural Constraints (Tooling Manifesto)
 - **Zero JS Default:** Client-side JavaScript must be strictly isolated. We will use a lightweight `<script>` tag or an Astro Island for the toggle logic to ensure the rest of the header remains static HTML.
