@@ -78,8 +78,10 @@ describe('Agent context exclusions', () => {
     expect(settings.enableArtifact).toBe(false);
   });
 
-  it.each(hiddenSkills)('hides the %s skill from Claude', (skill) => {
-    expect(['user-invocable-only', 'off']).toContain(settings.skillOverrides?.[skill]);
+  // "off" also hides the skill from the / menu, so only "user-invocable-only" keeps it typable
+  // (https://code.claude.com/docs/en/skills).
+  it.each(hiddenSkills)('hides the %s skill from Claude but keeps it typable', (skill) => {
+    expect(settings.skillOverrides?.[skill]).toBe('user-invocable-only');
   });
 });
 
