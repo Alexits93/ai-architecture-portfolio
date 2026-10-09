@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.12.0...v1.12.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* **ux:** resolve layout scatter, view transitions crash, dark-mode flash, and mobile menu a11y ([#30](https://github.com/Alexits93/ai-architecture-portfolio/issues/30)) ([b2c1c7f](https://github.com/Alexits93/ai-architecture-portfolio/commit/b2c1c7ffaea160558571f5866c673ca11e7d92e6))
+
 # [1.12.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.11.0...v1.12.0) (2026-10-08)
 
 
