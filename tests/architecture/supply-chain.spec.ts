@@ -1,3 +1,4 @@
+import { execFileSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { describe, it, expect } from 'vitest';
@@ -30,12 +31,13 @@ describe('Supply chain settings', () => {
   it('fails installs on trust downgrades and excludes only exact versions', () => {
     expect(workspace).toMatch(/^trustPolicy: no-downgrade$/m);
     expect(workspace).toMatch(/^trustPolicyExcludePrune: true$/m);
-    // Every indented line under the key must be an exact-version entry. A flow list such as
-    // `[chokidar]` or deeper indentation fails here instead of skipping the check.
-    const [, inline = '', excludes = ''] = workspace.match(/^trustPolicyExclude:(.*)\n((?:[ \t].*\n)*)/m) ?? [];
-    expect(inline).toBe('');
-    for (const entry of excludes.split('\n').filter(Boolean)) {
-      expect(entry).toMatch(/^ {2}- (?:@[\w.-]+\/)?[\w.-]+@\d+\.\d+\.\d+$/);
+    // pnpm's own parse of the workspace file, so any YAML layout is checked as pnpm reads it
+    // (https://pnpm.io/cli/config).
+    const excludes: string[] = JSON.parse(
+      execFileSync('pnpm', ['config', 'get', 'trustPolicyExclude', '--json'], { encoding: 'utf8' }),
+    );
+    for (const entry of excludes) {
+      expect(entry).toMatch(/^(?:@[\w.-]+\/)?[\w.-]+@\d+\.\d+\.\d+$/);
     }
   });
 
