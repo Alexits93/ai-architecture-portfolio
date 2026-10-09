@@ -44,9 +44,14 @@ describe('anti-slop hook', () => {
   });
 });
 
+// Every fake bin directory is removed after the file's tests, including those built in it.each tables.
+const fakeBins: string[] = [];
+afterAll(() => fakeBins.forEach((bin) => fs.rmSync(bin, { recursive: true, force: true })));
+
 // Puts a fake `gh` first on PATH that prints `answer` and exits with `status`, and a fake `git` on `branch`.
 const fakeGh = (answer: string, status: number, branch = 'master'): { PATH: string } => {
   const bin = fs.mkdtempSync(path.join(os.tmpdir(), 'fake-gh-'));
+  fakeBins.push(bin);
   fs.writeFileSync(path.join(bin, 'answer.json'), answer);
   fs.writeFileSync(path.join(bin, 'gh'), `#!/bin/sh\ncat "${bin}/answer.json"\nexit ${status}\n`, { mode: 0o755 });
   fs.writeFileSync(path.join(bin, 'git'), `#!/bin/sh\necho ${branch}\n`, { mode: 0o755 });
