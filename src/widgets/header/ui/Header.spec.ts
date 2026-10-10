@@ -34,9 +34,6 @@ describe('Header Widget (Astro)', () => {
     const themeBtn = doc.querySelector('button.theme-toggle');
     expect(themeBtn?.getAttribute('aria-label')).toBe('Dark theme');
     expect(themeBtn?.getAttribute('aria-pressed')).toBe('false');
-
-    const img = themeBtn?.querySelector('img.icon');
-    expect(img?.getAttribute('alt')).toBe('');
   });
 
   it('should render the menu toggle button', async () => {
@@ -48,4 +45,20 @@ describe('Header Widget (Astro)', () => {
     expect(menuBtn).not.toBeNull();
     
   });
+});
+
+// Inline icons take the theme colour through currentColor; no image request (#88).
+it('should render the theme toggle icons inline with currentColor', async () => {
+  const container = await AstroContainer.create();
+  const doc = new JSDOM(await container.renderToString(Header)).window.document;
+  const themeBtn = doc.querySelector('button.theme-toggle');
+
+  expect(themeBtn?.querySelector('img')).toBeNull();
+  const icons = [...(themeBtn?.querySelectorAll('svg') ?? [])].map((svg) =>
+    ['class', 'fill', 'aria-hidden', 'width', 'height'].map((name) => svg.getAttribute(name)),
+  );
+  expect(icons).toEqual([
+    ['icon moon', 'currentColor', 'true', '50', '50'],
+    ['icon sun', 'currentColor', 'true', '50', '50'],
+  ]);
 });
