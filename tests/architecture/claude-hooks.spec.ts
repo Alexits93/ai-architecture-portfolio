@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { HANDOVER_MARKER, PR_CHECKLIST, PR_SECTIONS } from '../../.github/workflow-rules.mjs';
+import { HANDOVER_MARKER, PR_CHECKLIST, PR_SECTIONS, RISK_TABLE_HEADER } from '../../.github/workflow-rules.mjs';
 
 const read = (file: string): string => fs.readFileSync(path.join(process.cwd(), file), 'utf8');
 
@@ -137,6 +137,12 @@ const gate = (command: string, ghAnswer = linkedTask({ number: 35 })): { status:
     encoding: 'utf8',
   });
 
+const filled: Record<string, string> = {
+  'Pre-Merge Checklist': PR_CHECKLIST.map((item) => `- [x] ${item}`).join('\n'),
+  'Unverified Risks & Metacognition': `${RISK_TABLE_HEADER}\n|---|---|---|---|\n| Safari | Low | Checked | #91 |`,
+};
+const prBody = PR_SECTIONS.map((s) => `## ${s}\n${filled[s] ?? '- Closes #44'}`).join('\n');
+
 // A crash also exits 2, so a block must name the gate in its message.
 const expectBlocked = (result: { status: number | null; stderr: string }): void => {
   expect(result.status).toBe(2);
@@ -145,8 +151,7 @@ const expectBlocked = (result: { status: number | null; stderr: string }): void 
 
 describe('pr-gate hook', () => {
   beforeAll(() => {
-    const checklist = PR_CHECKLIST.map((item) => `- [x] ${item}`).join('\n');
-    fs.writeFileSync(goodPr, PR_SECTIONS.map((s) => `## ${s}\n${s === 'Pre-Merge Checklist' ? checklist : '- Closes #44'}`).join('\n'));
+    fs.writeFileSync(goodPr, prBody);
     fs.writeFileSync(badPr, read('.github/PULL_REQUEST_TEMPLATE.md'));
     fs.writeFileSync(goodIssue, '### Description\n\nA\n\n### Requirements / Constraints\n\nB\n');
   });

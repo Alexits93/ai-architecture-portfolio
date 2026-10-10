@@ -19,6 +19,29 @@ export const PR_CHECKLIST = [
   'Documentation updated (Task issue, Architecture, ADRs)',
 ];
 
+// Every gap a PR leaves open is rated. Medium and High block the PR: close the gap or reduce it first.
+export const RISK_TABLE_HEADER = '| Gap | Risk | Why | Tracked in |';
+
+/** @param {string} row @returns {string[]} */
+const findRiskRowViolations = (row) => {
+  const cells = row.slice(1, -1).split('|').map((cell) => cell.trim());
+  const [gap, risk] = cells;
+  if (cells.length !== 4 || cells.includes('')) return [`Fill all four cells of the risk row "${row}".`];
+  if (risk === 'Low') return [];
+  return ['Medium', 'High'].includes(risk)
+    ? [`Risk "${gap}" is ${risk}. Close the gap or reduce it to Low before the PR.`]
+    : [`Rate risk "${gap}" as Low, Medium or High.`];
+};
+
+/** @param {string} section @returns {string[]} */
+const findRiskViolations = (section) => {
+  const lines = section.split('\n').map((line) => line.trim());
+  const start = lines.indexOf(RISK_TABLE_HEADER);
+  if (start === -1) return [`Rate the open gaps in a table under "Unverified Risks & Metacognition": ${RISK_TABLE_HEADER}`];
+  const rows = lines.slice(start + 2).filter((line) => line.startsWith('|'));
+  return rows.length === 0 ? ['Add at least one gap row to the risk table.'] : rows.flatMap(findRiskRowViolations);
+};
+
 // Epic > Story > Task: Stories and Tasks hang below their parent as native GitHub sub-issues.
 const NEEDS_PARENT = ['story', 'task'];
 
@@ -57,10 +80,7 @@ const PR_RULES = [
     PR_CHECKLIST.filter((item) => !(sections.get('Pre-Merge Checklist') ?? '').includes(`- [x] ${item}`)).map(
       (item) => `Tick the checklist item "${item}".`,
     ),
-  (_body, sections) =>
-    /^- \S/m.test(sections.get('Unverified Risks & Metacognition') ?? '')
-      ? []
-      : ['List at least one real blind spot under "Unverified Risks & Metacognition".'],
+  (_body, sections) => findRiskViolations(sections.get('Unverified Risks & Metacognition') ?? ''),
   (body) =>
     /\b(Closes|Fixes|Resolves) #\d+/i.test(body)
       ? []

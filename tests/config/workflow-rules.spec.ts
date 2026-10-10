@@ -5,6 +5,7 @@ import {
   ISSUE_TEMPLATES,
   PR_CHECKLIST,
   PR_SECTIONS,
+  RISK_TABLE_HEADER,
   closedIssueNumbers,
   findIssueViolations,
   findLinkedIssueViolations,
@@ -29,7 +30,9 @@ const validPrBody = [
   '## Pre-Merge Checklist',
   ...PR_CHECKLIST.map((item) => `- [x] ${item}`),
   '## Unverified Risks & Metacognition',
-  '- Shell parsing of quoted flags.',
+  RISK_TABLE_HEADER,
+  '|---|---|---|---|',
+  '| Shell parsing of quoted flags | Low | Unit tests cover the common forms | #84 |',
   '## Screenshots/Gifs',
   'None: no UI change.',
 ].join('\n');
@@ -44,7 +47,7 @@ describe('PR body rules', () => {
     ['a template comment', `${validPrBody}\n<!-- fill me -->`],
     ['an unticked box', validPrBody.replace('- [x] Tests passed', '- [ ] Tests passed')],
     ['a missing checklist item', validPrBody.replace('- [x] Tests passed\n', '')],
-    ['an empty risk bullet', validPrBody.replace('- Shell parsing of quoted flags.', '- ')],
+    ['a risk bullet instead of the table', validPrBody.replace(/^\|.*\n/gm, '').replace('## Screenshots', '- Shell parsing.\n## Screenshots')],
     ['an empty section', validPrBody.replace('Unit tests for the rules.', '')],
     ['a missing section', validPrBody.replace('## Screenshots/Gifs\nNone: no UI change.', '')],
     ['no closing keyword', validPrBody.replace('Closes #44', 'See #44')],
@@ -223,6 +226,7 @@ describe('rules match the GitHub templates', () => {
     const template = read('.github/PULL_REQUEST_TEMPLATE.md');
     expect([...template.matchAll(/^## (.+)$/gm)].map((m) => m[1])).toEqual(PR_SECTIONS);
     expect([...template.matchAll(/^- \[ \] (.+)$/gm)].map((m) => m[1])).toEqual(PR_CHECKLIST);
+    expect(template).toContain(`${RISK_TABLE_HEADER}\n|---|---|---|---|\n`);
   });
 
   it.each(Object.entries(ISSUE_TEMPLATES))('%s.yml has the same prefix, label and required fields', (name, rule) => {
