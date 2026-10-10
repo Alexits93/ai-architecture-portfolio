@@ -36,12 +36,19 @@ export const makeRepo = (): string => {
 
 // Claude Code sets CLAUDE_PROJECT_DIR for hooks (https://code.claude.com/docs/en/hooks); without it the
 // gate protects the paths in every repo.
-export const gate = (command: string, cwd: string, extraEnv: Record<string, string> = {}) => {
+const run = (input: object, extraEnv: Record<string, string>) => {
   const env = { ...process.env };
   delete env.CLAUDE_PROJECT_DIR;
   return spawnSync('node', [path.join(process.cwd(), '.claude/hooks/sandbox-gate.mjs')], {
-    input: JSON.stringify({ cwd, tool_input: { command } }),
+    input: JSON.stringify(input),
     env: { ...env, ...extraEnv },
     encoding: 'utf8',
   });
 };
+
+export const gate = (command: string, cwd: string, extraEnv: Record<string, string> = {}) =>
+  run({ cwd, tool_input: { command } }, extraEnv);
+
+// The Bash tool sends dangerouslyDisableSandbox as a top-level input when Claude retries a call unsandboxed.
+export const gateUnsandboxed = (command: string, cwd: string, disable = true) =>
+  run({ cwd, tool_input: { command, dangerouslyDisableSandbox: disable } }, {});

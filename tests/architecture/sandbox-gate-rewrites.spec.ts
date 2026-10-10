@@ -2,7 +2,7 @@ import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { gate, makeRepo } from './sandbox-gate.fixture';
+import { gate, gateUnsandboxed, makeRepo } from './sandbox-gate.fixture';
 
 // Each row rewrites CLAUDE.md, the protected file of the makeRepo fixture.
 const REWRITES: [string, string][] = [
@@ -49,8 +49,9 @@ const REWRITES: [string, string][] = [
 ];
 
 // The sandbox mounts sandbox.filesystem.denyWrite paths read-only, so a sandboxed git command that
-// rewrites them half-applies. The hook cannot see whether a call is sandboxed (Bash tool_input has no
-// such field, https://code.claude.com/docs/en/hooks), so it blocks whenever protected paths would change.
+// rewrites them half-applies. An unsandboxed call carries dangerouslyDisableSandbox: true, a top-level
+// Bash input (https://code.claude.com/docs/en/permissions, "Match by input parameter"), and the
+// permission mode reviews it (https://code.claude.com/docs/en/sandboxing), so only sandboxed calls block.
 describe('sandbox-gate hook on worktree-rewriting git commands', () => {
   let repo = '';
   const gateIn = (command: string) => gate(command, repo);
@@ -84,6 +85,31 @@ describe('sandbox-gate hook on worktree-rewriting git commands', () => {
     ['a command lookup', 'command -v git'],
   ])('allows %s', (_label, command) => {
     expect(gateIn(command).status).toBe(0);
+  });
+});
+
+// Unsandboxed, the read-only mount is gone, so a rewrite applies in full; flag reasons still block.
+describe('sandbox-gate hook on unsandboxed calls', () => {
+  let repo = '';
+  beforeAll(() => {
+    repo = makeRepo();
+  });
+  afterAll(() => fs.rmSync(repo, { recursive: true, force: true }));
+
+  it('names the unsandboxed retry in the block message', () => {
+    expect(gate('git switch gates', repo).stderr).toContain('dangerouslyDisableSandbox');
+  });
+
+  it.each(['git switch gates', 'git merge gates'])('allows %s run unsandboxed', (command) => {
+    expect(gateUnsandboxed(command, repo).status).toBe(0);
+  });
+
+  it('blocks a rewrite when dangerouslyDisableSandbox is false', () => {
+    expect(gateUnsandboxed('git switch gates', repo, false).status).toBe(2);
+  });
+
+  it('still blocks a force push run unsandboxed', () => {
+    expect(gateUnsandboxed('git push --force origin b', repo).status).toBe(2);
   });
 });
 
