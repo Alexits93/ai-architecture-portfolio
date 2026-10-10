@@ -1,3 +1,10 @@
+## [1.13.2](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.13.1...v1.13.2) (2026-10-10)
+
+
+### Bug Fixes
+
+* **content:** import z from astro/zod instead of astro:content ([#105](https://github.com/Alexits93/ai-architecture-portfolio/issues/105)) ([4deead1](https://github.com/Alexits93/ai-architecture-portfolio/commit/4deead19de1dfa42b07854391a78d0bc8e82a8b4)), closes [#93](https://github.com/Alexits93/ai-architecture-portfolio/issues/93)
+
 ## [1.13.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.13.0...v1.13.1) (2026-10-10)
 
 
