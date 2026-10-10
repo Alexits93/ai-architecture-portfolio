@@ -25,17 +25,18 @@ describe('Header Widget (Astro)', () => {
     expect(svg).not.toBeNull();
   });
 
-  it('should render a theme toggle button with appropriate attributes', async () => {
+  // APG button pattern: a toggle keeps its label and exposes its state with aria-pressed.
+  it('should render the theme toggle as a not-pressed "Dark theme" toggle button', async () => {
     const html = await container.renderToString(Header);
     const dom = new JSDOM(html);
     const doc = dom.window.document;
-    
+
     const themeBtn = doc.querySelector('button.theme-toggle');
-    expect(themeBtn).not.toBeNull();
-    
+    expect(themeBtn?.getAttribute('aria-label')).toBe('Dark theme');
+    expect(themeBtn?.getAttribute('aria-pressed')).toBe('false');
+
     const img = themeBtn?.querySelector('img.icon');
-    expect(img).not.toBeNull();
-    expect(img?.getAttribute('alt')).toContain('mode icon');
+    expect(img?.getAttribute('alt')).toBe('');
   });
 
   it('should render the menu toggle button', async () => {
