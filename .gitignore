@@ -9,3 +9,4 @@ playwright-report/
 test-results/
 pr-body.md
 .claude/settings.local.json
+.claude/skills/*/evals/results/
