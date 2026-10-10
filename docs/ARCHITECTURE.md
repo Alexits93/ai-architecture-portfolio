@@ -16,6 +16,7 @@ flowchart TD
 
     subgraph Layouts["src/layouts"]
         Base["BaseLayout.astro"]
+        PostLayout["BlogPostLayout.astro"]
     end
 
     subgraph Widgets["src/widgets"]
@@ -49,7 +50,9 @@ flowchart TD
         Config["config"]
     end
 
-    Index & CV & BlogIndex & BlogPost & Cookie & Privacy --> Base
+    Index & CV & BlogIndex & Cookie & Privacy --> Base
+    BlogPost --> PostLayout
+    PostLayout --> Base & Config
     Base --> Header & Menu & SeoHead
     Index --> AboutMe & Featured & Recommended & Config
     CV --> AboutMe & Experience
