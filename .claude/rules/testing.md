@@ -29,3 +29,5 @@ Per-file 100% lines, branches, functions and statements on `src/**` except `src/
 
 ## Visual check
 Run `pnpm build`, then a short Playwright script that saves a screenshot, then read the PNG.
+
+A failure that shows up only in CI is reproduced locally, and its screenshot read, before any code change. Local WebKit runs in the Playwright image of the installed version under Podman (`run-server`, https://playwright.dev/docs/docker). Never push a guessed fix to test it in CI.
