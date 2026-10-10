@@ -17,7 +17,7 @@ Write the failing test first, then the code (TDD). While a feature is in progres
 
 ## AstroContainer
 - Keep `environment: 'node'` in `vitest.config.ts`; jsdom strips the compiler metadata AstroContainer needs. Parse the rendered string with `new JSDOM(html)` inside the test.
-- AstroContainer inherits `site` from `astro.config.mjs`. Do not write tests that expect `Astro.site` to be undefined.
+- AstroContainer does not read `astro.config.mjs`: `Astro.site` is undefined unless the spec passes `astroConfig: { site }` to `create()`. Pass it whenever the render reaches `SeoHead` or anything else that reads `Astro.site`.
 - Assert on the exact classes child components render (for example `.skill-tag`).
 
 ## Types and mocks
