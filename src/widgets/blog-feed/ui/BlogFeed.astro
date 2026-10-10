@@ -85,22 +85,24 @@ const uniqueTags = Array.from(allTags).sort();
 		color: var(--font-color);
 	}
 
+	/* A bare 1fr has an automatic minimum (minmax(auto, 1fr), CSS Grid 2 fr unit), so WebKit widened
+	   the column to the thumbnail image's intrinsic width and overflowed a 320 px viewport. */
 	.blog-grid {
 		display: grid;
 		gap: 2rem;
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr);
 		margin-top: 2rem;
 	}
 
 	@media (min-width: 768px) {
 		.blog-grid {
-			grid-template-columns: repeat(2, 1fr);
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 
 	@media (min-width: 1024px) {
 		.blog-grid {
-			grid-template-columns: repeat(3, 1fr);
+			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
 	}
 

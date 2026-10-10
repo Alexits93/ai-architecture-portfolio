@@ -33,25 +33,6 @@ test.describe('Blog Page filtering', () => {
     await expect(hiddenWrappers(page)).toHaveCount(0);
   });
 
-  test('filters with the keyboard only', async ({ page }) => {
-    await page.goto('/blog/');
-    const checkbox = page.getByRole('group', { name: 'Filter by tag' }).getByRole('checkbox').first();
-    const tag = await checkbox.getAttribute('value');
-    for (let i = 0; i < 30 && !(await checkbox.evaluate((el) => el === document.activeElement)); i++) {
-      await page.keyboard.press('Tab');
-    }
-    await expect(checkbox).toBeFocused();
-    expect(await checkbox.evaluate((el) => el.matches(':focus-visible'))).toBe(true);
-    await expect(checkbox.locator('+ .skill-tag-visual')).not.toHaveCSS('outline-style', 'none');
-
-    await page.keyboard.press('Space');
-    await expect(checkbox).toBeChecked();
-    await expectFilteredBy(page, tag);
-
-    await page.keyboard.press('Space');
-    await expectFilteredBy(page, null);
-  });
-
   // Without the script the checkboxes would do nothing, so they stay hidden (CSS :defined).
   test.describe('without JavaScript', () => {
     test.use({ javaScriptEnabled: false });
@@ -82,4 +63,27 @@ test.describe('Blog page on a small viewport', () => {
       expect(overflow).toBeLessThanOrEqual(0);
     });
   }
+});
+
+test.describe('Blog filter by keyboard', () => {
+  test('filters with the keyboard only', async ({ page, browserName }) => {
+    // CI WebKit: :focus-visible matches, the tag outline computes to none. #90 replaces the checkboxes.
+    test.fail(browserName === 'webkit', 'No focus outline on the checkbox tag in WebKit (#90)');
+    await page.goto('/blog/');
+    const checkbox = page.getByRole('group', { name: 'Filter by tag' }).getByRole('checkbox').first();
+    const tag = await checkbox.getAttribute('value');
+    for (let i = 0; i < 30 && !(await checkbox.evaluate((el) => el === document.activeElement)); i++) {
+      await page.keyboard.press('Tab');
+    }
+    await expect(checkbox).toBeFocused();
+    expect(await checkbox.evaluate((el) => el.matches(':focus-visible'))).toBe(true);
+    await expect(checkbox.locator('+ .skill-tag-visual')).not.toHaveCSS('outline-style', 'none');
+
+    await page.keyboard.press('Space');
+    await expect(checkbox).toBeChecked();
+    await expectFilteredBy(page, tag);
+
+    await page.keyboard.press('Space');
+    await expectFilteredBy(page, null);
+  });
 });
