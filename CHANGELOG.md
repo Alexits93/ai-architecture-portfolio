@@ -1,3 +1,10 @@
+## [1.18.2](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.18.1...v1.18.2) (2026-10-10)
+
+
+### Bug Fixes
+
+* **theme:** follow the OS theme until the visitor picks one ([#131](https://github.com/Alexits93/ai-architecture-portfolio/issues/131)) ([38505ee](https://github.com/Alexits93/ai-architecture-portfolio/commit/38505ee5785883a9008587f5f50b68458c884707)), closes [#129](https://github.com/Alexits93/ai-architecture-portfolio/issues/129) [#88](https://github.com/Alexits93/ai-architecture-portfolio/issues/88) [#91](https://github.com/Alexits93/ai-architecture-portfolio/issues/91)
+
 ## [1.18.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.18.0...v1.18.1) (2026-10-10)
 
 
