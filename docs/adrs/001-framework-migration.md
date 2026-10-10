@@ -1,13 +1,13 @@
-# ADR 001: Framework Migration (Next.js/Vercel -> Astro, static hosting)
+# ADR 001: Framework Migration (web components -> Astro, static hosting)
 
 ## Context
-The previous iteration of this portfolio relied on Next.js, Vercel, and Tailwind. In recent years, Next.js has suffered from RCE vulnerabilities, Vercel has faced supply-chain concerns, and the Tailwind team has shrunk significantly.
+The legacy site was a web-components repo: every component was a custom element with its own script and styles, meant to ship as a separate package.
 
 ## Decision
-Migrate to **Astro** with `output: 'static'`: pure static HTML, hosted on **statichost.eu** (Hobby plan, `www.pa-tech.dev` canonical, 301 from the apex). Security headers live in `public/_headers`.
+Migrate to **Astro** with `output: 'static'`: pure static HTML, hosted on **statichost.eu** (Hobby plan, `www.pa-tech.dev` canonical, 301 from the apex). Security headers live in `public/_headers`. The code follows Astro's conventions, not the legacy component breakdown (ADR 002).
 
 ## Consequences
 - **Positive:** Near-zero attack surface.
-- **Positive:** Perfect Lighthouse scores and SEO for the AI blog.
-- **Positive:** Absolute control over pristine vanilla CSS without utility-class bloat.
-- **Negative:** Loss of Vercel's out-of-the-box dynamic OG image generation (mitigated by implementing `Satori` in Astro).
+- **Positive:** Server-rendered HTML with zero JavaScript by default, so good Lighthouse and SEO results for the blog.
+- **Positive:** Full control over vanilla CSS without utility-class bloat.
+- **Negative:** Open Graph images need a build step (`Satori` in Astro).

@@ -1,10 +1,10 @@
 # Architecture
 
-Feature-Sliced Design: `pages > widgets > features > entities > shared`. A layer imports only from layers below it (ESLint enforced). The map shows cross-slice imports; update it when a slice or page is added or removed.
+Target structure: Astro's conventions (ADR 002), imports flow `pages > layouts > components > lib` (ESLint enforced). The tree still holds the legacy folders `src/widgets`, `src/features`, `src/entities` and `src/shared`, which Story #76 moves. The map shows today's imports between folders; update it when a page, layout or component is added or removed.
 
 ```mermaid
 flowchart TD
-    subgraph Pages
+    subgraph Pages["src/pages"]
         Index["index.astro"]
         CV["cv.astro"]
         BlogIndex["blog/index.astro"]
@@ -14,7 +14,7 @@ flowchart TD
         OG["og.png.ts"]
     end
 
-    subgraph Widgets
+    subgraph Widgets["src/widgets"]
         Header["header"]
         Menu["navigator-menu"]
         Footer["footer"]
@@ -28,15 +28,15 @@ flowchart TD
         PrivacyW["privacy-policy"]
     end
 
-    subgraph Features
+    subgraph Features["src/features"]
         Filter["blog-post-filter"]
     end
 
-    subgraph Entities
+    subgraph Entities["src/entities"]
         Post["blog-post"]
     end
 
-    subgraph Shared
+    subgraph Shared["src/shared"]
         SkillTag["ui/skill-tag"]
         ArticleNav["ui/article-navigator"]
         SeoHead["ui/seo-head"]

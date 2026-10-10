@@ -2,14 +2,17 @@
 paths:
   - "src/**"
 ---
-# Feature-Sliced Design
+# Project structure (ADR 002)
 
-Layers, highest to lowest: `app > pages > widgets > features > entities > shared`. A layer imports only from layers below it. `@conarti/eslint-plugin-feature-sliced` enforces this; the lint hook reports violations after each edit.
+Astro's documented conventions (https://docs.astro.build/en/basics/project-structure/), decided in `docs/adrs/002-astro-conventions.md`. Target folders under `src/`, created by Stories #53 and #76. Imports flow `pages/ > layouts/ > components/ > lib/`; ESLint `no-restricted-imports` blocks the reverse direction.
 
-- Import other slices through their `index.ts` public API with the `@/` alias, for example `import { Header } from '@/widgets/header'`. Deep paths such as `@/widgets/header/ui/Header.astro` break the slice boundary.
-- A new slice ships with an `index.ts`.
-- `src/pages/` is the FSD `pages` layer and may not import `app`. Global tokens and layout CSS therefore live in `src/shared/styles/`.
-- Pages stay compositional: no inline `<style>` in `src/pages/`. Page styling goes to `src/shared/styles/global.css` or a layout widget.
-- `shared` holds pure, domain-free code. Extract to `shared` on the third identical use, not earlier (AHA).
-- Validate input at module boundaries (content schemas, config) and trust it inside.
-- Adding or removing a slice or page: update the mermaid map in `docs/ARCHITECTURE.md` in the same change.
+- `pages/`: routes. Markup and scoped `<style>` used by one page stay in that page. A page-only component sits next to the page with a `_` prefix (`_TagFilter.astro`); the router ignores it.
+- `layouts/`: the document shell (`<html>`, `<head>`, global CSS import, header, menu, footer, `<slot />`) and nested layouts. Every page renders through a layout.
+- `components/`: only components that two or more routes or layouts use. A `ui/` subfolder holds domain-free building blocks.
+- `styles/`: tokens and global CSS (reset, tokens, base element styles). Component styles are scoped in the component.
+- `content/` and `src/content.config.ts`: repeated structured content as collections. A one-off page keeps its content in the page.
+- `lib/`: framework-free TypeScript. No `.astro` imports.
+- Import with the `@/` alias across folders, relative paths inside one folder.
+- Validate input at boundaries (content schemas, config) and trust it inside.
+- `src/shared`, `src/entities`, `src/features` and `src/widgets` are legacy folders that Story #76 moves into the target folders. New code goes to the target folders.
+- Adding or removing a page, layout or component: update the mermaid map in `docs/ARCHITECTURE.md` in the same change.
