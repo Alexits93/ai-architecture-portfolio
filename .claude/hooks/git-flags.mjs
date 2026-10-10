@@ -14,6 +14,8 @@ export const EXPANDS = /[$`]/;
 // (https://typicode.github.io/husky/how-to.html).
 const CONFIG = /hookspath|\.mirror|\.push=\+/i;
 export const HOOK_ENV = /^(HUSKY|HOME|XDG_CONFIG_HOME|GIT_CONFIG_\w*)=/;
+// An assignment anywhere in the line counts, since export HUSKY=0 before git reaches it too.
+export const setsHookEnv = (outer, commands) => outer || commands.flat().some((word) => HOOK_ENV.test(word));
 
 const commitFlag = ({ options }) => (options.includes('-n') || skipsHooks(options) ? 'skips the commit hooks' : null);
 

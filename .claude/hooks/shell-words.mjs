@@ -8,8 +8,6 @@ const TOKEN =
   /'([^']*)'?|"((?:[^"\\]|\\[\s\S])*)"?|\\([\s\S])|([;&|\n])|([^\S\n]+|\d*[<>][<>&|]?[^\S\n]*(?:'[^']*'|"(?:[^"\\]|\\[\s\S])*"|[^\s'"\\;&|<>])*)|([^\s'"\\;&|<>]+)/g;
 const SEP = Symbol('separator');
 const BLANK = Symbol('blank');
-const ASSIGNMENT = /^[A-Za-z_][A-Za-z0-9_]*=/;
-const WRAPPERS = new Set(['env', 'command']);
 
 const partOf = (m) => m[1] ?? m[2]?.replace(/\\([$`"\\\n])/g, '$1') ?? m[3] ?? m[6];
 
@@ -26,23 +24,6 @@ export const commands = (line) =>
   splitOn([...line.replaceAll('\\\n', '').matchAll(TOKEN)].map((m) => partOf(m) ?? (m[4] ? SEP : BLANK)), SEP)
     .map((pieces) => splitOn(pieces, BLANK).filter((parts) => parts.length > 0).map((parts) => parts.join('')))
     .filter((words) => words.length > 0);
-
-// env -u takes a value; command -v and -V only look the command up, so nothing runs.
-const skipOptions = (wrapper, words) => {
-  if (wrapper === 'command' && /^-[vV]$/.test(words[0] ?? '')) return [];
-  const start = words.findIndex((word, i) => !word.startsWith('-') && words[i - 1] !== '-u');
-  return start === -1 ? [] : words.slice(start);
-};
-
-/** @returns {{ env: Record<string, string>, words: string[] }} the command after leading assignments and the env and command wrappers */
-export const unwrap = (env, words) => {
-  const [word = '', ...rest] = words;
-  if (ASSIGNMENT.test(word)) {
-    const eq = word.indexOf('=');
-    return unwrap({ ...env, [word.slice(0, eq)]: word.slice(eq + 1) }, rest);
-  }
-  return WRAPPERS.has(word) ? unwrap(env, skipOptions(word, rest)) : { env, words };
-};
 
 export const beforeDash = (args) => {
   const dash = args.indexOf('--');

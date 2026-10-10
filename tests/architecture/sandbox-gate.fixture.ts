@@ -34,8 +34,14 @@ export const makeRepo = (): string => {
   return repo;
 };
 
-export const gate = (command: string, cwd: string) =>
-  spawnSync('node', [path.join(process.cwd(), '.claude/hooks/sandbox-gate.mjs')], {
+// Claude Code sets CLAUDE_PROJECT_DIR for hooks (https://code.claude.com/docs/en/hooks); without it the
+// gate protects the paths in every repo.
+export const gate = (command: string, cwd: string, extraEnv: Record<string, string> = {}) => {
+  const env = { ...process.env };
+  delete env.CLAUDE_PROJECT_DIR;
+  return spawnSync('node', [path.join(process.cwd(), '.claude/hooks/sandbox-gate.mjs')], {
     input: JSON.stringify({ cwd, tool_input: { command } }),
+    env: { ...env, ...extraEnv },
     encoding: 'utf8',
   });
+};

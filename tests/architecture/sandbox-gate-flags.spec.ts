@@ -100,3 +100,50 @@ describe('sandbox-gate hook on other ways to skip hooks or force-push', () => {
     expect(gate(command, repo).status).toBe(0);
   });
 });
+
+// The hook strips the wrappers Claude Code strips (https://code.claude.com/docs/en/permissions, Wrappers)
+// plus exec and flagged xargs, with their own options: timeout(1), nice(1), stdbuf(1) and env(1) from GNU
+// coreutils 9.12, xargs(1) from GNU findutils 4.11.0, help exec and help time in bash 5.3.20. eval, sh -c
+// and bash -c stay open (#94).
+describe('sandbox-gate hook on wrapped git calls', () => {
+  let repo = '';
+  beforeAll(() => {
+    repo = makeRepo();
+  });
+  afterAll(() => fs.rmSync(repo, { recursive: true, force: true }));
+
+  it.each([
+    'timeout 9 git push origin b --force',
+    'timeout -s KILL 9 git commit -n -m x',
+    'timeout --kill-after=5 9 git commit -n -m x',
+    'nohup git commit -m x -n',
+    'nice -n 5 git commit -n -m x',
+    'nice git commit -m x -n',
+    'stdbuf -oL git commit -n -m x',
+    'stdbuf -o L git commit -n -m x',
+    'time -p git push -f origin b',
+    'noglob git commit -n -m x',
+    'builtin git commit -n -m x',
+    'exec git commit -n -m x',
+    'exec -a x git commit -n -m x',
+    'xargs -n1 git commit -n -m x',
+    'xargs -I {} git commit -n -m {}',
+    'xargs --max-args=1 git commit -n -m x',
+    'env -u FOO git commit -n -m x',
+    'env --unset FOO git commit -n -m x',
+    'env -S "git commit -n -m x"',
+    'env --split-string="git commit -n -m x"',
+    'timeout 9 env HUSKY=0 git commit -m x',
+  ])('blocks %s', (command) => {
+    const result = gate(command, repo);
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain('Blocked by .claude/hooks/sandbox-gate.mjs');
+  });
+
+  it.each(['timeout 9 git push origin b', 'xargs -n1 git log', 'nice -n 5 git commit -m "-n"', 'stdbuf -oL git status'])(
+    'allows %s',
+    (command) => {
+      expect(gate(command, repo).status).toBe(0);
+    },
+  );
+});

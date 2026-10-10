@@ -4,8 +4,8 @@
 // widens far more than the one command. This hook blocks those calls instead.
 // It also blocks git calls that skip hooks or force-push, which permission rules cannot match in a
 // short-flag cluster (https://code.claude.com/docs/en/permissions). The deny rules in settings.json cover
-// the wrapper, assignment and subshell forms that Claude Code strips before matching. Neither is a
-// security boundary: eval, sh -c and wrappers before a later flag position still pass (#84).
+// the subshell forms Claude Code checks before matching. Neither is a security boundary: eval, sh -c and
+// bash -c still pass (#94).
 // Exit 2 blocks the tool call and sends stderr to Claude. A crash, including a failed import, also
 // exits 2, so the gate never fails open.
 import { spawnSync } from 'node:child_process';
@@ -17,6 +17,10 @@ import { basename, join, relative, resolve } from 'node:path';
 let shell;
 /** @type {typeof import('./git-flags.mjs')} */
 let flags;
+/** @type {typeof import('./wrappers.mjs')} */
+let wrappers;
+// Git common dir of CLAUDE_PROJECT_DIR (https://code.claude.com/docs/en/hooks): worktrees count; unset, every repo does.
+let project = null;
 
 // The sandbox mounts sandbox.filesystem.denyWrite read-only, so a sandboxed git command that rewrites
 // one of those paths half-applies. The hook cannot tell whether a call is sandboxed (the Bash tool_input
@@ -27,7 +31,7 @@ const CREATE = new Set(['-c', '-C', '-b', '-B', '--create', '--force-create', '-
 // git apply modes that leave the worktree alone.
 const APPLY_READ_ONLY = new Set(['--cached', '--check', '--stat', '--numstat', '--summary']);
 // Global options whose value may be the next word (https://git-scm.com/docs/git).
-const GLOBAL_VALUE = new Set(['-C', '-c', '--git-dir', '--work-tree', '--namespace', '--config-env']);
+const GLOBAL_VALUE = new Set(['-C', '-c', '--git-dir', '--work-tree', '--namespace', '--config-env', '--attr-source']);
 const MAX_ALIAS_DEPTH = 10;
 // Options that write even in the listing modes; git accepts any unambiguous prefix, so --ap is --apply.
 const isApply = (option) => flags.longOption('--apply', '--ap'.length)(option);
@@ -160,8 +164,12 @@ const aliasReason = (call, args, depth) => {
 // Shell expansion, globs and pathspec magic resolve after the hook runs, so it cannot rule them out.
 const UNRESOLVED = /[$`*?[]|^:/;
 
+const COMMON_DIR = ['rev-parse', '--path-format=absolute', '--git-common-dir'];
+// The sandbox mounts denyWrite read-only relative to the project, so other repos have no protected paths.
+const leavesProtected = (call, args) => READ_ONLY.get(call.sub)?.(args) || (project !== null && gitOut(call, COMMON_DIR) !== project);
+
 const rewriteReason = (call, args) => {
-  if (READ_ONLY.get(call.sub)?.(args)) return null;
+  if (leavesProtected(call, args)) return null;
   const unresolved = args.filter((a) => UNRESOLVED.test(a));
   if (unresolved.length > 0) return { flag: false, reason: `git ${call.sub} names ${unresolved.join(', ')}, which the hook cannot resolve` };
   const reason = REASONS.get(call.sub)(call, args);
@@ -184,15 +192,14 @@ const gitReason = (ctx, words, depth) => {
   return REASONS.has(call.sub) ? rewriteReason(call, args) : aliasReason(call, args, depth);
 };
 
-// An assignment anywhere in the line counts, since export HUSKY=0 before git reaches it too.
-const setsHookEnv = (ctx, commands) => ctx.hookEnv || commands.flat().some((word) => flags.HOOK_ENV.test(word));
-
 const lineReason = (ctx, line, depth) => {
   const commands = shell.commands(line);
-  const hookEnv = setsHookEnv(ctx, commands);
+  const hookEnv = flags.setsHookEnv(ctx.hookEnv, commands);
+  let cwd = ctx.cwd;
   for (const command of commands) {
-    const { env, words } = shell.unwrap(ctx.env, command);
-    const reason = basename(words[0] ?? '') === 'git' ? gitReason({ ...ctx, env, hookEnv }, words.slice(1), depth) : null;
+    const { env, cwd: dir, words } = wrappers.unwrap({ env: ctx.env, cwd }, command);
+    cwd = wrappers.cdTo({ env, cwd }, words);
+    const reason = basename(words[0] ?? '') === 'git' ? gitReason({ ...ctx, env, cwd: dir, hookEnv }, words.slice(1), depth) : null;
     if (reason) return reason;
   }
   return null;
@@ -201,6 +208,8 @@ const lineReason = (ctx, line, depth) => {
 try {
   shell = await import('./shell-words.mjs');
   flags = await import('./git-flags.mjs');
+  wrappers = await import('./wrappers.mjs');
+  if (process.env.CLAUDE_PROJECT_DIR) project = gitOut({ cwd: process.env.CLAUDE_PROJECT_DIR, env: process.env, globals: [] }, COMMON_DIR);
   const settings = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'settings.json'), 'utf8'));
   // `gh issue *` matches `gh issue` with or without arguments, the same as a Bash(...) rule.
   const prefixes = (settings.sandbox?.excludedCommands ?? []).map((entry) => entry.replace(/\s\*$/, ''));

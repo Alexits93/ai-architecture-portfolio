@@ -1,3 +1,4 @@
+import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
@@ -104,6 +105,53 @@ describe('sandbox-gate hook on git calls that name the repo', () => {
 
   it('allows a switch through -C to unprotected changes', () => {
     expect(gate(`git -C ${repo} switch docs`, path.dirname(repo)).status).toBe(0);
+  });
+
+  // env -C (coreutils 9.12) and cd move the directory git runs in; --attr-source takes a value (git(1) 2.56.0).
+  it.each([
+    ['env -C', (repoDir: string) => `env -C ${repoDir} git switch gates`],
+    ['env --chdir=', (repoDir: string) => `env --chdir=${repoDir} git switch gates`],
+    ['cd', (repoDir: string) => `cd ${repoDir} && git switch gates`],
+    ['cd into a quoted variable', () => 'cd "$REPO" && git switch gates'],
+  ])('blocks a switch that reaches the repo through %s', (_label, command) => {
+    expect(gate(command(repo), path.dirname(repo), { REPO: repo }).status).toBe(2);
+  });
+
+  it('blocks a switch after --attr-source', () => {
+    expect(gate('git --attr-source HEAD switch gates', repo).status).toBe(2);
+  });
+});
+
+// Only the project's repo has read-only paths: the sandbox mounts denyWrite relative to the project, and
+// CLAUDE_PROJECT_DIR stays at the session's project root (https://code.claude.com/docs/en/hooks).
+describe('sandbox-gate hook on other repos', () => {
+  let repo = '';
+  let scratch = '';
+  beforeAll(() => {
+    repo = makeRepo();
+    scratch = makeRepo();
+  });
+  afterAll(() => {
+    fs.rmSync(repo, { recursive: true, force: true });
+    fs.rmSync(scratch, { recursive: true, force: true });
+  });
+
+  it('allows rewriting a protected path in a scratch repo after cd', () => {
+    expect(gate(`cd ${scratch} && git checkout -- CLAUDE.md`, repo, { CLAUDE_PROJECT_DIR: repo }).status).toBe(0);
+  });
+
+  it('blocks a rewrite in the project repo after cd back', () => {
+    expect(gate(`cd ${scratch} && cd ${repo} && git switch gates`, path.dirname(repo), { CLAUDE_PROJECT_DIR: repo }).status).toBe(2);
+  });
+
+  it('blocks a rewrite in a worktree of the project repo', () => {
+    const tree = path.join(path.dirname(repo), `${path.basename(repo)}-tree`);
+    spawnSync('git', ['worktree', 'add', '-q', '--detach', tree, 'base'], { cwd: repo });
+    try {
+      expect(gate('git switch gates', tree, { CLAUDE_PROJECT_DIR: repo }).status).toBe(2);
+    } finally {
+      fs.rmSync(tree, { recursive: true, force: true });
+    }
   });
 });
 
