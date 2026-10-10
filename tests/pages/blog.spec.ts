@@ -41,6 +41,7 @@ test.describe('Blog Page filtering', () => {
       await page.keyboard.press('Tab');
     }
     await expect(checkbox).toBeFocused();
+    expect(await checkbox.evaluate((el) => el.matches(':focus-visible'))).toBe(true);
     await expect(checkbox.locator('+ .skill-tag-visual')).not.toHaveCSS('outline-style', 'none');
 
     await page.keyboard.press('Space');
@@ -70,6 +71,13 @@ test.describe('Blog page on a small viewport', () => {
       await page.setViewportSize({ width: 320, height: 800 });
       await page.goto('/blog/');
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      // Names every element past the right edge, so a failure shows the cause.
+      const pastEdge = await page.evaluate(() =>
+        [...document.querySelectorAll('body *')]
+          .filter((el) => el.getBoundingClientRect().right > document.documentElement.clientWidth + 1)
+          .map((el) => `${el.tagName.toLowerCase()}.${[...el.classList].join('.')} right=${Math.round(el.getBoundingClientRect().right)}`),
+      );
+      expect(pastEdge).toEqual([]);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow).toBeLessThanOrEqual(0);
     });
