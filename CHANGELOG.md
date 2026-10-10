@@ -1,3 +1,10 @@
+## [1.13.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.13.0...v1.13.1) (2026-10-10)
+
+
+### Bug Fixes
+
+* **claude:** let a reviewed unsandboxed git call rewrite protected paths ([#102](https://github.com/Alexits93/ai-architecture-portfolio/issues/102)) ([9e415c1](https://github.com/Alexits93/ai-architecture-portfolio/commit/9e415c13c2679d3576cb17de9de9914570fa6350)), closes [#101](https://github.com/Alexits93/ai-architecture-portfolio/issues/101)
+
 # [1.13.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.12.1...v1.13.0) (2026-10-10)
 
 
