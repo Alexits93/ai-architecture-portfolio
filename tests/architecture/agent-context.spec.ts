@@ -166,6 +166,11 @@ describe('Learned agent guards', () => {
     expect(read('CLAUDE.md')).toMatch(/^5\. Report a subagent or skill result only from its task notification\..*$/m);
   });
 
+  // 2026-10-10: Claude sized eval and sh -c as costly unread; the owner deferred them on that (#94). Pinned.
+  it('keeps the sizing rule in CLAUDE.md', () => {
+    expect(read('CLAUDE.md')).toMatch(/^- Size a fix from the code it would change, read in this session, before you recommend doing or deferring it\..*$/m);
+  });
+
   it('registers the sandbox gate hook', () => {
     expect(read('.claude/settings.json')).toContain('.claude/hooks/sandbox-gate.mjs');
   });

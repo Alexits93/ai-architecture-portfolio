@@ -36,6 +36,7 @@ Path-scoped rules in `.claude/rules/` load automatically when you touch matching
 - A new dependency needs evidence that no native option exists, and the user approves it.
 - Research before acting: before you use or recommend any tool, API or config key, read its official docs for the version installed here, and cite the URL with that version in the commit and in the Task's Sources. The installed version must be the latest stable release, or the latest usable one where a needed API is not stable yet. `.github/workflows/outdated.yml` reports drift weekly and never blocks a PR. A link you have not read in this session is not a source. Training data lags this stack (Astro 7, pnpm 12, current Baseline features).
 - Principles, methods and patterns (architecture, testing, tooling choices): judge their fit for this project with evidence, not popularity, and ask the critic or domain-expert subagent where it helps.
+- Size a fix from the code it would change, read in this session, before you recommend doing or deferring it. The owner decides on that estimate.
 - No `any`, no `unknown`, no `as` casts to bypass types (ESLint enforced).
 - A new architectural rule ships with the ESLint, TypeScript or test gate that enforces it. A rule that exists only in Markdown is a suggestion.
 - Keep changes minimal: no refactors, abstractions or defensive code beyond the task.
