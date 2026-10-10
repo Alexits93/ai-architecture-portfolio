@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.17.0...v1.18.0) (2026-10-10)
+
+
+### Features
+
+* **seo:** build the sitemap with @astrojs/sitemap ([#128](https://github.com/Alexits93/ai-architecture-portfolio/issues/128)) ([d7b5111](https://github.com/Alexits93/ai-architecture-portfolio/commit/d7b5111b8ceee565704f18e3cccb683b613c3e55)), closes [#127](https://github.com/Alexits93/ai-architecture-portfolio/issues/127)
+
 # [1.17.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.16.0...v1.17.0) (2026-10-10)
 
 
