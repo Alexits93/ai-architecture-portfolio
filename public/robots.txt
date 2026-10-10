@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://www.pa-tech.dev/sitemap.xml
+Sitemap: https://www.pa-tech.dev/sitemap-index.xml

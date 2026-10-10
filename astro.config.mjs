@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
@@ -7,6 +8,9 @@ export default defineConfig({
   site: 'https://www.pa-tech.dev',
   // Legacy permalinks were `/blog/:slug/`. One policy, enforced, preserves link equity.
   trailingSlash: 'always',
+  // Sitemap from every built route; the site uses none of the optional namespaces
+  // (https://docs.astro.build/en/guides/integrations-guide/sitemap/).
+  integrations: [sitemap({ namespaces: { news: false, xhtml: false, image: false, video: false } })],
   // Shiki writes inline style attributes, which the hashed style-src blocks. Prism emits classes only;
   // BlogPostReader styles the token classes (https://docs.astro.build/en/reference/configuration-reference/#securitycsp).
   markdown: {
