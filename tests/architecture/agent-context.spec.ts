@@ -160,6 +160,12 @@ describe('Learned agent guards', () => {
     expect(read('CLAUDE.md')).toMatch(/^4\. Use the whole host .*Linux.*VS Code.*Podman.*Say which of the three you used\.$/m);
   });
 
+  // 2026-10-10: Claude wrote a /code-review result into its reply before the forked skill finished, and
+  // the owner decided on it. No hook reads reply text, so the line itself is pinned.
+  it('keeps the background-result base rule in CLAUDE.md', () => {
+    expect(read('CLAUDE.md')).toMatch(/^5\. Report a subagent or skill result only from its task notification\..*$/m);
+  });
+
   it('registers the sandbox gate hook', () => {
     expect(read('.claude/settings.json')).toContain('.claude/hooks/sandbox-gate.mjs');
   });

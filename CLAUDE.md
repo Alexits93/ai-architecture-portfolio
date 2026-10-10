@@ -9,6 +9,7 @@ Plan: the open GitHub issues (Epic > Story > Task as native sub-issues, order as
 2. Auto memory is off (`autoMemoryEnabled: false`). Repository history and knowledge live only in git history (`git log -S`, `git show`) and GitHub issues and PRs (`gh issue view`, `gh pr view`). Never work from memory, training data or assumption: before starting a task, read the relevant history, issues, code and official docs, and say what you verified.
 3. Live check before every "done": `pnpm build`, run the site (`pnpm preview`, or headed Playwright so the owner can watch), use the change in a real browser, read the screenshots, and report what you saw. Passing tests alone are not done.
 4. Use the whole host before you call something uncheckable or hand it to the owner: Linux (KDE Wayland, AT-SPI, Orca), VS Code (Problems panel, Playwright, Vitest and Firefox debugger extensions) and Podman (containers for browsers and services the host lacks). Say which of the three you used.
+5. Report a subagent or skill result only from its task notification. Until it arrives, say it is still running and do not ask the owner to decide on it.
 
 ## Commands
 - `pnpm check`: lint + `astro check` + unit tests with coverage. Run it before every commit and show its result as evidence.
