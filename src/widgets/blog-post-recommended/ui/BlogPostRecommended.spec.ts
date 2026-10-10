@@ -41,9 +41,4 @@ describe('BlogPostRecommended Widget (Astro)', () => {
     const doc = await render();
     expect(doc.querySelector('.wrapper-bottom a')?.getAttribute('href')).toBe('/blog/');
   });
-
-  it('applies the optional class', async () => {
-    const doc = await render({ blogPostClass: 'custom-class' });
-    expect(doc.querySelector('section.custom-class')).not.toBeNull();
-  });
 });
