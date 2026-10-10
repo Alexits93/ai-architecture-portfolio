@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.14.0...v1.14.1) (2026-10-10)
+
+
+### Bug Fixes
+
+* **og:** draw the site title and description from SITE ([#112](https://github.com/Alexits93/ai-architecture-portfolio/issues/112)) ([84dc6d4](https://github.com/Alexits93/ai-architecture-portfolio/commit/84dc6d415fe5202eab39201f8b9eb4f762e76590)), closes [#111](https://github.com/Alexits93/ai-architecture-portfolio/issues/111)
+
 # [1.14.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.13.3...v1.14.0) (2026-10-10)
 
 
