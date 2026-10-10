@@ -32,7 +32,6 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 const ogImageUrl = new URL(ogImagePath, Astro.site).href;
 ---
 
-<script is:inline src="/theme.js"></script>
 <title>{title}</title>
 <meta name="description" content={description} />
 <meta name="author" content={SITE.author} />

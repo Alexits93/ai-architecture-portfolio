@@ -1,12 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
-import { Header } from '@/widgets/header';
-import { NavigatorMenu } from '@/widgets/navigator-menu';
+import BaseLayout from '@/layouts/BaseLayout.astro';
 import { Footer } from '@/widgets/footer';
 import { BlogPostRecommended } from '@/widgets/blog-post-recommended';
 import BlogPostReader from '@/widgets/blog-post-reader/ui/BlogPostReader.astro';
-import SeoHead from '@/shared/ui/seo-head/SeoHead.astro';
-import '@/shared/styles/global.css';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -19,32 +16,11 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-		<link rel="manifest" href="/site.webmanifest">
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-        
-        <SeoHead
-            title={`${post.data.title} - Patrik Alexits`}
-            description={post.data.description}
-            type="article"
-        />
-	</head>
-	<body>
-        <Header />
-		<NavigatorMenu />
-        
-        <main>
-            <BlogPostReader post={post} />
-            <BlogPostRecommended />
-        </main>
+<BaseLayout title={`${post.data.title} | Patrik Alexits`} description={post.data.description} type="article">
+	<main>
+		<BlogPostReader post={post} />
+		<BlogPostRecommended />
+	</main>
 
-        <Footer />
-	</body>
-</html>
+	<Footer />
+</BaseLayout>

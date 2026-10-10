@@ -25,4 +25,11 @@ describe('Project Structure & Tooling Check (Deterministic Guardrails)', () => {
     ).filter((f) => fs.statSync(path.join(process.cwd(), f)).isFile());
     expect(files.filter((f) => /feature-sliced|\bFSD\b/i.test(fs.readFileSync(f, 'utf8')))).toEqual([]);
   });
+
+  // Every page renders through a layout (ADR 002, .claude/rules/architecture.md, #113).
+  it('keeps the document shell out of pages', () => {
+    const pages = fs.globSync('src/pages/**/*.astro', { cwd: process.cwd() });
+    expect(pages.length).toBeGreaterThan(5);
+    expect(pages.filter((f) => /<(html|head|body)[\s>]/.test(fs.readFileSync(f, 'utf8')))).toEqual([]);
+  });
 });

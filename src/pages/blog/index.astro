@@ -1,28 +1,10 @@
 ---
-import { Header } from '@/widgets/header';
-import { NavigatorMenu } from '@/widgets/navigator-menu';
+import BaseLayout from '@/layouts/BaseLayout.astro';
 import { BlogFeed } from '@/widgets/blog-feed';
-import '@/shared/styles/global.css';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-		<link rel="manifest" href="/site.webmanifest">
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<script is:inline src="/theme.js"></script>
-		<title>Blog - Patrik Alexits</title>
-	</head>
-	<body>
-		<Header />
-		<NavigatorMenu />
-		<main>
-			<BlogFeed />
-		</main>
-	</body>
-</html>
+<BaseLayout title="Blog | Patrik Alexits" description="Articles on frontend architecture, LLM coding agents and software engineering.">
+	<main>
+		<BlogFeed />
+	</main>
+</BaseLayout>
