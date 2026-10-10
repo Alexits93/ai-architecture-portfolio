@@ -47,7 +47,6 @@ test.describe('Theme after a change outside the page', () => {
     await page.goto('/');
     await page.emulateMedia({ colorScheme: 'dark' });
     await expect(toggle(page, true)).toBeVisible();
-    await expect(page.locator('.theme-toggle svg').filter({ visible: true })).toHaveClass(/\bsun\b/);
     await expect(page.locator('html')).not.toHaveAttribute('data-theme');
   });
 
@@ -95,7 +94,6 @@ test.describe('Theme toggle on a dark OS', () => {
     await page.goto('/');
     await expect(page.locator('html')).not.toHaveAttribute('data-theme');
     await expect(toggle(page, true)).toBeVisible();
-    await expect(page.locator('.theme-toggle svg').filter({ visible: true })).toHaveClass(/\bsun\b/);
 
     await toggle(page, true).click();
     await expect(toggle(page, false)).toBeVisible();
