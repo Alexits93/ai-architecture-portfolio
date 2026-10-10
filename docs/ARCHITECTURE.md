@@ -72,5 +72,5 @@ flowchart TD
 ```
 
 ## State
-- Theme: `BaseLayout` loads `public/theme.js` once per page. `themeStore` (`@nanostores/persistent`, localStorage key `theme`) in `src/shared/stores/ui`. Only the `Header` client script reads and writes it. `public/theme.js` applies the stored theme before first paint.
+- Theme: `BaseLayout` loads `public/theme.js` once per page. `themeStore` (`@nanostores/persistent`, localStorage key `theme`) in `src/shared/stores/ui`. Only the `Header` client script reads and writes it. `public/theme.js` applies a stored `light` or `dark` before first paint. Without one, nothing sets `data-theme` and `prefers-color-scheme` decides; the toggle's `aria-pressed` then follows the OS theme.
 - Menu and blog filter: no JS store. State lives in the DOM (form controls, `hidden` attributes).
