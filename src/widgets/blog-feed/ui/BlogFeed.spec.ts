@@ -83,12 +83,9 @@ describe('BlogFeed Widget (Astro) - Tags and Attributes', () => {
     expect(wrappers[2].getAttribute('data-tags')).toBe('');
   });
 
-  it('hides the submit button as JS handles the form (via component)', async () => {
+  it('renders the tag filter as a fieldset, with no form or submit button', async () => {
     const doc = await render();
-    const submitButton = doc.querySelector('.filter-submit');
-    // Note: the component CSS / inline style doesn't hide it, JS does it on mount.
-    // However, since we test the static HTML here, the button will be visible.
-    // So this test should just verify it exists.
-    expect(submitButton).not.toBeNull();
+    expect(doc.querySelector('blog-feed-interactive .blog-post-filter')?.tagName).toBe('FIELDSET');
+    expect(doc.querySelector('form, .filter-submit')).toBeNull();
   });
 });

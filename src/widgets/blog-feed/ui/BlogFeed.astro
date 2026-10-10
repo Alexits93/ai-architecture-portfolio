@@ -48,17 +48,15 @@ const uniqueTags = Array.from(allTags).sort();
 
 	class BlogFeedInteractive extends HTMLElement {
 		connectedCallback() {
-			const form = this.querySelector('#filter-form');
-			const submitBtn = this.querySelector('.filter-submit');
+			const filter = this.querySelector('.blog-post-filter');
 			const grid = this.querySelector('#blog-grid');
 
-			if (!(form instanceof HTMLFormElement) || !grid) return;
+			if (!filter || !grid) return;
 
-			if (submitBtn instanceof HTMLButtonElement) submitBtn.style.display = 'none';
-
-			form.addEventListener('change', () => {
-				const formData = new FormData(form);
-				const activeTags = formData.getAll('tag').filter((tag) => typeof tag === 'string');
+			filter.addEventListener('change', () => {
+				const activeTags = [...filter.querySelectorAll('input')]
+					.filter((input) => input.name === 'tag' && input.checked)
+					.map((input) => input.value);
 				hideUnmatchedWrappers(activeTags, grid.querySelectorAll('.blog-post-wrapper'));
 			});
 		}
@@ -68,6 +66,12 @@ const uniqueTags = Array.from(allTags).sort();
 </script>
 
 <style>
+	/* The filter works only through the script, so it takes its space but stays invisible until
+	   the element is defined (MDN :defined); visibility, not display, keeps the grid from shifting. */
+	blog-feed-interactive:not(:defined) :global(.blog-post-filter) {
+		visibility: hidden;
+	}
+
 	.blog-feed-container {
 		max-width: var(--page-max-width, 1200px);
 		margin: 0 auto;

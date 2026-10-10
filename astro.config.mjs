@@ -23,7 +23,8 @@ export default defineConfig({
         "frame-src 'none'",
         "object-src 'none'",
         "base-uri 'none'",
-        "form-action 'self'",
+        // No page submits a form; form-action has no default-src fallback (MDN CSP form-action).
+        "form-action 'none'",
         "require-trusted-types-for 'script'",
         'upgrade-insecure-requests',
       ],

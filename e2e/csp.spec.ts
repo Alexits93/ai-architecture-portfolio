@@ -14,7 +14,7 @@ const DIRECTIVES = [
   "frame-src 'none'",
   "object-src 'none'",
   "base-uri 'none'",
-  "form-action 'self'",
+  "form-action 'none'",
   "require-trusted-types-for 'script'",
   'upgrade-insecure-requests',
 ];
@@ -48,6 +48,8 @@ for (const route of ROUTES) {
       await expect(csp).toHaveAttribute('content', new RegExp(`(^|; *)${directive}(;|$)`));
     }
     await expect(page.locator('iframe')).toHaveCount(0);
+    // No page submits a form, so the privacy policy can say so and form-action stays 'none'.
+    await expect(page.locator('form')).toHaveCount(0);
     await expect(page.locator('html')).toHaveAttribute('data-theme', /^(light|dark)$/);
     expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
   });
@@ -71,6 +73,8 @@ for (const route of ROUTES) {
 
       expect((await themeScript).status()).toBe(200);
       expect(await page.evaluate(() => window.firstThemeWrite)).toBe(`${expected} loading`);
+      // goto resolves on load, after module scripts ran, so the Header store must keep the fallback.
+      await expect(page.locator('html')).toHaveAttribute('data-theme', expected);
     });
   }
 }
