@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.14.1...v1.15.0) (2026-10-10)
+
+
+### Features
+
+* **layouts:** render every page through BaseLayout with one SEO head ([#114](https://github.com/Alexits93/ai-architecture-portfolio/issues/114)) ([f0a6338](https://github.com/Alexits93/ai-architecture-portfolio/commit/f0a6338fca31b52279a2da7c3977f028a2f0fc6d)), closes [#113](https://github.com/Alexits93/ai-architecture-portfolio/issues/113)
+
 ## [1.14.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.14.0...v1.14.1) (2026-10-10)
 
 
