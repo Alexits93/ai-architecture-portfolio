@@ -175,10 +175,11 @@ describe('Learned agent guards', () => {
 
 });
 
-// Bash rules match the whole command text, so a flag rule misses short-flag clusters and denies a quoted
-// commit message that contains the flag (https://code.claude.com/docs/en/permissions). sandbox-gate.mjs
-// blocks -n, --no-verify and --force instead (tests/architecture/hook-safety.spec.ts).
-describe('Deny rules leave git flags to the sandbox-gate hook', () => {
+// Claude Code strips wrappers (timeout, nohup, ...) and leading assignments and checks subshells before it
+// matches deny rules, so a rule anchored at the flag covers those forms. A rule with the flag after `* `
+// would deny a quoted commit message that contains it (https://code.claude.com/docs/en/permissions).
+// sandbox-gate.mjs covers clusters and later positions (tests/architecture/sandbox-gate-flags.spec.ts).
+describe('Deny rules anchor git flags right after the subcommand', () => {
   const settings: { permissions?: { deny?: string[] } } = JSON.parse(read('.claude/settings.json'));
 
   // `*` stands for any text, and a trailing ` *` also matches the bare command
@@ -193,6 +194,17 @@ describe('Deny rules leave git flags to the sandbox-gate hook', () => {
   };
   const denied = (command: string): boolean =>
     (settings.permissions?.deny ?? []).some((rule) => rule.startsWith('Bash(') && matches(rule, command));
+
+  it.each([
+    'git commit --no-verify -m x',
+    'git commit -n -m x',
+    'git push --force origin b',
+    'git push -f origin b',
+    'git push --no-verify origin b',
+    'git push --mirror',
+  ])('denies %s', (command) => {
+    expect(denied(command)).toBe(true);
+  });
 
   it.each([
     'git commit -m "fix: drop the -n flag"',

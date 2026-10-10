@@ -3,7 +3,9 @@
 // (https://code.claude.com/docs/en/sandboxing), so it fails and invites an unsandboxed retry that
 // widens far more than the one command. This hook blocks those calls instead.
 // It also blocks git calls that skip hooks or force-push, which permission rules cannot match in a
-// short-flag cluster (https://code.claude.com/docs/en/permissions).
+// short-flag cluster (https://code.claude.com/docs/en/permissions). The deny rules in settings.json cover
+// the wrapper, assignment and subshell forms that Claude Code strips before matching. Neither is a
+// security boundary: eval, sh -c and wrappers before a later flag position still pass (#84).
 // Exit 2 blocks the tool call and sends stderr to Claude. A crash, including a failed import, also
 // exits 2, so the gate never fails open.
 import { spawnSync } from 'node:child_process';
@@ -13,6 +15,8 @@ import { basename, join, relative, resolve } from 'node:path';
 // Loaded inside the try below: a static import that fails would exit 1, which does not block.
 /** @type {typeof import('./shell-words.mjs')} */
 let shell;
+/** @type {typeof import('./git-flags.mjs')} */
+let flags;
 
 // The sandbox mounts sandbox.filesystem.denyWrite read-only, so a sandboxed git command that rewrites
 // one of those paths half-applies. The hook cannot tell whether a call is sandboxed (the Bash tool_input
@@ -25,6 +29,9 @@ const APPLY_READ_ONLY = new Set(['--cached', '--check', '--stat', '--numstat', '
 // Global options whose value may be the next word (https://git-scm.com/docs/git).
 const GLOBAL_VALUE = new Set(['-C', '-c', '--git-dir', '--work-tree', '--namespace', '--config-env']);
 const MAX_ALIAS_DEPTH = 10;
+// Options that write even in the listing modes; git accepts any unambiguous prefix, so --ap is --apply.
+const isApply = (option) => flags.longOption('--apply', '--ap'.length)(option);
+const writesAncestor = (option) => flags.longOption('--build-fake-ancestor', '--bu'.length)(option.split('=')[0]);
 
 // ctx: { cwd, env, globals, entries, sub } of one git call, so every query sees the repo and config
 // that call sees.
@@ -32,27 +39,6 @@ const gitOut = ({ cwd, env, globals }, args) => {
   const result = spawnSync('git', [...globals, ...args], { cwd, env, encoding: 'utf8' });
   return result.status === 0 ? result.stdout.trim() : null;
 };
-
-// git accepts any unambiguous prefix of a long option, so --no-veri is --no-verify.
-const skipsHooks = (options) => options.some((o) => o.length > '--no-'.length && '--no-verify'.startsWith(o));
-
-// git-commit: -m -F -C -c -t take a value, -u -S -U an optional stuck one; -n is --no-verify.
-// git-push: -o takes a value; -n is --dry-run, -f is --force.
-const commitFlag = (args) => {
-  const options = shell.optionsOf(args, 'mFCct', 'uSU');
-  return options.includes('-n') || skipsHooks(options) ? 'skips the commit hooks' : null;
-};
-
-const pushFlag = (args) => {
-  const options = shell.optionsOf(args, 'o');
-  if (skipsHooks(options)) return 'skips the pre-push hook';
-  return options.includes('-f') || options.includes('--force') ? 'force-pushes without a lease' : null;
-};
-
-const FLAGS = new Map([
-  ['commit', commitFlag],
-  ['push', pushFlag],
-]);
 
 // Repo-relative paths; a protected entry overlaps when either one contains the other.
 const overlaps = (path, entries) =>
@@ -70,7 +56,9 @@ const pathsReason = (ctx, paths) => {
 
 const splitArgs = (args) => {
   const dash = args.indexOf('--');
-  return { positionals: shell.beforeDash(args).filter((a) => !a.startsWith('-')), paths: dash === -1 ? [] : args.slice(dash + 1) };
+  // A bare - is the previous branch (https://git-scm.com/docs/git-switch).
+  const positionals = shell.beforeDash(args).filter((a) => a === '-' || !a.startsWith('-'));
+  return { positionals, paths: dash === -1 ? [] : args.slice(dash + 1) };
 };
 
 // Without --no-renames a protected file that the target renames away shows only under its new path.
@@ -100,18 +88,27 @@ const checkoutReason = (ctx, args) => {
 const always = ({ sub }) => `git ${sub} rewrites the worktree`;
 
 // --staged alone writes only the index (https://git-scm.com/docs/git-restore).
-const restoreReason = (ctx, args) => {
+const stagedOnly = (args) => {
   const options = shell.optionsOf(args, 's');
   const staged = options.includes('-S') || options.includes('--staged');
   const worktree = options.includes('-W') || options.includes('--worktree');
-  return staged && !worktree ? null : checkoutReason(ctx, args);
+  return staged && !worktree;
 };
 
-// --numstat lists only the new path of a rename, so any rename blocks.
+// Calls that leave the worktree alone, so a path the hook cannot resolve does not matter. --apply turns
+// patching back on after the listing modes (https://git-scm.com/docs/git-apply).
+const READ_ONLY = new Map([
+  ['apply', (args) => args.some((a) => APPLY_READ_ONLY.has(a)) && !args.some(isApply)],
+  ['reset', (args) => !args.some((a) => HARD_RESET.has(a))],
+  ['restore', stagedOnly],
+]);
+
+// --numstat lists only the new path of a rename, so any rename blocks. The listing runs outside the
+// sandbox, so it never passes on an option that writes.
 const applyReason = (ctx, args) => {
-  if (args.some((a) => APPLY_READ_ONLY.has(a))) return null;
-  if (/^ rename /m.test(gitOut(ctx, ['apply', '--summary', ...args]) ?? '')) return always(ctx);
-  const numstat = gitOut(ctx, ['apply', '--numstat', ...args]);
+  const listed = args.filter((a) => !isApply(a) && !writesAncestor(a) && !APPLY_READ_ONLY.has(a));
+  if (/^ rename /m.test(gitOut(ctx, ['apply', '--summary', ...listed]) ?? '')) return always(ctx);
+  const numstat = gitOut(ctx, ['apply', '--numstat', ...listed]);
   if (numstat === null) return `git ${ctx.sub} reads a patch the hook cannot list`;
   return pathsReason(ctx, numstat.split('\n').filter(Boolean).map((line) => line.split('\t')[2]));
 };
@@ -124,11 +121,11 @@ const REASONS = new Map([
   ['pull', always],
   ['am', always],
   ['apply', applyReason],
-  ['reset', (ctx, args) => (args.some((a) => HARD_RESET.has(a)) ? always(ctx) : null)],
+  ['reset', always],
   // An orphan switch removes every tracked file; an orphan checkout keeps them.
   ['switch', (ctx, args) => (args.includes('--orphan') ? always(ctx) : checkoutReason(ctx, args))],
   ['checkout', checkoutReason],
-  ['restore', restoreReason],
+  ['restore', checkoutReason],
 ]);
 
 // Global options stay on every git query; -C moves the directory the call runs in.
@@ -164,6 +161,7 @@ const aliasReason = (call, args, depth) => {
 const UNRESOLVED = /[$`*?[]|^:/;
 
 const rewriteReason = (call, args) => {
+  if (READ_ONLY.get(call.sub)?.(args)) return null;
   const unresolved = args.filter((a) => UNRESOLVED.test(a));
   if (unresolved.length > 0) return { flag: false, reason: `git ${call.sub} names ${unresolved.join(', ')}, which the hook cannot resolve` };
   const reason = REASONS.get(call.sub)(call, args);
@@ -171,17 +169,30 @@ const rewriteReason = (call, args) => {
 };
 
 /** @returns {{ flag: boolean, reason: string } | null} why the git call is blocked, or null */
+// The subcommand and the global options, which the shell may expand into anything.
+const expandedHead = (words, args) =>
+  words
+    .slice(0, words.length - args.length)
+    .filter((word, i, head) => (word.startsWith('-') || i === head.length - 1) && flags.EXPANDS.test(word.split('=')[0]));
+
 const gitReason = (ctx, words, depth) => {
   const { call, args } = globalsOf(ctx, words);
-  const flag = FLAGS.get(call.sub)?.(args);
+  const expanded = expandedHead(words, args);
+  if (expanded.length > 0) return { flag: true, reason: `git ${expanded.join(' ')} expands after the hook reads it` };
+  const flag = flags.FLAGS.has(call.sub) ? flags.flagReason(call, args) : null;
   if (flag) return { flag: true, reason: `git ${call.sub} ${flag}` };
   return REASONS.has(call.sub) ? rewriteReason(call, args) : aliasReason(call, args, depth);
 };
 
+// An assignment anywhere in the line counts, since export HUSKY=0 before git reaches it too.
+const setsHookEnv = (ctx, commands) => ctx.hookEnv || commands.flat().some((word) => flags.HOOK_ENV.test(word));
+
 const lineReason = (ctx, line, depth) => {
-  for (const command of shell.commands(line)) {
+  const commands = shell.commands(line);
+  const hookEnv = setsHookEnv(ctx, commands);
+  for (const command of commands) {
     const { env, words } = shell.unwrap(ctx.env, command);
-    const reason = basename(words[0] ?? '') === 'git' ? gitReason({ ...ctx, env }, words.slice(1), depth) : null;
+    const reason = basename(words[0] ?? '') === 'git' ? gitReason({ ...ctx, env, hookEnv }, words.slice(1), depth) : null;
     if (reason) return reason;
   }
   return null;
@@ -189,6 +200,7 @@ const lineReason = (ctx, line, depth) => {
 
 try {
   shell = await import('./shell-words.mjs');
+  flags = await import('./git-flags.mjs');
   const settings = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'settings.json'), 'utf8'));
   // `gh issue *` matches `gh issue` with or without arguments, the same as a Bash(...) rule.
   const prefixes = (settings.sandbox?.excludedCommands ?? []).map((entry) => entry.replace(/\s\*$/, ''));
@@ -204,7 +216,7 @@ try {
     .filter((entry) => entry.startsWith('./'))
     .map((entry) => entry.slice(2));
   const cwd = input.cwd ?? process.cwd();
-  const blocked = lineReason({ cwd, env: process.env, globals: [], entries }, input.tool_input?.command ?? '', 0);
+  const blocked = lineReason({ cwd, env: process.env, globals: [], entries, hookEnv: false },input.tool_input?.command ?? '', 0);
   if (blocked?.flag) {
     process.stderr.write(
       `Blocked by .claude/hooks/sandbox-gate.mjs:\n- ${blocked.reason}. Commit and push run their hooks, and a force push uses --force-with-lease, which asks the owner.\n`,

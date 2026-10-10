@@ -139,6 +139,12 @@
       "Bash(npm *)",
       "Bash(npx *)",
       "Bash(yarn *)",
+      "Bash(git commit --no-verify *)",
+      "Bash(git commit -n *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push --no-verify *)",
+      "Bash(git push --mirror *)",
       "Bash(git clean *)",
       "Bash(git stash *)",
       "Edit(./CHANGELOG.md)"
