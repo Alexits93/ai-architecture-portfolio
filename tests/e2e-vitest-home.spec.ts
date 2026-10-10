@@ -7,7 +7,8 @@ describe('Home Page (index.astro)', () => {
   let container: AstroContainer;
 
   beforeEach(async () => {
-    container = await AstroContainer.create();
+    // The page renders SeoHead through BaseLayout, which needs `site` for absolute URLs.
+    container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   });
 
   it('should render the layout with AboutMe and stubbed widgets', async () => {

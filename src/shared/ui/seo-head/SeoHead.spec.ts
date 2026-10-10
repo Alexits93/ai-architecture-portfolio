@@ -39,6 +39,11 @@ describe('SeoHead (Astro)', () => {
     expect(doc.querySelector('script[type="application/ld+json"]')).toBeNull();
   });
 
+  it('leaves the theme script to the layout', async () => {
+    const doc = await render();
+    expect(doc.querySelector('script[src="/theme.js"]')).toBeNull();
+  });
+
   it('emits article metadata and escaped JSON-LD when provided', async () => {
     const doc = await render({
       ...baseProps,

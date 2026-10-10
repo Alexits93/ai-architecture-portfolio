@@ -14,6 +14,10 @@ flowchart TD
         OG["og.png.ts"]
     end
 
+    subgraph Layouts["src/layouts"]
+        Base["BaseLayout.astro"]
+    end
+
     subgraph Widgets["src/widgets"]
         Header["header"]
         Menu["navigator-menu"]
@@ -45,12 +49,14 @@ flowchart TD
         Config["config"]
     end
 
-    Index --> Header & Menu & AboutMe & Featured & Recommended
-    CV --> Header & Menu & AboutMe & Experience
-    BlogIndex --> Header & Menu & Feed
-    BlogPost --> Header & Menu & Footer & Reader & Recommended & SeoHead
-    Cookie --> Header & Menu & CookieW
-    Privacy --> Header & Menu & PrivacyW
+    Index & CV & BlogIndex & BlogPost & Cookie & Privacy --> Base
+    Base --> Header & Menu & SeoHead
+    Index --> AboutMe & Featured & Recommended & Config
+    CV --> AboutMe & Experience
+    BlogIndex --> Feed
+    BlogPost --> Footer & Reader & Recommended
+    Cookie --> CookieW
+    Privacy --> PrivacyW
     OG --> OgLib
 
     Header --> Store
@@ -63,5 +69,5 @@ flowchart TD
 ```
 
 ## State
-- Theme: `themeStore` (`@nanostores/persistent`, localStorage key `theme`) in `src/shared/stores/ui`. Only the `Header` client script reads and writes it. `public/theme.js` applies the stored theme before first paint.
+- Theme: `BaseLayout` loads `public/theme.js` once per page. `themeStore` (`@nanostores/persistent`, localStorage key `theme`) in `src/shared/stores/ui`. Only the `Header` client script reads and writes it. `public/theme.js` applies the stored theme before first paint.
 - Menu and blog filter: no JS store. State lives in the DOM (form controls, `hidden` attributes).

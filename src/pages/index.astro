@@ -1,10 +1,9 @@
 ---
-import { Header } from '@/widgets/header';
-import { NavigatorMenu } from '@/widgets/navigator-menu';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE } from '@/shared/config';
 import { AboutMe } from '@/widgets/about-me';
 import { BlogPostFeatured } from '@/widgets/blog-post-featured';
 import { BlogPostRecommended } from '@/widgets/blog-post-recommended';
-import '@/shared/styles/global.css';
 
 const aboutMeData = {
     name: "Patrik Alexits",
@@ -17,41 +16,24 @@ const aboutMeData = {
 };
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-		<link rel="manifest" href="/site.webmanifest">
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<script is:inline src="/theme.js"></script>
-		<title>Patrik Alexits - AI Architect</title>
-	</head>
-	<body>
-		<Header />
-		<NavigatorMenu />
-		<main>
-			<div class="home-wrapper">
-				<div class="home-top-wrapper">
-					<AboutMe
-						name={aboutMeData.name}
-						profession={aboutMeData.profession}
-						text={aboutMeData.text}
-						githubUrl={aboutMeData.githubUrl}
-						linkedinUrl={aboutMeData.linkedinUrl}
-						instagramUrl={aboutMeData.instagramUrl}
-						stackoverflowUrl={aboutMeData.stackoverflowUrl}
-					/>
-					<BlogPostFeatured />
-				</div>
-				<div class="home-bottom-wrapper">
-					<BlogPostRecommended />
-				</div>
+<BaseLayout title={SITE.title} description={SITE.description}>
+	<main>
+		<div class="home-wrapper">
+			<div class="home-top-wrapper">
+				<AboutMe
+					name={aboutMeData.name}
+					profession={aboutMeData.profession}
+					text={aboutMeData.text}
+					githubUrl={aboutMeData.githubUrl}
+					linkedinUrl={aboutMeData.linkedinUrl}
+					instagramUrl={aboutMeData.instagramUrl}
+					stackoverflowUrl={aboutMeData.stackoverflowUrl}
+				/>
+				<BlogPostFeatured />
 			</div>
-		</main>
-	</body>
-</html>
-
+			<div class="home-bottom-wrapper">
+				<BlogPostRecommended />
+			</div>
+		</div>
+	</main>
+</BaseLayout>

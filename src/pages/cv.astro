@@ -1,9 +1,7 @@
 ---
-import { Header } from '@/widgets/header';
-import { NavigatorMenu } from '@/widgets/navigator-menu';
+import BaseLayout from '@/layouts/BaseLayout.astro';
 import { AboutMe } from '@/widgets/about-me';
 import { ExperienceList } from '@/widgets/experience-list';
-import '@/shared/styles/global.css';
 
 const aboutMeData = {
     name: "Patrik Alexits",
@@ -16,24 +14,9 @@ const aboutMeData = {
 };
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-		<link rel="manifest" href="/site.webmanifest">
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<script is:inline src="/theme.js"></script>
-		<title>CV - Patrik Alexits</title>
-	</head>
-	<body>
-		<Header />
-		<NavigatorMenu />
-		<main>
-			<section id="page-wrapper">
+<BaseLayout title="CV | Patrik Alexits" description="Experience and skills of Patrik Alexits, frontend architect and software engineer.">
+	<main>
+		<section id="page-wrapper">
                 <AboutMe
                     name={aboutMeData.name}
                     profession={aboutMeData.profession}
@@ -45,8 +28,5 @@ const aboutMeData = {
                 />
                 <ExperienceList />
             </section>
-		</main>
-	</body>
-</html>
-
-
+	</main>
+</BaseLayout>

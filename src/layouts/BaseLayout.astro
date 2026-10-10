@@ -1,0 +1,31 @@
+---
+import type { ComponentProps } from 'astro/types';
+import { Header } from '@/widgets/header';
+import { NavigatorMenu } from '@/widgets/navigator-menu';
+import { SeoHead } from '@/shared/ui/seo-head';
+import '@/shared/styles/global.css';
+
+type Props = ComponentProps<typeof SeoHead>;
+
+const props = Astro.props;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+		<link rel="manifest" href="/site.webmanifest">
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<script is:inline src="/theme.js"></script>
+		<SeoHead {...props} />
+	</head>
+	<body>
+		<Header />
+		<NavigatorMenu />
+		<slot />
+	</body>
+</html>
