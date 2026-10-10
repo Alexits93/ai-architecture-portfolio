@@ -103,7 +103,6 @@
       "WebFetch(domain:feature-sliced.design)"
     ],
     "ask": [
-      "Bash(dangerouslyDisableSandbox:true)",
       "Bash(git push *)",
       "Bash(git rebase *)",
       "Bash(git reset *)",

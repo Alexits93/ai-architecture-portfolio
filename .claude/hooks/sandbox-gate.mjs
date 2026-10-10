@@ -214,15 +214,18 @@ try {
   const cwd = input.cwd ?? process.cwd();
   const ctx = { cwd, env: process.env, globals: [], entries, hookEnv: false, depth: 0, data: false, check: gitReason };
   const blocked = reader.lineReason(ctx, input.tool_input?.command ?? '');
+  // Unsandboxed, the read-only mount is gone and the permission mode reviews the call
+  // (https://code.claude.com/docs/en/sandboxing). With the retry off, Claude Code ignores the flag.
+  const unsandboxed = input.tool_input?.dangerouslyDisableSandbox === true && settings.sandbox?.allowUnsandboxedCommands !== false;
   if (blocked?.flag) {
     process.stderr.write(
       `Blocked by .claude/hooks/sandbox-gate.mjs:\n- ${blocked.reason}. Commit and push run their hooks, and a force push uses --force-with-lease, which asks the owner.\n`,
     );
     process.exit(2);
   }
-  if (blocked) {
+  if (blocked && !unsandboxed) {
     process.stderr.write(
-      `Blocked by .claude/hooks/sandbox-gate.mjs:\n- ${blocked.reason}, and the sandbox mounts those paths read-only, so it would half-apply. Save \`git diff > "$TMPDIR/wip.patch"\`, then ask the owner to run the command with \`! <command>\`.\n`,
+      `Blocked by .claude/hooks/sandbox-gate.mjs:\n- ${blocked.reason}, and the sandbox mounts those paths read-only, so it would half-apply. Save \`git diff > "$TMPDIR/wip.patch"\`, then rerun the command alone with dangerouslyDisableSandbox: true.\n`,
     );
     process.exit(2);
   }
