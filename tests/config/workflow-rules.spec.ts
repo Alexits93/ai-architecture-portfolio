@@ -90,6 +90,11 @@ describe('linked issue rules', () => {
     expect(closedIssueNumbers(body)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
   });
 
+  // pr-gate looks up each number once, however often the body names it.
+  it('read a repeated reference once', () => {
+    expect(closedIssueNumbers('Closes #1. Fixes #2. Closes #1.')).toEqual([1, 2]);
+  });
+
   // o/r#9 is issue 9 of another repo, so it must never resolve to this repo's #9.
   it('never resolve a cross-repo reference to a local issue', () => {
     expect(closedIssueNumbers('Closes #1, fixes o/r#9, resolves: owner/repo#10')).toEqual([1]);

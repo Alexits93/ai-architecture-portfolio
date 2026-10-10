@@ -30,9 +30,10 @@ const forces = ({ options, positionals }) =>
   positionals.some((p) => p.startsWith('+'));
 
 // --delete (-d), --prune and an empty source (:<dst>) delete remote refs (https://git-scm.com/docs/git-push).
+// --de is the shortest prefix git reads as --delete: --dry-run also starts with --d (git push -h, 2.56.0).
 const deletes = ({ options, positionals }) =>
   options.includes('-d') ||
-  options.some(longOption('--delete', '--del'.length)) ||
+  options.some(longOption('--delete', '--de'.length)) ||
   options.some(longOption('--prune', '--pru'.length)) ||
   positionals.some((p) => p.startsWith(':'));
 

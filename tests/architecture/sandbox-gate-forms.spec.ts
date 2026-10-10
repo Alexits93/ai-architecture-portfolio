@@ -49,6 +49,8 @@ const RUNS_GIT = [
   "bash <<'EOF'\ngit commit -n -m x\nEOF",
   'git push --delete origin master',
   'git push -d origin master',
+  // --de is the shortest unique prefix of --delete: --dry-run also starts with --d (git push -h, 2.56.0).
+  'git push --de origin master',
   'git push origin :master',
   'git push --prune origin',
   '$(echo git) commit -n -m x',

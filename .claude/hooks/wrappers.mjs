@@ -90,7 +90,12 @@ export const dirOf = (word, { env, cwd }) => {
   return expanded === null ? null : resolve(cwd, expanded);
 };
 
-const cdTarget = (words) => words.slice(1).find((word) => !/^-[LPe@]+$/.test(word)) ?? '~';
+// cd accepts -- to end its options (bash(1) 5.3, SHELL BUILTIN COMMANDS).
+const cdTarget = (words) => {
+  const args = words.slice(1);
+  const first = args.findIndex((word) => !/^-[LPe@]+$/.test(word));
+  return (args[first] === '--' ? args[first + 1] : args[first]) ?? '~';
+};
 
 /** @returns {string} the directory later commands run in: cd moves it, unless the target is - or one the hook cannot resolve */
 export const cdTo = (ctx, words) => {

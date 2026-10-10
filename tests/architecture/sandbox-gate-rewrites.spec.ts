@@ -113,6 +113,8 @@ describe('sandbox-gate hook on git calls that name the repo', () => {
     ['env --chdir=', (repoDir: string) => `env --chdir=${repoDir} git switch gates`],
     ['cd', (repoDir: string) => `cd ${repoDir} && git switch gates`],
     ['cd into a quoted variable', () => 'cd "$REPO" && git switch gates'],
+    // cd accepts -- to end its options (bash(1) 5.3, SHELL BUILTIN COMMANDS).
+    ['cd --', (repoDir: string) => `cd -- ${repoDir} && git switch gates`],
   ])('blocks a switch that reaches the repo through %s', (_label, command) => {
     expect(gate(command(repo), path.dirname(repo), { REPO: repo }).status).toBe(2);
   });

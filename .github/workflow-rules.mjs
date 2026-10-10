@@ -99,7 +99,7 @@ export const findIssueViolations = ({ title, labels, body, parent }) => {
 // Local references only: owner/repo#N is an issue of another repo and is rejected by PR_RULES.
 /** @param {string} body @returns {number[]} */
 export const closedIssueNumbers = (body) =>
-  [...body.matchAll(new RegExp(`${CLOSING}#(\\d+)`, 'gi'))].map((m) => Number(m[1]));
+  [...new Set([...body.matchAll(new RegExp(`${CLOSING}#(\\d+)`, 'gi'))].map((m) => Number(m[1])))];
 
 export const LINKED_ISSUE_QUERY = `query($owner: String!, $repo: String!, $number: Int!) {
   repository(owner: $owner, name: $repo) {
