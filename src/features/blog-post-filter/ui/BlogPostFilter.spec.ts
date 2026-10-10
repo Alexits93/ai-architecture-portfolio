@@ -3,78 +3,33 @@ import { JSDOM } from 'jsdom';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { BlogPostFilter } from '../index';
 
-describe('BlogPostFilter - Initial Render', () => {
+describe('BlogPostFilter', () => {
   let container: AstroContainer;
 
   beforeEach(async () => {
     container = await AstroContainer.create();
   });
 
-  it('should render a list of native checkboxes', async () => {
-    const tags = ['Astro', 'React', 'Svelte'];
-
+  // The filter runs in the browser only; a static site never reads a submitted query, so there is no form.
+  it('groups native checkboxes in a labelled fieldset without a form', async () => {
     const html = await container.renderToString(BlogPostFilter, {
-      props: { tags }
+      props: { tags: ['Astro', 'React', 'Svelte'] },
     });
-    
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
+    const doc = new JSDOM(html).window.document;
 
-    const formEl = doc.querySelector('form#filter-form');
-    expect(formEl).not.toBeNull();
+    expect(doc.querySelector('form')).toBeNull();
+    expect(doc.querySelector('button')).toBeNull();
+    expect(doc.querySelector('fieldset > legend')?.textContent).toBe('Filter by tag');
 
-    const inputs = doc.querySelectorAll('input[type="checkbox"]');
-    expect(inputs.length).toBe(3);
-
-    // Verify first tag
-    expect(inputs[0].getAttribute('value')).toBe('Astro');
-    expect((inputs[0] as HTMLInputElement).checked).toBe(false);
+    const inputs = doc.querySelectorAll('fieldset input[type="checkbox"][name="tag"]');
+    expect([...inputs].map((input) => input.getAttribute('value'))).toEqual(['Astro', 'React', 'Svelte']);
     expect(inputs[0].hasAttribute('checked')).toBe(false);
-  });
-});
-
-describe('BlogPostFilter - With Selected Tags', () => {
-  let container: AstroContainer;
-
-  beforeEach(async () => {
-    container = await AstroContainer.create();
-  });
-
-  it('should mark inputs as checked if they are in selectedTags', async () => {
-    const tags = ['Astro', 'React', 'Svelte'];
-    const selectedTags = ['React'];
-
-    const html = await container.renderToString(BlogPostFilter, {
-      props: { tags, selectedTags }
-    });
-    
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-
-    const inputs = doc.querySelectorAll('input[type="checkbox"]');
-    
-    // Astro should not be checked
-    expect(inputs[0].hasAttribute('checked')).toBe(false);
-
-    // React should be checked
-    expect(inputs[1].hasAttribute('checked')).toBe(true);
-  });
-});
-
-describe('BlogPostFilter - Empty Props', () => {
-  let container: AstroContainer;
-
-  beforeEach(async () => {
-    container = await AstroContainer.create();
   });
 
   it('should handle empty props gracefully', async () => {
     const html = await container.renderToString(BlogPostFilter);
-    
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
+    const doc = new JSDOM(html).window.document;
 
-    const inputs = doc.querySelectorAll('input[type="checkbox"]');
-    expect(inputs.length).toBe(0);
+    expect(doc.querySelectorAll('input[type="checkbox"]').length).toBe(0);
   });
 });

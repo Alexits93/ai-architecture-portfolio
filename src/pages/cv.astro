@@ -9,7 +9,6 @@ const aboutMeData = {
     name: "Patrik Alexits",
     profession: "Frontend Software Engineer",
     text: "Bringing 7+ years of experience in web development with an emphasis on front-end technologies. Expert in enhancing user interfaces and ensuring accessibility, delivering projects that consistently meet rigorous web standards.",
-    spotifyTrackId: "60a0Rd6pjrkxjPbaKzXjfq",
     githubUrl: "https://github.com/Alexits93",
     linkedinUrl: "https://www.linkedin.com/in/patrik-alexits/",
     instagramUrl: "https://www.instagram.com/akelafreestyle/",
@@ -27,15 +26,7 @@ const aboutMeData = {
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<script is:inline>
-			try {
-    const localTheme = localStorage.getItem('theme');
-    const theme = (localTheme === 'dark' || localTheme === 'light') ? localTheme : 'light';
-    document.documentElement.setAttribute('data-theme', theme);
-  } catch {
-    document.documentElement.setAttribute('data-theme', 'light');
-  }
-		</script>
+		<script is:inline src="/theme.js"></script>
 		<title>CV - Patrik Alexits</title>
 	</head>
 	<body>
@@ -47,7 +38,6 @@ const aboutMeData = {
                     name={aboutMeData.name}
                     profession={aboutMeData.profession}
                     text={aboutMeData.text}
-                    spotifyTrackId={aboutMeData.spotifyTrackId}
                     githubUrl={aboutMeData.githubUrl}
                     linkedinUrl={aboutMeData.linkedinUrl}
                     instagramUrl={aboutMeData.instagramUrl}

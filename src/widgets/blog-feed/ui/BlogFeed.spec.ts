@@ -18,10 +18,6 @@ vi.mock('astro:content', () => ({
 const standardPost1 = createTestPost({ id: 'standard-1', publishDate: '2026-02-01', tags: ['vue', 'react'] });
 const standardPost2 = createTestPost({ id: 'standard-2', publishDate: '2026-03-01', tags: ['react', 'astro'] });
 const standardPost3 = createTestPost({ id: 'standard-3', publishDate: '2026-01-01' });
-// Explicitly override to undefined to satisfy the 100% branch coverage for `if (post.data.tags)`
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - overriding strictly for branch coverage
-standardPost3.data.tags = undefined;
 const featuredPost = createTestPost({ id: 'featured-1', publishDate: '2026-04-01', tags: ['svelte'], isFeatured: true });
 
 describe('BlogFeed Widget (Astro) - Initialization', () => {
@@ -29,8 +25,7 @@ describe('BlogFeed Widget (Astro) - Initialization', () => {
 
   beforeEach(async () => {
     container = await AstroContainer.create();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.mocked(getCollection).mockResolvedValue([standardPost1, standardPost2, standardPost3, featuredPost] as any);
+    vi.mocked(getCollection).mockResolvedValue([standardPost1, standardPost2, standardPost3, featuredPost]);
   });
 
   const render = async () => {
@@ -54,8 +49,7 @@ describe('BlogFeed Widget (Astro) - Tags and Attributes', () => {
 
   beforeEach(async () => {
     container = await AstroContainer.create();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    vi.mocked(getCollection).mockResolvedValue([standardPost1, standardPost2, standardPost3, featuredPost] as any);
+    vi.mocked(getCollection).mockResolvedValue([standardPost1, standardPost2, standardPost3, featuredPost]);
   });
 
   const render = async () => {
@@ -68,7 +62,7 @@ describe('BlogFeed Widget (Astro) - Tags and Attributes', () => {
   it('extracts unique and sorted tags from standard posts only', async () => {
     const doc = await render();
     const tagCheckboxes = doc.querySelectorAll('input[type="checkbox"][name="tag"]');
-    const tags = Array.from(tagCheckboxes).map((input) => (input as HTMLInputElement).value);
+    const tags = Array.from(tagCheckboxes).map((input) => input.getAttribute('value'));
     
     // 'svelte' should not be present because it belongs to a featured post.
     // 'astro', 'react', 'vue' should be present and sorted.
@@ -89,12 +83,9 @@ describe('BlogFeed Widget (Astro) - Tags and Attributes', () => {
     expect(wrappers[2].getAttribute('data-tags')).toBe('');
   });
 
-  it('hides the submit button as JS handles the form (via component)', async () => {
+  it('renders the tag filter as a fieldset, with no form or submit button', async () => {
     const doc = await render();
-    const submitButton = doc.querySelector('.filter-submit');
-    // Note: the component CSS / inline style doesn't hide it, JS does it on mount.
-    // However, since we test the static HTML here, the button will be visible.
-    // So this test should just verify it exists.
-    expect(submitButton).not.toBeNull();
+    expect(doc.querySelector('blog-feed-interactive .blog-post-filter')?.tagName).toBe('FIELDSET');
+    expect(doc.querySelector('form, .filter-submit')).toBeNull();
   });
 });

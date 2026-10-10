@@ -1,0 +1,107 @@
+// PreToolUse hook (Bash): gates `gh pr create` and `gh issue create` with the rules pr-lint enforces in CI.
+// It matches every Bash call because the hooks docs call the `if` filter best-effort.
+// Exit 2 blocks the tool call and sends stderr to Claude. A crash, including a failed import, also exits 2,
+// and settings.json sets onFailure: block for timeouts, so the gate never fails open.
+import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+
+// Loaded inside the try below: a static import that fails would exit 1, which does not block.
+/** @type {typeof import('../../.github/workflow-rules.mjs')} */
+let rules;
+
+const projectDir = join(import.meta.dirname, '..', '..');
+
+// Values of a flag in any form: --name value, --name=value, -n value, quoted or bare.
+// The scan consumes other quoted strings whole, so flag text inside another flag's value never matches.
+// gh keeps the last value of a repeated single-value flag, so checks read `.at(-1)`.
+const flagValues = (segment, names) =>
+  [...segment.matchAll(new RegExp(`(?:^|\\s)(${names.join('|')})(?:=|\\s+)(?:"([^"]*)"|'([^']*)'|(\\S+))|"[^"]*"|'[^']*'`, 'g'))]
+    .filter((m) => m[1])
+    .map((m) => m[2] ?? m[3] ?? m[4] ?? '');
+
+const readBody = (segment, cwd) => {
+  if (flagValues(segment, ['--body', '-b']).length > 0) return { error: 'Pass the body with --body-file <path>, not --body.' };
+  const file = flagValues(segment, ['--body-file', '-F']).at(-1);
+  if (!file) return { error: 'Pass the body with --body-file <path>.' };
+  try {
+    return { body: readFileSync(resolve(cwd, file), 'utf8') };
+  } catch {
+    return { error: `Cannot read the body file ${file}.` };
+  }
+};
+
+// The PR title becomes the squash commit on master, so it must pass commitlint.
+const lintTitle = (title) => {
+  if (!title) return ['Pass the PR title with --title. It becomes the squash commit.'];
+  const commitlint = join(projectDir, 'node_modules', '.bin', 'commitlint');
+  const result = spawnSync(commitlint, { input: title, cwd: projectDir, encoding: 'utf8' });
+  return result.status === 0 ? [] : [`The title is not a Conventional Commit:\n${result.stdout}${result.stderr}`];
+};
+
+// null: GitHub answered that #N is no issue. undefined: no usable answer.
+const parseIssue = (stdout) => {
+  try {
+    return JSON.parse(stdout).data?.repository?.issue ?? null;
+  } catch {
+    return undefined;
+  }
+};
+
+// Same check as CI pr-lint: each "Closes #N" is an open Story or Task with a native parent.
+// A failed lookup blocks, because the PR cannot be created offline anyway.
+const checkLinkedIssues = (body, cwd) =>
+  rules.closedIssueNumbers(body).flatMap((number) => {
+    const result = spawnSync(
+      'gh',
+      ['api', 'graphql', '-f', `query=${rules.LINKED_ISSUE_QUERY}`, '-F', 'owner={owner}', '-F', 'repo={repo}', '-F', `number=${number}`],
+      { cwd, encoding: 'utf8' },
+    );
+    if (result.error) return [`Cannot run gh to check #${number}: ${result.error.message}`];
+    const issue = parseIssue(result.stdout);
+    return issue === undefined ? [`Cannot check #${number}: ${result.stderr.trim()}`] : rules.findLinkedIssueViolations(number, issue);
+  });
+
+const checkPr = (segment, cwd) => {
+  const { body, error } = readBody(segment, cwd);
+  const bodyViolations = error ? [error] : rules.findPrBodyViolations(body);
+  return [
+    ...lintTitle(flagValues(segment, ['--title', '-t']).at(-1)),
+    ...bodyViolations,
+    ...(bodyViolations.length === 0 ? checkLinkedIssues(body, cwd) : []),
+  ];
+};
+
+const checkIssue = (segment, cwd) => {
+  const { body, error } = readBody(segment, cwd);
+  if (error) return [error];
+  const labels = flagValues(segment, ['--label', '-l']).flatMap((value) => value.split(',').map((l) => l.trim()));
+  const parent = flagValues(segment, ['--parent']).at(-1);
+  return rules.findIssueViolations({ title: flagValues(segment, ['--title', '-t']).at(-1) ?? '', labels, body, parent });
+};
+
+// `gh` must start the segment (after env assignments or env/command/exec), so text that only
+// mentions the command, such as a commit message, passes.
+const PREFIX = String.raw`^\s*(?:(?:env|command|exec)\s+|\w+=\S*\s+)*gh\s+`;
+const GATES = [
+  // `new` is gh's built-in alias for `create` (gh pr new --help, gh issue new --help).
+  [new RegExp(`${PREFIX}pr\\s+(?:create|new)\\b`), checkPr],
+  [new RegExp(`${PREFIX}issue\\s+(?:create|new)\\b`), checkIssue],
+];
+
+try {
+  rules = await import('../../.github/workflow-rules.mjs');
+  const input = JSON.parse(readFileSync(0, 'utf8'));
+  const command = input.tool_input?.command ?? '';
+  const cwd = input.cwd ?? process.cwd();
+  const violations = command
+    .split(/&&|\|\||[;|\n]/)
+    .flatMap((segment) => GATES.filter(([pattern]) => pattern.test(segment)).flatMap(([, check]) => check(segment, cwd)));
+  if (violations.length > 0) {
+    process.stderr.write(`Blocked by .claude/hooks/pr-gate.mjs:\n- ${violations.join('\n- ')}\n`);
+    process.exit(2);
+  }
+} catch (error) {
+  process.stderr.write(`pr-gate hook crashed, blocking the call: ${error}\n`);
+  process.exit(2);
+}

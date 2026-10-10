@@ -22,7 +22,7 @@ describe('AboutMe Widget (Astro) - Content', () => {
     expect(profession?.textContent).toBe('Jedi Council Member (Not Master though)');
 
     const text = doc.querySelector('p');
-    expect(text?.textContent).toBe("I don't like sand. It's coarse and rough and irritating — and it gets everywhere.");
+    expect(text?.textContent).toBe("I don't like sand. It's coarse and rough and irritating, and it gets everywhere.");
   });
 
   it('should render with custom props', async () => {
@@ -43,44 +43,6 @@ describe('AboutMe Widget (Astro) - Content', () => {
 
     const text = doc.querySelector('p');
     expect(text?.textContent).toBe('Peace is a lie.');
-  });
-});
-
-describe('AboutMe Widget (Astro) - Spotify Iframe', () => {
-  let container: AstroContainer;
-
-  beforeEach(async () => {
-    container = await AstroContainer.create();
-  });
-
-  it('should not render Spotify iframe if no track ID is provided', async () => {
-    const html = await container.renderToString(AboutMe);
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-
-    const iframe = doc.querySelector('iframe');
-    expect(iframe).toBeNull();
-  });
-
-  it('should render Spotify iframe if track ID is provided and alphanumeric', async () => {
-    const props = { spotifyTrackId: '1234abc' };
-    const html = await container.renderToString(AboutMe, { props });
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-
-    const iframe = doc.querySelector('iframe');
-    expect(iframe).not.toBeNull();
-    expect(iframe?.getAttribute('src')).toBe('https://open.spotify.com/embed/track/1234abc?utm_source=generator&theme=0');
-  });
-
-  it('should NOT render Spotify iframe if track ID is malicious (XSS prevention)', async () => {
-    const props = { spotifyTrackId: '123" onload="alert(1)"' };
-    const html = await container.renderToString(AboutMe, { props });
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-
-    const iframe = doc.querySelector('iframe');
-    expect(iframe).toBeNull();
   });
 });
 

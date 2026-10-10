@@ -5,7 +5,7 @@ labels: ["story"]
 body:
   - type: markdown
     attributes:
-      value: "Thanks for creating a Story! Ensure it connects to user value."
+      value: "Set the parent Epic as a native sub-issue link (Relationships in the sidebar, or `gh issue create --parent N`). CI pr-lint fails a PR whose Story has no parent."
   - type: textarea
     id: user-story
     attributes:
@@ -22,10 +22,3 @@ body:
       placeholder: - [ ] Condition 1...
     validations:
       required: true
-  - type: input
-    id: epic-link
-    attributes:
-      label: Parent Epic
-      description: Link to the parent epic issue number (e.g., #123)
-    validations:
-      required: false

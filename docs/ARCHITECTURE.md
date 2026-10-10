@@ -1,43 +1,67 @@
-# Architecture Visualization
+# Architecture
 
-This document provides a living visualization of the repository's feature-sliced design (FSD) architecture and component hierarchy.
-
-## Component Tree
+Feature-Sliced Design: `pages > widgets > features > entities > shared`. A layer imports only from layers below it (ESLint enforced). The map shows cross-slice imports; update it when a slice or page is added or removed.
 
 ```mermaid
 flowchart TD
-    %% Layers
-    subgraph Pages ["Pages (Layer)"]
-        Index["src/pages/index.astro"]
-        CV["src/pages/cv.astro"]
-        CookieDisclaimer["src/pages/cookie-disclaimer.astro"]
-        PrivacyPolicy["src/pages/privacy-policy.astro"]
-        BlogIndex["src/pages/blog/index.astro"]
-        BlogPost["src/pages/blog/[slug].astro"]
+    subgraph Pages
+        Index["index.astro"]
+        CV["cv.astro"]
+        BlogIndex["blog/index.astro"]
+        BlogPost["blog/[slug].astro"]
+        Cookie["cookie-disclaimer.astro"]
+        Privacy["privacy-policy.astro"]
+        OG["og.png.ts"]
     end
-    
-    subgraph Widgets ["Widgets (Layer)"]
-        Header["Header (src/widgets/header)"]
-        NavigatorMenu["NavigatorMenu (src/widgets/navigator-menu)"]
-        AboutMe["AboutMe (src/widgets/about-me)"]
-        BlogPostFeatured["BlogPostFeatured (src/widgets/blog-post-featured)"]
-        BlogPostRecommended["BlogPostRecommended (src/widgets/blog-post-recommended)"]
+
+    subgraph Widgets
+        Header["header"]
+        Menu["navigator-menu"]
+        Footer["footer"]
+        AboutMe["about-me"]
+        Experience["experience-list"]
+        Featured["blog-post-featured"]
+        Recommended["blog-post-recommended"]
+        Feed["blog-feed"]
+        Reader["blog-post-reader"]
+        CookieW["cookie-disclaimer"]
+        PrivacyW["privacy-policy"]
     end
-    
-    subgraph Shared ["Shared (Layer)"]
-        UIStore["UI Store (src/shared/stores/ui)"]
+
+    subgraph Features
+        Filter["blog-post-filter"]
     end
-    
-    %% Relationships
-    Pages --> Header
-    Index --> NavigatorMenu
-    Index --> AboutMe
-    Index --> BlogPostFeatured
-    Index --> BlogPostRecommended
-    
-    Header --> UIStore
+
+    subgraph Entities
+        Post["blog-post"]
+    end
+
+    subgraph Shared
+        SkillTag["ui/skill-tag"]
+        ArticleNav["ui/article-navigator"]
+        SeoHead["ui/seo-head"]
+        Store["stores/ui"]
+        OgLib["lib/og"]
+        Config["config"]
+    end
+
+    Index --> Header & Menu & AboutMe & Featured & Recommended
+    CV --> Header & Menu & AboutMe & Experience
+    BlogIndex --> Header & Menu & Feed
+    BlogPost --> Header & Menu & Footer & Reader & Recommended & SeoHead
+    Cookie --> Header & Menu & CookieW
+    Privacy --> Header & Menu & PrivacyW
+    OG --> OgLib
+
+    Header --> Store
+    Experience --> SkillTag
+    Feed --> Filter & Post
+    Featured --> Post
+    Recommended --> Post & Config
+    Reader --> ArticleNav & SkillTag
+    Post --> SkillTag & Config
 ```
 
-## State Management
-
-- **UI Store (`themeStore`)**: Managed via Nano Stores in `src/shared/stores/ui`. Only the `Header` reads this store to handle visual state reactively across Astro Islands.
+## State
+- Theme: `themeStore` (`@nanostores/persistent`, localStorage key `theme`) in `src/shared/stores/ui`. Only the `Header` client script reads and writes it. `public/theme.js` applies the stored theme before first paint.
+- Menu and blog filter: no JS store. State lives in the DOM (form controls, `hidden` attributes).

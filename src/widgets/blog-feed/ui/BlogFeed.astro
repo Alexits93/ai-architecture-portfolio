@@ -9,9 +9,7 @@ const standardPosts = selectStandardPosts(posts);
 // Extract unique tags
 const allTags = new Set<string>();
 standardPosts.forEach((post) => {
-	if (post.data.tags) {
-		post.data.tags.forEach((tag) => allTags.add(tag));
-	}
+	post.data.tags.forEach((tag) => allTags.add(tag));
 });
 const uniqueTags = Array.from(allTags).sort();
 ---
@@ -23,7 +21,7 @@ const uniqueTags = Array.from(allTags).sort();
 		<div class="blog-grid" id="blog-grid">
 			{
 				standardPosts.map((post) => (
-					<div class="blog-post-wrapper" data-tags={post.data.tags?.join(',') || ''}>
+					<div class="blog-post-wrapper" data-tags={post.data.tags.join(',')}>
 						<BlogPostThumbnail post={post} />
 					</div>
 				))
@@ -50,17 +48,15 @@ const uniqueTags = Array.from(allTags).sort();
 
 	class BlogFeedInteractive extends HTMLElement {
 		connectedCallback() {
-			const form = this.querySelector('#filter-form') as HTMLFormElement | null;
-			const submitBtn = this.querySelector('.filter-submit') as HTMLButtonElement | null;
+			const filter = this.querySelector('.blog-post-filter');
 			const grid = this.querySelector('#blog-grid');
 
-			if (!form || !grid) return;
+			if (!filter || !grid) return;
 
-			if (submitBtn) submitBtn.style.display = 'none';
-
-			form.addEventListener('change', () => {
-				const formData = new FormData(form);
-				const activeTags = formData.getAll('tag') as string[];
+			filter.addEventListener('change', () => {
+				const activeTags = [...filter.querySelectorAll('input')]
+					.filter((input) => input.name === 'tag' && input.checked)
+					.map((input) => input.value);
 				hideUnmatchedWrappers(activeTags, grid.querySelectorAll('.blog-post-wrapper'));
 			});
 		}
@@ -70,6 +66,12 @@ const uniqueTags = Array.from(allTags).sort();
 </script>
 
 <style>
+	/* The filter works only through the script, so it takes its space but stays invisible until
+	   the element is defined (MDN :defined); visibility, not display, keeps the grid from shifting. */
+	blog-feed-interactive:not(:defined) :global(.blog-post-filter) {
+		visibility: hidden;
+	}
+
 	.blog-feed-container {
 		max-width: var(--page-max-width, 1200px);
 		margin: 0 auto;
@@ -83,22 +85,24 @@ const uniqueTags = Array.from(allTags).sort();
 		color: var(--font-color);
 	}
 
+	/* A bare 1fr has an automatic minimum (minmax(auto, 1fr), CSS Grid 2 fr unit), so WebKit widened
+	   the column to the thumbnail image's intrinsic width and overflowed a 320 px viewport. */
 	.blog-grid {
 		display: grid;
 		gap: 2rem;
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr);
 		margin-top: 2rem;
 	}
 
 	@media (min-width: 768px) {
 		.blog-grid {
-			grid-template-columns: repeat(2, 1fr);
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 
 	@media (min-width: 1024px) {
 		.blog-grid {
-			grid-template-columns: repeat(3, 1fr);
+			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
 	}
 

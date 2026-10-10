@@ -4,29 +4,44 @@ on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
 
+permissions:
+  contents: read
+  issues: read
+
 jobs:
   pr-lint:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Environment
+        uses: ./.github/actions/setup-pnpm-env
+
+      # The PR title becomes the squash commit on master.
+      - name: Check PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$PR_TITLE" | pnpm exec commitlint
+
+      # Same rules as the local .claude/hooks/pr-gate.mjs.
       - name: Check PR description
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
-            const body = context.payload.pull_request.body;
-            if (!body || body.trim() === '') {
-              core.setFailed('PR description cannot be empty. Please fill out the PULL_REQUEST_TEMPLATE.');
-              return;
+            const { findPrBodyViolations } = await import(`${process.env.GITHUB_WORKSPACE}/.github/workflow-rules.mjs`);
+            const violations = findPrBodyViolations(context.payload.pull_request.body ?? '');
+            if (violations.length > 0) core.setFailed(violations.join('\n'));
+
+      # Each "Closes #N" is an open Story or Task with a native parent issue.
+      - name: Check linked issues
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const rules = await import(`${process.env.GITHUB_WORKSPACE}/.github/workflow-rules.mjs`);
+            const violations = [];
+            for (const number of rules.closedIssueNumbers(context.payload.pull_request.body ?? '')) {
+              const data = await github.graphql(rules.LINKED_ISSUE_QUERY, { ...context.repo, number }).catch(() => null);
+              violations.push(...rules.findLinkedIssueViolations(number, data?.repository?.issue ?? null));
             }
-            // Ensure the user actually filled out the template (removed comments or added content)
-            if (body.includes('<!-- A concise explanation of the change and the problem it solves. Why did it change? -->')) {
-              core.setFailed('Please remove the HTML comments and fill out the Summary & Motivation section in the PR template.');
-            }
-            if (!body.includes('[x] Tests passed') && !body.includes('[x] FSD / Architectural boundaries respected')) {
-              core.setFailed('Please complete the Pre-Merge Checklist in the PR description.');
-            }
-            
-            // Deterministic enforcement of issue linkage for traceability
-            const linkedIssueRegex = /(Closes|Fixes|Resolves)\s+#\d+/i;
-            if (!linkedIssueRegex.test(body)) {
-              core.setFailed('Traceability Error: PR description must include a linked issue (e.g., "Closes #123").');
-            }
+            if (violations.length > 0) core.setFailed(violations.join('\n'));

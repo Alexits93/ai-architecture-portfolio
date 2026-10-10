@@ -20,6 +20,14 @@ describe('PrivacyPolicy Widget (Astro)', () => {
     expect(heading?.textContent?.trim()).toBe('Privacy Policy');
   });
 
+  it('states that no cookies are set and claims no implied consent', async () => {
+    const html = await container.renderToString(PrivacyPolicy);
+    const text = new JSDOM(html).window.document.body.textContent ?? '';
+
+    expect(text).toContain('This site sets no cookies');
+    expect(text).not.toMatch(/spotify|by accessing the site, you agree/i);
+  });
+
   it('should render the contact email correctly', async () => {
     const html = await container.renderToString(PrivacyPolicy);
     const dom = new JSDOM(html);

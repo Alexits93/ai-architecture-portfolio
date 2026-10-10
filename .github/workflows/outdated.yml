@@ -1,0 +1,32 @@
+name: Outdated Report
+
+# Weekly drift report. It never runs on PRs, so a new upstream release cannot block a merge.
+# Schedules run only on the default branch; failure mails go to whoever last edited the cron line.
+# https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  outdated:
+    name: pnpm outdated (packages and GitHub Actions)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Environment
+        uses: ./.github/actions/setup-pnpm-env
+
+      # pnpm outdated exits 1 when anything is behind; pipefail (explicit shell: bash) keeps that exit code past tee.
+      # https://pnpm.io/cli/outdated
+      # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#adding-a-job-summary
+      - name: Report Outdated
+        shell: bash
+        run: pnpm outdated --include-github-actions --format list | tee -a "$GITHUB_STEP_SUMMARY"
