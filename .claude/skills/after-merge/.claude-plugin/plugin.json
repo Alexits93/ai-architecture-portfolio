@@ -1,0 +1,6 @@
+{
+  "name": "after-merge",
+  "description": "Reconciles git, GitHub issues, docs and the handover after a pull request is merged.",
+  "version": "1.0.0",
+  "author": { "name": "Patrik Alexits" }
+}
