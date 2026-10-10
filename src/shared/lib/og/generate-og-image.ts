@@ -16,12 +16,12 @@ const generateMarkup = (title: string, description: string) => html`
   </div>
 `;
 
-export async function generateOgImage(title: string, description: string): Promise<Buffer> {
+export async function renderOgSvg(title: string, description: string): Promise<string> {
   const fontRegular = loadFont('Inter-Regular.woff');
   const fontBold = loadFont('Inter-Bold.woff');
   const markup = generateMarkup(title, description);
 
-  const svg = await satori(markup, {
+  return satori(markup, {
     width: 1200,
     height: 630,
     fonts: [
@@ -29,7 +29,10 @@ export async function generateOgImage(title: string, description: string): Promi
       { name: 'Inter', data: fontBold, weight: 700, style: 'normal' },
     ],
   });
+}
 
+export async function generateOgImage(title: string, description: string): Promise<Buffer> {
+  const svg = await renderOgSvg(title, description);
   const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });
   return resvg.render().asPng();
 }

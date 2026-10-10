@@ -16,19 +16,16 @@ describe('og.png endpoint', () => {
     expect(response.status).toBe(200);
     expect(response.headers.get('Content-Type')).toBe('image/png');
     expect(response.headers.get('Cache-Control')).toBe('public, max-age=31536000, immutable');
-    
+
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     expect(buffer).toEqual(mockBuffer);
   });
 
-  it('should return a 500 response on error', async () => {
+  // A rejected GET fails `astro build` instead of shipping an error body as og.png.
+  it('propagates a generation error', async () => {
     vi.spyOn(ogModule, 'generateOgImage').mockRejectedValue(new Error('Test error'));
 
-    const response = await GET();
-
-    expect(response.status).toBe(500);
-    const text = await response.text();
-    expect(text).toBe('Error generating OG image');
+    await expect(GET()).rejects.toThrow('Test error');
   });
 });
