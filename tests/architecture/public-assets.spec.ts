@@ -24,8 +24,6 @@ describe('public/', () => {
     .filter((file) => !HOST_FILES.has(file));
 
   it.each(assets)('references /%s from src or public', (asset) => {
-    // The theme toggle builds the icon path from the theme name, so match the stem too.
-    const stem = asset.replace(/^(.*\/)(light|dark)(_mode\.svg)$/, '$1${');
-    expect(sources.includes(`/${asset}`) || sources.includes(`/${stem}`)).toBe(true);
+    expect(sources.includes(`/${asset}`)).toBe(true);
   });
 });
