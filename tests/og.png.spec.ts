@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from '@/pages/og.png';
 import * as ogModule from '@/shared/lib/og/generate-og-image';
+import { SITE } from '@/shared/config';
 
 describe('og.png endpoint', () => {
   beforeEach(() => {
@@ -20,6 +21,14 @@ describe('og.png endpoint', () => {
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     expect(buffer).toEqual(mockBuffer);
+  });
+
+  it('draws the title and description from SITE', async () => {
+    const spy = vi.spyOn(ogModule, 'generateOgImage').mockResolvedValue(Buffer.from('89504e470d0a1a0a', 'hex'));
+
+    await GET();
+
+    expect(spy).toHaveBeenCalledExactlyOnceWith(SITE.title, SITE.description);
   });
 
   // A rejected GET fails `astro build` instead of shipping an error body as og.png.

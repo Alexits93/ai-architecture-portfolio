@@ -1,10 +1,9 @@
 import type { APIRoute } from 'astro';
+import { SITE } from '@/shared/config';
 import { generateOgImage } from '@/shared/lib/og/generate-og-image';
 
 export const GET = (async () => {
-  const title = 'Patrika | AI Architecture Portfolio';
-  const description = 'Exploring AI Architecture, Modern Web Development, and the Future of Engineering.';
-  const pngBuffer = await generateOgImage(title, description);
+  const pngBuffer = await generateOgImage(SITE.title, SITE.description);
 
   return new Response(new Uint8Array(pngBuffer), {
     status: 200,

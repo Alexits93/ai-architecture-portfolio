@@ -8,7 +8,7 @@ const loadFont = (filename: string): Buffer =>
   fs.readFileSync(path.join(process.cwd(), 'src/shared/assets/fonts', filename));
 
 const generateMarkup = (title: string, description: string) => html`
-  <div style="display: flex; flex-direction: column; width: 100%; height: 100%; background-color: #111111; color: white; padding: 60px; font-family: 'Inter', sans-serif;">
+  <div style="display: flex; flex-direction: column; width: 100%; height: 100%; box-sizing: border-box; background-color: #111111; color: white; padding: 60px; font-family: 'Inter', sans-serif;">
     <div style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
       <h1 style="font-size: 64px; font-weight: 700; margin-bottom: 20px; line-height: 1.1;">${title}</h1>
       <p style="font-size: 32px; font-weight: 400; color: #a1a1aa; line-height: 1.5;">${description}</p>
