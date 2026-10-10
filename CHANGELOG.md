@@ -1,3 +1,10 @@
+## [1.18.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.18.0...v1.18.1) (2026-10-10)
+
+
+### Bug Fixes
+
+* **a11y:** give the theme toggle icon and menu close button 3:1 contrast ([#130](https://github.com/Alexits93/ai-architecture-portfolio/issues/130)) ([d23551b](https://github.com/Alexits93/ai-architecture-portfolio/commit/d23551b2251b0afe2d2968c721cb34f8bf4efa3d)), closes [#ffffff](https://github.com/Alexits93/ai-architecture-portfolio/issues/ffffff) [#88](https://github.com/Alexits93/ai-architecture-portfolio/issues/88)
+
 # [1.18.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.17.0...v1.18.0) (2026-10-10)
 
 
