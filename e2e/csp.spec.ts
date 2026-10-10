@@ -50,12 +50,12 @@ for (const route of ROUTES) {
     await expect(page.locator('iframe')).toHaveCount(0);
     // No page submits a form, so the privacy policy can say so and form-action stays 'none'.
     await expect(page.locator('form')).toHaveCount(0);
-    await expect(page.locator('html')).toHaveAttribute('data-theme', /^(light|dark)$/);
+    // No stored theme: nothing sets data-theme, so prefers-color-scheme in global.css decides.
+    await expect(page.locator('html')).not.toHaveAttribute('data-theme');
     expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
   });
 
-  // An invalid stored value falls back to light.
-  for (const [stored, expected] of [['dark', 'dark'], ['light', 'light'], ['bogus', 'light']]) {
+  for (const stored of ['dark', 'light']) {
     test(`/theme.js applies stored "${stored}" before module scripts on ${route}`, async ({ page }) => {
       // Astro inlines bundled scripts as modules, which run only after parsing, so the first
       // data-theme write while readyState is still "loading" can only come from the blocking /theme.js.
@@ -72,26 +72,47 @@ for (const route of ROUTES) {
       await page.goto(route);
 
       expect((await themeScript).status()).toBe(200);
-      expect(await page.evaluate(() => window.firstThemeWrite)).toBe(`${expected} loading`);
-      // goto resolves on load, after module scripts ran, so the Header store must keep the fallback.
-      await expect(page.locator('html')).toHaveAttribute('data-theme', expected);
+      expect(await page.evaluate(() => window.firstThemeWrite)).toBe(`${stored} loading`);
+      // goto resolves on load, after module scripts ran, so the Header store must keep the stored theme.
+      await expect(page.locator('html')).toHaveAttribute('data-theme', stored);
     });
   }
 }
 
-test('/theme.js falls back to light when storage throws', async ({ page }) => {
-  await page.addInitScript(() => {
-    Storage.prototype.getItem = () => {
-      throw new DOMException('denied', 'SecurityError');
-    };
-    window.firstThemeWrite = '';
-    new MutationObserver((_, observer) => {
-      window.firstThemeWrite = `${document.documentElement.dataset.theme} ${document.readyState}`;
-      observer.disconnect();
-    }).observe(document, { attributes: true, subtree: true, attributeFilter: ['data-theme'] });
-  });
-  await page.goto('/');
-  expect(await page.evaluate(() => window.firstThemeWrite)).toBe('light loading');
+// An invalid value or a throwing storage counts as no choice. The dark OS scheme proves that
+// neither /theme.js nor the Header store writes a light default over it.
+test.describe('no stored choice', () => {
+  test.use({ colorScheme: 'dark' });
+  const setups: [string, () => void][] = [
+    ['an invalid stored value', () => localStorage.setItem('theme', 'bogus')],
+    [
+      'storage that throws',
+      () => {
+        Storage.prototype.getItem = () => {
+          throw new DOMException('denied', 'SecurityError');
+        };
+      },
+    ],
+  ];
+  for (const [name, setup] of setups) {
+    test(`/theme.js sets no data-theme for ${name}`, async ({ page }) => {
+      await page.addInitScript(setup);
+      await page.addInitScript(() => {
+        window.firstThemeWrite = '';
+        new MutationObserver(() => {
+          window.firstThemeWrite = `${document.documentElement.dataset.theme} ${document.readyState}`;
+        }).observe(document, { attributes: true, subtree: true, attributeFilter: ['data-theme'] });
+      });
+      const errors: Error[] = [];
+      page.on('pageerror', (error) => errors.push(error));
+
+      await page.goto('/');
+
+      expect(await page.evaluate(() => window.firstThemeWrite)).toBe('');
+      await expect(page.locator('html')).not.toHaveAttribute('data-theme');
+      expect(errors).toEqual([]);
+    });
+  }
 });
 
 test('blocks an unhashed inline script', async ({ page }) => {
