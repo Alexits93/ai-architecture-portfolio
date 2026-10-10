@@ -30,6 +30,19 @@ for (const route of ROUTES) {
   });
 }
 
+// The sitemap lists exactly the built pages, so a new page or post needs no manual entry (#127).
+test('sitemap lists every built page', async ({ request }) => {
+  const xml = await (await request.get('/sitemap-0.xml')).text();
+  const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  expect(locs.toSorted()).toEqual(ROUTES.map((route) => `https://www.pa-tech.dev${route}`).toSorted());
+});
+
+test('robots.txt points to the sitemap index', async ({ request }) => {
+  await expect(request.get('/robots.txt').then((response) => response.text())).resolves.toContain(
+    'Sitemap: https://www.pa-tech.dev/sitemap-index.xml',
+  );
+});
+
 // Keyword matching that splits "frontend" and "front-end" still finds these pages (#125).
 for (const route of ['/', '/cv/']) {
   test(`"front-end" in the text of ${route}`, async ({ page }) => {
