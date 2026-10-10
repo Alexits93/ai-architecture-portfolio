@@ -52,6 +52,13 @@ describe('Supply chain settings', () => {
     expect(lockfile).not.toMatch(/^ {2}fflate@0\.7\.[0-4]:$/m);
   });
 
+  // A global fflate bump reached satori and drew .notdef boxes in og.png (#69,
+  // https://github.com/vercel/satori/issues/802). Its WOFF decoder needs the 0.7 inflateSync API.
+  it('keeps satori on the patched fflate 0.7 line', () => {
+    expect(lockfile).toMatch(/^ {2}satori>fflate: 0\.7\.5$/m);
+    expect(lockfile).toMatch(/^ {2}'@shuding\/opentype\.js>fflate': 0\.7\.5$/m);
+  });
+
   // .npmrc holds only registry and auth settings (https://pnpm.io/cli/config, pnpm 12.10.1).
   // This project uses neither, so any content there is a setting pnpm ignores or a credential.
   it('keeps .npmrc empty', () => {
