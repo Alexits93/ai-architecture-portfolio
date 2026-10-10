@@ -12,6 +12,10 @@ const SLOP_MESSAGE = "AI prose: banned word, em-dash or emoji (see CLAUDE.md wri
 // (https://eslint.org/docs/latest/rules/no-restricted-imports, ESLint 10.12.0).
 const boundary = (folders, message) => ({ regex: `^(@/|(\\.\\./)+)(${folders})/`, message });
 
+// Astro 7.3.8 deprecates `z` from astro:content (removed in Astro 8). A later block's options replace this one's
+// (https://eslint.org/docs/latest/use/configure/rules), so every boundary block below repeats it.
+const ASTRO_ZOD = { name: "astro:content", importNames: ["z"], message: "Import z from 'astro/zod' (deprecated in astro:content, removed in Astro 8)." };
+
 // Type and markup bans, kept apart from the prose selectors so the prose exemption below keeps them.
 const SYNTAX_BANS = [
   {
@@ -104,23 +108,30 @@ export default [
       globals: { process: "readonly" }
     }
   },
+  {
+    files: ["src/**"],
+    rules: {
+      "no-restricted-imports": ["error", { paths: [ASTRO_ZOD] }]
+    }
+  },
   // Import boundaries (ADR 002): pages > layouts > components > lib. Matches `@/` and `../` specifiers.
   {
     files: ["src/layouts/**"],
     rules: {
-      "no-restricted-imports": ["error", { patterns: [boundary("pages", "Layouts must not import pages (ADR 002).")] }]
+      "no-restricted-imports": ["error", { paths: [ASTRO_ZOD], patterns: [boundary("pages", "Layouts must not import pages (ADR 002).")] }]
     }
   },
   {
     files: ["src/components/**"],
     rules: {
-      "no-restricted-imports": ["error", { patterns: [boundary("pages|layouts", "Components must not import pages or layouts (ADR 002).")] }]
+      "no-restricted-imports": ["error", { paths: [ASTRO_ZOD], patterns: [boundary("pages|layouts", "Components must not import pages or layouts (ADR 002).")] }]
     }
   },
   {
     files: ["src/lib/**"],
     rules: {
       "no-restricted-imports": ["error", {
+        paths: [ASTRO_ZOD],
         patterns: [
           boundary("pages|layouts|components", "lib must not import pages, layouts or components (ADR 002)."),
           { regex: "\\.astro$", message: "lib is framework-free TypeScript and must not import .astro files (ADR 002)." }

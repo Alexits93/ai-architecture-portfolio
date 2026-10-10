@@ -60,6 +60,30 @@ describe('ESLint import-boundary gate', () => {
   });
 });
 
+// Astro 7.3.8 deprecates `z` from astro:content (node_modules/astro/types/content.d.ts); the docs import it from astro/zod
+// (https://docs.astro.build/en/guides/content-collections/). The boundary blocks replace the rule's options
+// (https://eslint.org/docs/latest/use/configure/rules, ESLint 10.12.0), so they must repeat this path.
+describe('ESLint astro/zod gate', () => {
+  const restricted = async (code: string, filePath: string) =>
+    (await new ESLint().lintText(code, { filePath }))[0].messages.filter((m) => m.ruleId === 'no-restricted-imports');
+
+  it.each([
+    'src/content.config.ts',
+    'src/lib/x.ts',
+    'src/components/X.ts',
+    'src/layouts/X.ts',
+  ])('blocks z from astro:content in %s and names astro/zod', async (filePath) => {
+    const messages = await restricted("import { z, defineCollection } from 'astro:content';\n", filePath);
+    expect(messages).toHaveLength(1);
+    expect(messages[0].message).toContain('astro/zod');
+  });
+
+  it('allows z from astro/zod and the other astro:content exports', async () => {
+    const code = "import { z } from 'astro/zod';\nimport { defineCollection, getCollection } from 'astro:content';\n";
+    expect(await restricted(code, 'src/content.config.ts')).toEqual([]);
+  });
+});
+
 describe('ESLint XSS gate', () => {
   const html = '---\nconst x = "<b>hi</b>";\n---\n<div set:html={x} />\n';
   const ruleIds = async (filePath: string) =>

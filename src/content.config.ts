@@ -1,5 +1,6 @@
 import { glob } from 'astro/loaders';
-import { z, defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
+import { defineCollection } from 'astro:content';
 
 /**
  * Permalink slug contract: lowercase ASCII words joined by single hyphens.

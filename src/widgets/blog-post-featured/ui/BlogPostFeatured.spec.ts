@@ -1,5 +1,5 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import * as contentModule from 'astro:content';
+import { getCollection } from 'astro:content';
 import { JSDOM } from 'jsdom';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createTestPost } from '@/entities/blog-post/testing';
@@ -15,7 +15,7 @@ describe('BlogPostFeatured Widget (Astro)', () => {
   });
 
   const renderWith = async (posts: ReturnType<typeof createTestPost>[]) => {
-    vi.mocked(contentModule.getCollection).mockResolvedValueOnce(posts);
+    vi.mocked(getCollection).mockResolvedValueOnce(posts);
     return new JSDOM(await container.renderToString(BlogPostFeatured)).window.document;
   };
 
