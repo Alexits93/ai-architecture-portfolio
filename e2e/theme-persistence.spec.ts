@@ -1,23 +1,17 @@
 import { test, expect } from '@playwright/test';
 
+test.use({ colorScheme: 'light' });
+
 test('Theme preference is preserved across page navigations', async ({ page }) => {
-  // Go to home page
   await page.goto('/');
 
-  // Check initial theme state (assuming light is default)
-  const body = page.locator('html');
-  await expect(body).toHaveAttribute('data-theme', 'light');
+  // No stored choice: the light OS scheme applies without data-theme.
+  const html = page.locator('html');
+  await expect(html).not.toHaveAttribute('data-theme');
 
-  // Click the theme toggle
-  const themeToggle = page.locator('.theme-toggle');
-  await themeToggle.click();
+  await page.locator('.theme-toggle').click();
+  await expect(html).toHaveAttribute('data-theme', 'dark');
 
-  // Verify theme changed to dark
-  await expect(body).toHaveAttribute('data-theme', 'dark');
-
-  // Navigate to another page (e.g. Privacy Policy) directly
   await page.goto('/cookie-disclaimer/');
-
-  // The theme should STILL be dark
-  await expect(body).toHaveAttribute('data-theme', 'dark');
+  await expect(html).toHaveAttribute('data-theme', 'dark');
 });
