@@ -155,6 +155,11 @@ describe('Learned agent guards', () => {
     expect(read('CLAUDE.md')).toMatch(/^3\. Live check before every "done":.*Passing tests alone are not done\.$/m);
   });
 
+  // Owner rule 2026-10-10, same reason: no hook can prove which host tools a check used.
+  it('keeps the host-toolbox base rule in CLAUDE.md', () => {
+    expect(read('CLAUDE.md')).toMatch(/^4\. Use the whole host .*Linux.*VS Code.*Podman.*Say which of the three you used\.$/m);
+  });
+
   it('registers the sandbox gate hook', () => {
     expect(read('.claude/settings.json')).toContain('.claude/hooks/sandbox-gate.mjs');
   });
