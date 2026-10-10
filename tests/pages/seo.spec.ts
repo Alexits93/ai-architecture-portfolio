@@ -30,6 +30,14 @@ for (const route of ROUTES) {
   });
 }
 
+// Keyword matching that splits "frontend" and "front-end" still finds these pages (#125).
+for (const route of ['/', '/cv/']) {
+  test(`"front-end" in the text of ${route}`, async ({ page }) => {
+    await page.goto(route);
+    await expect(page.locator('main')).toContainText('front-end');
+  });
+}
+
 // Post pages describe themselves as BlogPosting; other pages carry no article data (#121).
 for (const route of ROUTES) {
   const isPost = /^\/blog\/[^/]+\/$/.test(route);
