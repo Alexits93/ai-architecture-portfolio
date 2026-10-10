@@ -47,7 +47,8 @@ test.describe('Blog Page filtering', () => {
 
 test.describe('Blog page on a small viewport', () => {
   for (const theme of ['light', 'dark']) {
-    test(`fits a 320 px viewport in the ${theme} theme`, async ({ page }) => {
+    test(`fits a 320 px viewport in the ${theme} theme`, async ({ page, browserName }) => {
+      test.fail(browserName === 'webkit', 'Thumbnails overflow 320 px in WebKit (#91)');
       await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
       await page.setViewportSize({ width: 320, height: 800 });
       await page.goto('/blog/');
