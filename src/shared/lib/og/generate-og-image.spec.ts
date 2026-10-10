@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { OG_IMAGE_SIZE } from '../../config';
 import { generateOgImage, renderOgSvg } from './generate-og-image';
 
 describe('generateOgImage', () => {
@@ -46,5 +47,18 @@ describe('generateOgImage', () => {
     });
 
     await expect(generateOgImage('Title', 'Description')).rejects.toThrow('ENOENT');
+  });
+});
+
+describe('renderOgSvg layout', () => {
+  // Satori defaults to content-box, so width 100% plus padding pushed wrapped text past the right edge.
+  it('keeps every box inside the canvas width', async () => {
+    const svg = await renderOgSvg('Title', 'A description long enough to wrap onto a second line of the image.');
+    const rightEdges = [...svg.matchAll(/<rect x="([\d.]+)" y="[\d.]+" width="([\d.]+)"/g)].map(
+      ([, x, width]) => Number(x) + Number(width),
+    );
+
+    expect(rightEdges.length).toBeGreaterThan(0);
+    expect(Math.max(...rightEdges)).toBeLessThanOrEqual(OG_IMAGE_SIZE.width);
   });
 });

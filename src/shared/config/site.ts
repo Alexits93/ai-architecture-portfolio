@@ -3,8 +3,8 @@ export const SITE = {
   name: 'Patrik Alexits',
   author: 'Patrik Alexits',
   locale: 'en_US',
-  title: 'Patrik Alexits | Software Architect and Engineer',
-  description: 'Software architecture, AI engineering, and working with LLMs in production codebases.',
+  title: 'Patrik Alexits | Frontend Architect',
+  description: 'Software engineer and architect. I build harnesses for LLM coding agents, and coach and mentor engineers.',
   defaultOgImagePath: '/og.png',
 } as const;
 
