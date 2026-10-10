@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.13.3...v1.14.0) (2026-10-10)
+
+
+### Features
+
+* **workflow:** rate every PR gap and block Medium and High risks ([#109](https://github.com/Alexits93/ai-architecture-portfolio/issues/109)) ([25dc7f6](https://github.com/Alexits93/ai-architecture-portfolio/commit/25dc7f6743f39d161c156ee7c7eb07fd19694305)), closes [#108](https://github.com/Alexits93/ai-architecture-portfolio/issues/108)
+
 ## [1.13.3](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.13.2...v1.13.3) (2026-10-10)
 
 
