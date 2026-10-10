@@ -166,11 +166,6 @@ describe('Learned agent guards', () => {
     expect(read('CLAUDE.md')).toMatch(/^5\. Report a subagent or skill result only from its task notification\..*$/m);
   });
 
-  // 2026-10-10: Claude sized eval and sh -c as costly unread; the owner deferred them on that (#94). Pinned.
-  it('keeps the sizing rule in CLAUDE.md', () => {
-    expect(read('CLAUDE.md')).toMatch(/^- Size a fix from the code it would change, read in this session, before you recommend doing or deferring it\..*$/m);
-  });
-
   it('registers the sandbox gate hook', () => {
     expect(read('.claude/settings.json')).toContain('.claude/hooks/sandbox-gate.mjs');
   });
@@ -190,6 +185,18 @@ describe('Learned agent guards', () => {
 // matches deny rules, so a rule anchored at the flag covers those forms. A rule with the flag after `* `
 // would deny a quoted commit message that contains it (https://code.claude.com/docs/en/permissions).
 // sandbox-gate.mjs covers clusters and later positions (tests/architecture/sandbox-gate-flags.spec.ts).
+describe('Learned agent rules no hook can see (reply text, calls sharing a turn)', () => {
+  // 2026-10-10: Claude sized eval and sh -c as costly unread, and the owner deferred them on that (#94).
+  it('keeps the sizing rule in CLAUDE.md', () => {
+    expect(read('CLAUDE.md')).toMatch(/^- Size a fix from the code it would change, read in this session, before you recommend doing or deferring it\..*$/m);
+  });
+
+  // 2026-10-10: gh ran in the Write's turn twice; once a stale $TMPDIR/handover.md went to #94.
+  it('keeps the publish-after-write rule in CLAUDE.md', () => {
+    expect(read('CLAUDE.md')).toMatch(/^- Publish \(`gh \.\.\. --body-file`, `git push`\) only in a later turn than the write that produces its content.*$/m);
+  });
+});
+
 describe('Deny rules anchor git flags right after the subcommand', () => {
   const settings: { permissions?: { deny?: string[] } } = JSON.parse(read('.claude/settings.json'));
 

@@ -16,7 +16,12 @@ const WRAPPERS = new Map([
   ['env', { ...NONE, valued: 'auCS', long: { '--argv0': '-a', '--unset': '-u', '--chdir': '-C', '--split-string': '-S', '--env0-from': '-' } }],
   ['command', NONE],
   ['builtin', NONE],
+  // Reserved words that start a command list (bash(1) 5.3.20, RESERVED WORDS).
+  ...['!', '{', 'if', 'then', 'else', 'elif', 'do', 'while', 'until', 'coproc'].map((word) => [word, NONE]),
   ['noglob', NONE],
+  // zsh precommand modifiers (zshmisc(1), Precommand Modifiers).
+  ['nocorrect', NONE],
+  ['-', NONE],
   ['nohup', NONE],
   ['time', NONE],
   ['exec', { ...NONE, valued: 'a' }],
@@ -71,12 +76,18 @@ const parse = (wrapper, words) => {
   return { options, words: words.slice(i + Number(words[i] === '--') + wrapper.operands) };
 };
 
-/** @returns {string | null} the absolute directory a cd or env -C names, or null when the shell would expand more than ~, $NAME and ${NAME} */
-export const dirOf = (word, { env, cwd }) => {
+/** @returns {string | null} the word with ~, $NAME and ${NAME} resolved from env, or null when the shell would expand more */
+export const expand = (word, env) => {
   const expanded = word
     .replace(/^~(?=\/|$)/, () => env.HOME ?? '~')
     .replace(/\$(?:\{(\w+)\}|(\w+))/g, (match, braced, bare) => env[braced ?? bare] ?? match);
-  return /[$`~*?[]/.test(expanded) ? null : resolve(cwd, expanded);
+  return /[$`~*?[]|\{[^{}]*(,|\.\.)[^{}]*\}/.test(expanded) ? null : expanded;
+};
+
+/** @returns {string | null} the absolute directory a cd or env -C names, or null when the hook cannot resolve it */
+export const dirOf = (word, { env, cwd }) => {
+  const expanded = expand(word, env);
+  return expanded === null ? null : resolve(cwd, expanded);
 };
 
 const cdTarget = (words) => words.slice(1).find((word) => !/^-[LPe@]+$/.test(word)) ?? '~';
@@ -99,6 +110,9 @@ const assign = (ctx, word) => {
   return { ...ctx, env: { ...ctx.env, [word.slice(0, eq)]: word.slice(eq + 1) } };
 };
 
+// xargs appends words from stdin to the command, which the hook never sees.
+const appendsAfter = (ctx, word) => Boolean(ctx.appends) || word === 'xargs';
+
 // command -v and -V only look the command up, so nothing runs.
 const runs = (word, next) => WRAPPERS.has(word) && !(word === 'command' && /^-[vV]$/.test(next ?? ''));
 
@@ -109,5 +123,5 @@ export const unwrap = (ctx, words) => {
   if (!runs(word, rest[0])) return { ...ctx, words };
   const parsed = parse(WRAPPERS.get(word), rest);
   const next = word === 'env' ? unwrapEnv(ctx, parsed) : { ...ctx, words: parsed.words };
-  return unwrap({ env: next.env, cwd: next.cwd }, next.words);
+  return unwrap({ env: next.env, cwd: next.cwd, appends: appendsAfter(ctx, word) }, next.words);
 };

@@ -6,14 +6,18 @@ import { freeWords, optionsOf } from './shell-words.mjs';
 export const longOption = (name, shortest) => (option) => option.length >= shortest && name.startsWith(option);
 const skipsHooks = (options) => options.some(longOption('--no-verify', '--no-v'.length));
 
-// The shell expands $, $'..' and backticks after the hook reads the word, so it may become a flag.
-export const EXPANDS = /[$`]/;
+// The shell expands $, $'..', backticks and braces such as {-n,} after the hook reads the word, so it may
+// become a flag (bash(1) 5.3.20, Brace Expansion).
+export const EXPANDS = /[$`]|\{[^{}]*(,|\.\.)[^{}]*\}/;
 // Config from -c or --config-env (https://git-scm.com/docs/git) that moves the hooks or forces the push
 // (remote.<name>.mirror, a + refspec, https://git-scm.com/docs/git-push), and the env that sets config
 // (GIT_CONFIG_*, git-config(1) 2.56.0) or that husky reads to skip the hooks or source another init.sh
 // (https://typicode.github.io/husky/how-to.html).
-const CONFIG = /hookspath|\.mirror|\.push=\+/i;
-export const HOOK_ENV = /^(HUSKY|HOME|XDG_CONFIG_HOME|GIT_CONFIG_\w*)=/;
+// --exec-path and GIT_EXEC_PATH choose the git-commit program, and include.path or includeIf.<cond>.path
+// load another config file (git(1), git-config(1) 2.56.0, Includes).
+const CONFIG = /hookspath|\.mirror|\.push=\+|^--exec-path|^include/i;
+// PATH may put another git first.
+export const HOOK_ENV = /^(HUSKY|HOME|XDG_CONFIG_HOME|GIT_CONFIG_\w*|GIT_EXEC_PATH|PATH)=/;
 // An assignment anywhere in the line counts, since export HUSKY=0 before git reaches it too.
 export const setsHookEnv = (outer, commands) => outer || commands.flat().some((word) => HOOK_ENV.test(word));
 
@@ -25,8 +29,16 @@ const forces = ({ options, positionals }) =>
   options.some(longOption('--mirror', '--m'.length)) ||
   positionals.some((p) => p.startsWith('+'));
 
+// --delete (-d), --prune and an empty source (:<dst>) delete remote refs (https://git-scm.com/docs/git-push).
+const deletes = ({ options, positionals }) =>
+  options.includes('-d') ||
+  options.some(longOption('--delete', '--del'.length)) ||
+  options.some(longOption('--prune', '--pru'.length)) ||
+  positionals.some((p) => p.startsWith(':'));
+
 const pushFlag = (words) => {
   if (skipsHooks(words.options)) return 'skips the pre-push hook';
+  if (deletes(words)) return 'deletes remote refs';
   return forces(words) ? 'force-pushes without a lease' : null;
 };
 

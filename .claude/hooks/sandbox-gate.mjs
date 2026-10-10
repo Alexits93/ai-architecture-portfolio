@@ -10,15 +10,15 @@
 // exits 2, so the gate never fails open.
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { basename, join, relative, resolve } from 'node:path';
+import { join, relative, resolve } from 'node:path';
 
 // Loaded inside the try below: a static import that fails would exit 1, which does not block.
 /** @type {typeof import('./shell-words.mjs')} */
 let shell;
 /** @type {typeof import('./git-flags.mjs')} */
 let flags;
-/** @type {typeof import('./wrappers.mjs')} */
-let wrappers;
+/** @type {typeof import('./line-reader.mjs')} */
+let reader;
 // Git common dir of CLAUDE_PROJECT_DIR (https://code.claude.com/docs/en/hooks): worktrees count; unset, every repo does.
 let project = null;
 
@@ -148,17 +148,17 @@ const globalsOf = (ctx, words) => {
 const quote = (word) => `'${word.replaceAll("'", "'\\''")}'`;
 
 // A ! alias is a shell command, run from the top-level directory.
-const shellAliasReason = (call, line, depth) =>
-  lineReason({ ...call, cwd: gitOut(call, ['rev-parse', '--show-toplevel']) ?? call.cwd }, line, depth + 1);
+const shellAliasReason = (call, line) =>
+  reader.lineReason({ ...call, cwd: gitOut(call, ['rev-parse', '--show-toplevel']) ?? call.cwd, depth: call.depth + 1, data: false }, line);
 
 // Both alias config forms (git-config alias.*); git itself ignores an alias that hides a command.
-const aliasReason = (call, args, depth) => {
+const aliasReason = (call, args) => {
   const alias =
     gitOut(call, ['config', '--get', `alias.${call.sub}`]) ?? gitOut(call, ['config', '--get', `alias.${call.sub}.command`]);
   if (!alias) return null;
-  if (depth >= MAX_ALIAS_DEPTH) return { flag: false, reason: `git ${call.sub} nests aliases deeper than ${MAX_ALIAS_DEPTH}` };
-  if (alias.startsWith('!')) return shellAliasReason(call, [alias.slice(1), ...args.map(quote)].join(' '), depth);
-  return gitReason(call, [...shell.commands(alias).flat(), ...args], depth + 1);
+  if (call.depth >= MAX_ALIAS_DEPTH) return { flag: false, reason: `git ${call.sub} nests aliases deeper than ${MAX_ALIAS_DEPTH}` };
+  if (alias.startsWith('!')) return shellAliasReason(call, [alias.slice(1), ...args.map(quote)].join(' '));
+  return gitReason({ ...call, depth: call.depth + 1 }, [...shell.commands(alias).flat(), ...args]);
 };
 
 // Shell expansion, globs and pathspec magic resolve after the hook runs, so it cannot rule them out.
@@ -183,32 +183,19 @@ const expandedHead = (words, args) =>
     .slice(0, words.length - args.length)
     .filter((word, i, head) => (word.startsWith('-') || i === head.length - 1) && flags.EXPANDS.test(word.split('=')[0]));
 
-const gitReason = (ctx, words, depth) => {
+const gitReason = (ctx, words) => {
   const { call, args } = globalsOf(ctx, words);
   const expanded = expandedHead(words, args);
   if (expanded.length > 0) return { flag: true, reason: `git ${expanded.join(' ')} expands after the hook reads it` };
   const flag = flags.FLAGS.has(call.sub) ? flags.flagReason(call, args) : null;
   if (flag) return { flag: true, reason: `git ${call.sub} ${flag}` };
-  return REASONS.has(call.sub) ? rewriteReason(call, args) : aliasReason(call, args, depth);
-};
-
-const lineReason = (ctx, line, depth) => {
-  const commands = shell.commands(line);
-  const hookEnv = flags.setsHookEnv(ctx.hookEnv, commands);
-  let cwd = ctx.cwd;
-  for (const command of commands) {
-    const { env, cwd: dir, words } = wrappers.unwrap({ env: ctx.env, cwd }, command);
-    cwd = wrappers.cdTo({ env, cwd }, words);
-    const reason = basename(words[0] ?? '') === 'git' ? gitReason({ ...ctx, env, cwd: dir, hookEnv }, words.slice(1), depth) : null;
-    if (reason) return reason;
-  }
-  return null;
+  return REASONS.has(call.sub) ? rewriteReason(call, args) : aliasReason(call, args);
 };
 
 try {
   shell = await import('./shell-words.mjs');
   flags = await import('./git-flags.mjs');
-  wrappers = await import('./wrappers.mjs');
+  reader = await import('./line-reader.mjs');
   if (process.env.CLAUDE_PROJECT_DIR) project = gitOut({ cwd: process.env.CLAUDE_PROJECT_DIR, env: process.env, globals: [] }, COMMON_DIR);
   const settings = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'settings.json'), 'utf8'));
   // `gh issue *` matches `gh issue` with or without arguments, the same as a Bash(...) rule.
@@ -225,7 +212,8 @@ try {
     .filter((entry) => entry.startsWith('./'))
     .map((entry) => entry.slice(2));
   const cwd = input.cwd ?? process.cwd();
-  const blocked = lineReason({ cwd, env: process.env, globals: [], entries, hookEnv: false },input.tool_input?.command ?? '', 0);
+  const ctx = { cwd, env: process.env, globals: [], entries, hookEnv: false, depth: 0, data: false, check: gitReason };
+  const blocked = reader.lineReason(ctx, input.tool_input?.command ?? '');
   if (blocked?.flag) {
     process.stderr.write(
       `Blocked by .claude/hooks/sandbox-gate.mjs:\n- ${blocked.reason}. Commit and push run their hooks, and a force push uses --force-with-lease, which asks the owner.\n`,

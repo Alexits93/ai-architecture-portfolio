@@ -1,15 +1,29 @@
 // Shell words and git-style options of a Bash tool command, for hooks that check what a command runs.
-// Imported inside the hook's try, so a broken module blocks instead of failing open. Subshells and
-// grouping are #84.
+// Imported inside the hook's try, so a broken module blocks instead of failing open.
 
 // '...' | "..." (backslash escapes $ ` " \ newline) | \x | command separator | blank | redirect with its
-// target, which ends a word and is dropped | plain text.
-const TOKEN =
+// target, which ends a word and is dropped | plain text. Code also ends a command at ( ) and backticks,
+// which open and close subshells, groups and substitutions (bash(1) 5.3.20, SHELL GRAMMAR); data, a quoted
+// string read for the command it may hold, keeps them as text.
+const DATA_TOKEN =
   /'([^']*)'?|"((?:[^"\\]|\\[\s\S])*)"?|\\([\s\S])|([;&|\n])|([^\S\n]+|\d*[<>][<>&|]?[^\S\n]*(?:'[^']*'|"(?:[^"\\]|\\[\s\S])*"|[^\s'"\\;&|<>])*)|([^\s'"\\;&|<>]+)/g;
+const CODE_TOKEN =
+  /'([^']*)'?|"((?:[^"\\]|\\[\s\S])*)"?|\\([\s\S])|([;&|\n()`])|([^\S\n]+|\d*[<>][<>&|]?[^\S\n]*(?:'[^']*'|"(?:[^"\\]|\\[\s\S])*"|[^\s'"\\;&|<>()`])*)|([^\s'"\\;&|<>()`]+)/g;
+// A here-document body up to the line holding only its delimiter (bash(1), Here Documents). With a quoted
+// delimiter the body is data; without, it expands $(...) and backticks like a double-quoted string.
+const HERE_DOC = /<<-?[ \t]*(['"]?)([^\s'"<>;&|()`]+)\1([^\n]*)((?:\n[\s\S]*?)?)\n\t*\2(?=\n|$)/g;
 const SEP = Symbol('separator');
 const BLANK = Symbol('blank');
 
 const partOf = (m) => m[1] ?? m[2]?.replace(/\\([$`"\\\n])/g, '$1') ?? m[3] ?? m[6];
+
+// ( and ) stay as one-word commands, so a reader can scope cd to a subshell.
+const piecesOf = (m) => {
+  const part = partOf(m);
+  if (part !== undefined) return [part];
+  if (m[4] === '(' || m[4] === ')') return [SEP, m[4], SEP];
+  return [m[4] ? SEP : BLANK];
+};
 
 const splitOn = (items, marker) =>
   items.reduce((groups, item) => {
@@ -18,12 +32,44 @@ const splitOn = (items, marker) =>
     return groups;
   }, [[]]);
 
-// Bash removes a backslash-newline before it splits words (bash(1) 5.3, QUOTING).
-/** @returns {string[][]} the words of each simple command, quotes removed, split at && || ; | & and newlines */
-export const commands = (line) =>
-  splitOn([...line.replaceAll('\\\n', '').matchAll(TOKEN)].map((m) => partOf(m) ?? (m[4] ? SEP : BLANK)), SEP)
-    .map((pieces) => splitOn(pieces, BLANK).filter((parts) => parts.length > 0).map((parts) => parts.join('')))
+const hereDocs = (line) => {
+  const bodies = [];
+  const text = line.replace(HERE_DOC, (...match) => {
+    const [, quote, delimiter, rest, body] = match;
+    if (!quote) bodies.push(body);
+    return `<<${delimiter}${rest}`;
+  });
+  return { text, bodies };
+};
+
+// The commands of each $(...) and backtick substitution in expanding text.
+const substitutions = (text) => [...(text.match(/\$\(([\s\S]*)\)/)?.slice(1) ?? []), ...[...text.matchAll(/`([^`]*)`/g)].map((m) => m[1])];
+
+// Every double-quoted string outside single quotes, also a redirect target such as <<< "$(...)".
+const doubleQuoted = (text) => [...text.replace(/'[^']*'/g, "''").matchAll(/"((?:[^"\\]|\\[\s\S])*)"/g)].map((m) => m[1]);
+
+const wordsOf = (pieces) =>
+  splitOn(pieces, SEP)
+    .map((group) => splitOn(group, BLANK).filter((parts) => parts.length > 0).map((parts) => parts.join('')))
     .filter((words) => words.length > 0);
+
+// Bash removes a backslash-newline before it splits words (bash(1) 5.3, QUOTING).
+/** @returns {string[][]} the words of each simple command, quotes removed, split at && || ; | & and newlines; code also at ( ) and backticks, plus the commands of substitutions in double quotes and here-documents */
+export const commands = (line, data = false) => {
+  const { text, bodies } = hereDocs(line.replaceAll('\\\n', ''));
+  const matches = [...text.matchAll(data ? DATA_TOKEN : CODE_TOKEN)];
+  if (data) return wordsOf(matches.map((m) => partOf(m) ?? (m[4] ? SEP : BLANK)));
+  const inner = [...doubleQuoted(text), ...bodies].flatMap(substitutions);
+  return [...wordsOf(matches.flatMap(piecesOf)), ...inner.flatMap((body) => commands(body))];
+};
+
+// A command whose name comes from a substitution: $(...) or a backtick where a command starts, outside
+// quotes and here-document bodies (bash(1), SHELL GRAMMAR).
+/** @returns {boolean} whether the shell names a command by a substitution's output */
+export const substitutedName = (line) =>
+  /(^|[;&|\n(]|\b(?:then|do|else|elif|if|while|until|time)\s|!\s)\s*(\$\(|`)/.test(
+    hereDocs(line.replaceAll('\\\n', '')).text.replace(/'[^']*'/g, "''").replace(/"(?:[^"\\]|\\[\s\S])*"/g, '""'),
+  );
 
 export const beforeDash = (args) => {
   const dash = args.indexOf('--');
