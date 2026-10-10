@@ -170,11 +170,14 @@ describe('Learned agent guards', () => {
 
 });
 
-describe('Deny rules match a flag in any position', () => {
+// Bash rules match the whole command text, so a flag rule misses short-flag clusters and denies a quoted
+// commit message that contains the flag (https://code.claude.com/docs/en/permissions). sandbox-gate.mjs
+// blocks -n, --no-verify and --force instead (tests/architecture/hook-safety.spec.ts).
+describe('Deny rules leave git flags to the sandbox-gate hook', () => {
   const settings: { permissions?: { deny?: string[] } } = JSON.parse(read('.claude/settings.json'));
 
-  // Bash rules match the whole command, `*` stands for any text, and a trailing ` *` also matches the
-  // bare command (https://code.claude.com/docs/en/permissions#wildcard-patterns).
+  // `*` stands for any text, and a trailing ` *` also matches the bare command
+  // (https://code.claude.com/docs/en/permissions#wildcard-patterns).
   const matches = (rule: string, command: string): boolean => {
     const pattern = rule.slice('Bash('.length, -1);
     const escaped = pattern.split('*').map((part) => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('.*');
@@ -187,27 +190,13 @@ describe('Deny rules match a flag in any position', () => {
     (settings.permissions?.deny ?? []).some((rule) => rule.startsWith('Bash(') && matches(rule, command));
 
   it.each([
-    'git commit --no-verify -m x',
-    'git commit -m "fix: x" --no-verify',
-    'git commit -m x --no-verify -- src/a.ts',
-    'git commit -n -m x',
-    'git commit -m x -n',
-    'git push --no-verify',
-    'git push origin b --no-verify',
-    'git push --force origin b',
-    'git push origin b --force',
-    'git push -f origin b',
-    'git push origin b -f',
-  ])('denies %s', (command) => {
-    expect(denied(command)).toBe(true);
+    'git commit -m "fix: drop the -n flag"',
+    'git commit -m "docs: explain --no-verify" -- README.md',
+    'git push origin b',
+    'git push --force-with-lease origin b',
+  ])('does not deny %s', (command) => {
+    expect(denied(command)).toBe(false);
   });
-
-  it.each(['git commit -m "fix: x" -- src/a.ts', 'git push origin b', 'git push --force-with-lease origin b'])(
-    'does not deny %s',
-    (command) => {
-      expect(denied(command)).toBe(false);
-    },
-  );
 });
 
 // README is read as truth too: its tree names only what the repo tracks (plans and specs live in issues).
