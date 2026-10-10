@@ -6,7 +6,7 @@ Personal portfolio and blog of Patrik Alexits. Static Astro site hosted on stati
 - Astro (`output: 'static'`), vanilla CSS, Markdown content collections
 - Satori + resvg for Open Graph images
 - Vitest (AstroContainer) for components, Playwright for user journeys
-- ESLint with Feature-Sliced Design boundary rules
+- Astro's project structure (ADR 002), import boundaries enforced by ESLint
 
 ## Setup
 Requires Node 26 and pnpm (version pinned in `package.json`).

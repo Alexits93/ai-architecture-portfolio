@@ -123,7 +123,7 @@ h2 { margin: 0; letter-spacing: -.025em; font-weight: 500; font-size: 1.125rem; 
 a:active, a:focus, a:focus-visible { outline: 2px solid var(--focus-color); }
 ::selection { background-color: var(--theme-primary); }
 
-/* FSD Layout Extensions */
+/* Page layout rules: Stories #53 and #76 move them into layouts and pages */
 section#page-wrapper { display: flex; flex-direction: column; gap: 3rem; }
 section#page-wrapper > .experience-list-container { align-self: flex-end; }
 @media (min-width: 768px) {

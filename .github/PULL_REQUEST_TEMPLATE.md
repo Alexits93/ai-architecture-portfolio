@@ -12,7 +12,7 @@
 
 ## Pre-Merge Checklist
 - [ ] Tests passed
-- [ ] FSD / Architectural boundaries respected
+- [ ] Import boundaries respected (ADR 002)
 - [ ] No `any` / `unknown` introduced
 - [ ] Modernization mandated (used latest HTML5/CSS3/TS)
 - [ ] Documentation updated (Task issue, Architecture, ADRs)

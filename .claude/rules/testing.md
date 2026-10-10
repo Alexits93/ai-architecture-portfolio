@@ -13,7 +13,7 @@ Write the failing test first, then the code (TDD). While a feature is in progres
 ## Tool split
 - Vitest + `experimental_AstroContainer`: component rendering and unit logic, co-located as `src/**/*.spec.ts`. Never use Playwright for isolated component state; it is slower and flakier.
 - Playwright: multi-page journeys and anything that needs client `<script>` code to run (AstroContainer does not execute it). Location: `e2e/`, or `tests/pages/` for page-level browser tests.
-- Tests that import from `src/pages/` live in `tests/`, because a co-located page test would break FSD lint rules.
+- Tests that import from `src/pages/` live in `tests/pages/`. Astro builds every file in `src/pages/` whose name lacks a `_` prefix (https://docs.astro.build/en/guides/routing/), so a spec there would need one.
 
 ## AstroContainer
 - Keep `environment: 'node'` in `vitest.config.ts`; jsdom strips the compiler metadata AstroContainer needs. Parse the rendered string with `new JSDOM(html)` inside the test.
