@@ -1,3 +1,10 @@
+# [1.16.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.15.1...v1.16.0) (2026-10-10)
+
+
+### Features
+
+* **layouts:** add BlogPostLayout with publishedTime and BlogPosting JSON-LD ([#122](https://github.com/Alexits93/ai-architecture-portfolio/issues/122)) ([31a17ee](https://github.com/Alexits93/ai-architecture-portfolio/commit/31a17ee443ff50e97b36a7a25c12e93f70b620af)), closes [#121](https://github.com/Alexits93/ai-architecture-portfolio/issues/121)
+
 ## [1.15.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.15.0...v1.15.1) (2026-10-10)
 
 
