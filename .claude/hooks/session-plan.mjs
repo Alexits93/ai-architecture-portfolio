@@ -4,16 +4,6 @@
 // Claude Code adds plain SessionStart stdout to Claude's context. Exit codes cannot block SessionStart
 // (exit 2 reaches only the user), so a failure prints a stop notice to stdout instead of passing silently.
 import { spawnSync } from 'node:child_process';
-import {
-  HANDOVER_QUERY,
-  OPEN_PLAN_QUERY,
-  PR_HANDOVER_QUERY,
-  formatCurrentTask,
-  formatPlan,
-  formatPrHandover,
-  latestHandover,
-  linkedTask,
-} from '../../.github/workflow-rules.mjs';
 
 const cwd = process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 
@@ -30,6 +20,17 @@ const graphql = (query, vars = []) =>
     .data.repository;
 
 try {
+  // Imported here so a module that fails to load still prints the stop notice below.
+  const {
+  HANDOVER_QUERY,
+  OPEN_PLAN_QUERY,
+  PR_HANDOVER_QUERY,
+  formatCurrentTask,
+  formatPlan,
+  formatPrHandover,
+  latestHandover,
+  linkedTask,
+  } = await import('../../.github/workflow-rules.mjs');
   const { nodes: issues, pageInfo } = graphql(OPEN_PLAN_QUERY).issues;
   if (pageInfo.hasNextPage) throw new Error('more than 100 open issues, so the tree would be incomplete');
   const branch = run('git', ['branch', '--show-current']).trim();

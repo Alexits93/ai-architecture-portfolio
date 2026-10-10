@@ -150,7 +150,77 @@ describe('Learned agent guards', () => {
     expect(settings.autoMemoryEnabled).toBe(false);
   });
 
+  // Owner rule 2026-10-10. No hook can prove a browser check happened, so the line itself is pinned.
+  it('keeps the live-check base rule in CLAUDE.md', () => {
+    expect(read('CLAUDE.md')).toMatch(/^3\. Live check before every "done":.*Passing tests alone are not done\.$/m);
+  });
+
   it('registers the sandbox gate hook', () => {
     expect(read('.claude/settings.json')).toContain('.claude/hooks/sandbox-gate.mjs');
+  });
+
+  // A timed-out or crashed hook does not block unless onFailure is "block" (https://code.claude.com/docs/en/hooks).
+  it('makes every PreToolUse gate fail closed', () => {
+    const hooks: { hooks?: { PreToolUse?: Array<{ hooks: Array<{ command: string; onFailure?: string }> }> } } =
+      JSON.parse(read('.claude/settings.json'));
+    const gates = (hooks.hooks?.PreToolUse ?? []).flatMap((group) => group.hooks);
+    expect(gates.length).toBeGreaterThan(0);
+    expect(gates.filter((gate) => gate.onFailure !== 'block').map((gate) => gate.command)).toEqual([]);
+  });
+
+});
+
+describe('Deny rules match a flag in any position', () => {
+  const settings: { permissions?: { deny?: string[] } } = JSON.parse(read('.claude/settings.json'));
+
+  // Bash rules match the whole command, `*` stands for any text, and a trailing ` *` also matches the
+  // bare command (https://code.claude.com/docs/en/permissions#wildcard-patterns).
+  const matches = (rule: string, command: string): boolean => {
+    const pattern = rule.slice('Bash('.length, -1);
+    const escaped = pattern.split('*').map((part) => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('.*');
+    const regex = pattern.endsWith(' *') && pattern.indexOf('*') === pattern.length - 1
+      ? `^${escaped.slice(0, -3)}( .*)?$`
+      : `^${escaped}$`;
+    return new RegExp(regex, 's').test(command);
+  };
+  const denied = (command: string): boolean =>
+    (settings.permissions?.deny ?? []).some((rule) => rule.startsWith('Bash(') && matches(rule, command));
+
+  it.each([
+    'git commit --no-verify -m x',
+    'git commit -m "fix: x" --no-verify',
+    'git commit -m x --no-verify -- src/a.ts',
+    'git commit -n -m x',
+    'git commit -m x -n',
+    'git push --no-verify',
+    'git push origin b --no-verify',
+    'git push --force origin b',
+    'git push origin b --force',
+    'git push -f origin b',
+    'git push origin b -f',
+  ])('denies %s', (command) => {
+    expect(denied(command)).toBe(true);
+  });
+
+  it.each(['git commit -m "fix: x" -- src/a.ts', 'git push origin b', 'git push --force-with-lease origin b'])(
+    'does not deny %s',
+    (command) => {
+      expect(denied(command)).toBe(false);
+    },
+  );
+});
+
+// README is read as truth too: its tree names only what the repo tracks (plans and specs live in issues).
+describe('README tree', () => {
+  const line = (dir: string): string => read('README.md').split('\n').find((l) => l.startsWith(dir)) ?? '';
+
+  it('describes docs/ as the architecture map and ADRs only', () => {
+    expect(line('docs/')).toMatch(/ARCHITECTURE\.md/);
+    expect(line('docs/')).not.toMatch(/spec|plan/i);
+  });
+
+  it('describes .claude/ without skills', () => {
+    expect(line('.claude/')).toMatch(/rules, hooks/);
+    expect(line('.claude/')).not.toMatch(/skill/i);
   });
 });

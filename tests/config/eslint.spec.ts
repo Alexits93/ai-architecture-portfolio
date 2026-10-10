@@ -136,3 +136,15 @@ describe('ESLint AI-prose gate', () => {
     expect(await ruleIds('// robustness tests\nexport const a = "© ® ™ 2026";\n')).toEqual([]);
   });
 });
+
+describe('ESLint inline style message', () => {
+  // <style define:vars> renders style="--x: ..." on elements (Astro 7.3.8), which the hashed CSP blocks,
+  // so the message must point to classes or data-* attributes instead.
+  it('points dynamic inline styles to a class or data-* attribute, and says define:vars is blocked too', async () => {
+    const code = '---\nconst c = 1;\n---\n<p style={{ color: c }}>x</p>\n';
+    const messages = (await new ESLint().lintText(code, { filePath: 'src/widgets/x/ui/X.astro' }))[0].messages;
+    const style = messages.find((m) => m.message.includes('style={...}'));
+    expect(style?.message).toContain('data-*');
+    expect(style?.message).toContain('The hashed CSP blocks style attributes, including those <style define:vars> renders');
+  });
+});

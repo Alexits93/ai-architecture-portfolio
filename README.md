@@ -34,8 +34,8 @@ src/
   content/    blog posts (Markdown)
 e2e/          Playwright journeys
 tests/        page-level and architecture tests
-docs/         specs, execution plans, ADRs, architecture map
-.claude/      Claude Code rules, hooks, skills, permissions
+docs/         ARCHITECTURE.md (architecture map) and ADRs
+.claude/      Claude Code rules, hooks, permissions and sandbox
 ```
 
 ## Contributing

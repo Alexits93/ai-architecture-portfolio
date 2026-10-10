@@ -141,9 +141,19 @@
       "Bash(yarn *)",
       "Bash(git push --force *)",
       "Bash(git push -f *)",
+      "Bash(git push * --force)",
+      "Bash(git push * --force *)",
+      "Bash(git push * -f)",
+      "Bash(git push * -f *)",
       "Bash(git commit --no-verify *)",
+      "Bash(git commit * --no-verify)",
+      "Bash(git commit * --no-verify *)",
       "Bash(git commit -n *)",
+      "Bash(git commit * -n)",
+      "Bash(git commit * -n *)",
       "Bash(git push --no-verify *)",
+      "Bash(git push * --no-verify)",
+      "Bash(git push * --no-verify *)",
       "Bash(git clean *)",
       "Bash(git stash *)",
       "Edit(./CHANGELOG.md)"
@@ -162,14 +172,14 @@
       {
         "matcher": "Write|Edit",
         "hooks": [
-          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/anti-slop.mjs", "timeout": 10 }
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/anti-slop.mjs", "timeout": 10, "onFailure": "block" }
         ]
       },
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pr-gate.mjs", "timeout": 30 },
-          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/sandbox-gate.mjs", "timeout": 10 }
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pr-gate.mjs", "timeout": 30, "onFailure": "block" },
+          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/sandbox-gate.mjs", "timeout": 10, "onFailure": "block" }
         ]
       }
     ],

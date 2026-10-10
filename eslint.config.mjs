@@ -21,7 +21,7 @@ const SYNTAX_BANS = [
   },
   {
     "selector": "JSXAttribute[name.name='style'] JSXExpressionContainer",
-    "message": "Idiomatic Tooling (HTML5 State Law): Do not use dynamic inline styles (style={...}). Use Astro's <style define:vars={{...}}> instead."
+    "message": "Idiomatic Tooling (HTML5 State Law): Do not use dynamic inline styles (style={...}). The hashed CSP blocks style attributes, including those <style define:vars> renders. Toggle a class (class:list) or a data-* attribute and style it in a scoped <style>."
   },
   {
     "selector": "JSXOpeningElement[name.name='script']:has(JSXNamespacedName[namespace.name='is'][name.name='inline']):not(:has(JSXAttribute[name.name='src'])):not(:has(JSXAttribute[name.name='type'][value.value='application/ld+json']))",

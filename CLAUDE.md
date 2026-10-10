@@ -7,6 +7,7 @@ Plan: the open GitHub issues (Epic > Story > Task as native sub-issues, order as
 ## Base rules
 1. You run inside VS Code. Use its tools to check and improve your work: the Problems panel through `mcp__ide__getDiagnostics` (CLI) or `mcp__claude-vscode__getDiagnostics` (chat panel), and the installed extensions (`code --list-extensions --show-versions`, unsandboxed). If the `ide` server is not connected, tell the user to run `/ide` or reload the window.
 2. Auto memory is off (`autoMemoryEnabled: false`). Repository history and knowledge live only in git history (`git log -S`, `git show`) and GitHub issues and PRs (`gh issue view`, `gh pr view`). Never work from memory, training data or assumption: before starting a task, read the relevant history, issues, code and official docs, and say what you verified.
+3. Live check before every "done": `pnpm build`, run the site (`pnpm preview`, or headed Playwright so the owner can watch), use the change in a real browser, read the screenshots, and report what you saw. Passing tests alone are not done.
 
 ## Commands
 - `pnpm check`: lint + `astro check` + unit tests with coverage. Run it before every commit and show its result as evidence.
