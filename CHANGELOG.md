@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.15.0...v1.15.1) (2026-10-10)
+
+
+### Bug Fixes
+
+* **blog:** exclude the current post from its recommended articles ([#120](https://github.com/Alexits93/ai-architecture-portfolio/issues/120)) ([b196fcd](https://github.com/Alexits93/ai-architecture-portfolio/commit/b196fcd1d2b56a75e3a3c14961d97a8c73167c5a)), closes [#117](https://github.com/Alexits93/ai-architecture-portfolio/issues/117)
+
 # [1.15.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.14.1...v1.15.0) (2026-10-10)
 
 
