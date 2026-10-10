@@ -1,0 +1,27 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { ROUTES, SITE } from '@/shared/config';
+import type { JsonLdObject } from '@/shared/lib/seo';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { title, description, publishDate } = post.data;
+
+// https://developers.google.com/search/docs/appearance/structured-data/article
+const jsonLd: JsonLdObject = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  datePublished: publishDate.toISOString(),
+  author: { '@type': 'Person', name: SITE.author, url: new URL(ROUTES.cv, Astro.site).href },
+};
+---
+
+<BaseLayout title={`${title} | ${SITE.name}`} description={description} type="article" publishedTime={publishDate} jsonLd={jsonLd}>
+	<slot />
+</BaseLayout>

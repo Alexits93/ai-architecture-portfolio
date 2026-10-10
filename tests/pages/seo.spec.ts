@@ -29,3 +29,23 @@ for (const route of ROUTES) {
     await expect(page.locator('script[src="/theme.js"]')).toHaveCount(1);
   });
 }
+
+// Post pages describe themselves as BlogPosting; other pages carry no article data (#121).
+for (const route of ROUTES) {
+  const isPost = /^\/blog\/[^/]+\/$/.test(route);
+  test(`${isPost ? 'BlogPosting' : 'no article data'} on ${route}`, async ({ page }) => {
+    await page.goto(route);
+    const scripts = page.locator('script[type="application/ld+json"]');
+    const publishedTime = page.locator('meta[property="article:published_time"]');
+    if (!isPost) {
+      await expect(scripts).toHaveCount(0);
+      await expect(publishedTime).toHaveCount(0);
+      return;
+    }
+    await expect(scripts).toHaveCount(1);
+    await expect(publishedTime).toHaveAttribute('content', /^\d{4}-\d{2}-\d{2}T/);
+    const data: { '@type': string; headline: string } = JSON.parse((await scripts.textContent()) ?? '');
+    expect(data['@type']).toBe('BlogPosting');
+    expect(data.headline).toBe(await page.locator('h1').first().textContent());
+  });
+}

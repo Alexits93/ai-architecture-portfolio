@@ -2,6 +2,7 @@ import type { BlogPost } from './types';
 
 interface PostOverrides {
   id: string;
+  title?: string;
   isFeatured?: boolean;
   publishDate?: string;
   tags?: string[];
@@ -10,6 +11,7 @@ interface PostOverrides {
 /** Typed test fixture. Matches CollectionEntry<'blog'> exactly, no casts. */
 export const createTestPost = ({
   id,
+  title = `Title ${id}`,
   isFeatured = false,
   publishDate = '2026-01-01',
   tags = [],
@@ -19,7 +21,7 @@ export const createTestPost = ({
   collection: 'blog',
   data: {
     slug: id,
-    title: `Title ${id}`,
+    title,
     subtitle: `Subtitle ${id}`,
     description: `Description ${id}`,
     publishDate: new Date(publishDate),
