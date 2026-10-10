@@ -1,3 +1,10 @@
+## [1.13.3](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.13.2...v1.13.3) (2026-10-10)
+
+
+### Bug Fixes
+
+* **og:** pin satori's fflate to 0.7.5 so og.png draws text ([#106](https://github.com/Alexits93/ai-architecture-portfolio/issues/106)) ([c31a9d4](https://github.com/Alexits93/ai-architecture-portfolio/commit/c31a9d45be67ca29c70d4d5902d04f9465cc8936)), closes [#69](https://github.com/Alexits93/ai-architecture-portfolio/issues/69)
+
 ## [1.13.2](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.13.1...v1.13.2) (2026-10-10)
 
 
