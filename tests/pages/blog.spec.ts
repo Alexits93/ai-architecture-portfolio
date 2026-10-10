@@ -1,4 +1,8 @@
+import { globSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
+
+// Every built post page, e.g. /blog/<slug>/ (#117).
+const POST_ROUTES = globSync('blog/*/index.html', { cwd: 'dist' }).map((file) => `/${file.replace(/index\.html$/, '')}`);
 
 // Every wrapper is visible without a tag; with one, only the posts that carry it.
 const expectFilteredBy = async (page: Page, tag: string | null) => {
@@ -87,4 +91,17 @@ test.describe('Blog filter by keyboard', () => {
     await page.keyboard.press('Space');
     await expectFilteredBy(page, null);
   });
+});
+
+test.describe('Recommended articles on a post page', () => {
+  test('finds the built post pages', () => expect(POST_ROUTES.length).toBeGreaterThan(0));
+
+  for (const route of POST_ROUTES) {
+    test(`${route} does not recommend itself`, async ({ page }) => {
+      await page.goto(route);
+      const cards = page.locator('#blog-section .blog-post-thumbnail');
+      await expect(cards.first()).toBeVisible();
+      await expect(page.locator(`#blog-section a[href="${route}"]`)).toHaveCount(0);
+    });
+  }
 });

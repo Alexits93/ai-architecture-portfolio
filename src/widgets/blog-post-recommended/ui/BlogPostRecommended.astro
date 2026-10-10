@@ -4,15 +4,14 @@ import { BlogPostThumbnail, selectRecommendedPosts } from '@/entities/blog-post'
 import { ROUTES } from '@/shared/config';
 
 interface Props {
-  blogPostClass?: string;
   /** Post to omit, e.g. the article currently being read. */
   excludeId?: string;
 }
 
-const { blogPostClass = "", excludeId } = Astro.props;
+const { excludeId } = Astro.props;
 const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { excludeId });
 ---
-<section id="blog-section" class:list={[blogPostClass]}>
+<section id="blog-section">
   <div class="wrapper-top">
     <h1>Recommended Articles</h1>
   </div>
