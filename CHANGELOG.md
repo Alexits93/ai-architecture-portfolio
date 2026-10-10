@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.16.0...v1.17.0) (2026-10-10)
+
+
+### Features
+
+* **seo:** add front-end to the home text and gate it on home and CV ([#126](https://github.com/Alexits93/ai-architecture-portfolio/issues/126)) ([bcf546d](https://github.com/Alexits93/ai-architecture-portfolio/commit/bcf546da33b6de911d90e48ed66cbe26f50d76ca)), closes [#125](https://github.com/Alexits93/ai-architecture-portfolio/issues/125)
+
 # [1.16.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.15.1...v1.16.0) (2026-10-10)
 
 
