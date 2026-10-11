@@ -14,15 +14,25 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The commit range check needs the base and head commits.
+          fetch-depth: 0
 
       - name: Setup Environment
         uses: ./.github/actions/setup-pnpm-env
 
-      # The PR title becomes the squash commit on master.
+      # Squash merge only: the PR title becomes the commit on master.
       - name: Check PR title
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: printf '%s\n' "$PR_TITLE" | pnpm exec commitlint
+
+      # The squash body keeps the commit messages; semantic-release reads their footers.
+      - name: Check PR commits
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
 
       # Same rules as the local .claude/hooks/pr-gate.mjs.
       - name: Check PR description
