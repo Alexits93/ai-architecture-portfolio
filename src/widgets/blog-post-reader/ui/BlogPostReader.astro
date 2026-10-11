@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import ArticleNavigator from '@/shared/ui/article-navigator/ArticleNavigator.astro';
 import SkillTag from '@/shared/ui/skill-tag/SkillTag.astro';
+import { getCategoryPath } from '@/entities/blog-post';
 import Logo from '@/assets/logo.svg';
 
 interface Props {
@@ -52,13 +53,9 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
       <Content />
     </article>
 
-    {post.data.tags && post.data.tags.length > 0 && (
-      <div class="tags">
-        {post.data.tags.map((tag) => (
-          <SkillTag skill={tag} />
-        ))}
-      </div>
-    )}
+    <p class="category">
+      <a href={getCategoryPath(post.data.category)}><SkillTag skill={post.data.category} /></a>
+    </p>
   </div>
 
   <aside class="navigator-sidebar">
@@ -143,12 +140,14 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
     border-width: 0;
   }
 
-  .tags {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: .5rem;
+  .category {
     margin: 3rem 0;
+  }
+
+  /* global.css removes link underlines; without one the category reads as a plain tag. The tag is
+     inline-block, which a parent's text-decoration does not reach (CSS Text Decoration 4, section 2). */
+  .category a :global(.skill-tag) {
+    text-decoration: underline;
   }
 
   .prose {

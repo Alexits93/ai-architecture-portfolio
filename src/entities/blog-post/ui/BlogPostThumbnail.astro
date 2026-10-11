@@ -20,20 +20,11 @@ const { post } = Astro.props;
     </figure>
     <div class="thumbnail-body">
       <div class="thumbnail-body-top">
-        <h2>
-          <span>
-            {post.data.title}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </span>
-        </h2>
+        <h2>{post.data.title}</h2>
         <p>{post.data.description}</p>
       </div>
       <div class="tags">
-        {post.data.tags.map(tag => (
-          <SkillTag skill={tag} />
-        ))}
+        <SkillTag skill={post.data.category} />
       </div>
     </div>
   </article>

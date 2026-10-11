@@ -4,7 +4,7 @@ import { describe, it, expect, beforeEach, assert } from 'vitest';
 import { createTestPost } from '../model/test-post.fixture';
 import BlogPostThumbnail from './BlogPostThumbnail.astro';
 
-const mockPost = createTestPost({ id: 'test-post', tags: ['test', 'astro'] });
+const mockPost = createTestPost({ id: 'test-post', category: 'Architecture' });
 
 describe('BlogPostThumbnail Entity (Astro)', () => {
   let container: AstroContainer;
@@ -29,9 +29,12 @@ describe('BlogPostThumbnail Entity (Astro)', () => {
     expect(link.getAttribute('href')).toBe('/blog/test-post/');
   });
 
-  it('renders the tags', async () => {
+  // The card is one link, so the category is text, not a nested link (#90).
+  it('renders the category as text and no arrow icon', async () => {
     const doc = await render();
     const tags = [...doc.querySelectorAll('.skill-tag')].map((t) => t.textContent.trim());
-    expect(tags).toEqual(['#test', '#astro']);
+    expect(tags).toEqual(['#architecture']);
+    expect(doc.querySelectorAll('a')).toHaveLength(1);
+    expect(doc.querySelector('svg')).toBeNull();
   });
 });

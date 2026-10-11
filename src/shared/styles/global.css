@@ -121,6 +121,9 @@ main {
 h1 { margin: 0; letter-spacing: -.025em; font-weight: 700; font-size: 2.25rem; line-height: 2.5rem; }
 h2 { margin: 0; letter-spacing: -.025em; font-weight: 500; font-size: 1.125rem; line-height: 1.75rem; }
 a:active, a:focus, a:focus-visible { outline: 2px solid var(--focus-color); }
+/* A gap between the focus outline and what it outlines keeps the text readable. The outline shorthand does not set
+   outline-offset (MDN outline), so this reaches every component's focus outline. */
+:focus-visible { outline-offset: 4px; }
 ::selection { background-color: var(--theme-primary); }
 
 /* Page layout rules: Stories #53 and #76 move them into layouts and pages */
@@ -200,24 +203,8 @@ h1, h2, h3, h4, h5, h6 { scroll-margin-top: 100px; }
   line-height: 1.75rem;
 }
 
-.blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2 span {
-  display: flex;
-  gap: .5rem;
-  align-items: center;
-}
-
-.blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2 span svg {
-  width: 25px;
-  transition: all .3s ease-in-out;
-}
-
 .blog-post-thumbnail article .thumbnail-body .thumbnail-body-top p {
   margin: 0;
-}
-
-.blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2:hover span svg {
-  transform: scale(1.5);
-  color: var(--theme-primary);
 }
 
 .blog-post-thumbnail article .thumbnail-body .tags {

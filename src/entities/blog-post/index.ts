@@ -1,4 +1,4 @@
 export { default as BlogPostThumbnail } from './ui/BlogPostThumbnail.astro';
-export type { BlogPost } from './model/types';
-export { selectFeaturedPost, selectRecommendedPosts, sortByNewest, selectStandardPosts } from './model/selectors';
-export { getPostPath } from './lib/permalink';
+export type { BlogPost, Category } from './model/types';
+export { selectFeaturedPost, selectRecommendedPosts, sortByNewest } from './model/selectors';
+export { getCategoryPath, getPostPath } from './lib/permalink';
