@@ -107,7 +107,6 @@
       "Bash(git reset *)",
       "Bash(git branch -D *)",
       "Bash(gh pr create *)",
-      "Bash(gh pr merge *)",
       "Bash(gh issue create *)",
       "Bash(pnpm add *)",
       "Bash(pnpm remove *)",
@@ -143,6 +142,7 @@
       "Bash(git push -f *)",
       "Bash(git push --no-verify *)",
       "Bash(git push --mirror *)",
+      "Bash(gh pr merge *)",
       "Bash(git clean *)",
       "Bash(git stash *)",
       "Edit(./CHANGELOG.md)"
