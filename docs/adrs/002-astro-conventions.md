@@ -16,6 +16,7 @@ Follow Astro's documented project structure (https://docs.astro.build/en/basics/
 | `src/pages/` | Routes. Page-only markup and scoped styles stay in the page; page-only components sit next to it with a `_` prefix, which the router ignores (https://docs.astro.build/en/guides/routing/). |
 | `src/layouts/` | `BaseLayout.astro` (document shell, head, global CSS, header, menu, footer, `<slot />`) and nested layouts (https://docs.astro.build/en/basics/layouts/). |
 | `src/components/` | Components used by two or more routes or layouts. |
+| `src/assets/` | Local images and SVGs that components import. An imported `.svg` renders as an inline SVG component (https://docs.astro.build/en/guides/images/#svg-components). |
 | `src/styles/` | Tokens and global CSS (reset, tokens, base element styles). Component styles are scoped (https://docs.astro.build/en/guides/styling/). |
 | `src/content/`, `src/content.config.ts` | Collections: schema and data for repeated structured content (https://docs.astro.build/en/guides/content-collections/). |
 | `src/lib/` | Framework-free TypeScript. |

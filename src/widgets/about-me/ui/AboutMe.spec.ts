@@ -87,3 +87,27 @@ describe('AboutMe Widget (Astro) - Social Links', () => {
     expect(ul).toBeNull();
   });
 });
+
+// Each icon is a decorative SVG asset with an explicit 25px size (#119).
+it('should render each social link with its accessible name and a hidden icon', async () => {
+  const container = await AstroContainer.create();
+  const props = {
+    githubUrl: 'https://github.com',
+    linkedinUrl: 'https://linkedin.com',
+    instagramUrl: 'https://instagram.com',
+    stackoverflowUrl: 'https://stackoverflow.com'
+  };
+  const doc = new JSDOM(await container.renderToString(AboutMe, { props })).window.document;
+
+  const links = [...doc.querySelectorAll('.social-links a')].map((link) => {
+    const svg = link.querySelector('svg');
+    assert.exists(svg);
+    return [link.getAttribute('aria-label'), ...['viewBox', 'fill', 'aria-hidden', 'width', 'height'].map((name) => svg.getAttribute(name))];
+  });
+  expect(links).toEqual([
+    ['GitHub (Opens in new tab)', '0 0 16 16', 'currentColor', 'true', '25', '25'],
+    ['LinkedIn (Opens in new tab)', '0 0 24 24', 'currentColor', 'true', '25', '25'],
+    ['Instagram (Opens in new tab)', '0 0 1000 1000', 'currentColor', 'true', '25', '25'],
+    ['Stack Overflow (Opens in new tab)', '0 0 169.61 200', 'currentColor', 'true', '25', '25'],
+  ]);
+});

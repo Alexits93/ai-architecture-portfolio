@@ -23,7 +23,11 @@ describe('Header Widget (Astro)', () => {
     expect(srOnlySpan.textContent).toBe('Back to Home page');
     
     const svg = homeLink.querySelector('svg');
-    expect(svg).not.toBeNull();
+    assert.exists(svg);
+    // Explicit size keeps CLS at 0: 50px high at the viewBox aspect ratio (#119).
+    expect(['viewBox', 'fill', 'aria-hidden', 'width', 'height'].map((name) => svg.getAttribute(name))).toEqual(
+      ['0 0 467.68 294.45', 'currentColor', 'true', '79.42', '50'],
+    );
   });
 
   // APG button pattern: a toggle keeps its label and exposes its state with aria-pressed.
