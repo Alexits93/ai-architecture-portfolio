@@ -40,11 +40,9 @@ describe('Project Structure & Tooling Check (Deterministic Guardrails)', () => {
     expect(files.filter((f) => banned.test(fs.readFileSync(f, 'utf8')))).toEqual([]);
   });
 
-  // The logo lives once in src/assets/logo.svg; components import it as an SVG component (#119).
-  it('keeps the logo path data out of components', () => {
-    const logo = fs.readFileSync(path.join(process.cwd(), 'src/assets/logo.svg'), 'utf8');
-    expect(logo).toContain('m123.48,57.74H54.68');
+  // Icons live once in src/assets/; components import them as SVG components (#119, #141).
+  it('keeps inline SVG out of components', () => {
     const components = fs.globSync('src/**/*.astro', { cwd: process.cwd() });
-    expect(components.filter((f) => fs.readFileSync(f, 'utf8').includes('m123.48,57.74H54.68'))).toEqual([]);
+    expect(components.filter((f) => fs.readFileSync(f, 'utf8').includes('<svg'))).toEqual([]);
   });
 });
