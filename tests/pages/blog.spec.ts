@@ -54,8 +54,7 @@ test.describe('Blog category listing', () => {
     });
   });
 
-  test('returns to the category page with only its posts after Back', async ({ page, browserName }) => {
-    test.fail(browserName === 'webkit', 'WebKit upgrades the same-origin link navigation to https://localhost (#91)');
+  test('returns to the category page with only its posts after Back', async ({ page }) => {
     await page.goto('/blog/category/ai/');
     await page.locator('.blog-grid .blog-post-thumbnail').first().click();
     await expect(page).toHaveURL(/\/blog\/[a-z0-9-]+\/$/);
@@ -66,8 +65,7 @@ test.describe('Blog category listing', () => {
 });
 
 test.describe('Blog category navigation by keyboard', () => {
-  test('reaches every category with Tab and Enter, with a visible focus outline', async ({ page, browserName }) => {
-    test.fail(browserName === 'webkit', 'WebKit upgrades the same-origin link navigation to https://localhost (#91)');
+  test('reaches every category with Tab and Enter, with a visible focus outline', async ({ page }) => {
     await page.goto('/blog/');
     for (const { route, current } of BLOG_ROUTES.slice(1)) {
       const link = categoryNav(page).getByRole('link', { name: current, exact: true });
@@ -88,8 +86,7 @@ test.describe('Blog pages on a small viewport', () => {
   for (const { route } of BLOG_ROUTES) {
     for (const width of [320, 375]) {
       for (const theme of ['light', 'dark']) {
-        test(`${route} fits a ${width} px viewport in the ${theme} theme`, async ({ page, browserName }) => {
-          test.fail(browserName === 'webkit', 'Thumbnails overflow 320 px in WebKit (#91)');
+        test(`${route} fits a ${width} px viewport in the ${theme} theme`, async ({ page }) => {
           await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
           await page.setViewportSize({ width, height: 800 });
           await page.goto(route);

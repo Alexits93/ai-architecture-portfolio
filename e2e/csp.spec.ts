@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { globSync } from 'node:fs';
+import { globSync, readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 
 // Every built page must load under its CSP with zero violations, and the theme script must still run.
@@ -17,8 +17,19 @@ const DIRECTIVES = [
   "base-uri 'none'",
   "form-action 'none'",
   "require-trusted-types-for 'script'",
-  'upgrade-insecure-requests',
 ];
+
+// Without upgrade-insecure-requests, browsers block mixed scripts, styles and frames and only upgrade
+// mixed media (MDN mixed content), so no built file may fetch a subresource over http://.
+// XML namespace identifiers such as xmlns="http://www.w3.org/2000/svg" are names, not requests.
+test('no built file loads a subresource over http://', () => {
+  const insecure = globSync('**/*.{html,css,svg,xml}', { cwd: 'dist' }).flatMap((file) =>
+    [...readFileSync(`dist/${file}`, 'utf-8').matchAll(/(?:\b(?:src|href|srcset)=["']?|url\(["']?)[^"')>]*?http:\/\/[^\s"')>]*/g)].map(
+      ([match]) => `${file}: ${match}`,
+    ),
+  );
+  expect(insecure).toEqual([]);
+});
 
 declare global {
   interface Window {
@@ -36,8 +47,12 @@ for (const route of ROUTES) {
         window.cspViolations.push(`${e.effectiveDirective} blocked ${e.blockedURI}`);
       });
     });
+    // A stylesheet, icon or image that fails to load leaves every style and layout check untested (#91).
+    const failed: string[] = [];
+    page.on('requestfailed', (request) => failed.push(request.url()));
 
     const response = await page.goto(route);
+    expect(failed).toEqual([]);
 
     // The hashed style-src blocks inline style attributes (e.g. Shiki output), so the served HTML has none.
     assert(response !== null);
@@ -46,6 +61,7 @@ for (const route of ROUTES) {
     const csp = page.locator('meta[http-equiv="content-security-policy"]');
     await expect(csp).toHaveAttribute('content', /script-src 'self' 'sha256-/);
     await expect(csp).not.toHaveAttribute('content', /unsafe-inline/);
+    await expect(csp).not.toHaveAttribute('content', /upgrade-insecure-requests/);
     for (const directive of DIRECTIVES) {
       await expect(csp).toHaveAttribute('content', new RegExp(`(^|; *)${directive}(;|$)`));
     }

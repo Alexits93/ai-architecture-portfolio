@@ -12,6 +12,7 @@
     "typecheck": "astro check && tsc --noEmit",
     "test": "vitest run --coverage",
     "test:e2e": "playwright test",
+    "test:e2e:webkit": "PW_WEBKIT_PODMAN=1 playwright test --project=webkit",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "prepare": "husky"
   },

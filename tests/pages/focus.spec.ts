@@ -6,8 +6,7 @@ const ROUTES = globSync('**/*.html', { cwd: 'dist' }).map((file) => `/${file.rep
 
 // Owner 2026-10-11: a focus outline keeps a gap to what it outlines, so the outline does not touch the text.
 for (const route of ROUTES) {
-  test(`every keyboard focus outline on ${route} has an offset`, async ({ page, browserName }) => {
-    test.fail(browserName === 'webkit', 'The stylesheet does not load in WebKit e2e (#91)');
+  test(`every keyboard focus outline on ${route} has an offset`, async ({ page }) => {
     await page.goto(route);
     const touching: string[] = [];
     for (let i = 0; i < 40; i++) {

@@ -22,7 +22,6 @@ const css = (locator: Locator, property: 'fill' | 'backgroundColor') =>
 
 for (const [theme, icon] of [['light', 'moon'], ['dark', 'sun']]) {
   test.describe(`${theme} theme`, () => {
-    test.fail(({ browserName }) => browserName === 'webkit', 'The stylesheet does not load in WebKit e2e (#91)');
     test.beforeEach(async ({ page }) => {
       await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
       await page.goto('/');

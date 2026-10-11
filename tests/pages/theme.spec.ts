@@ -59,8 +59,7 @@ test.describe('Theme after a change outside the page', () => {
     await expect(page.locator('html')).not.toHaveAttribute('data-theme');
   });
 
-  test('switches the colours with the OS theme without a stored choice', async ({ page, browserName }) => {
-    test.fail(browserName === 'webkit', 'The stylesheet does not load in WebKit e2e (#91)');
+  test('switches the colours with the OS theme without a stored choice', async ({ page }) => {
     await page.goto('/');
     const light = await background(page);
     await page.emulateMedia({ colorScheme: 'dark' });
