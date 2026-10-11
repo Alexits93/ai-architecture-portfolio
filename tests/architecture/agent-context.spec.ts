@@ -208,7 +208,7 @@ describe('Learned agent rules no hook can see (reply text, calls sharing a turn)
 
   // 2026-10-10: gh ran in the Write's turn twice; once a stale $TMPDIR/handover.md went to #94.
   it('keeps the publish-after-write rule in CLAUDE.md', () => {
-    expect(read('CLAUDE.md')).toMatch(/^- Publish \(`gh \.\.\. --body-file`, `git push`\) only in a later turn than the write that produces its content.*$/m);
+    expect(read('CLAUDE.md')).toMatch(/^- Publish \(`gh \.\.\. --body-file`, `git push`\) only in a later turn than the write that produces its content.* A later tool call counts: do not stop for the owner in between, the permission prompt is the approval\..*$/m);
   });
 });
 
