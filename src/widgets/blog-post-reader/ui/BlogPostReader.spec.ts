@@ -91,4 +91,18 @@ describe('BlogPostReader Widget (Astro) - Secondary Elements', () => {
     const navigator = doc.querySelector('nav.article-navigator');
     expect(navigator).not.toBeNull();
   });
+
+  // Same logo asset as the header, 40px high at the viewBox aspect ratio (#119).
+  it('should render the logo next to the author name', async () => {
+    const html = await container.renderToString(BlogPostReader, {
+      props: { post: mockPost },
+    });
+    const doc = new JSDOM(html).window.document;
+
+    const svg = doc.querySelector('.author-info svg');
+    assert.exists(svg);
+    expect(['viewBox', 'fill', 'width', 'height'].map((name) => svg.getAttribute(name))).toEqual(
+      ['0 0 467.68 294.45', 'currentColor', '63.54', '40'],
+    );
+  });
 });
