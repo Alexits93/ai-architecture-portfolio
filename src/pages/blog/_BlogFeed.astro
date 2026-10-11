@@ -69,8 +69,8 @@ const links = [
 		text-decoration: none;
 	}
 
-	/* A bare 1fr has an automatic minimum (minmax(auto, 1fr), CSS Grid 2 fr unit), so WebKit widened
-	   the column to the thumbnail image's intrinsic width and overflowed a 320 px viewport. */
+	/* A bare 1fr has an automatic minimum (minmax(auto, 1fr), CSS Grid 2 fr unit), so a wide child
+	   can widen the track past a small viewport in any engine. minmax(0, 1fr) lets it shrink. */
 	.blog-grid {
 		display: grid;
 		gap: 2rem;

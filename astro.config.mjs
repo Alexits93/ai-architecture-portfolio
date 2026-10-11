@@ -44,7 +44,8 @@ export default defineConfig({
         // No page submits a form; form-action has no default-src fallback (MDN CSP form-action).
         "form-action 'none'",
         "require-trusted-types-for 'script'",
-        'upgrade-insecure-requests',
+        // No upgrade-insecure-requests: WebKit applies it to http://localhost and breaks local e2e. Production
+        // does not need it: HSTS in public/_headers, and e2e/csp.spec.ts bans http:// subresources (#91).
       ],
     },
   },

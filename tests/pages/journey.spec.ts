@@ -65,8 +65,7 @@ for (const width of [1280, 375]) {
     test.use({ viewport: { width, height: 900 } });
 
     for (const input of ['mouse', 'keyboard'] as const) {
-      test(`a reader finds AI posts from the home page by ${input}`, async ({ page, browserName }) => {
-        test.fail(browserName === 'webkit', 'WebKit upgrades the same-origin link navigation to https://localhost (#91)');
+      test(`a reader finds AI posts from the home page by ${input}`, async ({ page }) => {
         await journey(page, input);
       });
     }
