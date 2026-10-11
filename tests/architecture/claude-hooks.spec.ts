@@ -74,18 +74,17 @@ const run = (env: { PATH: string }): string =>
 
 // One fake answer serves every query: the plan reads `issues`, the handover lookup reads `issue`,
 // the open-PR fallback for an unlinked branch reads `pullRequests`.
+const connection = <T>(nodes: T[]) => ({ pageInfo: { hasNextPage: false, hasPreviousPage: false }, nodes });
+const owner = (body: string) => ({ body, authorAssociation: 'OWNER' });
+const planIssue = (issue: { number: number; title: string; parent: { number: number } | null }, branches: string[] = []) =>
+  ({ ...issue, blockedBy: connection([]), linkedBranches: connection(branches.map((name) => ({ ref: { name } }))) });
+const epic = planIssue({ number: 32, title: '[Epic] E', parent: null });
 const repository = {
-  issues: {
-    pageInfo: { hasNextPage: false },
-    nodes: [
-      { number: 32, title: '[Epic] E', parent: null, blockedBy: { nodes: [] }, linkedBranches: { nodes: [] } },
-      { number: 63, title: '[Task] T', parent: { number: 32 }, blockedBy: { nodes: [] }, linkedBranches: { nodes: [{ ref: { name: 'chore/t' } }] } },
-    ],
-  },
-  issue: { comments: { nodes: [{ body: `${HANDOVER_MARKER}\nNext: tests` }, { body: 'Measured' }] } },
+  issues: connection([epic, planIssue({ number: 63, title: '[Task] T', parent: { number: 32 } }, ['chore/t'])]),
+  issue: { comments: connection([owner(`${HANDOVER_MARKER}\nNext: tests`), owner('Measured')]) },
 };
-const prComment = { createdAt: '2026-10-10T00:00:00Z', body: `${HANDOVER_MARKER}\nFrom PR` };
-const pr = { number: 46, closingIssuesReferences: { nodes: [{ number: 63, title: '[Task] T', comments: { nodes: [prComment] } }] } };
+const prComment = { createdAt: '2026-10-10T00:00:00Z', ...owner(`${HANDOVER_MARKER}\nFrom PR`) };
+const pr = { number: 46, closingIssuesReferences: connection([{ number: 63, title: '[Task] T', comments: connection([prComment]) }]) };
 const withPr = (pullRequests: { nodes: Array<typeof pr> } | null): string => JSON.stringify({ data: { repository: { ...repository, pullRequests } } });
 const answer = withPr({ nodes: [] });
 
@@ -117,6 +116,7 @@ describe('session-plan hook', () => {
     ['gh is missing', { PATH: '' }],
     ['git fails', failingGit(answer)],
     ['more open issues exist than one page holds', fakeGh(answer.replace('"hasNextPage":false', '"hasNextPage":true'), 0)],
+    ['the Task has more comments than one page holds', fakeGh(answer.replaceAll('"hasPreviousPage":false', '"hasPreviousPage":true'), 0, 'chore/t')],
   ])('prints a stop notice when %s', (_label, env) => {
     expect(run(env)).toContain('PLAN UNAVAILABLE');
   });
@@ -124,7 +124,7 @@ describe('session-plan hook', () => {
 
 // The fake `gh` answer for the pr-gate linked-issue lookup, so the tests need no network or token.
 const linkedTask = (parent: { number: number } | null): string =>
-  JSON.stringify({ data: { repository: { issue: { state: 'OPEN', labels: { nodes: [{ name: 'task' }] }, parent } } } });
+  JSON.stringify({ data: { repository: { issue: { state: 'OPEN', labels: connection([{ name: 'task' }]), parent } } } });
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pr-gate-'));
 const goodPr = path.join(dir, 'good-pr.md');
@@ -234,8 +234,8 @@ describe('sandbox-gate hook', () => {
 });
 
 describe('lint-feedback hook', () => {
-  // Created at runtime so the repo itself never contains a lint error.
-  const brokenFile = path.join(process.cwd(), 'tests/architecture/tmp-lint-error.ts');
+  // Created at runtime so the repo itself never contains a lint error, outside the read-only gate test folders.
+  const brokenFile = path.join(process.cwd(), 'tests/tmp-lint-error.ts');
   beforeAll(() => fs.writeFileSync(brokenFile, 'export const a: any = 1;\n'));
   afterAll(() => fs.rmSync(brokenFile, { force: true }));
 
