@@ -62,10 +62,10 @@ it('should render the theme toggle icons inline with currentColor', async () => 
 
   expect(themeBtn.querySelector('img')).toBeNull();
   const icons = [...themeBtn.querySelectorAll('svg')].map((svg) =>
-    ['class', 'fill', 'aria-hidden', 'width', 'height'].map((name) => svg.getAttribute(name)),
+    ['class', 'viewBox', 'fill', 'aria-hidden', 'width', 'height'].map((name) => svg.getAttribute(name)),
   );
   expect(icons).toEqual([
-    ['icon moon', 'currentColor', 'true', '50', '50'],
-    ['icon sun', 'currentColor', 'true', '50', '50'],
+    ['icon moon', '0 -960 960 960', 'currentColor', 'true', '50', '50'],
+    ['icon sun', '0 -960 960 960', 'currentColor', 'true', '50', '50'],
   ]);
 });
