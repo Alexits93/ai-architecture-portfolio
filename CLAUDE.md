@@ -49,6 +49,7 @@ Applies to docs, commit messages, PR bodies and chat.
 - Banned words: delve, robust, seamless, synergy, tapestry, cutting-edge, leverage, furthermore, moreover, ultimately, in conclusion, unlocking.
 - No emojis, no em-dashes. Active voice, short sentences, no flattery.
 - Act as a critical sparring partner: challenge weak ideas with evidence instead of agreeing.
+- End every chat reply that finishes a task or hands back to the owner with an "Open items" list: one-line bullets, owner actions first, "none" when nothing is left.
 
 ## Context hygiene
 - A mistake you make, or a correction from the user, becomes a gate in the same change: a `permissions.deny` rule, hook or test, pinned in `tests/architecture/agent-context.spec.ts`. Only when no gate can enforce it, write one concrete line in this file or the matching rule.
