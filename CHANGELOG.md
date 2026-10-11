@@ -1,3 +1,10 @@
+# [1.21.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.20.1...v1.21.0) (2026-10-11)
+
+
+### Features
+
+* **claude:** block merges and pushes to master, run pr-lint from master ([#159](https://github.com/Alexits93/ai-architecture-portfolio/issues/159)) ([89e470a](https://github.com/Alexits93/ai-architecture-portfolio/commit/89e470a052819f223172db8059937eb83aadbcd3)), closes [#55](https://github.com/Alexits93/ai-architecture-portfolio/issues/55)
+
 ## [1.20.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.20.0...v1.20.1) (2026-10-11)
 
 
