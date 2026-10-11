@@ -1,16 +1,40 @@
-import { persistentAtom } from '@nanostores/persistent';
-
 export type Theme = 'light' | 'dark';
 
-// undefined is no stored choice: encode returns undefined, so the library removes the key and
-// prefers-color-scheme applies. decode maps any other stored value to undefined, as /theme.js does.
-export const themeStore = persistentAtom<Theme | undefined>('theme', undefined, {
-  encode: (value) => value,
-  decode: (stored) => (stored === 'dark' || stored === 'light' ? stored : undefined),
-});
+const KEY = 'theme';
+const listeners = new Set<() => void>();
+
+// Holds the choice for this page when storage throws, so the toggle still works.
+let fallback: Theme | undefined;
+
+// Any value other than light or dark is no choice, as in /theme.js; prefers-color-scheme applies.
+export function getStoredTheme(): Theme | undefined {
+  try {
+    const stored = localStorage.getItem(KEY);
+    return stored === 'dark' || stored === 'light' ? stored : undefined;
+  } catch {
+    return fallback;
+  }
+}
 
 // Stores the opposite of the theme on screen: the stored choice, else the OS theme.
 export function toggleTheme(systemTheme: Theme): void {
-  const current = themeStore.get() ?? systemTheme;
-  themeStore.set(current === 'light' ? 'dark' : 'light');
+  fallback = (getStoredTheme() ?? systemTheme) === 'light' ? 'dark' : 'light';
+  try {
+    localStorage.setItem(KEY, fallback);
+  } catch {
+    // Storage is blocked: the choice lasts for this page only.
+  }
+  listeners.forEach((listener) => listener());
+}
+
+// Calls listener after a toggle, after another tab changes or clears the key (key null), and after a
+// bfcache restore, which keeps the old DOM (MDN Window storage_event, Window pageshow_event).
+export function onThemeChange(listener: () => void): void {
+  listeners.add(listener);
+  window.addEventListener('storage', (event) => {
+    if (event.key === KEY || event.key === null) listener();
+  });
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) listener();
+  });
 }

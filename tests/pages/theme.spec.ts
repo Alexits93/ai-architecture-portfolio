@@ -15,6 +15,15 @@ const tabTo = async (page: Page, pressed: boolean) => {
 const background = (page: Page) => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 const stored = (page: Page) => page.evaluate(() => localStorage.getItem('theme'));
 
+// Stores dark on the first load only, so a later reload does not undo another tab's change.
+const seedDarkOnce = (page: Page) =>
+  page.addInitScript(() => {
+    if (!sessionStorage.getItem('seeded')) {
+      sessionStorage.setItem('seeded', '1');
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+
 test.describe('Theme toggle', () => {
   test.use({ colorScheme: 'light' });
 
@@ -68,13 +77,13 @@ test.describe('Theme after a change outside the page', () => {
     expect(await background(page)).toBe(light);
   });
 
+});
+
+test.describe('Theme after a change in another tab', () => {
+  test.use({ colorScheme: 'light' });
+
   test('follows the OS after another tab removes the stored choice', async ({ page, context }) => {
-    await page.addInitScript(() => {
-      if (!sessionStorage.getItem('seeded')) {
-        sessionStorage.setItem('seeded', '1');
-        localStorage.setItem('theme', 'dark');
-      }
-    });
+    await seedDarkOnce(page);
     await page.goto('/');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 
@@ -84,6 +93,56 @@ test.describe('Theme after a change outside the page', () => {
 
     await expect(page.locator('html')).not.toHaveAttribute('data-theme');
     await expect(toggle(page, false)).toBeVisible();
+  });
+
+  test('follows the OS after another tab clears localStorage', async ({ page, context }) => {
+    await seedDarkOnce(page);
+    await page.goto('/');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+
+    const other = await context.newPage();
+    await other.goto('/');
+    await other.evaluate(() => localStorage.clear());
+
+    await expect(page.locator('html')).not.toHaveAttribute('data-theme');
+    await expect(toggle(page, false)).toBeVisible();
+  });
+
+  // A bfcache restore keeps the old DOM, so the page re-reads the key. Playwright's Chromium and Firefox
+  // never restored from bfcache here, so the test fires the restore's pageshow. A same-tab write fires
+  // no storage event (MDN Window storage_event), so only the pageshow listener can re-render.
+  test('re-reads the stored theme on a pageshow from bfcache', async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() => localStorage.setItem('theme', 'dark'));
+    await expect(page.locator('html')).not.toHaveAttribute('data-theme');
+
+    await page.evaluate(() => dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })));
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(toggle(page, true)).toBeVisible();
+  });
+});
+
+test.describe('Theme toggle with blocked storage', () => {
+  test.use({ colorScheme: 'light' });
+
+  test('keeps the OS theme and still toggles in the page', async ({ page }) => {
+    const errors: Error[] = [];
+    page.on('pageerror', (error) => errors.push(error));
+    await page.addInitScript(() => {
+      const blocked = () => {
+        throw new DOMException('Storage is blocked', 'SecurityError');
+      };
+      Storage.prototype.getItem = blocked;
+      Storage.prototype.setItem = blocked;
+    });
+    await page.goto('/');
+    await expect(page.locator('html')).not.toHaveAttribute('data-theme');
+    await expect(toggle(page, false)).toBeVisible();
+
+    await toggle(page, false).click();
+    await expect(toggle(page, true)).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    expect(errors).toEqual([]);
   });
 });
 
