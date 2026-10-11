@@ -123,31 +123,43 @@ export const closedIssueNumbers = (body) =>
 
 export const LINKED_ISSUE_QUERY = `query($owner: String!, $repo: String!, $number: Int!) {
   repository(owner: $owner, name: $repo) {
-    issue(number: $number) { state labels(first: 20) { nodes { name } } parent { number } }
+    issue(number: $number) { state labels(first: 20) { pageInfo { hasNextPage } nodes { name } } parent { number } }
   }
 }`;
+
+/** @typedef {{ pageInfo: { hasNextPage: boolean }, nodes: Array<{ name: string }> }} Labels */
+
+/** A label past the page could be the only story or task label. @param {number} number @param {Labels} labels */
+const findLabelViolations = (number, labels) => {
+  if (labels.pageInfo.hasNextPage) return [`Cannot check #${number}: it has more labels than one page holds.`];
+  return labels.nodes.some((l) => NEEDS_PARENT.includes(l.name)) ? [] : [`#${number} is not labeled story or task.`];
+};
 
 /**
  * A PR closes an open Story or Task that has a native parent. `issue` is null when #N is no issue.
  * @param {number} number
- * @param {{ state: string, labels: { nodes: Array<{ name: string }> }, parent: { number: number } | null } | null} issue
+ * @param {{ state: string, labels: Labels, parent: { number: number } | null } | null} issue
  * @returns {string[]}
  */
 export const findLinkedIssueViolations = (number, issue) => {
   if (!issue) return [`#${number} is not an issue in this repository (a PR number?).`];
-  const labels = issue.labels.nodes.map((l) => l.name);
   return [
     ...(issue.state === 'OPEN' ? [] : [`#${number} is closed. Link the open Story or Task this PR ships.`]),
-    ...(labels.some((l) => NEEDS_PARENT.includes(l)) ? [] : [`#${number} is not labeled story or task.`]),
+    ...findLabelViolations(number, issue.labels),
     ...(issue.parent ? [] : [`#${number} has no native parent. Run: gh issue edit ${number} --parent <N>`]),
   ];
 };
 
 // A handover is a Task comment whose first line is this marker. Session start loads only the newest one.
+// Anyone who can comment can post the marker, so only the repository owner's comments count.
 export const HANDOVER_MARKER = '<!-- handover -->';
+/** @param {{ body: string, authorAssociation: string }} comment */
+const isHandover = (comment) => comment.authorAssociation === 'OWNER' && comment.body.startsWith(HANDOVER_MARKER);
 
 export const HANDOVER_QUERY = `query($owner: String!, $repo: String!, $number: Int!) {
-  repository(owner: $owner, name: $repo) { issue(number: $number) { comments(last: 50) { nodes { body } } } }
+  repository(owner: $owner, name: $repo) {
+    issue(number: $number) { comments(last: 50) { pageInfo { hasPreviousPage } nodes { body authorAssociation } } }
+  }
 }`;
 
 /**
@@ -157,9 +169,8 @@ export const HANDOVER_QUERY = `query($owner: String!, $repo: String!, $number: I
 export const linkedTask = (issues, branch) =>
   issues.find((i) => i.linkedBranches.nodes.some((b) => b.ref?.name === branch));
 
-/** @param {Array<{ body: string }>} comments oldest first @returns {string | null} */
-export const latestHandover = (comments) =>
-  comments.findLast((c) => c.body.startsWith(HANDOVER_MARKER))?.body ?? null;
+/** @param {Array<{ body: string, authorAssociation: string }>} comments oldest first @returns {string | null} */
+export const latestHandover = (comments) => comments.findLast(isHandover)?.body ?? null;
 
 /** @param {string} branch @param {PlanIssue | undefined} task @param {string | null} handover @returns {string} */
 export const formatCurrentTask = (branch, task, handover) => {
@@ -173,18 +184,17 @@ export const formatCurrentTask = (branch, task, handover) => {
 // Fallback for a branch no Task is linked to: the open PR with this head branch and the issues it closes.
 export const PR_HANDOVER_QUERY = `query($owner: String!, $repo: String!, $branch: String!) {
   repository(owner: $owner, name: $repo) {
-    pullRequests(headRefName: $branch, states: OPEN, first: 1) {
-      nodes {
-        number
-        closingIssuesReferences(first: 50) { nodes { number title comments(last: 50) { nodes { createdAt body } } } }
-      }
+    pullRequests(headRefName: $branch, states: OPEN, first: 1) { pageInfo { hasNextPage }
+      nodes { number closingIssuesReferences(first: 50) { pageInfo { hasNextPage }
+        nodes { number title comments(last: 50) { pageInfo { hasPreviousPage } nodes { createdAt body authorAssociation } } }
+      } }
     }
   }
 }`;
 
 /**
  * @typedef {{ number: number, closingIssuesReferences: { nodes: Array<{ number: number, title: string,
- *   comments: { nodes: Array<{ createdAt: string, body: string }> } }> } }} OpenPr
+ *   comments: { nodes: Array<{ createdAt: string, body: string, authorAssociation: string }> } }> } }} OpenPr
  */
 
 /**
@@ -195,7 +205,7 @@ export const formatPrHandover = (branch, pr) => {
   if (!pr) return formatCurrentTask(branch, undefined, null);
   const issues = pr.closingIssuesReferences.nodes;
   const [newest] = issues
-    .flatMap((issue) => issue.comments.nodes.filter((c) => c.body.startsWith(HANDOVER_MARKER)).map((c) => ({ issue, ...c })))
+    .flatMap((issue) => issue.comments.nodes.filter(isHandover).map((c) => ({ issue, ...c })))
     .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt));
   const head = `Branch ${branch} is not linked to a Task. Open PR #${pr.number} closes ${issues.map((i) => `#${i.number}`).join(', ')}.`;
   return newest
@@ -203,13 +213,14 @@ export const formatPrHandover = (branch, pr) => {
     : `${head}\nNo handover yet.`;
 };
 
+// Labeling needs triage rights, so an issue anyone opens stays out of the plan. GitHub matches any label.
+const PLAN_LABELS = JSON.stringify(Object.values(ISSUE_TEMPLATES).map((t) => t.label));
 export const OPEN_PLAN_QUERY = `query($owner: String!, $repo: String!) {
   repository(owner: $owner, name: $repo) {
-    issues(states: OPEN, first: 100, orderBy: { field: CREATED_AT, direction: ASC }) {
-      pageInfo { hasNextPage }
+    issues(states: OPEN, labels: ${PLAN_LABELS}, first: 100, orderBy: { field: CREATED_AT, direction: ASC }) { pageInfo { hasNextPage }
       nodes {
-        number title parent { number } blockedBy(first: 10) { nodes { number state } }
-        linkedBranches(first: 10) { nodes { ref { name } } }
+        number title parent { number } blockedBy(first: 10) { pageInfo { hasNextPage } nodes { number state } }
+        linkedBranches(first: 10) { pageInfo { hasNextPage } nodes { ref { name } } }
       }
     }
   }

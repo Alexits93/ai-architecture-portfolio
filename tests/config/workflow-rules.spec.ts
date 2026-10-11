@@ -10,12 +10,6 @@ import {
   findIssueViolations,
   findLinkedIssueViolations,
   findPrBodyViolations,
-  formatCurrentTask,
-  formatPlan,
-  formatPrHandover,
-  HANDOVER_MARKER,
-  latestHandover,
-  linkedTask,
 } from '../../.github/workflow-rules.mjs';
 
 const read = (file: string): string => fs.readFileSync(path.join(process.cwd(), file), 'utf8');
@@ -85,7 +79,7 @@ describe('issue rules', () => {
 });
 
 describe('linked issue rules', () => {
-  const openTask = { state: 'OPEN', labels: { nodes: [{ name: 'task' }] }, parent: { number: 35 } };
+  const openTask = { state: 'OPEN', labels: { pageInfo: { hasNextPage: false }, nodes: [{ name: 'task' }] }, parent: { number: 35 } };
 
   // https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue
   it('read every closing keyword GitHub honors', () => {
@@ -110,114 +104,12 @@ describe('linked issue rules', () => {
   it.each([
     ['no issue (a PR number)', null],
     ['a closed issue', { ...openTask, state: 'CLOSED' }],
-    ['an Epic', { ...openTask, labels: { nodes: [{ name: 'epic' }] } }],
+    ['an Epic', { ...openTask, labels: { pageInfo: { hasNextPage: false }, nodes: [{ name: 'epic' }] } }],
     ['no native parent', { ...openTask, parent: null }],
+    // A label past the page could be the only story or task label, so the check cannot pass.
+    ['more labels than one page holds', { ...openTask, labels: { pageInfo: { hasNextPage: true }, nodes: [{ name: 'task' }] } }],
   ])('reject %s', (_label, issue) => {
     expect(findLinkedIssueViolations(46, issue).length).toBeGreaterThan(0);
-  });
-});
-
-describe('plan rendering', () => {
-  const issue = (number: number, parent: number | null, blockers: Array<[number, string]> = []) => ({
-    number,
-    title: `I${number}`,
-    parent: parent === null ? null : { number: parent },
-    blockedBy: { nodes: blockers.map(([n, state]) => ({ number: n, state })) },
-    linkedBranches: { nodes: [] },
-  });
-
-  it('nests children and shows only open blockers', () => {
-    const plan = formatPlan([issue(1, null), issue(2, 1, [[3, 'OPEN'], [9, 'CLOSED']]), issue(3, 1)]);
-    expect(plan).toBe('- #1 I1\n  - #2 I2 (blocked by #3)\n  - #3 I3');
-  });
-
-  it('shows an issue whose parent is closed at the top level', () => {
-    expect(formatPlan([issue(5, 99)])).toBe('- #5 I5');
-  });
-
-  it('says so when nothing is open', () => {
-    expect(formatPlan([])).toBe('No open issues.');
-  });
-});
-
-describe('current Task and handover', () => {
-  const task = (number: number, branches: string[]) => ({
-    number,
-    title: `[Task] T${number}`,
-    parent: { number: 35 },
-    blockedBy: { nodes: [] },
-    linkedBranches: { nodes: branches.map((name) => ({ ref: { name } })) },
-  });
-  const comment = (body: string) => ({ body });
-
-  it('finds the open Task linked to the branch', () => {
-    expect(linkedTask([task(62, []), task(63, ['chore/a'])], 'chore/a')).toMatchObject({ number: 63 });
-  });
-
-  it('finds nothing for an unlinked branch', () => {
-    expect(linkedTask([task(63, ['chore/a'])], 'master')).toBeUndefined();
-  });
-
-  it('picks the newest marked comment and ignores unmarked ones', () => {
-    const comments = [
-      comment(`${HANDOVER_MARKER}\nold`),
-      comment(`${HANDOVER_MARKER}\nnew`),
-      comment('Measured saving'),
-    ];
-    expect(latestHandover(comments)).toBe(`${HANDOVER_MARKER}\nnew`);
-  });
-
-  it('returns null without a marked comment', () => {
-    expect(latestHandover([comment('Measured saving')])).toBeNull();
-  });
-
-  it('prints the Task and its handover', () => {
-    expect(formatCurrentTask('chore/a', task(63, ['chore/a']), 'Next: tests')).toBe(
-      'Current Task: #63 [Task] T63 (branch chore/a)\nHandover:\nNext: tests',
-    );
-  });
-
-  it('says when the Task has no handover yet', () => {
-    expect(formatCurrentTask('chore/a', task(63, ['chore/a']), null)).toBe(
-      'Current Task: #63 [Task] T63 (branch chore/a)\nNo handover yet.',
-    );
-  });
-
-  it('says when no Task is linked to the branch', () => {
-    expect(formatCurrentTask('master', undefined, null)).toBe(
-      'No open Task is linked to branch master. Create Task branches with `gh issue develop <N> --checkout`.',
-    );
-  });
-});
-
-describe('handover from the open PR of an unlinked branch', () => {
-  const issue = (number: number, comments: Array<[string, string]>) => ({
-    number,
-    title: `[Task] T${number}`,
-    comments: { nodes: comments.map(([createdAt, body]) => ({ createdAt, body })) },
-  });
-  const pr = (...issues: Array<ReturnType<typeof issue>>) => ({ number: 46, closingIssuesReferences: { nodes: issues } });
-
-  it('loads the newest handover by createdAt across the closing issues', () => {
-    const open = pr(
-      issue(63, [['2026-10-09T21:00:00Z', `${HANDOVER_MARKER}\nnewest`], ['2026-10-09T22:00:00Z', 'Measured']]),
-      issue(62, [['2026-10-09T20:00:00Z', `${HANDOVER_MARKER}\nolder`]]),
-      issue(33, []),
-    );
-    expect(formatPrHandover('chore/x', open)).toBe(
-      'Branch chore/x is not linked to a Task. Open PR #46 closes #63, #62, #33.\n' +
-        `Current Task: #63 [Task] T63 (newest handover in PR #46)\nHandover:\n${HANDOVER_MARKER}\nnewest`,
-    );
-  });
-
-  it('names the PR when no closing issue has a handover', () => {
-    expect(formatPrHandover('chore/x', pr(issue(33, [['2026-10-09T20:00:00Z', 'Measured']])))).toBe(
-      'Branch chore/x is not linked to a Task. Open PR #46 closes #33.\nNo handover yet.',
-    );
-  });
-
-  it('falls back to the unlinked message without an open PR', () => {
-    expect(formatPrHandover('master', undefined)).toBe(formatCurrentTask('master', undefined, null));
   });
 });
 

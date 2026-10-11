@@ -14,13 +14,18 @@ const run = (command, args) => {
   return result.stdout;
 };
 
-/** @param {string} query @param {string[]} vars */
-const graphql = (query, vars = []) =>
-  JSON.parse(run('gh', ['api', 'graphql', '-f', `query=${query}`, '-F', 'owner={owner}', '-F', 'repo={repo}', ...vars]))
-    .data.repository;
-
 try {
   // Imported here so a module that fails to load still prints the stop notice below.
+  const { truncatedConnections } = await import('../../.github/graphql-pages.mjs');
+  /** @param {string} query @param {string[]} vars */
+  const graphql = (query, vars = []) => {
+    const { repository } = JSON.parse(
+      run('gh', ['api', 'graphql', '-f', `query=${query}`, '-F', 'owner={owner}', '-F', 'repo={repo}', ...vars]),
+    ).data;
+    const truncated = truncatedConnections(repository);
+    if (truncated.length > 0) throw new Error(`${truncated.join(', ')} hold more than one page, so the context would be incomplete`);
+    return repository;
+  };
   const {
   HANDOVER_QUERY,
   OPEN_PLAN_QUERY,
@@ -31,8 +36,7 @@ try {
   latestHandover,
   linkedTask,
   } = await import('../../.github/workflow-rules.mjs');
-  const { nodes: issues, pageInfo } = graphql(OPEN_PLAN_QUERY).issues;
-  if (pageInfo.hasNextPage) throw new Error('more than 100 open issues, so the tree would be incomplete');
+  const issues = graphql(OPEN_PLAN_QUERY).issues.nodes;
   const branch = run('git', ['branch', '--show-current']).trim();
   const task = linkedTask(issues, branch);
   const current = task
