@@ -1,3 +1,10 @@
+# [1.22.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.21.1...v1.22.0) (2026-10-11)
+
+
+### Features
+
+* **blog:** paginate the blog list and category pages at 10 posts ([#164](https://github.com/Alexits93/ai-architecture-portfolio/issues/164)) ([aa914e1](https://github.com/Alexits93/ai-architecture-portfolio/commit/aa914e1d5bde8461a9540bc0116682f34aa6add3)), closes [#160](https://github.com/Alexits93/ai-architecture-portfolio/issues/160)
+
 ## [1.21.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.21.0...v1.21.1) (2026-10-11)
 
 
