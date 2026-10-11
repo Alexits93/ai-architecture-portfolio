@@ -31,11 +31,11 @@ describe('ArticleNavigator - With Headings', () => {
     expect(links.length).toBe(3);
 
     expect(links[0].getAttribute('href')).toBe('#intro');
-    expect(links[0].textContent?.trim()).toBe('Introduction');
+    expect(links[0].textContent.trim()).toBe('Introduction');
     expect(links[0].classList.contains('h2-link')).toBe(true);
 
     expect(links[1].getAttribute('href')).toBe('#sub-intro');
-    expect(links[1].textContent?.trim()).toBe('Sub Introduction');
+    expect(links[1].textContent.trim()).toBe('Sub Introduction');
     expect(links[1].classList.contains('h3-link')).toBe(true);
   });
 });

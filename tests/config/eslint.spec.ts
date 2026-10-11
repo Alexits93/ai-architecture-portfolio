@@ -1,5 +1,5 @@
 import { ESLint } from 'eslint';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, assert } from 'vitest';
 
 describe('ESLint Configuration (Deterministic Enforcement)', () => {
   it('should explicitly ban "any" and "unknown" types', async () => {
@@ -179,7 +179,46 @@ describe('ESLint inline style message', () => {
     const code = '---\nconst c = 1;\n---\n<p style={{ color: c }}>x</p>\n';
     const messages = (await new ESLint().lintText(code, { filePath: 'src/widgets/x/ui/X.astro' }))[0].messages;
     const style = messages.find((m) => m.message.includes('style={...}'));
-    expect(style?.message).toContain('data-*');
-    expect(style?.message).toContain('The hashed CSP blocks style attributes, including those <style define:vars> renders');
+    assert.exists(style);
+    expect(style.message).toContain('data-*');
+    expect(style.message).toContain('The hashed CSP blocks style attributes, including those <style define:vars> renders');
+  });
+});
+
+// #138: a missing value in a spec must fail at a guard, not flow on as undefined or a fallback.
+// https://eslint.org/docs/latest/rules/no-restricted-syntax (ESLint 10.12.0), ChainExpression per
+// https://github.com/estree/estree/blob/master/es2020.md, and
+// https://typescript-eslint.io/rules/no-non-null-assertion/ (typescript-eslint 8.71.1).
+describe('ESLint null-safety gate in specs', () => {
+  const messages = async (code: string, filePath: string) => (await new ESLint().lintText(code, { filePath }))[0].messages;
+  const specs = ['src/x/X.spec.ts', 'tests/config/x.ts', 'e2e/x.spec.ts', 'tests/config/eslint.spec.ts'];
+
+  it.each(specs.flatMap((filePath) => [
+    [filePath, 'export const a = b?.c;\n', 'no-restricted-syntax'],
+    [filePath, 'export const a = b?.();\n', 'no-restricted-syntax'],
+    [filePath, 'export const a = b?.[0];\n', 'no-restricted-syntax'],
+    [filePath, "export const a = b ?? '';\n", 'no-restricted-syntax'],
+    [filePath, 'let a = b; a ??= c;\n', 'no-restricted-syntax'],
+    [filePath, 'export const a = b!.c;\n', '@typescript-eslint/no-non-null-assertion'],
+  ]))('flags %s: %j', async (filePath, code, ruleId) => {
+    const flagged = (await messages(code, filePath)).filter((m) => m.ruleId === ruleId);
+    expect(flagged).toHaveLength(1);
+    expect(flagged[0].message).toMatch(/assert\.exists|non-null assertion/);
+  });
+
+  it('allows a narrowing assert guard in specs', async () => {
+    const code = "import { assert } from 'vitest';\nconst el = document.querySelector('p');\nassert.exists(el);\nexport const t = el.textContent;\n";
+    expect(await messages(code, 'src/x/X.spec.ts')).toEqual([]);
+  });
+
+  it('leaves production code out of scope', async () => {
+    const code = "export const a = b?.c ?? '';\nexport const d = e!.f;\n";
+    expect(await messages(code, 'src/shared/lib/x.ts')).toEqual([]);
+  });
+
+  it('keeps the prose and type bans in specs', async () => {
+    const rules = (await messages('export const a = "Moreover, yes" as unknown;\n', 'src/x/X.spec.ts')).map((m) => m.message);
+    expect(rules).toContain('AI prose: banned word, em-dash or emoji (see CLAUDE.md writing rules).');
+    expect(rules).toContain("The 'unknown' type is banned. Define explicit types or interfaces.");
   });
 });

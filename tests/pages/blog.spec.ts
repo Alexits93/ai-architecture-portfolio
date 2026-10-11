@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { globSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 
@@ -10,8 +11,9 @@ const expectFilteredBy = async (page: Page, tag: string | null) => {
   const count = await wrappers.count();
   expect(count).toBeGreaterThan(0);
   for (let i = 0; i < count; i++) {
-    const tags = (await wrappers.nth(i).getAttribute('data-tags'))?.split(',') ?? [];
-    await expect(wrappers.nth(i)).toHaveJSProperty('hidden', tag !== null && !tags.includes(tag));
+    const tags = await wrappers.nth(i).getAttribute('data-tags');
+    assert(tags !== null, 'a .blog-post-wrapper has no data-tags');
+    await expect(wrappers.nth(i)).toHaveJSProperty('hidden', tag !== null && !tags.split(',').includes(tag));
   }
 };
 

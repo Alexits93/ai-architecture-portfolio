@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { globSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { SITE } from '../../src/shared/config/site';
@@ -18,7 +19,7 @@ test('finds the built pages', () => expect(ROUTES.length).toBeGreaterThan(5));
 for (const route of ROUTES) {
   test(`one SEO head on ${route}`, async ({ page }) => {
     await page.goto(route);
-    const title = TITLES[route] ?? new RegExp(`^.+ \\| ${SITE.name}$`);
+    const title = route in TITLES ? TITLES[route] : new RegExp(`^.+ \\| ${SITE.name}$`);
     await expect(page).toHaveTitle(title);
     await expect(page.locator('title')).toHaveCount(1);
     await expect(page.locator('meta[name="description"]')).toHaveCount(1);
@@ -29,7 +30,7 @@ for (const route of ROUTES) {
     // One inline theme script in <head>, injected by astro.config.mjs, and no external copy (#86).
     // Text locators skip <script> content, so read it directly. Astro's bundled scripts are type="module".
     const classicInline = page.locator('head script:not([src]):not([type])');
-    expect(await classicInline.evaluateAll((els) => els.map((el) => el.textContent?.includes("localStorage.getItem('theme')")))).toEqual([true]);
+    expect(await classicInline.evaluateAll((els) => els.map((el) => el.textContent.includes("localStorage.getItem('theme')")))).toEqual([true]);
     await expect(page.locator('script[src="/theme.js"]')).toHaveCount(0);
   });
 }
@@ -69,7 +70,9 @@ for (const route of ROUTES) {
     }
     await expect(scripts).toHaveCount(1);
     await expect(publishedTime).toHaveAttribute('content', /^\d{4}-\d{2}-\d{2}T/);
-    const data: { '@type': string; headline: string } = JSON.parse((await scripts.textContent()) ?? '');
+    const json = await scripts.textContent();
+    assert(json !== null);
+    const data: { '@type': string; headline: string } = JSON.parse(json);
     expect(data['@type']).toBe('BlogPosting');
     expect(data.headline).toBe(await page.locator('h1').first().textContent());
   });

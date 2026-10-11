@@ -40,6 +40,27 @@ const SYNTAX_BANS = [
   }
 ];
 
+const PROSE_BANS = [
+  { "selector": `Literal[value=${SLOP}]`, "message": SLOP_MESSAGE },
+  // cooked, not raw, so an escaped U+2014 in source is caught.
+  { "selector": `TemplateElement[value.cooked=${SLOP}]`, "message": SLOP_MESSAGE },
+  { "selector": `JSXText[value=${SLOP}]`, "message": SLOP_MESSAGE },
+  // HTML comments and <style> or <script is:inline> bodies (https://github.com/ota-meshi/astro-eslint-parser/blob/main/docs/AST.md).
+  { "selector": `AstroHTMLComment[value=${SLOP}]`, "message": SLOP_MESSAGE },
+  { "selector": `AstroRawText[value=${SLOP}]`, "message": SLOP_MESSAGE }
+];
+
+// Specs: a missing value must fail the test at a guard, not flow on as undefined or a fallback (#138).
+// ChainExpression is the root of every optional chain (https://github.com/estree/estree/blob/master/es2020.md).
+const NULL_GUARD_MESSAGE = "Specs: no optional chaining or ?? fallbacks. Guard the value so a missing one fails the test and narrows the type: assert.exists or assert.instanceOf from vitest, or assert(value !== null) from node:assert/strict in Playwright specs.";
+const NULL_SAFETY_BANS = [
+  { "selector": "ChainExpression", "message": NULL_GUARD_MESSAGE },
+  { "selector": "LogicalExpression[operator='??']", "message": NULL_GUARD_MESSAGE },
+  { "selector": "AssignmentExpression[operator='??=']", "message": NULL_GUARD_MESSAGE }
+];
+const SPECS = ["**/*.spec.ts", "tests/**/*.ts", "e2e/**/*.ts"];
+const PROSE_EXEMPT_SPECS = ["tests/architecture/claude-hooks.spec.ts", "tests/config/eslint.spec.ts"];
+
 export default [
   js.configs.recommended,
   ...tsEslint.configs.recommended,
@@ -64,17 +85,15 @@ export default [
       "@typescript-eslint/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
       "no-console": "error",
       "no-warning-comments": ["error", { "terms": [...BANNED_WORDS, "—"], "location": "anywhere" }],
-      "no-restricted-syntax": [
-        "error",
-        { "selector": `Literal[value=${SLOP}]`, "message": SLOP_MESSAGE },
-        // cooked, not raw, so an escaped U+2014 in source is caught.
-        { "selector": `TemplateElement[value.cooked=${SLOP}]`, "message": SLOP_MESSAGE },
-        { "selector": `JSXText[value=${SLOP}]`, "message": SLOP_MESSAGE },
-        // HTML comments and <style> or <script is:inline> bodies (https://github.com/ota-meshi/astro-eslint-parser/blob/main/docs/AST.md).
-        { "selector": `AstroHTMLComment[value=${SLOP}]`, "message": SLOP_MESSAGE },
-        { "selector": `AstroRawText[value=${SLOP}]`, "message": SLOP_MESSAGE },
-        ...SYNTAX_BANS
-      ]
+      "no-restricted-syntax": ["error", ...PROSE_BANS, ...SYNTAX_BANS]
+    }
+  },
+  {
+    // A later block's options replace this rule's list (https://eslint.org/docs/latest/use/configure/rules).
+    files: SPECS,
+    rules: {
+      "no-restricted-syntax": ["error", ...PROSE_BANS, ...SYNTAX_BANS, ...NULL_SAFETY_BANS],
+      "@typescript-eslint/no-non-null-assertion": "error"
     }
   },
   {
@@ -87,10 +106,17 @@ export default [
   },
   {
     // These files must spell out the banned list or slop samples to test the gates.
-    files: ["eslint.config.mjs", ".claude/hooks/anti-slop.mjs", "tests/architecture/claude-hooks.spec.ts", "tests/config/eslint.spec.ts"],
+    files: ["eslint.config.mjs", ".claude/hooks/anti-slop.mjs"],
     rules: {
       "no-warning-comments": "off",
       "no-restricted-syntax": ["error", ...SYNTAX_BANS]
+    }
+  },
+  {
+    files: PROSE_EXEMPT_SPECS,
+    rules: {
+      "no-warning-comments": "off",
+      "no-restricted-syntax": ["error", ...SYNTAX_BANS, ...NULL_SAFETY_BANS]
     }
   },
   {

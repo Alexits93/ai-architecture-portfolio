@@ -1,6 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, assert } from 'vitest';
 import { BlogPostFilter } from '../index';
 
 describe('BlogPostFilter', () => {
@@ -19,7 +19,9 @@ describe('BlogPostFilter', () => {
 
     expect(doc.querySelector('form')).toBeNull();
     expect(doc.querySelector('button')).toBeNull();
-    expect(doc.querySelector('fieldset > legend')?.textContent).toBe('Filter by tag');
+    const el = doc.querySelector('fieldset > legend');
+    assert.exists(el);
+    expect(el.textContent).toBe('Filter by tag');
 
     const inputs = doc.querySelectorAll('fieldset input[type="checkbox"][name="tag"]');
     expect([...inputs].map((input) => input.getAttribute('value'))).toEqual(['Astro', 'React', 'Svelte']);

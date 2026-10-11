@@ -1,6 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, assert } from 'vitest';
 import SeoHead from './SeoHead.astro';
 
 const SITE_URL = 'https://www.pa-tech.dev';
@@ -17,25 +17,32 @@ const render = async (props: SeoProps = baseProps, site: string | undefined = SI
   return new JSDOM(`<head>${html}</head>`).window.document;
 };
 
-const meta = (doc: Document, key: string) =>
-  doc.querySelector(`meta[property="${key}"], meta[name="${key}"]`)?.getAttribute('content');
+const meta = (doc: Document, key: string) => {
+  const tag = doc.querySelector(`meta[property="${key}"], meta[name="${key}"]`);
+  assert.exists(tag, `meta ${key}`);
+  return tag.getAttribute('content');
+};
 
 describe('SeoHead (Astro)', () => {
   it('emits identical absolute canonical and og:url without query strings', async () => {
     const doc = await render();
-    const canonical = doc.querySelector('link[rel="canonical"]')?.getAttribute('href');
+    const link = doc.querySelector('link[rel="canonical"]');
+    assert.exists(link);
+    const canonical = link.getAttribute('href');
     expect(canonical).toBe(`${SITE_URL}/blog/my-post/`);
     expect(meta(doc, 'og:url')).toBe(canonical);
   });
 
   it('emits title, description, and website defaults with absolute default OG image', async () => {
     const doc = await render();
-    expect(doc.querySelector('title')?.textContent).toBe('Post Title');
+    const el = doc.querySelector('title');
+    assert.exists(el);
+    expect(el.textContent).toBe('Post Title');
     expect(meta(doc, 'description')).toBe('Post description');
     expect(meta(doc, 'og:type')).toBe('website');
     expect(meta(doc, 'og:image')).toBe(`${SITE_URL}/og.png`);
     expect(meta(doc, 'twitter:card')).toBe('summary_large_image');
-    expect(meta(doc, 'article:published_time')).toBeUndefined();
+    expect(doc.querySelector('meta[property="article:published_time"]')).toBeNull();
     expect(doc.querySelector('script[type="application/ld+json"]')).toBeNull();
   });
 
@@ -55,8 +62,9 @@ describe('SeoHead (Astro)', () => {
     expect(meta(doc, 'og:type')).toBe('article');
     expect(meta(doc, 'og:image')).toBe(`${SITE_URL}/blog/my-post/og.png`);
     expect(meta(doc, 'article:published_time')).toBe('2026-10-08T00:00:00.000Z');
-    const ld = doc.querySelector('script[type="application/ld+json"]')?.textContent ?? '';
-    expect(JSON.parse(ld).headline).toBe('</script>');
+    const ld = doc.querySelector('script[type="application/ld+json"]');
+    assert.exists(ld);
+    expect(JSON.parse(ld.textContent).headline).toBe('</script>');
   });
 
 

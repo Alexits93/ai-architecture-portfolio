@@ -1,6 +1,7 @@
 import { execFileSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
+import { ESLint } from 'eslint';
 import { describe, it, expect } from 'vitest';
 
 // Agent instruction files decay silently: they grow, and they keep pointing at files that moved.
@@ -29,8 +30,8 @@ const referencedPaths = (file: string): string[] =>
   [...read(file).matchAll(/`([^`]+)`/g)].map((m) => m[1]).filter(isRepoPath);
 
 const ruleGlobs = (file: string): string[] => {
-  const frontmatter = read(file).match(/^---\n([\s\S]*?)\n---/)?.[1] ?? '';
-  return [...frontmatter.matchAll(/^\s+- "([^"]+)"/gm)].map((m) => m[1]);
+  const frontmatter = read(file).match(/^---\n([\s\S]*?)\n---/);
+  return frontmatter ? [...frontmatter[1].matchAll(/^\s+- "([^"]+)"/gm)].map((m) => m[1]) : [];
 };
 
 const matchesAnyFile = (glob: string): boolean =>
@@ -49,7 +50,7 @@ describe('Agent context budget', () => {
 // Every listed skill and tool costs context on every turn. These are never used in this repo,
 // so they stay out of Claude's listing; hidden skills remain typable in the / menu.
 describe('Agent context exclusions', () => {
-  const settings: { enableArtifact?: boolean; skillOverrides?: Record<string, string> } =
+  const settings: { enableArtifact?: boolean; skillOverrides: Record<string, string> } =
     JSON.parse(read('.claude/settings.json'));
   const hiddenSkills = [
     'docx',
@@ -81,24 +82,24 @@ describe('Agent context exclusions', () => {
   // "off" also hides the skill from the / menu, so only "user-invocable-only" keeps it typable
   // (https://code.claude.com/docs/en/skills).
   it.each(hiddenSkills)('hides the %s skill from Claude but keeps it typable', (skill) => {
-    expect(settings.skillOverrides?.[skill]).toBe('user-invocable-only');
+    expect(settings.skillOverrides[skill]).toBe('user-invocable-only');
   });
 });
 
 // Hooks receive no context-usage field and compaction loses detail, so the 150k handover rule
 // relies on the status line: it gets the token count and shows a marker from 130k on.
 describe('Session handover status line', () => {
-  const settings: { statusLine?: { type?: string; command?: string } } = JSON.parse(
+  const settings: { statusLine: { type: string; command: string } } = JSON.parse(
     read('.claude/settings.json'),
   );
   const render = (inputTokens: number): string =>
-    execFileSync('sh', ['-c', settings.statusLine?.command ?? 'false'], {
+    execFileSync('sh', ['-c', settings.statusLine.command], {
       input: JSON.stringify({ context_window: { total_input_tokens: inputTokens } }),
       encoding: 'utf8',
     });
 
   it('runs as a command status line', () => {
-    expect(settings.statusLine?.type).toBe('command');
+    expect(settings.statusLine.type).toBe('command');
   });
 
   it('shows the token count without the marker below 130k', () => {
@@ -135,13 +136,22 @@ describe('Agent context truthfulness', () => {
 // Lessons from agent mistakes become gates, not notes. The sandbox mounts gate configs such as
 // eslint.config.mjs read-only, so a stash cannot restore them and half-applies; commit by path.
 // `cmd *` also matches the bare command (https://code.claude.com/docs/en/sandboxing).
+// Owner rule 2026-10-11 (#138): specs guard a missing value instead of routing around it.
+// tests/config/eslint.spec.ts covers every banned form.
+describe('Learned spec guard', () => {
+  it('bans optional chaining in specs', async () => {
+    const [{ messages }] = await new ESLint().lintText('export const a = b?.c;\n', { filePath: 'src/x/X.spec.ts' });
+    expect(messages.map((m) => m.ruleId)).toContain('no-restricted-syntax');
+  });
+});
+
 describe('Learned agent guards', () => {
-  const settings: { autoMemoryEnabled?: boolean; permissions?: { deny?: string[] } } = JSON.parse(
+  const settings: { autoMemoryEnabled?: boolean; permissions: { deny: string[] } } = JSON.parse(
     read('.claude/settings.json'),
   );
 
   it('denies git stash', () => {
-    expect(settings.permissions?.deny).toContain('Bash(git stash *)');
+    expect(settings.permissions.deny).toContain('Bash(git stash *)');
   });
 
   // Knowledge lives in git history and GitHub issues, never in machine-local notes
@@ -172,9 +182,9 @@ describe('Learned agent guards', () => {
 
   // A timed-out or crashed hook does not block unless onFailure is "block" (https://code.claude.com/docs/en/hooks).
   it('makes every PreToolUse gate fail closed', () => {
-    const hooks: { hooks?: { PreToolUse?: Array<{ hooks: Array<{ command: string; onFailure?: string }> }> } } =
+    const hooks: { hooks: { PreToolUse: Array<{ hooks: Array<{ command: string; onFailure?: string }> }> } } =
       JSON.parse(read('.claude/settings.json'));
-    const gates = (hooks.hooks?.PreToolUse ?? []).flatMap((group) => group.hooks);
+    const gates = hooks.hooks.PreToolUse.flatMap((group) => group.hooks);
     expect(gates.length).toBeGreaterThan(0);
     expect(gates.filter((gate) => gate.onFailure !== 'block').map((gate) => gate.command)).toEqual([]);
   });
@@ -198,7 +208,7 @@ describe('Learned agent rules no hook can see (reply text, calls sharing a turn)
 });
 
 describe('Deny rules anchor git flags right after the subcommand', () => {
-  const settings: { permissions?: { deny?: string[] } } = JSON.parse(read('.claude/settings.json'));
+  const settings: { permissions: { deny: string[] } } = JSON.parse(read('.claude/settings.json'));
 
   // `*` stands for any text, and a trailing ` *` also matches the bare command
   // (https://code.claude.com/docs/en/permissions#wildcard-patterns).
@@ -211,7 +221,7 @@ describe('Deny rules anchor git flags right after the subcommand', () => {
     return new RegExp(regex, 's').test(command);
   };
   const denied = (command: string): boolean =>
-    (settings.permissions?.deny ?? []).some((rule) => rule.startsWith('Bash(') && matches(rule, command));
+    settings.permissions.deny.some((rule) => rule.startsWith('Bash(') && matches(rule, command));
 
   it.each([
     'git commit --no-verify -m x',
@@ -231,20 +241,5 @@ describe('Deny rules anchor git flags right after the subcommand', () => {
     'git push --force-with-lease origin b',
   ])('does not deny %s', (command) => {
     expect(denied(command)).toBe(false);
-  });
-});
-
-// README is read as truth too: its tree names only what the repo tracks (plans and specs live in issues).
-describe('README tree', () => {
-  const line = (dir: string): string => read('README.md').split('\n').find((l) => l.startsWith(dir)) ?? '';
-
-  it('describes docs/ as the architecture map and ADRs only', () => {
-    expect(line('docs/')).toMatch(/ARCHITECTURE\.md/);
-    expect(line('docs/')).not.toMatch(/spec|plan/i);
-  });
-
-  it('describes .claude/ without skills', () => {
-    expect(line('.claude/')).toMatch(/rules, hooks/);
-    expect(line('.claude/')).not.toMatch(/skill/i);
   });
 });

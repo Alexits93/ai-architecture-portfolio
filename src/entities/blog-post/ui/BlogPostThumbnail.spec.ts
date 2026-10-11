@@ -1,6 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, assert } from 'vitest';
 import { createTestPost } from '../model/test-post.fixture';
 import BlogPostThumbnail from './BlogPostThumbnail.astro';
 
@@ -20,14 +20,18 @@ describe('BlogPostThumbnail Entity (Astro)', () => {
 
   it('renders title, description, and a slug permalink with trailing slash', async () => {
     const doc = await render();
-    expect(doc.querySelector('h2')?.textContent).toBe('Title test-post');
-    expect(doc.querySelector('p')?.textContent).toBe('Description test-post');
-    expect(doc.querySelector('a')?.getAttribute('href')).toBe('/blog/test-post/');
+    const [title, description, link] = [doc.querySelector('h2'), doc.querySelector('p'), doc.querySelector('a')];
+    assert.exists(title);
+    assert.exists(description);
+    assert.exists(link);
+    expect(title.textContent).toBe('Title test-post');
+    expect(description.textContent).toBe('Description test-post');
+    expect(link.getAttribute('href')).toBe('/blog/test-post/');
   });
 
   it('renders the tags', async () => {
     const doc = await render();
-    const tags = [...doc.querySelectorAll('.skill-tag')].map((t) => t.textContent?.trim());
+    const tags = [...doc.querySelectorAll('.skill-tag')].map((t) => t.textContent.trim());
     expect(tags).toEqual(['#test', '#astro']);
   });
 });

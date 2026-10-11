@@ -10,7 +10,7 @@ const bodyWith = (...rows: string[]): string =>
   PR_SECTIONS.map((section) =>
     section === 'Unverified Risks & Metacognition'
       ? `## ${section}\n${[RISK_TABLE_HEADER, '|---|---|---|---|', ...rows].join('\n')}`
-      : `## ${section}\n${content[section] ?? 'Filled.'}`,
+      : `## ${section}\n${section in content ? content[section] : 'Filled.'}`,
   ).join('\n');
 
 const lowRow = '| Shell parsing of quoted flags | Low | Unit tests cover the common forms | #84 |';

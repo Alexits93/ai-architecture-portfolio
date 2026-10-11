@@ -1,6 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, assert } from 'vitest';
 import { Content } from '../__mocks__/code-fence.md';
 
 // The CSP hashes style-src, so inline style attributes (Shiki's output) are blocked.
@@ -10,7 +10,9 @@ describe('Markdown code fences under CSP', () => {
     const container = await AstroContainer.create();
     const doc = new JSDOM(await container.renderToString(Content)).window.document;
 
-    expect(doc.querySelector('pre.language-ts > code.language-ts .token.keyword')?.textContent).toBe('const');
+    const el = doc.querySelector('pre.language-ts > code.language-ts .token.keyword');
+    assert.exists(el);
+    expect(el.textContent).toBe('const');
     expect(doc.querySelectorAll('[style]')).toHaveLength(0);
   });
 });

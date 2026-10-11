@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { globSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 
@@ -39,7 +40,8 @@ for (const route of ROUTES) {
     const response = await page.goto(route);
 
     // The hashed style-src blocks inline style attributes (e.g. Shiki output), so the served HTML has none.
-    expect(await response?.text()).not.toMatch(/<[a-z][^>]*\sstyle=/);
+    assert(response !== null);
+    expect(await response.text()).not.toMatch(/<[a-z][^>]*\sstyle=/);
 
     const csp = page.locator('meta[http-equiv="content-security-policy"]');
     await expect(csp).toHaveAttribute('content', /script-src 'self' 'sha256-/);

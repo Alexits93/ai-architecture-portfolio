@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, assert } from 'vitest';
 
 // Correction #123: after a merge the agent left git cleanup, issue updates and the handover to the owner.
 // The after-merge skill does them; `claude plugin eval .claude/skills/after-merge` measures its behavior
@@ -9,11 +9,12 @@ const SKILL_DIR = '.claude/skills/after-merge';
 const EVALS_DIR = path.join(SKILL_DIR, 'evals');
 
 const frontmatter = (file: string): Record<string, string> => {
-  const block = fs.readFileSync(file, 'utf8').match(/^---\n([\s\S]*?)\n---/)?.[1] ?? '';
+  const block = fs.readFileSync(file, 'utf8').match(/^---\n([\s\S]*?)\n---/);
+  assert.exists(block, `${file} has no frontmatter`);
   return Object.fromEntries(
-    block.split('\n').flatMap((line) => {
+    block[1].split('\n').flatMap((line) => {
       const match = line.match(/^([\w-]+):\s*(.*)$/);
-      return match?.[1] ? [[match[1], match[2] ?? '']] : [];
+      return match ? [[match[1], match[2]]] : [];
     }),
   );
 };
@@ -29,7 +30,7 @@ const skillGraders = () =>
       return fs
         .readdirSync(graders)
         .map((file) => frontmatter(path.join(graders, file)))
-        .filter((grader) => grader.tool === 'Skill' && SKILL_GRADER.test(grader.input_match ?? ''));
+        .filter((grader) => grader.tool === 'Skill' && SKILL_GRADER.test(grader.input_match));
     });
 
 describe('after-merge skill', () => {
@@ -38,7 +39,8 @@ describe('after-merge skill', () => {
     expect(meta.name).toBe('after-merge');
     expect(meta['disable-model-invocation']).toBeUndefined();
     expect(meta['user-invocable']).toBeUndefined();
-    expect(meta.description?.length).toBeLessThanOrEqual(1024);
+    assert.exists(meta.description);
+    expect(meta.description.length).toBeLessThanOrEqual(1024);
     expect(meta.description).toMatch(/merged/);
     expect(meta.description).toMatch(/Not for performing a merge/);
   });
