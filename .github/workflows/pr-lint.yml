@@ -1,7 +1,10 @@
 name: PR Lint
 
+# pull_request_target runs this file and checks out master, so a PR cannot weaken the rules that check it
+# (#55). No step runs PR code; the PR's title, body and commit messages are only read as data
+# (https://docs.github.com/en/actions/reference/security/secure-use).
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, edited, synchronize, reopened]
 
 permissions:
@@ -12,11 +15,13 @@ jobs:
   pr-lint:
     runs-on: ubuntu-latest
     steps:
+      # No ref: for this event it is master (https://github.com/actions/checkout, v7.0.1).
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # The commit range check needs the base and head commits.
+          # All branches, so the PR head commits are there for the commit message check; never checked out.
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Environment
         uses: ./.github/actions/setup-pnpm-env

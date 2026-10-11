@@ -80,6 +80,35 @@ const checkIssue = (segment, cwd) => {
   return rules.findIssueViolations({ title: flagValues(segment, ['--title', '-t']).at(-1) ?? '', labels, body, parent });
 };
 
+// The repo is private on GitHub Free, without branch protection: the owner's review is the only server-side
+// gate, so Claude never merges (#55). REST merges a pull request at pulls/<n>/merge or merge-async and a branch at
+// repos/<o>/<r>/merges (https://docs.github.com/en/rest/pulls/pulls#merge-a-pull-request,
+// https://docs.github.com/en/rest/branches/branches#merge-a-branch); GraphQL through these mutations.
+const MERGE_API = /pulls\/[^/\s]+\/merge\b|\/merges\b|\b(?:mergePullRequest|enablePullRequestAutoMerge|mergeBranch)\b/;
+const NO_MERGE = 'Claude never merges: the owner reviews and merges on GitHub (#55).';
+
+// -F/--field key=@file and --input read the request from a file, or from stdin for `-` (gh api --help).
+const apiFiles = (segment) => [
+  ...flagValues(segment, ['-F', '--field']).filter((value) => value.includes('=@')).map((value) => value.split('=@')[1]),
+  ...flagValues(segment, ['--input']),
+];
+
+// null: stdin or a file the hook cannot read, so it cannot rule out a merge.
+const readRequest = (file, cwd) => {
+  if (file === '-') return null;
+  try {
+    return readFileSync(resolve(cwd, file), 'utf8');
+  } catch {
+    return null;
+  }
+};
+
+const checkApi = (segment, cwd) => {
+  const texts = [segment, ...apiFiles(segment).map((file) => readRequest(file, cwd))];
+  if (texts.includes(null)) return [`gh api reads its request from stdin or an unreadable file. ${NO_MERGE}`];
+  return texts.some((text) => MERGE_API.test(text)) ? [`gh api calls a merge endpoint. ${NO_MERGE}`] : [];
+};
+
 // `gh` must start the segment (after env assignments or env/command/exec), so text that only
 // mentions the command, such as a commit message, passes.
 const PREFIX = String.raw`^\s*(?:(?:env|command|exec)\s+|\w+=\S*\s+)*gh\s+`;
@@ -87,6 +116,10 @@ const GATES = [
   // `new` is gh's built-in alias for `create` (gh pr new --help, gh issue new --help).
   [new RegExp(`${PREFIX}pr\\s+(?:create|new)\\b`), checkPr],
   [new RegExp(`${PREFIX}issue\\s+(?:create|new)\\b`), checkIssue],
+  [new RegExp(`${PREFIX}pr\\s+merge\\b`), () => [NO_MERGE]],
+  [new RegExp(`${PREFIX}api\\b`), checkApi],
+  // An alias can rename any command, a blocked one included (https://cli.github.com/manual/gh_alias_set).
+  [new RegExp(`${PREFIX}alias\\s+(?:set|import)\\b`), () => [`gh alias set and import can rename a blocked command. ${NO_MERGE}`]],
 ];
 
 try {
