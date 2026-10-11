@@ -42,14 +42,14 @@ describe('Header Widget (Astro)', () => {
     expect(themeBtn.getAttribute('aria-pressed')).toBe('false');
   });
 
-  it('should render the menu toggle button', async () => {
-    const html = await container.renderToString(Header);
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-    
-    const menuBtn = doc.querySelector('button#site-menu-open-btn');
-    expect(menuBtn).not.toBeNull();
-    
+  // Invoker command: the button opens the menu dialog without a script (#157).
+  it('should render the menu button as a show-modal command for the site menu', async () => {
+    const doc = new JSDOM(await container.renderToString(Header)).window.document;
+    const menuBtn = doc.querySelector('button.navigator-menu-opener');
+    assert.exists(menuBtn);
+    expect(['aria-label', 'commandfor', 'command', 'id'].map((name) => menuBtn.getAttribute(name))).toEqual(
+      ['Open menu', 'site-menu', 'show-modal', null],
+    );
   });
 });
 
