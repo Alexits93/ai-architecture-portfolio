@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import BlogPostLayout from '@/layouts/BlogPostLayout.astro';
-import { Footer } from '@/widgets/footer';
 import { BlogPostRecommended } from '@/widgets/blog-post-recommended';
 import BlogPostReader from '@/widgets/blog-post-reader/ui/BlogPostReader.astro';
 
@@ -21,6 +20,4 @@ const { post } = Astro.props;
 		<BlogPostReader post={post} />
 		<BlogPostRecommended excludeId={post.id} />
 	</main>
-
-	<Footer />
 </BlogPostLayout>

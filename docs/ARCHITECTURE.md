@@ -53,11 +53,11 @@ flowchart TD
     Index & CV & BlogIndex & Cookie & Privacy --> Base
     BlogPost --> PostLayout
     PostLayout --> Base & Config
-    Base --> Header & Menu & SeoHead
+    Base --> Header & Menu & Footer & SeoHead
     Index --> AboutMe & Featured & Recommended & Config
     CV --> AboutMe & Experience
     BlogIndex --> Feed
-    BlogPost --> Footer & Reader & Recommended
+    BlogPost --> Reader & Recommended
     Cookie --> CookieW
     Privacy --> PrivacyW
     OG --> OgLib
