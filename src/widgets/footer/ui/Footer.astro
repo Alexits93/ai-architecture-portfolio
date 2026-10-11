@@ -20,6 +20,14 @@ const currentYear = new Date().getFullYear();
     text-align: center;
   }
 
+  /* compressHTML removes the whitespace between the links, so the gap comes from flex. */
+  .app-footer div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1rem;
+  }
+
   .app-footer p {
     display: inline-block;
     margin: 0;

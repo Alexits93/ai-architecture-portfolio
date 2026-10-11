@@ -1,5 +1,6 @@
 ---
 import type { ComponentProps } from 'astro/types';
+import { Footer } from '@/widgets/footer';
 import { Header } from '@/widgets/header';
 import { NavigatorMenu } from '@/widgets/navigator-menu';
 import { SeoHead } from '@/shared/ui/seo-head';
@@ -27,5 +28,6 @@ const props = Astro.props;
 		<Header />
 		<NavigatorMenu />
 		<slot />
+		<Footer />
 	</body>
 </html>
