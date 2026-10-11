@@ -1,3 +1,10 @@
+# [1.19.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.18.2...v1.19.0) (2026-10-11)
+
+
+### Features
+
+* **layout:** render the footer on every page from BaseLayout ([#134](https://github.com/Alexits93/ai-architecture-portfolio/issues/134)) ([b1cabb0](https://github.com/Alexits93/ai-architecture-portfolio/commit/b1cabb072dbb62f66de16aeeda43b57e560c9b25)), closes [#132](https://github.com/Alexits93/ai-architecture-portfolio/issues/132)
+
 ## [1.18.2](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.18.1...v1.18.2) (2026-10-10)
 
 
