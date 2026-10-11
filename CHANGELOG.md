@@ -1,3 +1,10 @@
+## [1.21.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.21.0...v1.21.1) (2026-10-11)
+
+
+### Bug Fixes
+
+* **claude:** close the handover, paging and test-gate holes ([#161](https://github.com/Alexits93/ai-architecture-portfolio/issues/161)) ([02e7912](https://github.com/Alexits93/ai-architecture-portfolio/commit/02e79124a4deb8d35ff37b66d754a30b5698dab1)), closes [#57](https://github.com/Alexits93/ai-architecture-portfolio/issues/57)
+
 # [1.21.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.20.1...v1.21.0) (2026-10-11)
 
 
