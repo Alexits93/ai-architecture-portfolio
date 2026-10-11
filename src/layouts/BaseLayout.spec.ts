@@ -21,7 +21,7 @@ const meta = (doc: Document, key: string) =>
   doc.querySelector(`meta[property="${key}"], meta[name="${key}"]`)?.getAttribute('content');
 
 describe('BaseLayout (Astro)', () => {
-  it('renders the document shell with the SEO head and one theme script', async () => {
+  it('renders the document shell with the SEO head', async () => {
     const doc = await render();
     expect(doc.documentElement.lang).toBe('en');
     expect(doc.querySelectorAll('title')).toHaveLength(1);
@@ -29,8 +29,8 @@ describe('BaseLayout (Astro)', () => {
     expect(meta(doc, 'description')).toBe('Page description');
     expect(doc.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(`${SITE_URL}/cv/`);
     expect(meta(doc, 'og:title')).toBe('Page Title');
-    expect(doc.querySelectorAll('script[src="/theme.js"]')).toHaveLength(1);
-    expect(doc.head.querySelector('script[src="/theme.js"]')).not.toBeNull();
+    // The theme script is injected inline by astro.config.mjs, which the container does not read (#86).
+    expect(doc.querySelector('script[src="/theme.js"]')).toBeNull();
     expect(doc.head.querySelector('link[rel="manifest"]')?.getAttribute('href')).toBe('/site.webmanifest');
     expect(meta(doc, 'viewport')).toBe('width=device-width');
   });

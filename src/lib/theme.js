@@ -1,6 +1,5 @@
-// Applies the stored theme before first paint. Loaded as a classic blocking script from <head>
-// so it runs before render. It is a file, not inline, because Astro does not hash is:inline code.
-// It loads before the CSP <meta>, which does not govern earlier content (W3C CSP3, meta element).
+// Applies the stored theme before first paint. astro.config.mjs injects it as a classic inline
+// <head> script, which Astro hashes into script-src, so it costs no request. A block, not globals.
 // Without a valid stored choice it sets nothing, so prefers-color-scheme in global.css applies.
 try {
   const storedTheme = localStorage.getItem('theme');

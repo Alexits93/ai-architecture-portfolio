@@ -56,9 +56,12 @@ for (const route of ROUTES) {
   });
 
   for (const stored of ['dark', 'light']) {
-    test(`/theme.js applies stored "${stored}" before module scripts on ${route}`, async ({ page }) => {
-      // Astro inlines bundled scripts as modules, which run only after parsing, so the first
-      // data-theme write while readyState is still "loading" can only come from the blocking /theme.js.
+    test(`the hashed theme script applies stored "${stored}" before module scripts on ${route}`, async ({ page }) => {
+      // Astro inlines bundled scripts as modules, which run only after parsing, so the first data-theme
+      // write while readyState is still "loading" can only come from the classic inline theme script.
+      // It runs only if its hash is in script-src, and it costs no extra request on a first visit (#86).
+      const requests: string[] = [];
+      page.on('request', (request) => requests.push(new URL(request.url()).pathname));
       await page.addInitScript((value) => {
         localStorage.setItem('theme', value);
         window.firstThemeWrite = '';
@@ -68,11 +71,11 @@ for (const route of ROUTES) {
         }).observe(document, { attributes: true, subtree: true, attributeFilter: ['data-theme'] });
       }, stored);
 
-      const themeScript = page.waitForResponse('**/theme.js');
       await page.goto(route);
 
-      expect((await themeScript).status()).toBe(200);
+      expect(requests).not.toContain('/theme.js');
       expect(await page.evaluate(() => window.firstThemeWrite)).toBe(`${stored} loading`);
+      expect(await page.evaluate(() => ['theme', 'storedTheme'].filter((name) => name in window))).toEqual([]);
       // goto resolves on load, after module scripts ran, so the Header store must keep the stored theme.
       await expect(page.locator('html')).toHaveAttribute('data-theme', stored);
     });
@@ -80,7 +83,7 @@ for (const route of ROUTES) {
 }
 
 // An invalid value or a throwing storage counts as no choice. The dark OS scheme proves that
-// neither /theme.js nor the Header store writes a light default over it.
+// neither the theme script nor the Header store writes a light default over it.
 test.describe('no stored choice', () => {
   test.use({ colorScheme: 'dark' });
   const setups: [string, () => void][] = [
@@ -95,7 +98,7 @@ test.describe('no stored choice', () => {
     ],
   ];
   for (const [name, setup] of setups) {
-    test(`/theme.js sets no data-theme for ${name}`, async ({ page }) => {
+    test(`the theme script sets no data-theme for ${name}`, async ({ page }) => {
       await page.addInitScript(setup);
       await page.addInitScript(() => {
         window.firstThemeWrite = '';

@@ -6,7 +6,7 @@ const listeners = new Set<() => void>();
 // Holds the choice for this page when storage throws, so the toggle still works.
 let fallback: Theme | undefined;
 
-// Any value other than light or dark is no choice, as in /theme.js; prefers-color-scheme applies.
+// Any value other than light or dark is no choice, as in src/lib/theme.js; prefers-color-scheme applies.
 export function getStoredTheme(): Theme | undefined {
   try {
     const stored = localStorage.getItem(KEY);
