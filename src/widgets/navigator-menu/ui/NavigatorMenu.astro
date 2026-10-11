@@ -43,7 +43,6 @@ const { menuItems = defaultMenuItems } = Astro.props;
             link.addEventListener('click', () => dialog.close());
         });
     };
-    document.addEventListener('astro:page-load', setupMenu);
     setupMenu();
 </script>
 
