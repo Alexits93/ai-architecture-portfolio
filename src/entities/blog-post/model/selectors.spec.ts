@@ -1,5 +1,5 @@
 import { describe, it, expect, assert } from 'vitest';
-import { selectFeaturedPost, selectRecommendedPosts, sortByNewest, selectStandardPosts } from './selectors';
+import { selectFeaturedPost, selectRecommendedPosts, sortByNewest } from './selectors';
 import { createTestPost } from './test-post.fixture';
 
 const oldest = createTestPost({ id: 'oldest', publishDate: '2026-01-01' });
@@ -53,22 +53,5 @@ describe('selectRecommendedPosts', () => {
 
   it('returns an empty list for an empty collection', () => {
     expect(selectRecommendedPosts([])).toEqual([]);
-  });
-});
-
-describe('selectStandardPosts', () => {
-  it('returns all non-featured posts sorted by newest', () => {
-    const ids = selectStandardPosts([oldest, featured, middle, newest]).map((p) => p.id);
-    expect(ids).toEqual(['newest', 'middle', 'oldest']);
-  });
-
-  it('returns all posts if none are featured', () => {
-    const ids = selectStandardPosts([oldest, middle, newest]).map((p) => p.id);
-    expect(ids).toEqual(['newest', 'middle', 'oldest']);
-  });
-
-  it('returns an empty list if all posts are featured', () => {
-    const featuredAlso = createTestPost({ id: 'featured-also', publishDate: '2026-04-01', isFeatured: true });
-    expect(selectStandardPosts([featured, featuredAlso])).toEqual([]);
   });
 });

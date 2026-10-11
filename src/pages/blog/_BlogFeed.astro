@@ -1,0 +1,97 @@
+---
+import { BlogPostThumbnail, getCategoryPath, sortByNewest, type BlogPost, type Category } from '@/entities/blog-post';
+import { CATEGORIES } from '@/content.config';
+import { ROUTES } from '@/shared/config';
+
+interface Props {
+	heading: string;
+	posts: readonly BlogPost[];
+	/** The category page being rendered; undefined on /blog/. */
+	current?: Category;
+}
+
+const { heading, posts, current } = Astro.props;
+const links = [
+	{ name: 'All', href: ROUTES.blog, isCurrent: current === undefined },
+	...CATEGORIES.map((category) => ({ name: category, href: getCategoryPath(category), isCurrent: category === current })),
+];
+---
+
+<div class="blog-feed-container">
+	<h1>{heading}</h1>
+	<nav aria-label="Blog categories">
+		<ul>
+			{links.map(({ name, href, isCurrent }) => (
+				<li><a href={href} aria-current={isCurrent ? 'page' : undefined}>{name}</a></li>
+			))}
+		</ul>
+	</nav>
+	<div class="blog-grid">
+		{sortByNewest(posts).map((post) => (
+			<div class="blog-post-wrapper">
+				<BlogPostThumbnail post={post} />
+			</div>
+		))}
+	</div>
+</div>
+
+<style>
+	.blog-feed-container {
+		max-width: var(--page-max-width, 1200px);
+		margin: 0 auto;
+		padding: 2rem 1rem;
+	}
+
+	h1 {
+		text-align: center;
+		margin-bottom: 2rem;
+		font-size: 2.5rem;
+		color: var(--font-color);
+	}
+
+	nav ul {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: .5rem 1.5rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	nav a {
+		color: var(--font-color);
+	}
+
+	nav a[aria-current='page'] {
+		color: var(--font-color-bold);
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	/* A bare 1fr has an automatic minimum (minmax(auto, 1fr), CSS Grid 2 fr unit), so WebKit widened
+	   the column to the thumbnail image's intrinsic width and overflowed a 320 px viewport. */
+	.blog-grid {
+		display: grid;
+		gap: 2rem;
+		grid-template-columns: minmax(0, 1fr);
+		margin-top: 2rem;
+	}
+
+	@media (min-width: 768px) {
+		.blog-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.blog-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	.blog-post-wrapper {
+		display: flex;
+		height: 100%;
+	}
+</style>

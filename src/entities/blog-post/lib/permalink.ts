@@ -1,5 +1,5 @@
 import { ROUTES } from '@/shared/config';
-import type { BlogPost } from '../model/types';
+import type { BlogPost, Category } from '../model/types';
 
 type PostRef = Pick<BlogPost, 'id'>;
 
@@ -8,3 +8,6 @@ type PostRef = Pick<BlogPost, 'id'>;
  * (native glob() loader behavior), validated by the collection schema.
  */
 export const getPostPath = (post: PostRef): string => `${ROUTES.blog}${post.id}/`;
+
+/** The only place a category page URL is built; the segment is the `[category]` param of its route. */
+export const getCategoryPath = (category: Category): string => `${ROUTES.blog}category/${category.toLowerCase()}/`;

@@ -4,7 +4,7 @@ title: "Working with LLMs as a Software Architect"
 subtitle: "Treat the model as a fast junior engineer with no memory"
 description: "Practical habits for pairing with LLMs on real codebases: scoping tasks, feeding context, challenging output, and keeping ownership of design decisions."
 publishDate: 2026-10-07
-tags: ["AI", "LLM", "Software Architecture"]
+category: AI
 isFeatured: false
 ---
 

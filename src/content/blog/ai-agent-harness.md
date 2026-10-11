@@ -4,7 +4,7 @@ title: "Building an AI Agent Harness"
 subtitle: "Deterministic gates around non-deterministic models"
 description: "An LLM agent is only as reliable as the system around it. This post breaks down the parts of a harness: context, tools, gates, and handover."
 publishDate: 2026-10-08
-tags: ["AI", "LLM", "Agents", "Architecture"]
+category: AI
 isFeatured: true
 ---
 

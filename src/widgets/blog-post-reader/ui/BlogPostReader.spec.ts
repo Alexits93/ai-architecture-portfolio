@@ -13,7 +13,7 @@ const mockPost: CollectionEntry<'blog'> = {
     subtitle: 'Test Subtitle',
     description: 'A test description for the blog post.',
     publishDate: new Date('2026-09-14T00:00:00.000Z'),
-    tags: ['astro', 'typescript'],
+    category: 'AI',
     slug: 'test-post',
     isFeatured: false,
   },
@@ -59,18 +59,18 @@ describe('BlogPostReader Widget (Astro)', () => {
     expect(htmlContent).toContain('14 SEP 2026');
   });
 
-  it('should render the tags via SkillTag', async () => {
+  it('should link the category to its category page', async () => {
     const html = await container.renderToString(BlogPostReader, {
       props: { post: mockPost },
     });
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
+    const doc = new JSDOM(html).window.document;
 
-    // Check if skill tags are rendered
     const tags = doc.querySelectorAll('span.skill-tag');
-    expect(tags.length).toBe(2);
-    expect(tags[0].textContent.trim()).toBe('#astro');
-    expect(tags[1].textContent.trim()).toBe('#typescript');
+    expect(tags).toHaveLength(1);
+    const link = tags.item(0).closest('a');
+    assert.exists(link);
+    expect(link.getAttribute('href')).toBe('/blog/category/ai/');
+    expect(link.textContent.trim()).toBe('#ai');
   });
 });
 

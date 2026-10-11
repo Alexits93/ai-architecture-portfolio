@@ -1,10 +1,13 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { BlogFeed } from '@/widgets/blog-feed';
+import BlogFeed from './_BlogFeed.astro';
+
+const posts = await getCollection('blog');
 ---
 
 <BaseLayout title="Blog | Patrik Alexits" description="Articles on frontend architecture, LLM coding agents and software engineering.">
 	<main>
-		<BlogFeed />
+		<BlogFeed heading="Blog" posts={posts} />
 	</main>
 </BaseLayout>

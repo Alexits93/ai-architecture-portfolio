@@ -4,7 +4,7 @@ title: "Architecture Rules as Code"
 subtitle: "If CI cannot fail on it, it is not a rule"
 description: "How to turn architectural principles into ESLint selectors, Stylelint rules, schema validation, and tests, so violations break the build instead of slipping through review."
 publishDate: 2026-10-06
-tags: ["Software Architecture", "Tooling", "ESLint"]
+category: Architecture
 isFeatured: false
 ---
 

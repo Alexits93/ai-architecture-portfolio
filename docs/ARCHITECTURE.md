@@ -1,6 +1,6 @@
 # Architecture
 
-Target structure: Astro's conventions (ADR 002), imports flow `pages > layouts > components > lib` (ESLint enforced). The tree still holds the legacy folders `src/widgets`, `src/features`, `src/entities` and `src/shared`, which Story #76 moves. The map shows today's imports between folders; update it when a page, layout or component is added or removed.
+Target structure: Astro's conventions (ADR 002), imports flow `pages > layouts > components > lib` (ESLint enforced). The tree still holds the legacy folders `src/widgets`, `src/entities` and `src/shared`, which Story #76 moves. The map shows today's imports between folders; update it when a page, layout or component is added or removed.
 
 ```mermaid
 flowchart TD
@@ -8,6 +8,8 @@ flowchart TD
         Index["index.astro"]
         CV["cv.astro"]
         BlogIndex["blog/index.astro"]
+        BlogCategory["blog/category/[category].astro"]
+        BlogFeed["blog/_BlogFeed.astro"]
         BlogPost["blog/[slug].astro"]
         Cookie["cookie-disclaimer.astro"]
         Privacy["privacy-policy.astro"]
@@ -27,15 +29,12 @@ flowchart TD
         Experience["experience-list"]
         Featured["blog-post-featured"]
         Recommended["blog-post-recommended"]
-        Feed["blog-feed"]
         Reader["blog-post-reader"]
         CookieW["cookie-disclaimer"]
         PrivacyW["privacy-policy"]
     end
 
-    subgraph Features["src/features"]
-        Filter["blog-post-filter"]
-    end
+    Content["src/content.config.ts"]
 
     subgraph Entities["src/entities"]
         Post["blog-post"]
@@ -50,13 +49,15 @@ flowchart TD
         Config["config"]
     end
 
-    Index & CV & BlogIndex & Cookie & Privacy --> Base
+    Index & CV & BlogIndex & BlogCategory & Cookie & Privacy --> Base
     BlogPost --> PostLayout
     PostLayout --> Base & Config
     Base --> Header & Menu & Footer & SeoHead
     Index --> AboutMe & Featured & Recommended & Config
     CV --> AboutMe & Experience
-    BlogIndex --> Feed
+    BlogIndex & BlogCategory --> BlogFeed
+    BlogCategory --> Content
+    BlogFeed --> Post & Content & Config
     BlogPost --> Reader & Recommended
     Cookie --> CookieW
     Privacy --> PrivacyW
@@ -64,13 +65,12 @@ flowchart TD
 
     Header --> Store
     Experience --> SkillTag
-    Feed --> Filter & Post
     Featured --> Post
     Recommended --> Post & Config
-    Reader --> ArticleNav & SkillTag
+    Reader --> ArticleNav & SkillTag & Post
     Post --> SkillTag & Config
 ```
 
 ## State
 - Theme: `astro.config.mjs` injects `src/lib/theme.js` as a hashed inline `<head>` script on every page, so it costs no request (#86). A native store over localStorage key `theme` in `src/shared/stores/ui`, without a state library; it re-renders on the `storage` event from other tabs and on a bfcache `pageshow`. Only the `Header` client script reads and writes it. `src/lib/theme.js` applies a stored `light` or `dark` before first paint. Without one, nothing sets `data-theme` and `prefers-color-scheme` decides; the toggle's `aria-pressed` then follows the OS theme.
-- Menu and blog filter: no JS store. State lives in the DOM (form controls, `hidden` attributes).
+- Menu: no JS store. State lives in the DOM. Blog categories: no client state; each category is a static page built by `getStaticPaths`, linked from `nav[aria-label="Blog categories"]` with `aria-current="page"` on the current link.

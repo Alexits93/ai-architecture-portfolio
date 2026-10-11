@@ -33,6 +33,13 @@ describe('Project Structure & Tooling Check (Deterministic Guardrails)', () => {
     expect(pages.filter((f) => /<(html|head|body)[\s>]/.test(fs.readFileSync(f, 'utf8')))).toEqual([]);
   });
 
+  // One category per post with static category pages replaced the script-driven tag filter (#90).
+  it('keeps post tags and the tag filter out of source', () => {
+    const files = fs.globSync('src/**/*', { cwd: process.cwd() }).filter((f) => fs.statSync(path.join(process.cwd(), f)).isFile());
+    const banned = /\bdata\.tags\b|^tags:|data-tags|blog-post-filter|BlogPostFilter|blog-feed-interactive/m;
+    expect(files.filter((f) => banned.test(fs.readFileSync(f, 'utf8')))).toEqual([]);
+  });
+
   // The logo lives once in src/assets/logo.svg; components import it as an SVG component (#119).
   it('keeps the logo path data out of components', () => {
     const logo = fs.readFileSync(path.join(process.cwd(), 'src/assets/logo.svg'), 'utf8');

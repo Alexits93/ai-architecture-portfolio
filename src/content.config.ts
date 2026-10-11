@@ -9,17 +9,23 @@ import { defineCollection } from 'astro:content';
  */
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+/** One category per post; each gets a static page at /blog/category/<lowercase name>/. */
+export const CATEGORIES = ['AI', 'Architecture'] as const;
+
+/** Strict object: an unknown frontmatter key, such as the removed `tags`, fails the build (Zod 4 z.strictObject). */
+export const blogSchema = z.strictObject({
+	slug: z.string().regex(SLUG_PATTERN, 'slug must be lowercase kebab-case (e.g. "web-components-overview")'),
+	title: z.string(),
+	subtitle: z.string(),
+	description: z.string(),
+	publishDate: z.coerce.date(),
+	category: z.enum(CATEGORIES),
+	isFeatured: z.boolean().default(false),
+});
+
 const blogCollection = defineCollection({
 	loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
-	schema: z.object({
-		slug: z.string().regex(SLUG_PATTERN, 'slug must be lowercase kebab-case (e.g. "web-components-overview")'),
-		title: z.string(),
-		subtitle: z.string(),
-		description: z.string(),
-		publishDate: z.coerce.date(),
-		tags: z.array(z.string()).default([]),
-		isFeatured: z.boolean().default(false),
-	}),
+	schema: blogSchema,
 });
 
 export const collections = {
