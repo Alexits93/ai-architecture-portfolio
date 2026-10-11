@@ -21,7 +21,7 @@
 </div>
 
 <script>
-  import { toggleTheme, themeStore, type Theme } from '@/shared/stores/ui';
+  import { getStoredTheme, onThemeChange, toggleTheme, type Theme } from '@/shared/stores/ui';
 
   const themeBtn = document.querySelector('.theme-toggle');
   const darkScheme = matchMedia('(prefers-color-scheme: dark)');
@@ -30,7 +30,7 @@
   if (themeBtn) {
     // Without a stored choice the page keeps no data-theme and shows the OS theme.
     const render = () => {
-      const stored = themeStore.get();
+      const stored = getStoredTheme();
       const theme = stored ?? systemTheme();
       themeBtn.setAttribute('aria-pressed', String(theme === 'dark'));
       if (stored) {
@@ -41,7 +41,8 @@
     };
 
     themeBtn.addEventListener('click', () => toggleTheme(systemTheme()));
-    themeStore.subscribe(render);
+    onThemeChange(render);
+    render();
     darkScheme.addEventListener('change', render);
   }
 </script>
