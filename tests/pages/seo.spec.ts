@@ -26,7 +26,11 @@ for (const route of ROUTES) {
     await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://www.pa-tech.dev${route}`);
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', title);
-    await expect(page.locator('script[src="/theme.js"]')).toHaveCount(1);
+    // One inline theme script in <head>, injected by astro.config.mjs, and no external copy (#86).
+    // Text locators skip <script> content, so read it directly. Astro's bundled scripts are type="module".
+    const classicInline = page.locator('head script:not([src]):not([type])');
+    expect(await classicInline.evaluateAll((els) => els.map((el) => el.textContent?.includes("localStorage.getItem('theme')")))).toEqual([true]);
+    await expect(page.locator('script[src="/theme.js"]')).toHaveCount(0);
   });
 }
 

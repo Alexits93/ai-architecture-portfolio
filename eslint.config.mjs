@@ -32,7 +32,7 @@ const SYNTAX_BANS = [
   },
   {
     "selector": "JSXOpeningElement[name.name='script']:has(JSXNamespacedName[namespace.name='is'][name.name='inline']):not(:has(JSXAttribute[name.name='src'])):not(:has(JSXAttribute[name.name='type'][value.value='application/ld+json']))",
-    "message": "CSP: inline is:inline scripts get no hash and a <meta> CSP does not cover content before it (W3C CSP3 3.3). Move the code to public/ and load it with <script is:inline src=\"/file.js\">."
+    "message": "CSP: inline is:inline scripts get no hash and a <meta> CSP does not cover content before it (W3C CSP3 3.3). For a pre-paint script, inject it with injectScript('head-inline') in astro.config.mjs, which Astro hashes, as src/lib/theme.js is."
   },
   {
     "selector": "JSXAttribute[name.name='class'] JSXExpressionContainer",
@@ -94,8 +94,8 @@ export default [
     }
   },
   {
-    // Classic browser scripts served as-is from public/ (outside Astro's bundler).
-    files: ["public/**/*.js"],
+    // Classic browser script outside Astro's bundler, injected inline by astro.config.mjs.
+    files: ["src/lib/theme.js"],
     languageOptions: {
       sourceType: "script",
       globals: { document: "readonly", localStorage: "readonly" }

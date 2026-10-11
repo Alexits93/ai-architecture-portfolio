@@ -21,7 +21,7 @@ describe('getStoredTheme', () => {
     expect(store.getStoredTheme()).toBeUndefined();
   });
 
-  // /theme.js treats an invalid stored value as no choice; the store must not undo that.
+  // src/lib/theme.js treats an invalid stored value as no choice; the store must not undo that.
   it.each([
     ['dark', 'dark'],
     ['light', 'light'],
