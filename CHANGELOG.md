@@ -1,3 +1,10 @@
+## [1.20.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.20.0...v1.20.1) (2026-10-11)
+
+
+### Bug Fixes
+
+* **csp:** drop upgrade-insecure-requests so WebKit e2e runs styled ([#148](https://github.com/Alexits93/ai-architecture-portfolio/issues/148)) ([bffd116](https://github.com/Alexits93/ai-architecture-portfolio/commit/bffd11632f07cd230d018fda6263e3633cf735d7))
+
 # [1.20.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.19.1...v1.20.0) (2026-10-11)
 
 
