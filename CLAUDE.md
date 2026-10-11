@@ -31,7 +31,7 @@ Path-scoped rules in `.claude/rules/` load automatically when you touch matching
 - Before a command that rewrites the worktree or index, or publishes: check which hooks it triggers (lint-staged stashes) and which paths are protected, and save `git diff > "$TMPDIR/wip.patch"` first.
 - `excludedCommands` in `.claude/settings.json` apply only to a standalone call: a `cd`, `;`, `&&`, redirect or `$(...)` keeps it sandboxed.
 - A sandboxed test that fails with ENOTDIR or EACCES on `.claude/*` or a shell startup file hit a protected-path placeholder: rerun it unsandboxed, never change the test.
-- Publish (`gh ... --body-file`, `git push`) only in a later turn than the write that produces its content, after that write succeeded. Write a new file name in `$TMPDIR`; the Read tool cannot open one to overwrite it. `$TMPDIR` (`/tmp/claude-1000`) is shared with other projects' Claude sessions: delete only files this repo's sessions created.
+- Publish (`gh ... --body-file`, `git push`) only in a later turn than the write that produces its content, after that write succeeded. A later tool call counts: do not stop for the owner in between, the permission prompt is the approval. Write a new file name in `$TMPDIR`; the Read tool cannot open one to overwrite it. `$TMPDIR` (`/tmp/claude-1000`) is shared with other projects' Claude sessions: delete only files this repo's sessions created.
 
 ## Engineering rules
 - Native and official solutions only: use the built-in capabilities of the tools in this stack (Astro, TypeScript, ESLint, Vitest, Playwright, pnpm, GitHub, Claude Code) as their docs describe. No custom scripts, workarounds or "creative" solutions. If no native option exists, stop and discuss alternatives with the user before building anything.
