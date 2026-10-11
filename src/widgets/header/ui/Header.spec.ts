@@ -1,6 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, assert } from 'vitest';
 import Header from './Header.astro';
 
 describe('Header Widget (Astro)', () => {
@@ -16,12 +16,13 @@ describe('Header Widget (Astro)', () => {
     const doc = dom.window.document;
     
     const homeLink = doc.querySelector('a[href="/"]');
-    expect(homeLink).not.toBeNull();
+    assert.exists(homeLink);
     
-    const srOnlySpan = homeLink?.querySelector('.sr-only');
-    expect(srOnlySpan?.textContent).toBe('Back to Home page');
+    const srOnlySpan = homeLink.querySelector('.sr-only');
+    assert.exists(srOnlySpan);
+    expect(srOnlySpan.textContent).toBe('Back to Home page');
     
-    const svg = homeLink?.querySelector('svg');
+    const svg = homeLink.querySelector('svg');
     expect(svg).not.toBeNull();
   });
 
@@ -32,8 +33,9 @@ describe('Header Widget (Astro)', () => {
     const doc = dom.window.document;
 
     const themeBtn = doc.querySelector('button.theme-toggle');
-    expect(themeBtn?.getAttribute('aria-label')).toBe('Dark theme');
-    expect(themeBtn?.getAttribute('aria-pressed')).toBe('false');
+    assert.exists(themeBtn);
+    expect(themeBtn.getAttribute('aria-label')).toBe('Dark theme');
+    expect(themeBtn.getAttribute('aria-pressed')).toBe('false');
   });
 
   it('should render the menu toggle button', async () => {
@@ -52,9 +54,10 @@ it('should render the theme toggle icons inline with currentColor', async () => 
   const container = await AstroContainer.create();
   const doc = new JSDOM(await container.renderToString(Header)).window.document;
   const themeBtn = doc.querySelector('button.theme-toggle');
+  assert.exists(themeBtn);
 
-  expect(themeBtn?.querySelector('img')).toBeNull();
-  const icons = [...(themeBtn?.querySelectorAll('svg') ?? [])].map((svg) =>
+  expect(themeBtn.querySelector('img')).toBeNull();
+  const icons = [...themeBtn.querySelectorAll('svg')].map((svg) =>
     ['class', 'fill', 'aria-hidden', 'width', 'height'].map((name) => svg.getAttribute(name)),
   );
   expect(icons).toEqual([

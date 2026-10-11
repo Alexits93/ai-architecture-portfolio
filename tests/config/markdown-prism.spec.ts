@@ -1,6 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, assert } from 'vitest';
 import { Content } from './fixtures/code-fence.md';
 
 // No published post has a code fence, so this fixture runs one through the real markdown config.
@@ -13,6 +13,8 @@ describe('Markdown code fences under the hash-based CSP', () => {
 
     expect(doc.querySelectorAll('[style]')).toHaveLength(0);
     expect(doc.querySelector('pre.language-ts code.language-ts')).not.toBeNull();
-    expect(doc.querySelector('.token.keyword')?.textContent).toBe('const');
+    const el = doc.querySelector('.token.keyword');
+    assert.exists(el);
+    expect(el.textContent).toBe('const');
   });
 });

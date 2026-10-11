@@ -1,9 +1,12 @@
+import assert from 'node:assert/strict';
 import { test, expect, type Locator } from '@playwright/test';
 
 // WCAG 2.2 SC 1.4.11: icons and the marks that identify a control need 3:1 against adjacent colours.
 // Relative luminance and contrast ratio as defined in the WCAG 2.2 glossary (https://www.w3.org/TR/WCAG22/).
 const luminance = (rgb: string) => {
-  const [r, g, b] = (rgb.match(/[\d.]+/g) ?? []).slice(0, 3).map((value) => {
+  const channels = rgb.match(/[\d.]+/g);
+  assert(channels !== null, `not an rgb() colour: ${rgb}`);
+  const [r, g, b] = channels.slice(0, 3).map((value) => {
     const c = Number(value) / 255;
     return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
   });

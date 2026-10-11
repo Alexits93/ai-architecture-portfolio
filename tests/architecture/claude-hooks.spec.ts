@@ -2,7 +2,7 @@ import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, assert } from 'vitest';
 import { HANDOVER_MARKER, PR_CHECKLIST, PR_SECTIONS, RISK_TABLE_HEADER } from '../../.github/workflow-rules.mjs';
 
 const read = (file: string): string => fs.readFileSync(path.join(process.cwd(), file), 'utf8');
@@ -55,7 +55,8 @@ const fakeGh = (answer: string, status: number, branch = 'master'): { PATH: stri
   fs.writeFileSync(path.join(bin, 'answer.json'), answer);
   fs.writeFileSync(path.join(bin, 'gh'), `#!/bin/sh\ncat "${bin}/answer.json"\nexit ${status}\n`, { mode: 0o755 });
   fs.writeFileSync(path.join(bin, 'git'), `#!/bin/sh\necho ${branch}\n`, { mode: 0o755 });
-  return { PATH: `${bin}${path.delimiter}${process.env.PATH ?? ''}` };
+  assert.exists(process.env.PATH);
+  return { PATH: `${bin}${path.delimiter}${process.env.PATH}` };
 };
 
 // fakeGh with a `git` that fails, as outside a repository.
@@ -141,7 +142,7 @@ const filled: Record<string, string> = {
   'Pre-Merge Checklist': PR_CHECKLIST.map((item) => `- [x] ${item}`).join('\n'),
   'Unverified Risks & Metacognition': `${RISK_TABLE_HEADER}\n|---|---|---|---|\n| Safari | Low | Checked | #91 |`,
 };
-const prBody = PR_SECTIONS.map((s) => `## ${s}\n${filled[s] ?? '- Closes #44'}`).join('\n');
+const prBody = PR_SECTIONS.map((s) => `## ${s}\n${s in filled ? filled[s] : '- Closes #44'}`).join('\n');
 
 // A crash also exits 2, so a block must name the gate in its message.
 const expectBlocked = (result: { status: number | null; stderr: string }): void => {

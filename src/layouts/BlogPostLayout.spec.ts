@@ -1,6 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, assert } from 'vitest';
 import { createTestPost } from '@/entities/blog-post/testing';
 import BlogPostLayout from './BlogPostLayout.astro';
 
@@ -16,13 +16,18 @@ const render = async (post = createTestPost({ id: 'hello', publishDate: '2026-03
   return new JSDOM(html).window.document;
 };
 
-const meta = (doc: Document, key: string) =>
-  doc.querySelector(`meta[property="${key}"], meta[name="${key}"]`)?.getAttribute('content');
+const meta = (doc: Document, key: string) => {
+  const tag = doc.querySelector(`meta[property="${key}"], meta[name="${key}"]`);
+  assert.exists(tag, `meta ${key}`);
+  return tag.getAttribute('content');
+};
 
 const jsonLd = (doc: Document) => {
   const scripts = doc.querySelectorAll('script[type="application/ld+json"]');
   expect(scripts).toHaveLength(1);
-  return JSON.parse(scripts[0]?.textContent ?? '');
+  const script = scripts.item(0);
+  assert.exists(script);
+  return JSON.parse(script.textContent);
 };
 
 describe('BlogPostLayout (Astro)', () => {
@@ -32,7 +37,9 @@ describe('BlogPostLayout (Astro)', () => {
     expect(meta(doc, 'description')).toBe('Description hello');
     expect(meta(doc, 'og:type')).toBe('article');
     expect(meta(doc, 'article:published_time')).toBe('2026-03-04T00:00:00.000Z');
-    expect(doc.getElementById('page-main')?.textContent).toBe('Post body');
+    const main = doc.getElementById('page-main');
+    assert.exists(main);
+    expect(main.textContent).toBe('Post body');
   });
 
   it('describes the post as BlogPosting with the CV page as author URL', async () => {

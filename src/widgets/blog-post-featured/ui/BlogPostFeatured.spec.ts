@@ -1,7 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { getCollection } from 'astro:content';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, assert } from 'vitest';
 import { createTestPost } from '@/entities/blog-post/testing';
 import BlogPostFeatured from './BlogPostFeatured.astro';
 
@@ -24,7 +24,9 @@ describe('BlogPostFeatured Widget (Astro)', () => {
       createTestPost({ id: 'other', publishDate: '2026-05-01' }),
       createTestPost({ id: 'picked', isFeatured: true }),
     ]);
-    expect(doc.querySelector('.blog-post-thumbnail')?.getAttribute('href')).toBe('/blog/picked/');
+    const el = doc.querySelector('.blog-post-thumbnail');
+    assert.exists(el);
+    expect(el.getAttribute('href')).toBe('/blog/picked/');
   });
 
   it('falls back to the newest post when none is featured', async () => {
@@ -32,7 +34,9 @@ describe('BlogPostFeatured Widget (Astro)', () => {
       createTestPost({ id: 'old', publishDate: '2026-01-01' }),
       createTestPost({ id: 'new', publishDate: '2026-06-01' }),
     ]);
-    expect(doc.querySelector('.blog-post-thumbnail')?.getAttribute('href')).toBe('/blog/new/');
+    const el = doc.querySelector('.blog-post-thumbnail');
+    assert.exists(el);
+    expect(el.getAttribute('href')).toBe('/blog/new/');
   });
 
   it('renders no thumbnail for an empty collection', async () => {

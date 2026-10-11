@@ -1,6 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, assert } from 'vitest';
 import CookieDisclaimer from './CookieDisclaimer.astro';
 
 describe('CookieDisclaimer Widget (Astro)', () => {
@@ -16,13 +16,13 @@ describe('CookieDisclaimer Widget (Astro)', () => {
     const doc = dom.window.document;
 
     const heading = doc.querySelector('h1');
-    expect(heading).not.toBeNull();
-    expect(heading?.textContent?.trim()).toBe('Cookie Disclaimer');
+    assert.exists(heading);
+    expect(heading.textContent.trim()).toBe('Cookie Disclaimer');
   });
 
   it('states that no cookies are set and claims no implied consent', async () => {
     const html = await container.renderToString(CookieDisclaimer);
-    const text = new JSDOM(html).window.document.body.textContent ?? '';
+    const text = new JSDOM(html).window.document.body.textContent;
 
     expect(text).toContain('This site sets no cookies');
     expect(text).toContain('localStorage');
@@ -35,7 +35,7 @@ describe('CookieDisclaimer Widget (Astro)', () => {
     const doc = dom.window.document;
 
     const link = doc.querySelector('a[href="/privacy-policy/"]');
-    expect(link).not.toBeNull();
-    expect(link?.textContent?.trim()).toContain('Privacy Policy');
+    assert.exists(link);
+    expect(link.textContent.trim()).toContain('Privacy Policy');
   });
 });

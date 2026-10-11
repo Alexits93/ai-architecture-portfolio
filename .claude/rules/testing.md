@@ -22,6 +22,7 @@ Write the failing test first, then the code (TDD). While a feature is in progres
 
 ## Types and mocks
 - Same strictness as production: no `any`, no `unknown`, no `as` casts to bypass types. Use `Partial<T>` or a fixture that matches the real interface.
+- No optional chaining (`?.`), `??` fallbacks or `!` non-null assertions in specs. They route around a missing value: `expect(el?.textContent ?? '').not.toContain(x)` passes when `el` is absent, and the type check stops proving the value exists. Guard instead, so a missing value fails at the guard and the type narrows: `assert.exists(el)` or `assert.instanceOf` from `vitest` (https://vitest.dev/api/assert), `assert(value !== null)` after `import assert from 'node:assert/strict'` in Playwright specs. A value that may legitimately be absent gets an explicit branch (`key in map ? map[key] : fallback`). ESLint enforces this in `**/*.spec.ts`, `tests/**` and `e2e/**` (#138).
 - `vi.mock()` for modules, `vi.fn()` for spies, `vi.clearAllMocks()` in `beforeEach`.
 
 ## Coverage

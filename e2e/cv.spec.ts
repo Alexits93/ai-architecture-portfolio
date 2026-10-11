@@ -1,8 +1,10 @@
+import assert from 'node:assert/strict';
 import { test, expect } from '@playwright/test';
 
 test('CV Page renders correctly', async ({ page }) => {
   const response = await page.goto('/cv/');
-  expect(response?.status()).toBe(200);
+  assert(response !== null);
+  expect(response.status()).toBe(200);
 
   await expect(page.getByRole('banner')).toBeVisible();
   await expect(page.locator('section#about-me')).toBeVisible();

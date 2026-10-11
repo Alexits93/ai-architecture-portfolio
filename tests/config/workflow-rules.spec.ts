@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, assert } from 'vitest';
 import {
   ISSUE_TEMPLATES,
   PR_CHECKLIST,
@@ -151,7 +151,7 @@ describe('current Task and handover', () => {
   const comment = (body: string) => ({ body });
 
   it('finds the open Task linked to the branch', () => {
-    expect(linkedTask([task(62, []), task(63, ['chore/a'])], 'chore/a')?.number).toBe(63);
+    expect(linkedTask([task(62, []), task(63, ['chore/a'])], 'chore/a')).toMatchObject({ number: 63 });
   });
 
   it('finds nothing for an unlinked branch', () => {
@@ -234,7 +234,11 @@ describe('rules match the GitHub templates', () => {
     const required = template
       .split(/^ {2}- type: /m)
       .filter((field) => /required: true/.test(field))
-      .map((field) => /label: (.+)/.exec(field)?.[1]);
+      .map((field) => {
+        const label = /label: (.+)/.exec(field);
+        assert.exists(label, field);
+        return label[1];
+      });
     expect(template).toContain(`title: "${rule.prefix}"`);
     expect(template).toContain(`labels: ["${rule.label}"]`);
     expect(required).toEqual(rule.headings);

@@ -1,7 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import type { CollectionEntry } from 'astro:content';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, assert } from 'vitest';
 import MockContent from '../__mocks__/MockContent.astro';
 import BlogPostReader from './BlogPostReader.astro';
 
@@ -47,12 +47,12 @@ describe('BlogPostReader Widget (Astro)', () => {
     const doc = dom.window.document;
 
     const title = doc.querySelector('h1');
-    expect(title).not.toBeNull();
-    expect(title?.textContent).toBe('Test Post Title');
+    assert.exists(title);
+    expect(title.textContent).toBe('Test Post Title');
 
     const subtitle = doc.querySelector('h2');
-    expect(subtitle).not.toBeNull();
-    expect(subtitle?.textContent).toBe('Test Subtitle');
+    assert.exists(subtitle);
+    expect(subtitle.textContent).toBe('Test Subtitle');
 
     // Should format date
     const htmlContent = doc.body.innerHTML;
@@ -69,8 +69,8 @@ describe('BlogPostReader Widget (Astro)', () => {
     // Check if skill tags are rendered
     const tags = doc.querySelectorAll('span.skill-tag');
     expect(tags.length).toBe(2);
-    expect(tags[0].textContent?.trim()).toBe('#astro');
-    expect(tags[1].textContent?.trim()).toBe('#typescript');
+    expect(tags[0].textContent.trim()).toBe('#astro');
+    expect(tags[1].textContent.trim()).toBe('#typescript');
   });
 });
 

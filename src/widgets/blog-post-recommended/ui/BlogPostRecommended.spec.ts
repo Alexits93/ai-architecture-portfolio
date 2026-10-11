@@ -1,7 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { getCollection } from 'astro:content';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, assert } from 'vitest';
 import { createTestPost } from '@/entities/blog-post/testing';
 import BlogPostRecommended from './BlogPostRecommended.astro';
 
@@ -39,6 +39,8 @@ describe('BlogPostRecommended Widget (Astro)', () => {
 
   it('links "See more" to the blog index route', async () => {
     const doc = await render();
-    expect(doc.querySelector('.wrapper-bottom a')?.getAttribute('href')).toBe('/blog/');
+    const el = doc.querySelector('.wrapper-bottom a');
+    assert.exists(el);
+    expect(el.getAttribute('href')).toBe('/blog/');
   });
 });

@@ -1,6 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, assert } from 'vitest';
 import NavigatorMenu from './NavigatorMenu.astro';
 
 describe('NavigatorMenu Widget (Astro)', () => {
@@ -16,9 +16,9 @@ describe('NavigatorMenu Widget (Astro)', () => {
     const doc = dom.window.document;
     
     const navMenu = doc.querySelector('dialog#site-menu');
-    expect(navMenu).not.toBeNull();
+    assert.exists(navMenu);
     // Should not have the "open" attribute by default
-    expect(navMenu?.hasAttribute('open')).toBe(false);
+    expect(navMenu.hasAttribute('open')).toBe(false);
   });
 
   it('should render the default navigation links', async () => {
@@ -31,7 +31,7 @@ describe('NavigatorMenu Widget (Astro)', () => {
     
     // Check if the home link exists
     const homeLink = Array.from(links).find((link: Element) => link.getAttribute('href') === '/');
-    expect(homeLink).not.toBeUndefined();
-    expect(homeLink?.textContent?.trim()).toBe('Home');
+    assert.exists(homeLink);
+    expect(homeLink.textContent.trim()).toBe('Home');
   });
 });

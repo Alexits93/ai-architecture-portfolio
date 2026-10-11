@@ -1,7 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { getCollection } from 'astro:content';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, assert } from 'vitest';
 import { createTestPost } from '@/entities/blog-post/testing';
 import BlogFeed from './BlogFeed.astro';
 
@@ -85,7 +85,9 @@ describe('BlogFeed Widget (Astro) - Tags and Attributes', () => {
 
   it('renders the tag filter as a fieldset, with no form or submit button', async () => {
     const doc = await render();
-    expect(doc.querySelector('blog-feed-interactive .blog-post-filter')?.tagName).toBe('FIELDSET');
+    const el = doc.querySelector('blog-feed-interactive .blog-post-filter');
+    assert.exists(el);
+    expect(el.tagName).toBe('FIELDSET');
     expect(doc.querySelector('form, .filter-submit')).toBeNull();
   });
 });

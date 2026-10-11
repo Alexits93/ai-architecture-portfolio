@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, assert } from 'vitest';
 import { selectFeaturedPost, selectRecommendedPosts, sortByNewest, selectStandardPosts } from './selectors';
 import { createTestPost } from './test-post.fixture';
 
@@ -17,11 +17,15 @@ describe('sortByNewest', () => {
 
 describe('selectFeaturedPost', () => {
   it('returns the explicitly featured post', () => {
-    expect(selectFeaturedPost([oldest, featured, newest])?.id).toBe('featured');
+    const post = selectFeaturedPost([oldest, featured, newest]);
+    assert.exists(post);
+    expect(post.id).toBe('featured');
   });
 
   it('falls back to the newest post when none is featured', () => {
-    expect(selectFeaturedPost([oldest, newest, middle])?.id).toBe('newest');
+    const post = selectFeaturedPost([oldest, newest, middle]);
+    assert.exists(post);
+    expect(post.id).toBe('newest');
   });
 
   it('returns undefined for an empty collection', () => {

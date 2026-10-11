@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, assert } from 'vitest';
 
 // public/_headers is the host contract (statichost.eu reads it from the publish root).
 // https://www.statichost.eu/docs/custom-headers/
@@ -10,7 +10,9 @@ const headers = fs.readFileSync(path.join(process.cwd(), 'public/_headers'), 'ut
 
 const block = (route: string): string => {
   const escaped = route.replace(/[*/]/g, '\\$&');
-  return headers.match(new RegExp(`^${escaped}\\n((?:[ \\t]+.*\\n?)*)`, 'm'))?.[1] ?? '';
+  const match = headers.match(new RegExp(`^${escaped}\\n((?:[ \\t]+.*\\n?)*)`, 'm'));
+  assert.exists(match, `public/_headers has no ${route} block`);
+  return match[1];
 };
 
 const SITE_WIDE = [

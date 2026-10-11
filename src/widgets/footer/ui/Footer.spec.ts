@@ -1,6 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, assert } from 'vitest';
 import Footer from './Footer.astro';
 
 describe('Footer Widget (Astro)', () => {
@@ -16,17 +16,17 @@ describe('Footer Widget (Astro)', () => {
     const doc = dom.window.document;
     
     const footer = doc.querySelector('.app-footer');
-    expect(footer).not.toBeNull();
+    assert.exists(footer);
     
     // Check year and name
     const currentYear = new Date().getFullYear().toString();
-    expect(footer?.textContent).toContain(currentYear);
-    expect(footer?.textContent).toContain('Patrik Alexits');
+    expect(footer.textContent).toContain(currentYear);
+    expect(footer.textContent).toContain('Patrik Alexits');
 
     // Check framework link
     const frameworkLink = doc.querySelector('a[href="https://astro.build/"]');
-    expect(frameworkLink).not.toBeNull();
-    expect(frameworkLink?.textContent).toBe('Astro');
+    assert.exists(frameworkLink);
+    expect(frameworkLink.textContent).toBe('Astro');
 
     // Check policy links
     const cookieLink = doc.querySelector('a[href="/cookie-disclaimer/"]');

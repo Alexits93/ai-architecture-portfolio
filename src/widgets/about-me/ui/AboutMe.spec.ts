@@ -1,6 +1,6 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, assert } from 'vitest';
 import AboutMe from './AboutMe.astro';
 
 describe('AboutMe Widget (Astro) - Content', () => {
@@ -16,13 +16,16 @@ describe('AboutMe Widget (Astro) - Content', () => {
     const doc = dom.window.document;
 
     const name = doc.querySelector('h1');
-    expect(name?.textContent).toBe('John Doe');
+    assert.exists(name);
+    expect(name.textContent).toBe('John Doe');
 
     const profession = doc.querySelector('h2');
-    expect(profession?.textContent).toBe('Jedi Council Member (Not Master though)');
+    assert.exists(profession);
+    expect(profession.textContent).toBe('Jedi Council Member (Not Master though)');
 
     const text = doc.querySelector('p');
-    expect(text?.textContent).toBe("I don't like sand. It's coarse and rough and irritating, and it gets everywhere.");
+    assert.exists(text);
+    expect(text.textContent).toBe("I don't like sand. It's coarse and rough and irritating, and it gets everywhere.");
   });
 
   it('should render with custom props', async () => {
@@ -36,13 +39,16 @@ describe('AboutMe Widget (Astro) - Content', () => {
     const doc = dom.window.document;
 
     const name = doc.querySelector('h1');
-    expect(name?.textContent).toBe('Jane Doe');
+    assert.exists(name);
+    expect(name.textContent).toBe('Jane Doe');
 
     const profession = doc.querySelector('h2');
-    expect(profession?.textContent).toBe('Sith Lord');
+    assert.exists(profession);
+    expect(profession.textContent).toBe('Sith Lord');
 
     const text = doc.querySelector('p');
-    expect(text?.textContent).toBe('Peace is a lie.');
+    assert.exists(text);
+    expect(text.textContent).toBe('Peace is a lie.');
   });
 });
 
@@ -68,7 +74,8 @@ describe('AboutMe Widget (Astro) - Social Links', () => {
     expect(listItems.length).toBe(4);
 
     const githubLink = doc.querySelector('a[aria-label="GitHub (Opens in new tab)"]');
-    expect(githubLink?.getAttribute('href')).toBe('https://github.com');
+    assert.exists(githubLink);
+    expect(githubLink.getAttribute('href')).toBe('https://github.com');
   });
 
   it('should not render social links ul if no urls are provided', async () => {

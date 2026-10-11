@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, assert } from 'vitest';
 import SkillTag from './SkillTag.astro';
 
 describe('SkillTag Component', () => {
@@ -19,9 +19,11 @@ describe('SkillTag Component', () => {
 
     const tags = doc.querySelectorAll('.skill-tag');
     expect(tags).toHaveLength(1);
-    expect(tags[0]?.tagName).toBe('SPAN');
-    expect(tags[0]?.classList.contains('non-interactive')).toBe(true);
-    expect(tags[0]?.textContent?.trim()).toBe('#vue.js');
+    const tag = tags.item(0);
+    assert.exists(tag);
+    expect(tag.tagName).toBe('SPAN');
+    expect(tag.classList.contains('non-interactive')).toBe(true);
+    expect(tag.textContent.trim()).toBe('#vue.js');
   });
 
   it('has no interactive variant in its source', () => {

@@ -2,18 +2,24 @@ import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ESLint } from 'eslint';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, assert } from 'vitest';
 
 // The banned list lives in CLAUDE.md (the rule), eslint.config.mjs (code gate) and
 // .claude/hooks/anti-slop.mjs (Markdown gate). The gates must agree with the rule and each other.
 
 const read = (file: string): string => fs.readFileSync(path.join(process.cwd(), file), 'utf8');
 
-const claudeList = (): string[] =>
-  (read('CLAUDE.md').match(/^- Banned words: (.+)\.$/m)?.[1] ?? '').split(', ');
+const claudeList = (): string[] => {
+  const line = read('CLAUDE.md').match(/^- Banned words: (.+)\.$/m);
+  assert.exists(line, 'CLAUDE.md has no banned-words line');
+  return line[1].split(', ');
+};
 
-const arrayLiteral = (file: string): string[] =>
-  [...(read(file).match(/const BANNED_WORDS = \[([^\]]+)\]/)?.[1] ?? '').matchAll(/["']([^"']+)["']/g)].map((m) => m[1]);
+const arrayLiteral = (file: string): string[] => {
+  const list = read(file).match(/const BANNED_WORDS = \[([^\]]+)\]/);
+  assert.exists(list, `${file} has no BANNED_WORDS array`);
+  return [...list[1].matchAll(/["']([^"']+)["']/g)].map((m) => m[1]);
+};
 
 const eslintFlags = async (text: string): Promise<boolean> => {
   const [result] = await new ESLint().lintText(`export const a = ${JSON.stringify(text)};\n`, { filePath: 'src/shared/lib/x.ts' });
