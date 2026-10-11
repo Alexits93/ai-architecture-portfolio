@@ -1,16 +1,18 @@
 ---
-import { BlogPostThumbnail, getCategoryPath, sortByNewest, type BlogPost, type Category } from '@/entities/blog-post';
+import type { Page } from 'astro';
+import { BlogPostThumbnail, getCategoryPath, type BlogPost, type Category } from '@/entities/blog-post';
 import { CATEGORIES } from '@/content.config';
 import { ROUTES } from '@/shared/config';
 
 interface Props {
 	heading: string;
-	posts: readonly BlogPost[];
+	/** One page of newest-first posts from paginate() (https://docs.astro.build/en/reference/routing-reference/#page-prop). */
+	page: Page<BlogPost>;
 	/** The category page being rendered; undefined on /blog/. */
 	current?: Category;
 }
 
-const { heading, posts, current } = Astro.props;
+const { heading, page, current } = Astro.props;
 const links = [
 	{ name: 'All', href: ROUTES.blog, isCurrent: current === undefined },
 	...CATEGORIES.map((category) => ({ name: category, href: getCategoryPath(category), isCurrent: category === current })),
@@ -27,12 +29,19 @@ const links = [
 		</ul>
 	</nav>
 	<div class="blog-grid">
-		{sortByNewest(posts).map((post) => (
+		{page.data.map((post) => (
 			<div class="blog-post-wrapper">
 				<BlogPostThumbnail post={post} />
 			</div>
 		))}
 	</div>
+	{page.lastPage > 1 && (
+		<nav aria-label="Pagination" class="pagination">
+			{page.url.prev && <a href={page.url.prev} rel="prev">Previous</a>}
+			<a href={page.url.current} aria-current="page">Page {page.currentPage} of {page.lastPage}</a>
+			{page.url.next && <a href={page.url.next} rel="next">Next</a>}
+		</nav>
+	)}
 </div>
 
 <style>
@@ -61,6 +70,13 @@ const links = [
 
 	nav a {
 		color: var(--font-color);
+	}
+
+	.pagination {
+		display: flex;
+		justify-content: center;
+		gap: 1.5rem;
+		margin-top: 2rem;
 	}
 
 	nav a[aria-current='page'] {

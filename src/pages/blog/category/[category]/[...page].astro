@@ -1,0 +1,29 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import { CATEGORIES } from '@/content.config';
+import { sortByNewest } from '@/entities/blog-post';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BlogFeed from '../../_BlogFeed.astro';
+
+// Each category paginated at 10 posts: /blog/category/<name>/, then /<name>/2/
+// (https://docs.astro.build/en/reference/routing-reference/#paginate, Astro 7).
+export const getStaticPaths = (async ({ paginate }) => {
+	const posts = sortByNewest(await getCollection('blog'));
+	return CATEGORIES.flatMap((category) =>
+		paginate(posts.filter((post) => post.data.category === category), {
+			params: { category: category.toLowerCase() },
+			props: { category },
+			pageSize: 10,
+		}),
+	);
+}) satisfies GetStaticPaths;
+
+const { category, page } = Astro.props;
+---
+
+<BaseLayout title={`${category} | Blog | Patrik Alexits`} description={`Articles by Patrik Alexits in the ${category} category.`}>
+	<main>
+		<BlogFeed heading={`Blog: ${category}`} page={page} current={category} />
+	</main>
+</BaseLayout>
