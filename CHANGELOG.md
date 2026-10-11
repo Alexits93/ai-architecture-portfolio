@@ -1,3 +1,10 @@
+## [1.19.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.19.0...v1.19.1) (2026-10-11)
+
+
+### Performance Improvements
+
+* **theme:** inline the hashed theme script instead of a blocking /theme.js ([#136](https://github.com/Alexits93/ai-architecture-portfolio/issues/136)) ([2622b3a](https://github.com/Alexits93/ai-architecture-portfolio/commit/2622b3ae9104f8ee5ef27e800317a93350c446f2)), closes [#86](https://github.com/Alexits93/ai-architecture-portfolio/issues/86)
+
 # [1.19.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.18.2...v1.19.0) (2026-10-11)
 
 
