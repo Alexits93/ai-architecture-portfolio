@@ -180,6 +180,11 @@ describe('Learned agent guards', () => {
     expect(read('.claude/settings.json')).toContain('.claude/hooks/sandbox-gate.mjs');
   });
 
+  it('gates AskUserQuestion by hook and pins the prose half in CLAUDE.md (owner rule 2026-10-11, #155)', () => {
+    expect(read('.claude/settings.json')).toMatch(/"AskUserQuestion"[^\]]*\.claude\/hooks\/decision-gate\.mjs/);
+    expect(read('CLAUDE.md')).toMatch(/^- Ask every owner decision through `AskUserQuestion`: .*`\(Recommended\)`.*`No-op`.*$/m);
+  });
+
   // A timed-out or crashed hook does not block unless onFailure is "block" (https://code.claude.com/docs/en/hooks).
   it('makes every PreToolUse gate fail closed', () => {
     const hooks: { hooks: { PreToolUse: Array<{ hooks: Array<{ command: string; onFailure?: string }> }> } } =
