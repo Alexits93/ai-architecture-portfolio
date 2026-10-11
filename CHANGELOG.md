@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.19.1...v1.20.0) (2026-10-11)
+
+
+### Features
+
+* **blog:** one category per post with static category pages ([#146](https://github.com/Alexits93/ai-architecture-portfolio/issues/146)) ([c8bac51](https://github.com/Alexits93/ai-architecture-portfolio/commit/c8bac514ade3aee6aee111410997301edc90c5a3)), closes [#90](https://github.com/Alexits93/ai-architecture-portfolio/issues/90) [#91](https://github.com/Alexits93/ai-architecture-portfolio/issues/91) [#90](https://github.com/Alexits93/ai-architecture-portfolio/issues/90)
+
 ## [1.19.1](https://github.com/Alexits93/ai-architecture-portfolio/compare/v1.19.0...v1.19.1) (2026-10-11)
 
 
