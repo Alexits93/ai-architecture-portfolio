@@ -35,8 +35,8 @@ describe('NavigatorMenu Widget (Astro)', () => {
     expect(homeLink.textContent.trim()).toBe('Home');
   });
 
-  // Invoker command: the close button closes the dialog, no script and no inline position (#157).
-  it('should render the close button as a close command without a script', async () => {
+  // Invoker command: the close button closes the dialog, no inline position (#157).
+  it('should render the close button as a close command', async () => {
     const html = await container.renderToString(NavigatorMenu);
     const doc = new JSDOM(html).window.document;
     const closeBtn = doc.querySelector('dialog#site-menu button');
@@ -44,6 +44,5 @@ describe('NavigatorMenu Widget (Astro)', () => {
     expect(['aria-label', 'commandfor', 'command', 'style'].map((name) => closeBtn.getAttribute(name))).toEqual(
       ['Close menu', 'site-menu', 'close', null],
     );
-    expect(html).not.toContain('<script');
   });
 });

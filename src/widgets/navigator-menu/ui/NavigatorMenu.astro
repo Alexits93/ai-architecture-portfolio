@@ -24,6 +24,13 @@ const { menuItems = defaultMenuItems } = Astro.props;
     </div>
 </dialog>
 
+<script>
+    // No HTML or CSS closes a dialog when a link navigates. Close it before the page enters the back/forward
+    // cache, so Back restores it closed (https://developer.mozilla.org/en-US/docs/Web/API/Window/pagehide_event).
+    const menu = document.getElementById('site-menu');
+    if (menu instanceof HTMLDialogElement) addEventListener('pagehide', () => menu.close());
+</script>
+
 <style>
     dialog#site-menu {
         --menu-origin: 2.5rem 2.6rem;
@@ -104,7 +111,7 @@ const { menuItems = defaultMenuItems } = Astro.props;
     dialog#site-menu[open] .navigator-menu-body li:nth-child(3) { transition-delay: 0.41s; }
 
     .navigator-menu-body ul li a { display: flex; color: var(--font-color); text-decoration: none; }
-    .navigator-menu-body ul li a:focus-visible { outline: 2px solid var(--focus-color); outline-offset: 4px; }
+    .navigator-menu-body ul li a:focus-visible { outline: 2px solid var(--focus-color); }
     .navigator-menu-body ul li a h2 {
         display: inline-block; margin: 0; font-size: 48px;
         line-height: 1.2; color: var(--font-color-bold);

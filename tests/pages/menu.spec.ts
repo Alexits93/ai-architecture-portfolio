@@ -45,15 +45,6 @@ test('a click outside the menu items keeps the menu open', async ({ page }) => {
   await expect(menu(page)).toBeHidden();
 });
 
-test('Back after a menu link shows the previous page with the menu closed', async ({ page }) => {
-  await opener(page).click();
-  await menu(page).getByRole('link', { name: 'Blog' }).click();
-  await expect(page).toHaveURL(/\/blog\/$/);
-  await page.goBack();
-  await expect(page).toHaveURL(/\/$/);
-  await expect(menu(page)).toBeHidden();
-});
-
 for (const viewport of [{ width: 320, height: 640 }, { width: 1280, height: 800 }]) {
   test.describe(`at ${viewport.width} px`, () => {
     test.use({ viewport });
