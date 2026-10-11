@@ -6,7 +6,7 @@ import SunIcon from '@/assets/sun.svg';
 
 <div class="header-wrapper">
   <header>
-    <button id="site-menu-open-btn" class="navigator-menu-opener" aria-label="Open menu">
+    <button class="navigator-menu-opener" commandfor="site-menu" command="show-modal" aria-label="Open menu">
       <span></span>
       <span></span>
     </button>
@@ -54,7 +54,8 @@ import SunIcon from '@/assets/sun.svg';
   .header-wrapper {
       position: sticky;
       top: 0;
-      z-index: 10000;
+      /* Above positioned page content while sticky; the open menu sits in the top layer. */
+      z-index: 1;
   }
   .header-wrapper header {
       display: flex;
@@ -73,6 +74,10 @@ import SunIcon from '@/assets/sun.svg';
       text-decoration: none;
       color: var(--font-color);
   }
+  /* Block icons keep the header 1rem + 50px + 1rem tall in every engine; the menu close button relies on it. */
+  .header-wrapper header svg {
+      display: block;
+  }
   .header-wrapper header a svg {
       height: 50px;
   }
@@ -83,7 +88,11 @@ import SunIcon from '@/assets/sun.svg';
   }
   /* The icon takes the theme colour; aria-pressed picks the icon for the other theme. */
   .theme-toggle {
+      padding: 0;
       color: var(--font-color-bold);
+  }
+  .theme-toggle:focus-visible {
+      outline: 2px solid var(--focus-color);
   }
   .theme-toggle[aria-pressed="false"] .sun,
   .theme-toggle[aria-pressed="true"] .moon {
@@ -100,8 +109,6 @@ import SunIcon from '@/assets/sun.svg';
       gap: .5rem;
       background: none;
       border: none;
-      position: relative;
-      z-index: 9999;
   }
   .navigator-menu-opener span {
       display: block;

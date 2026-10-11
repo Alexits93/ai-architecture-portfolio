@@ -66,3 +66,11 @@ describe('BaseLayout (Astro)', () => {
     expect(meta(doc, 'article:published_time')).toBe('2026-01-02T00:00:00.000Z');
   });
 });
+
+// Header and menu share only the dialog ID through commandfor (#157).
+it('renders the commandfor target once and points every commandfor at it', async () => {
+  const doc = await render();
+  expect(doc.querySelectorAll('#site-menu')).toHaveLength(1);
+  const targets = [...doc.querySelectorAll('[commandfor]')].map((el) => el.getAttribute('commandfor'));
+  expect(targets).toEqual(['site-menu', 'site-menu']);
+});

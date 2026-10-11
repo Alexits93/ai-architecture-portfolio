@@ -11,7 +11,7 @@ const { menuItems = defaultMenuItems } = Astro.props;
 ---
 <dialog id="site-menu" aria-label="Site navigation">
     <div class="navigator-menu-overlay" aria-hidden="true"></div>
-    <button id="site-menu-close-btn" class="navigator-menu-opener" aria-label="Close menu">
+    <button class="navigator-menu-opener" commandfor="site-menu" command="close" aria-label="Close menu">
         <span></span>
         <span></span>
     </button>
@@ -25,25 +25,10 @@ const { menuItems = defaultMenuItems } = Astro.props;
 </dialog>
 
 <script>
-    const setupMenu = () => {
-        const openBtn = document.getElementById('site-menu-open-btn');
-        const closeBtn = document.getElementById('site-menu-close-btn');
-        const dialog = document.getElementById('site-menu');
-
-        if (!openBtn || !closeBtn || !(dialog instanceof HTMLDialogElement)) return;
-
-        openBtn.addEventListener('click', () => {
-            const rect = openBtn.getBoundingClientRect();
-            closeBtn.style.top = `${rect.top}px`;
-            closeBtn.style.left = `${rect.left}px`;
-            dialog.showModal();
-        });
-        closeBtn.addEventListener('click', () => dialog.close());
-        dialog.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => dialog.close());
-        });
-    };
-    setupMenu();
+    // No HTML or CSS closes a dialog when a link navigates. Close it before the page enters the back/forward
+    // cache, so Back restores it closed (https://developer.mozilla.org/en-US/docs/Web/API/Window/pagehide_event).
+    const menu = document.getElementById('site-menu');
+    if (menu instanceof HTMLDialogElement) addEventListener('pagehide', () => menu.close());
 </script>
 
 <style>
@@ -75,8 +60,10 @@ const { menuItems = defaultMenuItems } = Astro.props;
         dialog#site-menu[open] .navigator-menu-overlay { clip-path: circle(0 at var(--menu-origin)); }
     }
 
+    /* Over the header hamburger: header padding 1rem, 3rem button centred in the 50px header row. */
     .navigator-menu-opener {
         position: absolute; z-index: 3;
+        top: calc(1rem + (50px - 3rem) / 2); left: 1rem;
         display: flex; flex-direction: column; justify-content: center; cursor: pointer;
         padding: 0 .5rem; width: 3rem; height: 3rem; gap: .5rem; background: none; border: none;
         transition: gap 0.3s ease-in-out;
@@ -124,7 +111,7 @@ const { menuItems = defaultMenuItems } = Astro.props;
     dialog#site-menu[open] .navigator-menu-body li:nth-child(3) { transition-delay: 0.41s; }
 
     .navigator-menu-body ul li a { display: flex; color: var(--font-color); text-decoration: none; }
-    .navigator-menu-body ul li a:focus-visible { outline: 2px solid var(--focus-color); outline-offset: 4px; }
+    .navigator-menu-body ul li a:focus-visible { outline: 2px solid var(--focus-color); }
     .navigator-menu-body ul li a h2 {
         display: inline-block; margin: 0; font-size: 48px;
         line-height: 1.2; color: var(--font-color-bold);

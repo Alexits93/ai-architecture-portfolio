@@ -41,7 +41,7 @@ for (const [theme, icon] of [['light', 'moon'], ['dark', 'sun']]) {
       await page.evaluate(async () => {
         await Promise.all(document.getAnimations().map((animation) => animation.finished));
       });
-      const bar = await css(page.locator('#site-menu-close-btn span').first(), 'backgroundColor');
+      const bar = await css(page.getByRole('button', { name: 'Close menu' }).locator('span').first(), 'backgroundColor');
       expect(contrast(bar, await css(page.locator('.navigator-menu-overlay'), 'backgroundColor'))).toBeGreaterThanOrEqual(3);
     });
   });

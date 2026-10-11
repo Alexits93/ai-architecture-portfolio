@@ -5,6 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
 // on the host loopback (https://playwright.dev/docs/docker, tests/config/playwright-webkit-podman.spec.ts).
 const webkitInPodman = process.env.PW_WEBKIT_PODMAN === '1';
 const PLAYWRIGHT_VERSION = '1.64.0';
+const BFCACHE_SPEC = 'tests/pages/menu-bfcache.spec.ts';
 
 export default defineConfig({
   testDir: '.',
@@ -22,15 +23,29 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      testIgnore: BFCACHE_SPEC,
       use: { ...devices['Desktop Chrome'] },
+    },
+    // The back/forward cache needs the real Chromium of new headless mode (https://playwright.dev/docs/browsers)
+    // without Playwright's --disable-back-forward-cache default (https://playwright.dev/docs/api/class-browsertype).
+    {
+      name: 'chromium-bfcache',
+      testMatch: BFCACHE_SPEC,
+      use: {
+        ...devices['Desktop Chrome'],
+        channel: 'chromium',
+        launchOptions: { ignoreDefaultArgs: ['--disable-back-forward-cache'] },
+      },
     },
     // Trusted Types and the hash-based CSP must hold in every engine, not only Chromium.
     {
       name: 'firefox',
+      testIgnore: BFCACHE_SPEC,
       use: { ...devices['Desktop Firefox'] },
     },
     {
       name: 'webkit',
+      testIgnore: BFCACHE_SPEC,
       use: {
         ...devices['Desktop Safari'],
         connectOptions: webkitInPodman ? { wsEndpoint: 'ws://127.0.0.1:3000/', exposeNetwork: '<loopback>' } : undefined,
