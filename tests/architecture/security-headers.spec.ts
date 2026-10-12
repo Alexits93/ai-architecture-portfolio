@@ -9,8 +9,7 @@ import { describe, it, expect, assert } from 'vitest';
 const headers = fs.readFileSync(path.join(process.cwd(), 'public/_headers'), 'utf8');
 
 const block = (route: string): string => {
-  const escaped = route.replace(/[*/]/g, '\\$&');
-  const match = headers.match(new RegExp(`^${escaped}\\n((?:[ \\t]+.*\\n?)*)`, 'm'));
+  const match = headers.match(new RegExp(`^${RegExp.escape(route)}\\n((?:[ \\t]+.*\\n?)*)`, 'm'));
   assert.exists(match, `public/_headers has no ${route} block`);
   return match[1];
 };
@@ -27,6 +26,7 @@ const SITE_WIDE = [
   'Cross-Origin-Embedder-Policy: require-corp',
 ];
 
+const headerLine = (line: string): RegExp => new RegExp(`^\\s+${RegExp.escape(line)}$`, 'm');
 const lines = (text: string): string[] => text.split('\n').map((line) => line.trim()).filter(Boolean);
 const name = (line: string): string => line.slice(0, line.indexOf(':')).toLowerCase();
 
@@ -34,7 +34,12 @@ describe('public/_headers', () => {
   const site = block('*');
 
   it.each(SITE_WIDE)('sets "%s" site-wide', (line) => {
-    expect(site).toMatch(new RegExp(`^\\s+${line.replace(/[()*;]/g, '\\$&')}$`, 'm'));
+    expect(site).toMatch(headerLine(line));
+  });
+
+  it('matches a header line only as literal text', () => {
+    expect('  Max-Age: 1.5+\n').toMatch(headerLine('Max-Age: 1.5+'));
+    expect('  Max-Age: 1x55\n').not.toMatch(headerLine('Max-Age: 1.5+'));
   });
 
   it('sets nothing else site-wide', () => {
