@@ -5,9 +5,10 @@ import * as path from 'path';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { gate, makeRepo } from './sandbox-gate.fixture';
 
-// The repo is private on GitHub Free, so no branch protection exists: the owner's review is the only
-// server-side gate, and Claude never merges or pushes to master (#55). Bash rules are no security
-// boundary (https://code.claude.com/docs/en/permissions#bash-rule-limits), so the hooks repeat them.
+// On the server, ruleset 24675871 on master requires a PR, the 5 CI checks on an up-to-date branch and
+// linear history, and blocks force pushes and deletion (#172). Claude never merges or pushes to master
+// (#55): permissions.deny says so, and because Bash rules are no security boundary
+// (https://code.claude.com/docs/en/permissions#bash-rule-limits), the hooks repeat them.
 const settings: { permissions: { ask: string[]; deny: string[] } } = JSON.parse(
   fs.readFileSync(path.join(process.cwd(), '.claude/settings.json'), 'utf8'),
 );
