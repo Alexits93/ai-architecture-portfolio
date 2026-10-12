@@ -1,4 +1,5 @@
-// Fail-closed paging for the GraphQL answers that .claude/hooks/session-plan.mjs loads into the context.
+// Fail-closed paging for the GraphQL answers that .claude/hooks/session-plan.mjs loads into the context and that
+// the branch link check in .claude/hooks/pr-gate.mjs and .github/workflows/pr-lint.yml reads.
 // A connection paged with `first` reports hasNextPage, one paged with `last` reports hasPreviousPage
 // (https://docs.github.com/en/graphql/guides/using-pagination-in-the-graphql-api).
 

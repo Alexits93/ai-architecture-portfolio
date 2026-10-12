@@ -9,6 +9,10 @@ import { join, resolve } from 'node:path';
 // Loaded inside the try below: a static import that fails would exit 1, which does not block.
 /** @type {typeof import('../../.github/workflow-rules.mjs')} */
 let rules;
+/** @type {typeof import('../../.github/branch-links.mjs')} */
+let links;
+/** @type {typeof import('../../.github/graphql-pages.mjs')} */
+let pages;
 
 const projectDir = join(import.meta.dirname, '..', '..');
 
@@ -62,13 +66,46 @@ const checkLinkedIssues = (body, cwd) =>
     return issue === undefined ? [`Cannot check #${number}: ${result.stderr.trim()}`] : rules.findLinkedIssueViolations(number, issue);
   });
 
+// The PR's head: --head, else the current branch (https://cli.github.com/manual/gh_pr_create).
+// A fork head is <owner>:<branch>; a git ref name cannot contain a colon.
+const headBranch = (segment, cwd) => {
+  const head = flagValues(segment, ['--head', '-H']).at(-1);
+  if (head) return head.split(':').at(-1);
+  const result = spawnSync('git', ['branch', '--show-current'], { cwd, encoding: 'utf8' });
+  return result.status === 0 ? result.stdout.trim() : '';
+};
+
+const parseIssues = (stdout) => {
+  try {
+    return JSON.parse(stdout).data?.repository?.issues;
+  } catch {
+    return undefined;
+  }
+};
+
+// Same rule as CI pr-lint: the merge would close every issue linked to the head branch, so the body names each.
+const checkBranchLinks = (segment, body, cwd) => {
+  const branch = headBranch(segment, cwd);
+  if (!branch) return ['Cannot read the head branch. Check out the Task branch or pass --head <branch>.'];
+  const result = spawnSync(
+    'gh',
+    ['api', 'graphql', '-f', `query=${links.BRANCH_LINKS_QUERY}`, '-F', 'owner={owner}', '-F', 'repo={repo}'],
+    { cwd, encoding: 'utf8' },
+  );
+  if (result.error) return [`Cannot run gh to check the issues linked to ${branch}: ${result.error.message}`];
+  const issues = parseIssues(result.stdout);
+  if (!issues) return [`Cannot check the issues linked to ${branch}: ${result.stderr.trim()}`];
+  if (pages.truncatedConnections(issues).length > 0) return [`Cannot check the issues linked to ${branch}: more than one page.`];
+  return links.findUnclosedLinkViolations(rules.closedIssueNumbers(body), links.issuesLinkedToBranch(issues.nodes, branch));
+};
+
 const checkPr = (segment, cwd) => {
   const { body, error } = readBody(segment, cwd);
   const bodyViolations = error ? [error] : rules.findPrBodyViolations(body);
   return [
     ...lintTitle(flagValues(segment, ['--title', '-t']).at(-1)),
     ...bodyViolations,
-    ...(bodyViolations.length === 0 ? checkLinkedIssues(body, cwd) : []),
+    ...(bodyViolations.length === 0 ? [...checkLinkedIssues(body, cwd), ...checkBranchLinks(segment, body, cwd)] : []),
   ];
 };
 
@@ -124,6 +161,8 @@ const GATES = [
 
 try {
   rules = await import('../../.github/workflow-rules.mjs');
+  links = await import('../../.github/branch-links.mjs');
+  pages = await import('../../.github/graphql-pages.mjs');
   const input = JSON.parse(readFileSync(0, 'utf8'));
   const command = input.tool_input?.command ?? '';
   const cwd = input.cwd ?? process.cwd();

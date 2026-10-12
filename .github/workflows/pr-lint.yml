@@ -7,9 +7,11 @@ on:
   pull_request_target:
     types: [opened, edited, synchronize, reopened]
 
+# Read-only. pull-requests: read serves the PR's closingIssuesReferences in the branch link check.
 permissions:
   contents: read
   issues: read
+  pull-requests: read
 
 jobs:
   pr-lint:
@@ -59,4 +61,19 @@ jobs:
               const data = await github.graphql(rules.LINKED_ISSUE_QUERY, { ...context.repo, number }).catch(() => null);
               violations.push(...rules.findLinkedIssueViolations(number, data?.repository?.issue ?? null));
             }
+            if (violations.length > 0) core.setFailed(violations.join('\n'));
+
+      # GitHub closes every issue linked to the PR on merge, including the one its branch was created for (#185).
+      - name: Check issues the merge closes
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const rules = await import(`${process.env.GITHUB_WORKSPACE}/.github/workflow-rules.mjs`);
+            const links = await import(`${process.env.GITHUB_WORKSPACE}/.github/branch-links.mjs`);
+            const { truncatedConnections } = await import(`${process.env.GITHUB_WORKSPACE}/.github/graphql-pages.mjs`);
+            const { number, body } = context.payload.pull_request;
+            const data = await github.graphql(links.PR_CLOSING_QUERY, { ...context.repo, number });
+            const closing = data.repository.pullRequest.closingIssuesReferences;
+            if (truncatedConnections(closing).length > 0) core.setFailed(`PR #${number} links more issues than one page holds.`);
+            const violations = links.findUnclosedLinkViolations(rules.closedIssueNumbers(body ?? ''), closing.nodes.map((i) => i.number));
             if (violations.length > 0) core.setFailed(violations.join('\n'));
