@@ -30,7 +30,8 @@ src/
   widgets/    page sections (header, blog feed, ...)
   features/   user interactions (blog post filter)
   entities/   domain models (blog post)
-  shared/     config, styles, UI kit, SEO and OG helpers
+  shared/     config, UI kit, SEO and OG helpers
+  styles/     design tokens and global CSS (@layer reset, tokens, base)
   content/    blog posts (Markdown)
 e2e/          Playwright journeys
 tests/        page-level and architecture tests
