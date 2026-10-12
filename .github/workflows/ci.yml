@@ -14,13 +14,15 @@ concurrency:
 
 permissions:
   contents: read
-  checks: write
-  pull-requests: write
 
 jobs:
   quality-gate:
     name: Code Quality (Lint, Typecheck, Test)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write # dorny/test-reporter creates the check run
+      pull-requests: write # vitest-coverage-report-action comments on the PR
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
