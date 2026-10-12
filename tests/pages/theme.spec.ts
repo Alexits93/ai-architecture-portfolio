@@ -138,14 +138,15 @@ test.describe('light-dark() tokens follow the manual toggle', () => {
     const light = await background(page);
     expect(light).not.toBe(dark);
 
+    // Polled: with motion allowed the switch runs inside a view transition's update callback (#210).
     await toggle(page, false).click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    expect(await colorScheme(page)).toBe('dark');
-    expect(await background(page)).toBe(dark);
+    await expect.poll(() => colorScheme(page)).toBe('dark');
+    await expect.poll(() => background(page)).toBe(dark);
 
     await toggle(page, true).click();
-    expect(await colorScheme(page)).toBe('light');
-    expect(await background(page)).toBe(light);
+    await expect.poll(() => colorScheme(page)).toBe('light');
+    await expect.poll(() => background(page)).toBe(light);
   });
 
   test('shows the dark colours of a stored dark theme on a light OS', async ({ page, browser }) => {

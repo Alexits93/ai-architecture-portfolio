@@ -1,20 +1,16 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import { animationsSettled } from './animations';
 
 // Owner 2026-10-12 (#206): interactive elements react to the pointer. Hover styles apply only where the primary
 // input can hover (https://developer.mozilla.org/en-US/docs/Web/CSS/@media/hover), and focus rings only on
 // :focus-visible, so a mouse click draws none (https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible).
-const settled = (page: Page) =>
-  page.evaluate(async () => {
-    await Promise.allSettled(document.getAnimations().map((animation) => animation.finished));
-  });
-
 test('a hovered blog card lifts onto a changed surface', async ({ page }) => {
   await page.goto('/blog/');
   const card = page.locator('.blog-post-thumbnail').first();
   const surface = card.locator('article');
   const before = await surface.evaluate((el) => getComputedStyle(el).backgroundColor);
   await card.hover();
-  await settled(page);
+  await animationsSettled(page);
   const after = await surface.evaluate((el) => {
     const style = getComputedStyle(el);
     return { background: style.backgroundColor, translate: style.translate };
@@ -27,7 +23,7 @@ test('the hovered theme toggle shows a tint behind the icon', async ({ page }) =
   await page.goto('/');
   const toggle = page.locator('.theme-toggle');
   await toggle.hover();
-  await settled(page);
+  await animationsSettled(page);
   expect(await toggle.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)');
 });
 
@@ -58,7 +54,7 @@ for (const theme of ['dark', 'light']) {
     const button = page.getByRole('link', { name: 'See all articles' });
     const before = await button.evaluate((el) => getComputedStyle(el).backgroundColor);
     await button.hover();
-    await settled(page);
+    await animationsSettled(page);
     expect(await button.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe(before);
   });
 }

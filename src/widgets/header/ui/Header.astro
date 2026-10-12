@@ -43,7 +43,34 @@ import SunIcon from '@/assets/sun.svg';
       }
     };
 
-    themeBtn.addEventListener('click', () => toggleTheme(systemTheme()));
+    // The new theme spreads as a circle from the toggle: a same-document view transition whose new root snapshot
+    // is clipped to a growing circle (developer.chrome.com, same-document view transitions). Without the API, or
+    // under reduced motion, the theme switches at once (#210).
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const root = document.documentElement;
+    themeBtn.addEventListener('click', () => {
+      const toggle = () => toggleTheme(systemTheme());
+      if (!('startViewTransition' in document) || reduceMotion.matches) {
+        toggle();
+        return;
+      }
+      const box = themeBtn.getBoundingClientRect();
+      const x = box.left + box.width / 2;
+      const y = box.top + box.height / 2;
+      const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+      root.dataset.themeReveal = '';
+      const transition = document.startViewTransition(toggle);
+      transition.ready
+        .then(() => {
+          root.animate(
+            { clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+            { duration: 600, easing: 'cubic-bezier(0.76, 0, 0.24, 1)', pseudoElement: '::view-transition-new(root)' },
+          );
+        })
+        .catch(() => undefined);
+      const done = () => delete root.dataset.themeReveal;
+      void transition.finished.then(done, done);
+    });
     onThemeChange(render);
     render();
     darkScheme.addEventListener('change', render);
@@ -51,6 +78,14 @@ import SunIcon from '@/assets/sun.svg';
 </script>
 
 <style>
+  /* During the theme reveal the old theme stays under the new one, which the script clips to a growing circle;
+     the default root cross-fade would show both themes blended. Page navigations keep the cross-fade. */
+  :global(html[data-theme-reveal]::view-transition-old(root)),
+  :global(html[data-theme-reveal]::view-transition-new(root)) {
+      animation: none;
+      mix-blend-mode: normal;
+  }
+
   .header-wrapper {
       position: sticky;
       top: 0;
