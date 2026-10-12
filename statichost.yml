@@ -1,0 +1,4 @@
+# statichost.eu build (https://www.statichost.eu/docs/build-config/). Node 25+ ships no Corepack.
+image: node:26
+command: npm install -g corepack && corepack enable && pnpm install --frozen-lockfile && pnpm build
+public: dist
