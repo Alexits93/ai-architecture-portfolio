@@ -46,15 +46,15 @@ const links = [
 
 <style>
 	.blog-feed-container {
-		max-width: var(--page-max-width, 1200px);
+		max-width: var(--page-max-width);
 		margin: 0 auto;
-		padding: 2rem 1rem;
+		padding: var(--space-8) var(--space-4);
 	}
 
 	h1 {
 		text-align: center;
-		margin-bottom: 2rem;
-		font-size: 2.5rem;
+		margin-bottom: var(--space-8);
+		font-size: var(--font-size-3xl);
 		color: var(--font-color);
 	}
 
@@ -62,7 +62,7 @@ const links = [
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		gap: .5rem 1.5rem;
+		gap: var(--space-2) var(--space-6);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -75,13 +75,13 @@ const links = [
 	.pagination {
 		display: flex;
 		justify-content: center;
-		gap: 1.5rem;
-		margin-top: 2rem;
+		gap: var(--space-6);
+		margin-top: var(--space-8);
 	}
 
 	nav a[aria-current='page'] {
 		color: var(--font-color-bold);
-		font-weight: 700;
+		font-weight: var(--font-weight-bold);
 		text-decoration: none;
 	}
 
@@ -89,18 +89,18 @@ const links = [
 	   can widen the track past a small viewport in any engine. minmax(0, 1fr) lets it shrink. */
 	.blog-grid {
 		display: grid;
-		gap: 2rem;
+		gap: var(--space-8);
 		grid-template-columns: minmax(0, 1fr);
-		margin-top: 2rem;
+		margin-top: var(--space-8);
 	}
 
-	@media (min-width: 768px) {
+	@media (min-width: 48rem) {
 		.blog-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 
-	@media (min-width: 1024px) {
+	@media (min-width: 64rem) {
 		.blog-grid {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}

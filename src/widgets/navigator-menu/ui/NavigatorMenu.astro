@@ -33,7 +33,7 @@ const { menuItems = defaultMenuItems } = Astro.props;
 
 <style>
     dialog#site-menu {
-        --menu-origin: 2.5rem 2.6rem;
+        --menu-origin: var(--space-10) 2.6rem;
         --menu-ease: cubic-bezier(0.76, 0, 0.24, 1);
         --menu-duration: 0.6s;
         margin: 0; padding: 0;
@@ -60,27 +60,27 @@ const { menuItems = defaultMenuItems } = Astro.props;
         dialog#site-menu[open] .navigator-menu-overlay { clip-path: circle(0 at var(--menu-origin)); }
     }
 
-    /* Over the header hamburger: header padding 1rem, 3rem button centred in the 50px header row. */
+    /* Over the header hamburger: header padding, then the button centred in the header icon row. */
     .navigator-menu-opener {
         position: absolute; z-index: 3;
-        top: calc(1rem + (50px - 3rem) / 2); left: 1rem;
+        top: calc(var(--space-4) + (var(--size-icon-lg) - var(--space-12)) / 2); left: var(--space-4);
         display: flex; flex-direction: column; justify-content: center; cursor: pointer;
-        padding: 0 .5rem; width: 3rem; height: 3rem; gap: .5rem; background: none; border: none;
+        padding: 0 var(--space-2); width: var(--space-12); height: var(--space-12); gap: var(--space-2); background: none; border: none;
         transition: gap 0.3s ease-in-out;
     }
     .navigator-menu-opener span {
         display: block; transition: all 0.3s ease-in-out;
-        height: .2rem; width: 2rem; background-color: var(--font-color-bold);
-        border-radius: 2px; transform: translateY(0) rotate(0deg);
+        height: .2rem; width: var(--space-8); background-color: var(--font-color-bold);
+        border-radius: var(--radius-xs); transform: translateY(0) rotate(0deg);
     }
-    .navigator-menu-opener:focus-visible { outline: 2px solid var(--focus-color); }
+    .navigator-menu-opener:focus-visible { outline: var(--outline-width-focus) solid var(--focus-color); }
 
     dialog#site-menu[open] .navigator-menu-opener { gap: 0; }
     dialog#site-menu[open] .navigator-menu-opener span:first-of-type { transform: translateY(0.1rem) rotate(45deg); }
     dialog#site-menu[open] .navigator-menu-opener span:last-of-type { transform: translateY(-0.1rem) rotate(-45deg); }
 
     @starting-style {
-        dialog#site-menu[open] .navigator-menu-opener { gap: .5rem; }
+        dialog#site-menu[open] .navigator-menu-opener { gap: var(--space-2); }
         dialog#site-menu[open] .navigator-menu-opener span:first-of-type { transform: translateY(0) rotate(0deg); }
         dialog#site-menu[open] .navigator-menu-opener span:last-of-type { transform: translateY(0) rotate(0deg); }
     }
@@ -91,10 +91,10 @@ const { menuItems = defaultMenuItems } = Astro.props;
     }
     .navigator-menu-body ul {
         display: flex; flex-direction: column; align-items: center;
-        gap: 3rem; list-style: none; padding: 0; margin: 0;
+        gap: var(--space-12); list-style: none; padding: 0; margin: 0;
     }
     .navigator-menu-body li {
-        opacity: 0; translate: 0 1.5rem;
+        opacity: 0; translate: 0 var(--space-6);
         transition: opacity 0.25s ease, translate 0.25s ease;
     }
 
@@ -105,15 +105,15 @@ const { menuItems = defaultMenuItems } = Astro.props;
     }
     
     @starting-style {
-        dialog#site-menu[open] .navigator-menu-body li { opacity: 0; translate: 0 1.5rem; }
+        dialog#site-menu[open] .navigator-menu-body li { opacity: 0; translate: 0 var(--space-6); }
     }
     dialog#site-menu[open] .navigator-menu-body li:nth-child(2) { transition-delay: 0.33s; }
     dialog#site-menu[open] .navigator-menu-body li:nth-child(3) { transition-delay: 0.41s; }
 
     .navigator-menu-body ul li a { display: flex; color: var(--font-color); text-decoration: none; }
-    .navigator-menu-body ul li a:focus-visible { outline: 2px solid var(--focus-color); }
+    .navigator-menu-body ul li a:focus-visible { outline: var(--outline-width-focus) solid var(--focus-color); }
     .navigator-menu-body ul li a h2 {
-        display: inline-block; margin: 0; font-size: 48px;
+        display: inline-block; margin: 0; font-size: var(--font-size-menu);
         line-height: 1.2; color: var(--font-color-bold);
     }
 </style>

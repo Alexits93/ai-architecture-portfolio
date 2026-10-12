@@ -29,3 +29,74 @@ const { post } = Astro.props;
     </div>
   </article>
 </a>
+
+<style>
+  .blog-post-thumbnail {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .blog-post-thumbnail article {
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    background-color: var(--thumbnail-bg-color);
+  }
+
+  .blog-post-thumbnail article figure {
+    margin: 0;
+    margin-bottom: var(--space-4);
+  }
+
+  .blog-post-thumbnail article figure img {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .blog-post-thumbnail article figure figcaption {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+  }
+
+  .blog-post-thumbnail article .thumbnail-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2 {
+    color: var(--font-color-bold);
+    margin: 0 0 var(--space-4);
+    letter-spacing: var(--letter-spacing-tight);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-md);
+  }
+
+  .blog-post-thumbnail article .thumbnail-body .thumbnail-body-top p {
+    margin: 0;
+  }
+
+  .blog-post-thumbnail article .thumbnail-body .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  @media (min-width: 48rem) {
+    .blog-post-thumbnail article .thumbnail-body {
+      min-height: var(--size-thumbnail-body);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2 {
+      font-size: var(--font-size-xl);
+      line-height: var(--line-height-lg);
+    }
+  }
+</style>

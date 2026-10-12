@@ -23,19 +23,19 @@ const { headings = [] } = Astro.props;
 <style>
 	.article-navigator {
 		display: none;
-		padding: 0 2rem;
-		max-width: 205px;
+		padding: 0 var(--space-8);
+		max-width: var(--size-toc);
 		height: fit-content;
-		font-size: 1rem;
+		font-size: var(--font-size-base);
 		position: relative;
 	}
 
 	.article-navigator::before {
 		position: absolute;
-		left: 1rem;
+		left: var(--space-4);
 		top: 0;
 		height: 100%;
-		width: 1px;
+		width: var(--border-width-hairline);
 		background: var(--font-color-bold);
 		content: "";
 	}
@@ -55,20 +55,20 @@ const { headings = [] } = Astro.props;
 	a:hover::before {
 		position: absolute;
 		left: -1.22rem;
-		top: calc(50% - .25rem);
-		width: .5rem;
-		height: .5rem;
-		border-radius: 50%;
+		top: calc(50% - var(--space-1));
+		width: var(--space-2);
+		height: var(--space-2);
+		border-radius: var(--radius-full);
 		background-color: var(--theme-primary);
 		content: "";
 	}
 
-	.h3-link { padding-left: 1rem; }
-	.h4-link { padding-left: 2rem; }
-	.h5-link { padding-left: 3rem; }
-	.h6-link { padding-left: 4rem; }
+	.h3-link { padding-left: var(--space-4); }
+	.h4-link { padding-left: var(--space-8); }
+	.h5-link { padding-left: var(--space-12); }
+	.h6-link { padding-left: var(--space-16); }
 
-	@media (min-width: 1024px) {
+	@media (min-width: 64rem) {
 		.article-navigator {
 			display: block;
 		}

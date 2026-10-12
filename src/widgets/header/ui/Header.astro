@@ -61,25 +61,25 @@ import SunIcon from '@/assets/sun.svg';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem;
+      padding: var(--space-4);
       background-color: var(--body-background);
       color: var(--font-color);
   }
   .header-wrapper header a:active,
   .header-wrapper header a:focus,
   .header-wrapper header a:focus-visible {
-      outline: 2px solid var(--focus-color);
+      outline: var(--outline-width-focus) solid var(--focus-color);
   }
   .header-wrapper header a {
       text-decoration: none;
       color: var(--font-color);
   }
-  /* Block icons keep the header 1rem + 50px + 1rem tall in every engine; the menu close button relies on it. */
+  /* Block icons keep the header --space-4 + --size-icon-lg + --space-4 tall in every engine; the menu close button relies on it. */
   .header-wrapper header svg {
       display: block;
   }
   .header-wrapper header a svg {
-      height: 50px;
+      height: var(--size-icon-lg);
   }
   .header-wrapper header button {
       background: none;
@@ -92,7 +92,7 @@ import SunIcon from '@/assets/sun.svg';
       color: var(--font-color-bold);
   }
   .theme-toggle:focus-visible {
-      outline: 2px solid var(--focus-color);
+      outline: var(--outline-width-focus) solid var(--focus-color);
   }
   .theme-toggle[aria-pressed="false"] .sun,
   .theme-toggle[aria-pressed="true"] .moon {
@@ -103,10 +103,10 @@ import SunIcon from '@/assets/sun.svg';
       flex-direction: column;
       justify-content: center;
       cursor: pointer;
-      padding: 0 .5rem;
-      width: 3rem;
-      height: 3rem;
-      gap: .5rem;
+      padding: 0 var(--space-2);
+      width: var(--space-12);
+      height: var(--space-12);
+      gap: var(--space-2);
       background: none;
       border: none;
   }
@@ -114,12 +114,12 @@ import SunIcon from '@/assets/sun.svg';
       display: block;
       transition: all .3s ease-in-out;
       height: .2rem;
-      width: 2rem;
+      width: var(--space-8);
       background-color: var(--font-color-bold);
-      border-radius: 2px;
+      border-radius: var(--radius-xs);
   }
   .navigator-menu-opener:focus-visible {
-      outline: 2px solid var(--focus-color);
+      outline: var(--outline-width-focus) solid var(--focus-color);
   }
   .sr-only {
       position: absolute;
