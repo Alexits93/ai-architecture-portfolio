@@ -206,9 +206,9 @@ describe('Learned agent rules no hook can see (reply text, calls sharing a turn)
     expect(read('CLAUDE.md')).toMatch(/^- Size a fix from the code it would change, read in this session, before you recommend doing or deferring it\..*$/m);
   });
 
-  // 2026-10-10: gh ran in the Write's turn twice; once a stale $TMPDIR/handover.md went to #94.
-  it('keeps the publish-after-write rule in CLAUDE.md', () => {
-    expect(read('CLAUDE.md')).toMatch(/^- Publish \(`gh \.\.\. --body-file`, `git push`\) only in a later turn than the write that produces its content.* A later tool call counts: do not stop for the owner in between, the permission prompt is the approval\..*$/m);
+  // 2026-10-10: gh ran in the Write's turn twice; once a stale $TMPDIR/handover.md went to #94. 2026-10-12 (#204): the agent asked before opening the PR.
+  it('keeps the publish-after-write and open-the-PR rules in CLAUDE.md', () => {
+    expect(read('CLAUDE.md')).toMatch(/^- Publish \(`gh \.\.\. --body-file`, `git push`\) only in a later turn than the write that produces its content.* A later tool call counts: do not stop for the owner in between, the permission prompt is the approval\. Open the PR as soon as `pnpm check`, the live check and `pnpm test:e2e` pass, without asking; the owner reviews the open PR\..*$/m);
   });
 });
 
