@@ -3,7 +3,7 @@
    set is written once (https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark).
    theme.js and the header toggle set data-theme; without it the OS preference applies.
 
-   Breakpoints: 48rem and 64rem. They are not custom properties, because var() does not work in media
+   Breakpoints: 48rem, 64rem and 80rem. They are not custom properties, because var() does not work in media
    conditions and @custom-media ships in no browser
    (https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@custom-media). */
 
@@ -27,6 +27,7 @@
     --space-1: .25rem;
     --space-2: .5rem;
     --space-4: 1rem;
+    --space-5: 1.25rem;
     --space-6: 1.5rem;
     --space-8: 2rem;
     --space-10: 2.5rem;
@@ -60,6 +61,21 @@
     --radius-md: .5rem;
     --radius-lg: 10px;
     --radius-full: 50%;
+
+    --border-width-hairline: 1px;
+    --outline-width-focus: 2px;
+
+    /* Fixed sizes, kept in px so the layout matches the pre-token build. */
+    --size-icon-sm: 25px;
+    --size-icon-md: 40px;
+    --size-icon-lg: 50px;
+    --size-toc: 205px;
+    --size-sidebar: 230px;
+    --size-thumbnail-body: 250px;
+    --size-card-max: 400px;
+    --size-prose: 800px;
+    --page-max-width: 1200px;
+    --font-size-menu: 48px;
 
     --shadow-card: drop-shadow(0 10px 8px rgba(0, 0, 0, .04)) drop-shadow(0 4px 3px rgba(0, 0, 0, .1));
     --shadow-card-edge: inset 0 1px 0 0 rgba(148, 163, 184, .1);

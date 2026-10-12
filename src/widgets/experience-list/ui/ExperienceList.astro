@@ -87,3 +87,18 @@ import { SkillTag } from '@/shared/ui/skill-tag';
 </div>
 
 
+<style>
+    .experience-list-container { display: flex; flex-direction: column; gap: var(--space-4); }
+    .experience-list-container .experience-item {
+        padding: var(--space-4); border-radius: var(--radius-lg);
+        filter: var(--shadow-card);
+        box-shadow: var(--shadow-card-edge);
+        background-color: var(--theme-secondary); color: var(--font-color);
+    }
+    .experience-list-container .experience-item .position p strong { color: var(--font-color-bold); }
+    .experience-list-container .experience-item .position p strong:hover { background-color: var(--theme-primary); color: var(--focus-color); }
+
+    .experience-list-container .position h3 { margin: 0 0 var(--space-4); color: var(--font-color-bold); }
+    .experience-list-container .position .tags { display: flex; gap: var(--space-4); flex-wrap: wrap; margin: var(--space-4) 0; }
+    .experience-list-container h2 { margin: 0 0 var(--space-4); color: var(--font-color-bold); }
+</style>

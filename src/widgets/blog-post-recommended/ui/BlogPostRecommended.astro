@@ -29,7 +29,7 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
   #blog-section {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--space-4);
     width: 100%;
   }
 
@@ -42,17 +42,17 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
   #blog-section .wrapper-top h1 {
     color: var(--font-color-bold);
     margin: 0;
-    letter-spacing: -.025em;
-    font-weight: 700;
-    font-size: 2.25rem;
-    line-height: 2.5rem;
+    letter-spacing: var(--letter-spacing-tight);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-2xl);
+    line-height: var(--line-height-xl);
   }
 
   #blog-section .wrapper {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(0, 400px));
-    gap: 1rem;
-    margin-bottom: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(0, var(--size-card-max)));
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
     justify-content: center;
   }
 
@@ -63,9 +63,9 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
   }
 
   #blog-section .wrapper-bottom a {
-    padding: .5rem;
+    padding: var(--space-2);
     background-color: var(--theme-secondary);
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     color: var(--font-color);
     text-decoration: none;
     transition: background-color .3s ease-in-out;
@@ -76,7 +76,7 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
   }
 
 
-  @media (min-width: 768px) {
+  @media (min-width: 48rem) {
     #blog-section .wrapper {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -86,7 +86,7 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
     }
   }
 
-  @media (min-width: 1280px) {
+  @media (min-width: 80rem) {
     #blog-section .wrapper {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }

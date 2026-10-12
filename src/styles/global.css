@@ -1,5 +1,5 @@
 /* Layer order: reset, then tokens, then base element styles. Unlayered styles beat every layer, so
-   Astro's scoped component styles and the component rules below still win
+   Astro's scoped component styles still win
    (https://developer.mozilla.org/en-US/docs/Web/CSS/@layer). */
 @layer reset, tokens, base;
 @import './tokens.css' layer(tokens);
@@ -54,7 +54,7 @@
         overflow: hidden;
     }
 
-    @media (min-width: 1024px) {
+    @media (min-width: 64rem) {
         body { font-size: var(--font-size-lg); }
     }
 
@@ -65,11 +65,11 @@
         padding: var(--space-12) var(--space-6);
     }
 
-    @media (min-width: 768px) {
+    @media (min-width: 48rem) {
         main { min-height: calc(100vh - 186px); max-width: min(100%, 1280px); padding: var(--space-12) var(--space-8); margin: 0 auto; }
     }
 
-    @media (min-width: 1024px) {
+    @media (min-width: 64rem) {
         main { padding: var(--space-24); margin: 0 auto; }
     }
 
@@ -81,103 +81,4 @@
        outline-offset (MDN outline), so this reaches every component's focus outline. */
     :focus-visible { outline-offset: 8px; }
     ::selection { background-color: var(--theme-primary); }
-}
-
-/* Component and page rules, unlayered: #198 moves them into their components and pages. */
-section#page-wrapper { display: flex; flex-direction: column; gap: 3rem; }
-section#page-wrapper > .experience-list-container { align-self: flex-end; }
-@media (min-width: 768px) {
-  section#page-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
-  section#page-wrapper > .experience-list-container { align-self: auto; }
-  section#page-wrapper section#about-me { position: sticky; top: 6rem; }
-}
-.experience-list-container { display: flex; flex-direction: column; gap: 1rem; }
-.experience-list-container .experience-item {
-    padding: 1rem; border-radius: 10px;
-    filter: var(--shadow-card);
-    box-shadow: var(--shadow-card-edge);
-    background-color: var(--theme-secondary); color: var(--font-color);
-}
-.experience-list-container .experience-item .position p strong { color: var(--font-color-bold); }
-.experience-list-container .experience-item .position p strong:hover { background-color: var(--theme-primary); color: var(--focus-color); }
-
-.experience-list-container .position h3 { margin: 0 0 1rem; color: var(--font-color-bold); }
-.experience-list-container .position .tags { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0; }
-.experience-list-container h2 { margin: 0 0 1rem; color: var(--font-color-bold); }
-
-.home-wrapper { display: flex; flex-direction: column; gap: 3rem; }
-.home-top-wrapper { display: flex; flex-direction: column; gap: 3rem; }
-.home-bottom-wrapper { display: flex; justify-content: center; }
-@media (min-width: 768px) { .home-top-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; } }
-.page-container { padding: 2rem; max-width: 800px; margin: 0 auto; }
-
-
-/* BlogPostThumbnail styles extracted from entity */
-.blog-post-thumbnail {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-}
-
-.blog-post-thumbnail article {
-  padding: 1rem;
-  border-radius: 10px;
-  background-color: var(--thumbnail-bg-color);
-}
-
-.blog-post-thumbnail article figure {
-  margin: 0;
-  margin-bottom: 1rem;
-}
-
-.blog-post-thumbnail article figure img {
-  width: 100%;
-  border-radius: 10px;
-  object-fit: cover;
-  object-position: center;
-}
-
-.blog-post-thumbnail article figure figcaption {
-  height: 0;
-  width: 0;
-  visibility: hidden;
-}
-
-.blog-post-thumbnail article .thumbnail-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2 {
-  color: var(--font-color-bold);
-  margin: 0 0 1rem;
-  letter-spacing: -.025em;
-  font-weight: 500;
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-}
-
-.blog-post-thumbnail article .thumbnail-body .thumbnail-body-top p {
-  margin: 0;
-}
-
-.blog-post-thumbnail article .thumbnail-body .tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-@media (min-width: 768px) {
-  .blog-post-thumbnail article .thumbnail-body {
-    min-height: 250px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2 {
-    font-size: 1.5rem;
-    line-height: 2rem;
-  }
 }

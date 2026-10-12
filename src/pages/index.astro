@@ -37,3 +37,10 @@ const aboutMeData = {
 		</div>
 	</main>
 </BaseLayout>
+
+<style>
+	.home-wrapper { display: flex; flex-direction: column; gap: var(--space-12); }
+	.home-top-wrapper { display: flex; flex-direction: column; gap: var(--space-12); }
+	.home-bottom-wrapper { display: flex; justify-content: center; }
+	@media (min-width: 48rem) { .home-top-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); } }
+</style>

@@ -18,8 +18,8 @@ const featuredPost = selectFeaturedPost(await getCollection('blog'));
   
   #blog-featured .wrapper {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(0, 400px));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(0, var(--size-card-max)));
+    gap: var(--space-4);
     justify-content: center;
   }
   
@@ -27,14 +27,14 @@ const featuredPost = selectFeaturedPost(await getCollection('blog'));
     color: var(--font-color-bold);
     text-align: center;
     margin: 0;
-    letter-spacing: -.025em;
-    font-weight: 700;
-    font-size: 2.25rem;
-    line-height: 2.5rem;
+    letter-spacing: var(--letter-spacing-tight);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-2xl);
+    line-height: var(--line-height-xl);
   }
   
 
-  @media (min-width: 768px) {
+  @media (min-width: 48rem) {
     #blog-featured .wrapper {
       justify-content: flex-start;
     }
@@ -44,7 +44,7 @@ const featuredPost = selectFeaturedPost(await getCollection('blog'));
     }
   }
   
-  @media (min-width: 1024px) {
+  @media (min-width: 64rem) {
     #blog-featured .wrapper {
       justify-content: flex-end;
     }
