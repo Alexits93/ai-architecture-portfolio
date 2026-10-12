@@ -65,8 +65,6 @@ import SunIcon from '@/assets/sun.svg';
       background-color: var(--body-background);
       color: var(--font-color);
   }
-  .header-wrapper header a:active,
-  .header-wrapper header a:focus,
   .header-wrapper header a:focus-visible {
       outline: var(--outline-width-focus) solid var(--focus-color);
   }
@@ -84,9 +82,22 @@ import SunIcon from '@/assets/sun.svg';
   .header-wrapper header button {
       background: none;
       border: none;
+      border-radius: var(--radius-full);
       cursor: pointer;
+      transition: background-color .2s ease-out, scale .1s ease-out;
   }
-  /* The icon takes the theme colour; aria-pressed picks the icon for the other theme. */
+  /* Only where the primary input can hover, so a tap on a touch screen leaves no stuck tint (MDN @media hover). */
+  @media (hover: hover) {
+      .header-wrapper header button:hover {
+          background-color: var(--state-hover);
+      }
+  }
+  .header-wrapper header button:active {
+      scale: .92;
+  }
+  /* The icon takes the theme colour and shows the other theme. It follows data-theme (set by the head script) and the
+     OS scheme, both known at first paint; aria-pressed comes from the deferred module script, so the icon flipped on
+     every navigation when it followed that (#206). */
   .theme-toggle {
       padding: 0;
       color: var(--font-color-bold);
@@ -94,9 +105,21 @@ import SunIcon from '@/assets/sun.svg';
   .theme-toggle:focus-visible {
       outline: var(--outline-width-focus) solid var(--focus-color);
   }
-  .theme-toggle[aria-pressed="false"] .sun,
-  .theme-toggle[aria-pressed="true"] .moon {
+  /* Anchored on .header-wrapper so these outrank the display: block on every header svg above. */
+  .header-wrapper .theme-toggle .sun,
+  :global([data-theme="dark"]) .header-wrapper .theme-toggle .moon {
       display: none;
+  }
+  :global([data-theme="dark"]) .header-wrapper .theme-toggle .sun {
+      display: block;
+  }
+  @media (prefers-color-scheme: dark) {
+      :global(:root:not([data-theme="light"])) .header-wrapper .theme-toggle .sun {
+          display: block;
+      }
+      :global(:root:not([data-theme="light"])) .header-wrapper .theme-toggle .moon {
+          display: none;
+      }
   }
   .navigator-menu-opener {
       display: flex;

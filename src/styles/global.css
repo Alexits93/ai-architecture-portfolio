@@ -50,7 +50,9 @@
         -webkit-font-smoothing: antialiased;
     }
 
-    html:has(dialog[open]) {
+    /* The lock sits on body, not html: html keeps overflow visible, so body's value reaches the viewport and body never
+       becomes a scroll container that would unstick the header (CSS Overflow 3, overflow viewport propagation). */
+    body:has(dialog[open]) {
         overflow: hidden;
     }
 
@@ -76,7 +78,8 @@
     h1 { margin: 0; letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-bold); font-size: var(--font-size-2xl); line-height: var(--line-height-xl); }
     h2 { margin: 0; letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-medium); font-size: var(--font-size-md); line-height: var(--line-height-md); }
     h1, h2, h3, h4, h5, h6 { scroll-margin-top: 100px; }
-    a:active, a:focus, a:focus-visible { outline: 2px solid var(--focus-color); }
+    /* :focus-visible only: the browser shows the ring for keyboard focus, not for a mouse click (MDN :focus-visible). */
+    a:focus-visible { outline: 2px solid var(--focus-color); }
     /* A gap between the focus outline and what it outlines keeps the text readable. The outline shorthand does not set
        outline-offset (MDN outline), so this reaches every component's focus outline. */
     :focus-visible { outline-offset: 8px; }

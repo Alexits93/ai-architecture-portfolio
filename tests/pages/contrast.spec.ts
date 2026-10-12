@@ -39,10 +39,22 @@ for (const [theme, icon] of [['light', 'moon'], ['dark', 'sun']]) {
       await expect(page.getByRole('button', { name: 'Close menu' })).toBeVisible();
       // The bars transition their colour on open; a mid-transition read could pass falsely.
       await page.evaluate(async () => {
-        await Promise.all(document.getAnimations().map((animation) => animation.finished));
+        await Promise.allSettled(document.getAnimations().map((animation) => animation.finished));
       });
       const bar = await css(page.getByRole('button', { name: 'Close menu' }).locator('span').first(), 'backgroundColor');
       expect(contrast(bar, await css(page.locator('.navigator-menu-overlay'), 'backgroundColor'))).toBeGreaterThanOrEqual(3);
     });
+  });
+}
+
+// Owner 2026-10-12 (#206): a card sits on its own surface. In dark the surface is lighter than the page,
+// as Material's dark scheme raises containers above the surface tone; in light it is darker.
+for (const [theme, raised] of [['dark', true], ['light', false]] as const) {
+  test(`blog cards in the ${theme} theme sit on a ${raised ? 'lighter' : 'darker'} surface than the page`, async ({ page }) => {
+    await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
+    await page.goto('/blog/');
+    const card = luminance(await css(page.locator('.blog-post-thumbnail article').first(), 'backgroundColor'));
+    const body = luminance(await css(page.locator('body'), 'backgroundColor'));
+    expect(card > body).toBe(raised);
   });
 }

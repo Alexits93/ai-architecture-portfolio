@@ -34,6 +34,37 @@ test('the close button closes the menu and focus returns to the hamburger', asyn
   await expect(opener(page)).toBeFocused();
 });
 
+// Firefox transitions neither display nor overlay, so the close animation used to run in Chromium only (#206).
+test('closing animates the overlay before the menu hides', async ({ page }) => {
+  await openWithKeyboard(page);
+  await page.evaluate(async () => {
+    await Promise.allSettled(document.getAnimations().map((animation) => animation.finished));
+  });
+  await closer(page).click();
+  const overlay = page.locator('.navigator-menu-overlay');
+  expect(await overlay.evaluate((el) => el.getAnimations().length)).toBeGreaterThan(0);
+  await expect(menu(page)).toBeHidden();
+  await expect(opener(page)).toBeEnabled();
+  await opener(page).click();
+  await expect(menu(page)).toBeVisible();
+});
+
+// Owner 2026-10-12 (#206): the scroll lock on html stopped body's overflow from reaching the viewport, so body
+// became a scroll container and the sticky header jumped out of view while the menu opened
+// (https://drafts.csswg.org/css-overflow-3/#overflow-propagation).
+test('opening the menu on a scrolled page keeps the header and the scroll position', async ({ page }) => {
+  // Instant: html scrolls smoothly, and a scroll still animating would move scrollY after the read.
+  await page.evaluate(() => window.scrollTo({ top: 800, behavior: 'instant' }));
+  const scrollY = await page.evaluate(() => window.scrollY);
+  expect(scrollY).toBeGreaterThan(0);
+  await opener(page).click();
+  await expect(menu(page)).toBeVisible();
+  const header = await page.locator('.header-wrapper').boundingBox();
+  assert(header !== null);
+  expect(header.y).toBe(0);
+  expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
+});
+
 test('a click outside the menu items keeps the menu open', async ({ page }) => {
   await opener(page).click();
   await expect(menu(page)).toBeVisible();
