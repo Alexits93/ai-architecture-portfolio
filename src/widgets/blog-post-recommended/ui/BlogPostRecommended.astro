@@ -68,11 +68,18 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
     border-radius: var(--radius-lg);
     color: var(--font-color);
     text-decoration: none;
-    transition: background-color .3s ease-in-out;
+    transition: background-color .2s ease-out, scale .1s ease-out;
   }
 
-  #blog-section .wrapper-bottom a:hover {
-    background-color: var(--thumbnail-bg-color);
+  /* The card hover surface: --thumbnail-bg-color equals --theme-secondary in dark, so it showed no change (#206). */
+  @media (hover: hover) {
+    #blog-section .wrapper-bottom a:hover {
+      background-color: var(--thumbnail-bg-color-hover);
+    }
+  }
+
+  #blog-section .wrapper-bottom a:active {
+    scale: .96;
   }
 
 

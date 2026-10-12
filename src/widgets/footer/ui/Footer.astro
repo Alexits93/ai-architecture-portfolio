@@ -35,5 +35,14 @@ const currentYear = new Date().getFullYear();
 
   .app-footer a {
     color: var(--font-color);
+    text-decoration: underline transparent;
+    text-underline-offset: var(--space-1);
+    transition: text-decoration-color .2s ease-out;
+  }
+
+  @media (hover: hover) {
+    .app-footer a:hover {
+      text-decoration-color: currentColor;
+    }
   }
 </style>

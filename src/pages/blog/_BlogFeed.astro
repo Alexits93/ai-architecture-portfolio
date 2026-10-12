@@ -70,6 +70,16 @@ const links = [
 
 	nav a {
 		color: var(--font-color);
+		text-decoration: underline transparent;
+		text-decoration-thickness: var(--outline-width-focus);
+		text-underline-offset: var(--space-1);
+		transition: text-decoration-color .2s ease-out;
+	}
+
+	@media (hover: hover) {
+		nav a:hover {
+			text-decoration-color: currentColor;
+		}
 	}
 
 	.pagination {
@@ -82,7 +92,7 @@ const links = [
 	nav a[aria-current='page'] {
 		color: var(--font-color-bold);
 		font-weight: var(--font-weight-bold);
-		text-decoration: none;
+		text-decoration-color: currentColor;
 	}
 
 	/* A bare 1fr has an automatic minimum (minmax(auto, 1fr), CSS Grid 2 fr unit), so a wide child

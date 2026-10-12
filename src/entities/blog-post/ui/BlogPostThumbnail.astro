@@ -31,16 +31,42 @@ const { post } = Astro.props;
 </a>
 
 <style>
+  /* The radius lets the keyboard focus outline follow the card's corners. */
   .blog-post-thumbnail {
     display: block;
     text-decoration: none;
     color: inherit;
+    border-radius: var(--radius-lg);
   }
 
   .blog-post-thumbnail article {
     padding: var(--space-4);
     border-radius: var(--radius-lg);
     background-color: var(--thumbnail-bg-color);
+    transition: translate .2s ease-out, background-color .2s ease-out;
+  }
+
+  .blog-post-thumbnail h2 {
+    text-decoration: underline transparent;
+    text-underline-offset: var(--space-1);
+    transition: text-decoration-color .2s ease-out;
+  }
+
+  /* Hover lifts the card one step off the page; only where the primary input can hover (MDN @media hover). */
+  @media (hover: hover) {
+    .blog-post-thumbnail:hover article {
+      translate: 0 calc(-1 * var(--space-1));
+      background-color: var(--thumbnail-bg-color-hover);
+    }
+
+    .blog-post-thumbnail:hover h2 {
+      text-decoration-color: currentColor;
+    }
+  }
+
+  .blog-post-thumbnail:active article {
+    translate: 0 0;
+    transition-duration: .05s;
   }
 
   .blog-post-thumbnail article figure {
