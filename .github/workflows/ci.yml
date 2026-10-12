@@ -1,14 +1,13 @@
 name: CI/CD Pipeline
 
+# No push trigger: ruleset 24675871 requires up-to-date branches, so a push run on master would repeat the PR run.
 on:
-  push:
-    branches: ["master", "main"]
   pull_request:
     branches: ["master", "main"]
   merge_group:
     branches: ["master", "main"]
 
-# Cancel in-progress runs for the same branch to save free-tier minutes
+# Cancel a superseded run for the same branch
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -85,6 +84,7 @@ jobs:
   e2e-gate:
     name: E2E (Playwright, all engines)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [quality-gate, security-gate]
     # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idpermissions
     permissions:

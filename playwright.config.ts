@@ -16,6 +16,8 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
+  // https://playwright.dev/docs/ci: "Always set a global timeout in CI." The suite takes about 3 minutes there.
+  globalTimeout: process.env.CI ? 15 * 60 * 1000 : undefined,
   // https://playwright.dev/docs/test-reporters#github-actions-annotations
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'html',
   use: {
