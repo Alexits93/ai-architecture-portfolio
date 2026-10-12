@@ -45,6 +45,13 @@ describe('after-merge skill', () => {
     expect(meta.description).toMatch(/Not for performing a merge/);
   });
 
+  // #179: since #177 a release is a tag and a GitHub Release, with no commit to pull after the merge.
+  it('reports the release tag instead of waiting for a release commit', () => {
+    const skill = fs.readFileSync(path.join(SKILL_DIR, 'SKILL.md'), 'utf8');
+    expect(skill).not.toMatch(/chore\(release\)/);
+    expect(skill).toMatch(/gh release view/);
+  });
+
   it('is a skills-directory plugin that claude plugin eval can target', () => {
     const manifest: { name: string } = JSON.parse(fs.readFileSync(path.join(SKILL_DIR, '.claude-plugin/plugin.json'), 'utf8'));
     expect(manifest.name).toBe('after-merge');
