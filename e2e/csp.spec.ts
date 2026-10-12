@@ -68,7 +68,7 @@ for (const route of ROUTES) {
     await expect(page.locator('iframe')).toHaveCount(0);
     // No page submits a form, so the privacy policy can say so and form-action stays 'none'.
     await expect(page.locator('form')).toHaveCount(0);
-    // No stored theme: nothing sets data-theme, so prefers-color-scheme in global.css decides.
+    // No stored theme: nothing sets data-theme, so color-scheme: light dark in tokens.css follows the OS.
     await expect(page.locator('html')).not.toHaveAttribute('data-theme');
     expect(await page.evaluate(() => window.cspViolations)).toEqual([]);
   });

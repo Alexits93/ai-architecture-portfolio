@@ -11,7 +11,7 @@ const tabTo = async (page: Page, pressed: boolean) => {
   await expect(toggle(page, pressed)).toBeFocused();
 };
 
-// The page colours, read from the token that global.css switches per theme.
+// The page colour, a light-dark() token in tokens.css that follows the used color-scheme.
 const background = (page: Page) => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 const stored = (page: Page) => page.evaluate(() => localStorage.getItem('theme'));
 
@@ -118,6 +118,45 @@ test.describe('Theme after a change in another tab', () => {
     await page.evaluate(() => dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })));
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     await expect(toggle(page, true)).toBeVisible();
+  });
+});
+
+// MDN says light-dark() resolves against the used color-scheme but does not document a data-attribute
+// toggle (https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark), so this proves it (#197).
+test.describe('light-dark() tokens follow the manual toggle', () => {
+  test.use({ colorScheme: 'light' });
+
+  const colorScheme = (page: Page) => page.evaluate(() => getComputedStyle(document.documentElement).colorScheme);
+
+  test('switches color-scheme and the colours without a reload', async ({ page, browser }) => {
+    const darkOs = await browser.newPage({ colorScheme: 'dark' });
+    await darkOs.goto('/');
+    const dark = await background(darkOs);
+    await darkOs.close();
+
+    await page.goto('/');
+    const light = await background(page);
+    expect(light).not.toBe(dark);
+
+    await toggle(page, false).click();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    expect(await colorScheme(page)).toBe('dark');
+    expect(await background(page)).toBe(dark);
+
+    await toggle(page, true).click();
+    expect(await colorScheme(page)).toBe('light');
+    expect(await background(page)).toBe(light);
+  });
+
+  test('shows the dark colours of a stored dark theme on a light OS', async ({ page, browser }) => {
+    const darkOs = await browser.newPage({ colorScheme: 'dark' });
+    await darkOs.goto('/');
+    const dark = await background(darkOs);
+    await darkOs.close();
+
+    await page.addInitScript(() => localStorage.setItem('theme', 'dark'));
+    await page.goto('/');
+    expect(await background(page)).toBe(dark);
   });
 });
 
