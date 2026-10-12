@@ -37,10 +37,12 @@ describe('BlogPostRecommended Widget (Astro)', () => {
     expect(hrefs(doc)).toEqual(['/blog/second/']);
   });
 
-  it('links "See more" to the blog index route', async () => {
+  // Lighthouse link-text: the text names the destination (https://developer.chrome.com/docs/lighthouse/seo/link-text).
+  it('links "See all articles" to the blog index route', async () => {
     const doc = await render();
     const el = doc.querySelector('.wrapper-bottom a');
     assert.exists(el);
     expect(el.getAttribute('href')).toBe('/blog/');
+    expect(el.textContent).toBe('See all articles');
   });
 });
