@@ -128,6 +128,20 @@ export default [
     }
   },
   {
+    // The card-to-post morph, also a classic inline <head> script injected by astro.config.mjs (#210).
+    files: ["src/lib/post-morph.js"],
+    languageOptions: {
+      sourceType: "script",
+      globals: {
+        addEventListener: "readonly",
+        document: "readonly",
+        matchMedia: "readonly",
+        navigation: "readonly",
+        URL: "readonly"
+      }
+    }
+  },
+  {
     // Claude Code hook scripts run directly in Node.
     files: [".claude/hooks/**/*.mjs"],
     languageOptions: {
