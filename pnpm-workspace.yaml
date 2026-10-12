@@ -15,3 +15,6 @@ trustPolicy: no-downgrade
 trustPolicyExclude:
   - chokidar@4.0.3
 trustPolicyExcludePrune: true
+audit:
+  ignore:
+    - GHSA-vfj7-8cjw-p6xm # braces <=3.0.3 has no patched version; reached only through semantic-release (#173)

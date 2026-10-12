@@ -65,7 +65,7 @@ jobs:
         uses: ./.github/actions/setup-pnpm-env
 
       - name: pnpm Audit (Supply Chain Security)
-        run: pnpm audit --prod --audit-level=high
+        run: pnpm audit --audit-level=high
 
   build-gate:
     name: Build Verification

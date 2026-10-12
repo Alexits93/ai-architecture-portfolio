@@ -67,6 +67,24 @@ describe('Supply chain settings', () => {
   });
 });
 
+// Dev dependencies run with a write token in release.yml, so the audit covers them too (#173).
+// A reviewed list instead of --ignore-unfixable, which also writes ids to pnpm-workspace.yaml and
+// passes every future unpatched advisory (https://pnpm.io/cli/audit, pnpm 12.10.1).
+describe('Dependency audit', () => {
+  it('ignores only listed GHSA ids, each with a comment naming the package and why', () => {
+    const ignored: string[] = JSON.parse(pnpmConfig('audit.ignore', '[]'));
+    for (const id of ignored) {
+      expect(id).toMatch(/^GHSA(?:-[23456789cfghjmpqrvwx]{4}){3}$/);
+      expect(workspace).toMatch(new RegExp(`^ {4}- ${RegExp.escape(id)} # \\S+ \\S.*$`, 'm'));
+    }
+  });
+
+  it.each(['.github/workflows/ci.yml', '.husky/pre-push'])('%s audits every dependency at level high', (file) => {
+    const audits = [...read(file).matchAll(/pnpm audit[^&\n]*/g)].map((match) => match[0].trim());
+    expect(audits).toEqual(['pnpm audit --audit-level=high']);
+  });
+});
+
 // Drift is reported weekly by outdated.yml and never blocks a PR.
 // https://pnpm.io/cli/outdated (pnpm 12.10.1), https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
 const actionFiles = [
