@@ -13,7 +13,7 @@ Copy this checklist into your reply and tick it as you go:
 ```
 After merge:
 - [ ] 1. Merged PR identified
-- [ ] 2. master synced with origin
+- [ ] 2. master synced with origin, release reported
 - [ ] 3. Merged local branches deleted, others kept
 - [ ] 4. Closed issues confirmed, parent Story criteria ticked
 - [ ] 5. Stale references found and fixed or tracked
@@ -35,7 +35,7 @@ Confirm `state` is `MERGED` with `gh pr view <N> --json state,mergeCommit,headRe
 
 1. `git status --porcelain`: if the tree is dirty, save `git diff > "$TMPDIR/after-merge-wip.patch"` and stop to ask the user. Never `git stash`, never discard changes.
 2. `git checkout master`, then `git pull --ff-only`, then `git fetch --prune origin`.
-3. A release workflow may push a `chore(release)` commit after the merge. Check `gh run list --branch master --limit 3`; if a run is in progress, wait for it and pull again.
+3. Report the release. The Release workflow creates a tag and a GitHub Release and pushes no commit, so there is nothing to pull after it. Find its run for the squash commit with `gh run list --workflow Release --branch master --limit 3`; if it is in progress, wait with `gh run watch <run-id>`. A `feat`, `fix` or `perf` commit, or a breaking change, releases: run `git fetch --tags` and report the tag and its URL from `gh release view <tag>`. Any other type releases nothing; report "no release". A failed run is reported with its error.
 
 ## 3. Delete merged local branches
 
