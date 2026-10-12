@@ -11,6 +11,7 @@ import {
   findLinkedIssueViolations,
   findPrBodyViolations,
 } from '../../.github/workflow-rules.mjs';
+import { findUnclosedLinkViolations, issuesLinkedToBranch } from '../../.github/branch-links.mjs';
 
 const read = (file: string): string => fs.readFileSync(path.join(process.cwd(), file), 'utf8');
 
@@ -110,6 +111,34 @@ describe('linked issue rules', () => {
     ['more labels than one page holds', { ...openTask, labels: { pageInfo: { hasNextPage: true }, nodes: [{ name: 'task' }] } }],
   ])('reject %s', (_label, issue) => {
     expect(findLinkedIssueViolations(46, issue).length).toBeGreaterThan(0);
+  });
+});
+
+// GitHub closes on merge every issue linked to the PR, including the issue its branch was created for
+// (#185: PR #182 said "Closes #181" from a branch linked to #72 and closed both).
+describe('branch link rules', () => {
+  const linked = (number: number, branches: string[]) => ({
+    number,
+    linkedBranches: { nodes: branches.map((name) => ({ ref: { name } })) },
+  });
+  const issues = [linked(72, ['ci/x']), linked(181, ['ci/y']), linked(44, []), { number: 9, linkedBranches: { nodes: [{ ref: null }] } }];
+
+  it('find the open issues linked to a branch', () => {
+    expect(issuesLinkedToBranch(issues, 'ci/x')).toEqual([72]);
+    expect(issuesLinkedToBranch(issues, 'ci/z')).toEqual([]);
+  });
+
+  it('reject a linked issue the body does not close, and name it', () => {
+    const violations = findUnclosedLinkViolations([181], [72]);
+    expect(violations).toHaveLength(1);
+    expect(violations[0]).toContain('#72');
+  });
+
+  it.each([
+    ['a linked issue the body closes', [181], [181]],
+    ['no linked issue', [44], []],
+  ])('accept %s', (_label, closed, linkedNumbers) => {
+    expect(findUnclosedLinkViolations(closed, linkedNumbers)).toEqual([]);
   });
 });
 

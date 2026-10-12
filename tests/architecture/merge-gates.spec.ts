@@ -148,7 +148,7 @@ describe('pr-lint workflow', () => {
   });
 
   it('keeps a read-only token and no secrets', () => {
-    expect(workflow).toMatch(/^permissions:\n {2}contents: read\n {2}issues: read\n\n/m);
+    expect(workflow).toMatch(/^permissions:\n {2}contents: read\n {2}issues: read\n {2}pull-requests: read\n\n/m);
     expect(workflow).not.toMatch(/: write|secrets\./);
   });
 
