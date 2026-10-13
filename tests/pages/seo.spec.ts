@@ -55,6 +55,14 @@ test('robots.txt points to the sitemap index', async ({ request }) => {
   );
 });
 
+// Home describes the site with the same role and pitch as the heroes (#223, owner decision 2026-10-13).
+test('the home description is the site-wide role and pitch', async ({ page }) => {
+  const description = 'Frontend Architect. I design front-end architecture, build harnesses for LLM coding agents, and coach engineers.';
+  await page.goto('/');
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', description);
+  await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', description);
+});
+
 // Keyword matching that splits "frontend" and "front-end" still finds these pages (#125).
 for (const route of ['/', '/cv/']) {
   test(`"front-end" in the text of ${route}`, async ({ page }) => {
