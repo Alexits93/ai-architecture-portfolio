@@ -64,16 +64,16 @@ const BREAKPOINTS = ['48rem', '64rem', '80rem'];
 const ALLOWED_EVERYWHERE = ['100%'];
 // Owner decision 2026-10-12: one-off geometry stays a literal, pinned to the file that needs it.
 const ALLOWED_IN_FILE: Record<string, { values: string[]; reason: string }> = {
-  'src/shared/ui/article-navigator/ArticleNavigator.astro': {
+  'src/pages/blog/_ArticleNavigator.astro': {
     values: ['5px', '-1.22rem', '50%'],
     reason: 'bullet placement on the 1px guide line',
   },
-  'src/widgets/header/ui/Header.astro': { values: ['.2rem'], reason: 'hamburger bar thickness' },
-  'src/widgets/navigator-menu/ui/NavigatorMenu.astro': {
+  'src/components/Header.astro': { values: ['.2rem'], reason: 'hamburger bar thickness' },
+  'src/components/NavigatorMenu.astro': {
     values: ['2.6rem', '.2rem', '0.1rem', '-0.1rem', '100vw', '100vh', '150vmax'],
     reason: 'full-viewport dialog, reveal origin over the hamburger, bar thickness and cross offset',
   },
-  'src/widgets/blog-post-reader/ui/BlogPostReader.astro': {
+  'src/pages/blog/_BlogPostReader.astro': {
     values: ['.125rem', '.875em'],
     reason: 'inline code padding and size relative to the surrounding text',
   },
@@ -131,7 +131,7 @@ describe('raw-literal gate', () => {
   });
 
   it('allows a per-file value only in its file', () => {
-    const file = 'src/widgets/header/ui/Header.astro';
+    const file = 'src/components/Header.astro';
     expect(findViolations(file, '.bar { height: .2rem; }')).toEqual([]);
     expect(findViolations('x.astro', '.bar { height: .2rem; }')).toEqual(['x.astro: .2rem']);
   });

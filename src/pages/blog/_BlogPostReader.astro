@@ -1,0 +1,218 @@
+---
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import ArticleNavigator from './_ArticleNavigator.astro';
+import SkillTag from '@/components/SkillTag.astro';
+import { getCategoryPath } from '@/lib/permalink';
+import Logo from '@/assets/logo.svg';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+const monthNames = [
+  "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+  "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+];
+const d = new Date(post.data.publishDate);
+const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+---
+
+<div class="blog-post-layout">
+  <div class="blog-post-reader">
+    <header class="wrapper-top" id="post-hero">
+      <div class="wrapper-top-heading">
+        <h1 data-morph="title">{post.data.title}</h1>
+        <h2>{post.data.subtitle}</h2>
+      </div>
+      <div class="wrapper-top-post-data">
+        <div class="author-info">
+          <Logo width="63.54" height="40" />
+          <p>Patrik Alexits</p>
+        </div>
+        <p class="publish-date">{formattedDate}</p>
+      </div>
+
+      <figure>
+        <picture>
+          <img src="/assets/images/placeholder.webp"
+               data-morph="image"
+               alt={post.data.title}
+               width="728"
+               height="364"
+               loading="eager"
+               fetchpriority="high" />
+        </picture>
+        <figcaption class="sr-only">{post.data.title}</figcaption>
+      </figure>
+    </header>
+
+    <article class="prose">
+      <Content />
+    </article>
+
+    <p class="category">
+      <a href={getCategoryPath(post.data.category)}><SkillTag skill={post.data.category} /></a>
+    </p>
+  </div>
+
+  <aside class="navigator-sidebar">
+    <ArticleNavigator headings={headings} />
+  </aside>
+</div>
+
+
+<style>
+  .blog-post-layout {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .blog-post-reader {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .navigator-sidebar {
+    display: none;
+  }
+
+  .wrapper-top-heading h1 {
+    color: var(--font-color-bold);
+    margin: 0 0 var(--space-4);
+    letter-spacing: var(--letter-spacing-tight);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-2xl);
+    line-height: var(--line-height-xl);
+  }
+
+  .wrapper-top-heading h2 {
+    margin: 0 0 var(--space-4);
+  }
+
+  .wrapper-top-post-data {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4) 0;
+    margin-bottom: var(--space-4);
+    border-top: var(--border-width-hairline) solid var(--font-color);
+    border-bottom: var(--border-width-hairline) solid var(--font-color);
+  }
+
+  .author-info {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  .author-info svg {
+    height: var(--size-icon-md);
+  }
+
+  figure {
+    margin: 0 0 var(--space-4);
+  }
+
+  figure img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .category {
+    margin: var(--space-12) 0;
+  }
+
+  /* global.css removes link underlines; without one the category reads as a plain tag. The tag is
+     inline-block, which a parent's text-decoration does not reach (CSS Text Decoration 4, section 2). */
+  .category a :global(.skill-tag) {
+    text-decoration: underline;
+  }
+
+  .prose {
+    line-height: 1.6;
+    margin-bottom: var(--space-8);
+  }
+
+  /* Prism token classes from markdown.syntaxHighlight: 'prism'. Markdown output carries no scope attribute, hence :global(). */
+  .prose :global(pre) {
+    overflow-x: auto;
+    margin: 0 0 var(--space-4);
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    background-color: var(--theme-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+  }
+
+  .prose :global(code) {
+    font-family: var(--font-family-mono);
+  }
+
+  .prose :global(:not(pre) > code) {
+    padding: .125rem var(--space-1);
+    border-radius: var(--radius-sm);
+    background-color: var(--theme-secondary);
+    font-size: .875em;
+  }
+
+  .prose :global(:is(.token.comment, .token.prolog, .token.doctype, .token.cdata)) {
+    color: var(--code-comment);
+    font-style: italic;
+  }
+
+  .prose :global(:is(.token.keyword, .token.atrule, .token.important, .token.selector, .token.tag)) {
+    color: var(--code-keyword);
+  }
+
+  .prose :global(:is(.token.string, .token.char, .token.attr-value, .token.regex, .token.url, .token.inserted)) {
+    color: var(--code-string);
+  }
+
+  .prose :global(:is(.token.number, .token.boolean, .token.constant, .token.symbol, .token.deleted)) {
+    color: var(--code-number);
+  }
+
+  .prose :global(:is(.token.function, .token.class-name, .token.builtin, .token.attr-name, .token.property)) {
+    color: var(--code-function);
+  }
+
+  @media (min-width: 64rem) {
+    .blog-post-layout {
+      display: grid;
+      grid-template-columns: 1fr var(--size-sidebar);
+      gap: var(--space-12);
+      width: 100%;
+      margin: 0;
+    }
+
+    .navigator-sidebar {
+      display: block;
+      position: sticky;
+      top: var(--space-24);
+      height: max-content;
+    }
+  }
+</style>

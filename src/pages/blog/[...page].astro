@@ -1,7 +1,7 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
-import { sortByNewest } from '@/entities/blog-post';
+import { sortByNewest } from '@/lib/posts';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import BlogFeed from './_BlogFeed.astro';
 

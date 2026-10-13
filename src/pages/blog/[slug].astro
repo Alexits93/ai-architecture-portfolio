@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import BlogPostLayout from '@/layouts/BlogPostLayout.astro';
-import { BlogPostRecommended } from '@/widgets/blog-post-recommended';
-import BlogPostReader from '@/widgets/blog-post-reader/ui/BlogPostReader.astro';
+import BlogPostRecommended from '@/components/BlogPostRecommended.astro';
+import BlogPostReader from './_BlogPostReader.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');

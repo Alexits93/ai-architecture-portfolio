@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
-import { SITE } from '@/shared/config';
-import { generateOgImage } from '@/shared/lib/og/generate-og-image';
+import { SITE } from '@/consts';
+import { generateOgImage } from '@/lib/og-image';
 
 export const GET = (async () => {
   const pngBuffer = await generateOgImage(SITE.title, SITE.description);

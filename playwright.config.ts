@@ -5,13 +5,13 @@ import { defineConfig, devices } from '@playwright/test';
 // on the host loopback (https://playwright.dev/docs/docker, tests/config/playwright-webkit-podman.spec.ts).
 const webkitInPodman = process.env.PW_WEBKIT_PODMAN === '1';
 const PLAYWRIGHT_VERSION = '1.64.0';
-const BFCACHE_SPEC = 'tests/pages/menu-bfcache.spec.ts';
+const BFCACHE_SPEC = 'e2e/menu-bfcache.spec.ts';
 // Live-site specs run only through playwright.staging.config.ts (pnpm test:e2e:staging).
 const STAGING_SPECS = 'e2e/staging/**';
 
 export default defineConfig({
   testDir: '.',
-  testMatch: ['e2e/**/*.spec.ts', 'tests/pages/**/*.spec.ts'],
+  testMatch: ['e2e/**/*.spec.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

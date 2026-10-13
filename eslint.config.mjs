@@ -92,7 +92,7 @@ export default [
   {
     // XSS: raw HTML injection is banned. SeoHead's JSON-LD (serializeJsonLd) is the single exception.
     files: ["**/*.astro"],
-    ignores: ["src/shared/ui/seo-head/SeoHead.astro"],
+    ignores: ["src/components/SeoHead.astro"],
     rules: {
       "astro/no-set-html-directive": "error"
     }

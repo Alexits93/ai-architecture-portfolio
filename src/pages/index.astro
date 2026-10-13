@@ -1,9 +1,9 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { SITE } from '@/shared/config';
-import { AboutMe } from '@/widgets/about-me';
-import { BlogPostFeatured } from '@/widgets/blog-post-featured';
-import { BlogPostRecommended } from '@/widgets/blog-post-recommended';
+import { SITE } from '@/consts';
+import AboutMe from '@/components/AboutMe.astro';
+import BlogPostFeatured from './_BlogPostFeatured.astro';
+import BlogPostRecommended from '@/components/BlogPostRecommended.astro';
 import Now from './_Now.astro';
 
 const aboutMeData = {

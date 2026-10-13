@@ -1,9 +1,9 @@
 ---
 import type { ComponentProps } from 'astro/types';
-import { Footer } from '@/widgets/footer';
-import { Header } from '@/widgets/header';
-import { NavigatorMenu } from '@/widgets/navigator-menu';
-import { SeoHead } from '@/shared/ui/seo-head';
+import Footer from '@/components/Footer.astro';
+import Header from '@/components/Header.astro';
+import NavigatorMenu from '@/components/NavigatorMenu.astro';
+import SeoHead from '@/components/SeoHead.astro';
 import '@/styles/global.css';
 
 type Props = ComponentProps<typeof SeoHead>;
