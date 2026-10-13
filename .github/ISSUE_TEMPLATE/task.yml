@@ -1,22 +1,21 @@
 name: Task
-description: Define a specific technical or actionable task.
+description: One change that ships as one PR.
 title: "[Task] "
 labels: ["task"]
 body:
-  - type: markdown
-    attributes:
-      value: "Set the parent Story as a native sub-issue link (Relationships in the sidebar, or `gh issue create --parent N`). CI pr-lint fails a PR whose Task has no parent."
   - type: textarea
     id: description
     attributes:
       label: Description
-      description: "The spec: requirements, a mermaid flowchart TD of the DOM and state flow where it helps."
+      description: "What changes and why. Add a mermaid diagram only where a flow is hard to describe in words."
     validations:
       required: true
   - type: textarea
-    id: requirements
+    id: done
     attributes:
-      label: Requirements / Constraints
-      description: "The devspec: behavioral matrix (input, state, expected output), Security (XSS surface), Performance (LCP/CLS/INP), import boundaries (ADR 002), and the gate tests."
+      label: Done when
+      description: "A checklist of observable outcomes, each one a test or a live check."
+      placeholder: |
+        - [ ] ...
     validations:
       required: true

@@ -1,59 +1,43 @@
 # pa-tech.dev
 
-Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statichost.eu: vanilla CSS, Markdown content collections, Satori OG images, Vitest, Playwright. Structure follows Astro's conventions (`docs/adrs/002-astro-conventions.md`), import boundaries enforced by ESLint.
-
-Plan: the open GitHub issues (Epic > Story > Task as native sub-issues, order as blocked-by links). `.claude/hooks/session-plan.mjs` loads the tree into context at session start, plus the open Task linked to the current branch and its newest handover (for an unlinked branch: the newest handover among the issues its open PR closes). "continue" means: resume that Task from that handover. The repo has no plan files. If the hook prints `PLAN UNAVAILABLE`, stop and tell the user.
-
-## Base rules
-1. You run inside VS Code. Use its tools to check and improve your work: the Problems panel through `mcp__ide__getDiagnostics` (CLI) or `mcp__claude-vscode__getDiagnostics` (chat panel), and the installed extensions (`code --list-extensions --show-versions`, unsandboxed). If the `ide` server is not connected, tell the user to run `/ide` or reload the window.
-2. Auto memory is off (`autoMemoryEnabled: false`). Repository history and knowledge live only in git history (`git log -S`, `git show`) and GitHub issues and PRs (`gh issue view`, `gh pr view`). Never work from memory, training data or assumption: before starting a task, read the relevant history, issues, code and official docs, and say what you verified.
-3. Live check before every "done": `pnpm build`, run the site (`pnpm preview`, or headed Playwright so the owner can watch), use the change in a real browser, read the screenshots, and report what you saw. Passing tests alone are not done.
-4. Use the whole host before you call something uncheckable or hand it to the owner: Linux (KDE Wayland, AT-SPI, Orca), VS Code (Problems panel, Playwright, Vitest and Firefox debugger extensions) and Podman (containers for browsers and services the host lacks). Say which of the three you used.
-5. Report a subagent or skill result only from its task notification. Until it arrives, say it is still running and do not ask the owner to decide on it.
+Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statichost.eu: vanilla CSS, Markdown and YAML content collections, Satori OG image, Vitest, Playwright. Structure follows Astro's conventions (`docs/adrs/002-astro-conventions.md`); path-scoped rules in `.claude/rules/` load when you touch matching files.
 
 ## Commands
-- `pnpm check`: lint + `astro check` + unit tests with coverage. Run it before every commit and show its result as evidence.
-- `pnpm exec vitest run <path>` for one test file while iterating (no coverage, so per-file thresholds do not fail). `pnpm test:e2e` needs `pnpm build` first.
+- `pnpm check`: lint, `astro check`, unit tests with coverage. Run it before every commit.
+- `pnpm exec vitest run <path>` for one test file while iterating.
+- `pnpm build`, then `pnpm test:e2e`. WebKit runs in Podman: `pnpm test:e2e:webkit`.
 - `pnpm astro sync` after editing `src/content.config.ts`.
-- pnpm only. `npm`, `npx` and `yarn` are denied in `.claude/settings.json`.
+- pnpm only; `npm`, `npx` and `yarn` are denied.
+
+## Working rules
+- Read the code, the git history (`git log -S`) and the official docs of the installed version before you change or recommend something, and cite the doc URL in the commit. Auto memory is off; knowledge lives in git, issues and PRs.
+- Use the stack's native features as their docs describe. If none fits, ask before building something custom. A new dependency needs the owner's approval.
+- No `any`, no `unknown`, no `as` casts (ESLint enforces it). Keep changes minimal: no refactors or defensive code beyond the task, except removing what the change makes obsolete (see Removing).
+- Done means seen: `pnpm build`, run the site (`pnpm preview` or Playwright), look at the screenshots, and report what you saw.
+- Add a lint rule, hook or test as a gate only for a mistake that recurred and is costly, and retire an obsolete gate in the same change. Content truth (CV text, posts) is checked by the owner, not by gates.
+
+## Removing
+Code, config, tests, docs, rules and dependencies are a cost to keep, not an asset. Remove anything that is demonstrably obsolete:
+- Nothing uses it: no import, caller, link or reference (`git grep`), and the build and tests pass without it.
+- It duplicates something that already does the job; keep the native or official one.
+- Its reason is gone: the bug, decision, feature or dependency it served no longer exists.
+- It only restates config or tests the tooling around the site instead of the site's behavior.
+- An instruction Claude follows without it: ask "would removing this cause a mistake?" If not, cut it.
+
+Before removing, find why it was added (`git log -S`, the PR or issue) and who uses it. If you can't tell why it exists, ask instead of guessing. When you change an area, remove what the change makes obsolete in the same PR. Ask the owner before removing visible content, a security control, or anything an ADR records.
 
 ## Workflow
-1. Spec and devspec in the Task issue body (format in `.claude/rules/docs.md`), never as repo files. Code and tests are the truth once it ships.
-2. Failing test, then implementation until `pnpm check` passes.
-3. Open the issue before the branch: Epic > Story > Task, from `.github/ISSUE_TEMPLATE`, created with `gh issue create --parent <N>` so the parent is a native sub-issue link. Encode order with `gh issue edit <N> --add-blocked-by <M>`. One branch per Task (GitHub flow, squash merge only), created and pushed with `gh issue develop <N> --base <branch> --name <branch> --checkout` so GitHub links it to the Task. Conventional Commits (commitlint enforced).
-4. PR body follows `.github/PULL_REQUEST_TEMPLATE.md`, passed with `--body-file`. `Closes #N` references the Story or Task issue, never the PR. The PR title is the squash commit and must pass commitlint. Under "Unverified Risks" rate every open gap (screen readers, Safari, small viewports) in the table `| Gap | Risk | Why | Tracked in |` as Low, Medium or High, because passing tests do not prove UX. Medium and High block the PR: close the gap or reduce it to Low first. Chat reports state gaps the same way. `.claude/hooks/pr-gate.mjs` and CI `pr-lint` enforce this with `.github/workflow-rules.mjs`, including that each closed issue is an open Story or Task with a native parent, and with `.github/branch-links.mjs` that the body closes every issue linked to the PR or its branch (GitHub closes those on merge).
-5. After the owner merges, the `after-merge` skill does the reconciliation: git sync and branch cleanup, issue and Story updates, stale references, handover. Change the skill only with a `claude plugin eval .claude/skills/after-merge` run in the PR.
+1. One GitHub Task issue per change (`.github/ISSUE_TEMPLATE/task.yml`). Read it with `gh issue view <N>`.
+2. Branch with `gh issue develop <N> --base master --name <type>/<N>-<slug> --checkout`.
+3. Failing test first, then the code, until `pnpm check` passes. Conventional Commits.
+4. Open the PR once `pnpm check`, the e2e run and the live check pass, with `.github/PULL_REQUEST_TEMPLATE.md`, `Closes #N` and a Conventional Commits title (it becomes the squash commit). The owner reviews and merges; then run the `after-merge` skill.
 
-Path-scoped rules in `.claude/rules/` load automatically when you touch matching files.
+## Gotchas
+- Commit by path: `git commit -- <paths>`. `git stash` is denied.
+- `CLAUDE.md`, `.claude/`, `.github/`, `.husky/` and the root configs are read-only to sandboxed shell commands; edit them with the Edit or Write tool.
+- `gh issue`, `gh pr`, `gh run` and `git push` have auth only as a standalone call outside the sandbox.
+- Vitest has no content store: mock `astro:content` in specs and check real entries in Playwright on the built site. A running `astro dev` keeps its own store; restart it after a collection or branch change.
+- Write temporary files in `$TMPDIR`; it is shared with other projects, so delete only your own files.
 
-## Git and sandbox
-- Commit part of the tree by path: `git commit -- <paths>`. `git stash` is denied, because the sandbox mounts gate configs read-only and a stash cannot restore them.
-- Before a command that rewrites the worktree or index, or publishes: check which hooks it triggers (lint-staged stashes) and which paths are protected, and save `git diff > "$TMPDIR/wip.patch"` first.
-- `excludedCommands` in `.claude/settings.json` apply only to a standalone call: a `cd`, `;`, `&&`, redirect or `$(...)` keeps it sandboxed.
-- A sandboxed test that fails with ENOTDIR or EACCES on `.claude/*` or a shell startup file hit a protected-path placeholder: rerun it unsandboxed, never change the test.
-- Publish (`gh ... --body-file`, `git push`) only in a later turn than the write that produces its content, after that write succeeded. A later tool call counts: do not stop for the owner in between, the permission prompt is the approval. Open the PR as soon as `pnpm check`, the live check and `pnpm test:e2e` pass, without asking; the owner reviews the open PR. Write a new file name in `$TMPDIR`; the Read tool cannot open one to overwrite it. `$TMPDIR` (`/tmp/claude-1000`) is shared with other projects' Claude sessions: delete only files this repo's sessions created.
-
-## Engineering rules
-- Native and official solutions only: use the built-in capabilities of the tools in this stack (Astro, TypeScript, ESLint, Vitest, Playwright, pnpm, GitHub, Claude Code) as their docs describe. No custom scripts, workarounds or "creative" solutions. If no native option exists, stop and discuss alternatives with the user before building anything.
-- Code ported from the legacy web-components app, and every decision an earlier agent made, follows this stack's documented conventions. Neither is a reason by itself: keep a pattern only with an official source for this stack.
-- A new dependency needs evidence that no native option exists, and the user approves it.
-- Research before acting: before you use or recommend any tool, API or config key, read its official docs for the version installed here, and cite the URL with that version in the commit and in the Task's Sources. The installed version must be the latest stable release, or the latest usable one where a needed API is not stable yet. `.github/workflows/outdated.yml` reports drift weekly and never blocks a PR. A link you have not read in this session is not a source. Training data lags this stack (Astro 7, pnpm 12, current Baseline features).
-- Principles, methods and patterns (architecture, testing, tooling choices): judge their fit for this project with evidence, not popularity, and ask the critic or domain-expert subagent where it helps.
-- Size a fix from the code it would change, read in this session, before you recommend doing or deferring it. The owner decides on that estimate.
-- No `any`, no `unknown`, no `as` casts to bypass types (ESLint enforced).
-- A new architectural rule ships with the ESLint, TypeScript or test gate that enforces it. A rule that exists only in Markdown is a suggestion.
-- Keep changes minimal: no refactors, abstractions or defensive code beyond the task.
-
-## Writing style
-Applies to docs, commit messages, PR bodies and chat.
-- Banned words: delve, robust, seamless, synergy, tapestry, cutting-edge, leverage, furthermore, moreover, ultimately, in conclusion, unlocking.
-- No emojis, no em-dashes. Active voice, short sentences, no flattery.
-- Act as a critical sparring partner: challenge weak ideas with evidence instead of agreeing.
-- End every chat reply that finishes a task or hands back to the owner with an "Open items" list: one-line bullets, owner actions first, "none" when nothing is left.
-- Ask every owner decision through `AskUserQuestion`: your researched recommendation first, labeled `(Recommended)`, at least one valid alternative, and one `No-op` option that says what stays as it is and what that costs, each with a description. `.claude/hooks/decision-gate.mjs` enforces the shape.
-
-## Context hygiene
-- A mistake you make, or a correction from the user, becomes a gate in the same change: a `permissions.deny` rule, hook or test, pinned in `tests/architecture/agent-context.spec.ts`. Only when no gate can enforce it, write one concrete line in this file or the matching rule.
-- Do not commit memory, session-log or scratch files to the repo. Durable knowledge goes into this file, `.claude/rules/`, an ADR, or the relevant issue, by editing the existing text rather than appending.
-- When compacting, keep: the current story, files modified so far, the last `pnpm check` result, and open decisions.
-- Before the session context reaches 150k tokens, stop and post a no-loss handover (the status line in `.claude/settings.json` shows `HANDOVER NOW` from 130k) as a comment on the current Task with `gh issue comment <N> --body-file`, first line `<!-- handover -->`. Never paste it into chat. Contents: branch and commits (git-verified), the last `pnpm check` result, files modified, open items in priority order, user decisions and pending approvals, sandbox notes, and cited sources with full URLs.
+## Writing
+Docs, commits, PR bodies and chat: active voice, short sentences, no emojis, no em-dashes, no flattery. Avoid: delve, robust, seamless, synergy, tapestry, cutting-edge, leverage, furthermore, moreover, ultimately, in conclusion, unlocking. Be a critical sparring partner. Ask owner decisions with `AskUserQuestion`: your recommendation first, at least one alternative, and a no-op option with its cost. End a hand-back with an "Open items" list, owner actions first.

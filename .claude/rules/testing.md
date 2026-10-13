@@ -8,7 +8,7 @@ paths:
 ---
 # Testing
 
-Write the failing test first, then the code (TDD). While a feature is in progress, each new test traces to a row in the behavioral matrix of its Task issue.
+Write the failing test first, then the code (TDD).
 
 ## Tool split
 - Vitest + `experimental_AstroContainer`: component rendering and unit logic, co-located as `src/**/*.spec.ts`. Never use Playwright for isolated component state; it is slower and flakier.

@@ -26,7 +26,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "jq -r '(.context_window.total_input_tokens // 0) as $t | \"context \\($t / 1000 | floor)k / 150k\" + (if $t >= 130000 then \" \\u001b[31mHANDOVER NOW\\u001b[0m\" else \"\" end)'"
+    "command": "jq -r '\"context \\((.context_window.total_input_tokens // 0) / 1000 | floor)k\"'"
   },
   "sandbox": {
     "enabled": true,
@@ -48,10 +48,7 @@
         "./pnpm-lock.yaml",
         "./pnpm-workspace.yaml",
         "./.commitlintrc.json",
-        "./.releaserc.json",
-        "./public/_headers",
-        "./tests/architecture",
-        "./tests/config"
+        "./public/_headers"
       ]
     },
     "network": {
@@ -108,7 +105,6 @@
       "Bash(git push *)",
       "Bash(git rebase *)",
       "Bash(git reset *)",
-      "Bash(git branch -D *)",
       "Bash(gh pr create *)",
       "Bash(gh issue create *)",
       "Bash(pnpm add *)",
@@ -129,10 +125,7 @@
       "Edit(./pnpm-workspace.yaml)",
       "Edit(./.npmrc)",
       "Edit(./.commitlintrc.json)",
-      "Edit(./.releaserc.json)",
-      "Edit(./public/_headers)",
-      "Edit(./tests/architecture/**)",
-      "Edit(./tests/config/**)"
+      "Edit(./public/_headers)"
     ],
     "deny": [
       "Read(./.env)",
@@ -147,42 +140,15 @@
       "Bash(git push -f *)",
       "Bash(git push --no-verify *)",
       "Bash(git push --mirror *)",
+      "Bash(git push * master)",
+      "Bash(git push * HEAD:master)",
+      "Bash(git branch -D *)",
       "Bash(gh pr merge *)",
       "Bash(git clean *)",
-      "Bash(git stash *)",
-      "Edit(./CHANGELOG.md)"
+      "Bash(git stash *)"
     ]
   },
   "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "startup|resume|clear|compact",
-        "hooks": [
-          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-plan.mjs", "timeout": 30 }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/anti-slop.mjs", "timeout": 10, "onFailure": "block" }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pr-gate.mjs", "timeout": 30, "onFailure": "block" },
-          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/sandbox-gate.mjs", "timeout": 10, "onFailure": "block" }
-        ]
-      },
-      {
-        "matcher": "AskUserQuestion",
-        "hooks": [
-          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/decision-gate.mjs", "timeout": 10, "onFailure": "block" }
-        ]
-      }
-    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",

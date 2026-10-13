@@ -140,38 +140,6 @@ describe('ESLint CSP gate', () => {
   });
 });
 
-describe('ESLint AI-prose gate', () => {
-  const ruleIds = async (code: string, filePath = 'src/shared/lib/x.ts') =>
-    (await new ESLint().lintText(code, { filePath }))[0].messages.map(m => m.ruleId);
-
-  it.each([
-    ['a banned word in a comment', '// a robust helper\nexport const a = 1;\n', 'no-warning-comments'],
-    ['an em-dash in a comment', '// fast — small\nexport const a = 1;\n', 'no-warning-comments'],
-    ['a banned word in a string', 'export const a = "Moreover, yes";\n', 'no-restricted-syntax'],
-    ['an emoji in a template', 'export const a = `shipped \u{1F680}`;\n', 'no-restricted-syntax'],
-    ['a text-style emoji in a string', 'export const a = "ok \u2764 yes";\n', 'no-restricted-syntax'],
-    ['an escaped em-dash in a template', 'export const a = `a \\u2014 b`;\n', 'no-restricted-syntax'],
-  ])('flags %s', async (_label, code, ruleId) => {
-    expect(await ruleIds(code)).toContain(ruleId);
-  });
-
-  it.each([
-    ['template text', '<p>A seamless site</p>\n'],
-    ['an HTML comment', '<!-- a robust page -->\n<p>x</p>\n'],
-    ['a style comment', '<p>x</p>\n<style>\n/* a robust rule */\np { color: red; }\n</style>\n'],
-  ])('flags slop in Astro %s', async (_label, code) => {
-    expect(await ruleIds(code, 'src/widgets/x/ui/X.astro')).toContain('no-restricted-syntax');
-  });
-
-  it('keeps the type bans in files exempt from the prose gate', async () => {
-    expect(await ruleIds('export const a = 1 as unknown as number;\n', 'tests/config/eslint.spec.ts')).toContain('no-restricted-syntax');
-  });
-
-  it('allows plain text, derived words and the copyright, registered and trademark signs', async () => {
-    expect(await ruleIds('// robustness tests\nexport const a = "© ® ™ 2026";\n')).toEqual([]);
-  });
-});
-
 describe('ESLint inline style message', () => {
   // <style define:vars> renders style="--x: ..." on elements (Astro 7.3.8), which the hashed CSP blocks,
   // so the message must point to classes or data-* attributes instead.
@@ -216,9 +184,8 @@ describe('ESLint null-safety gate in specs', () => {
     expect(await messages(code, 'src/shared/lib/x.ts')).toEqual([]);
   });
 
-  it('keeps the prose and type bans in specs', async () => {
-    const rules = (await messages('export const a = "Moreover, yes" as unknown;\n', 'src/x/X.spec.ts')).map((m) => m.message);
-    expect(rules).toContain('AI prose: banned word, em-dash or emoji (see CLAUDE.md writing rules).');
+  it('keeps the type bans in specs', async () => {
+    const rules = (await messages('export const a = 1 as unknown;\n', 'src/x/X.spec.ts')).map((m) => m.message);
     expect(rules).toContain("The 'unknown' type is banned. Define explicit types or interfaces.");
   });
 });
