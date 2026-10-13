@@ -32,4 +32,6 @@ jobs:
       - name: Check the PR closes an issue
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
-        run: printf '%s\n' "$PR_BODY" | grep -qiE '\b(close[sd]?|fix(e[sd])?|resolve[sd]?):? #[0-9]+' || { echo "The PR body must close an issue, for example 'Closes #123'."; exit 1; }
+        # A block scalar: in a plain YAML scalar, " #" starts a comment and cuts the command.
+        run: |
+          printf '%s\n' "$PR_BODY" | grep -qiE '\b(close[sd]?|fix(e[sd])?|resolve[sd]?):? #[0-9]+' || { echo "The PR body must close an issue, for example 'Closes #123'."; exit 1; }
