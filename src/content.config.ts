@@ -64,29 +64,8 @@ const nowCollection = defineCollection({
 	schema: nowSchema,
 });
 
-/**
- * The projects block on home. `order` sets the card order, because collection order is not guaranteed
- * (https://docs.astro.build/en/guides/content-collections/). A project without a public `url` renders no link.
- */
-export const projectSchema = z.strictObject({
-	id: z.string().regex(SLUG_PATTERN),
-	order: z.int().positive(),
-	name: z.string(),
-	description: z.string(),
-	role: z.string(),
-	stack: z.array(z.string()).min(1),
-	outcome: z.string(),
-	url: z.url().optional(),
-});
-
-const projectsCollection = defineCollection({
-	loader: file('src/content/projects.yaml'),
-	schema: projectSchema,
-});
-
 export const collections = {
 	blog: blogCollection,
 	experience: experienceCollection,
 	now: nowCollection,
-	projects: projectsCollection,
 };
