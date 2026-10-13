@@ -99,7 +99,6 @@ const { menuItems = defaultMenuItems } = Astro.props;
         height: .2rem; width: var(--space-8); background-color: var(--font-color-bold);
         border-radius: var(--radius-xs); transform: translateY(0) rotate(0deg);
     }
-    .navigator-menu-opener:focus-visible { outline: var(--outline-width-focus) solid var(--focus-color); }
     .navigator-menu-opener { border-radius: var(--radius-full); }
     @media (hover: hover) {
         .navigator-menu-opener:hover { background-color: var(--state-hover); }
@@ -146,7 +145,6 @@ const { menuItems = defaultMenuItems } = Astro.props;
     @media (hover: hover) {
         .navigator-menu-body ul li a:hover h2 { text-decoration-color: currentColor; }
     }
-    .navigator-menu-body ul li a:focus-visible { outline: var(--outline-width-focus) solid var(--focus-color); }
     .navigator-menu-body ul li a h2 {
         display: inline-block; margin: 0; font-size: var(--font-size-menu);
         line-height: 1.2; color: var(--font-color-bold);

@@ -73,6 +73,11 @@
 
     --border-width-hairline: 1px;
     --outline-width-focus: 2px;
+    /* GOV.UK Frontend's link underline: the line scales with the text when the user enlarges it
+       (govuk-frontend src/govuk/settings/_links.scss). */
+    --link-underline-thickness: max(1px, .0625rem);
+    --link-underline-thickness-hover: max(3px, .1875rem, .12em);
+    --link-underline-offset: .1578em;
 
     /* Fixed sizes, kept in px so the layout matches the pre-token build. */
     --size-icon-sm: 25px;

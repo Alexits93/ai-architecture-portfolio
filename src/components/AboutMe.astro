@@ -41,7 +41,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
           <ul class="social-links">
             {githubUrl && (
               <li>
-                <a href={githubUrl} target="_blank" rel="noopener noreferrer" aria-label="GitHub (Opens in new tab)">
+                <a href={githubUrl}>
                   <GitHubIcon width="25" height="25" aria-hidden="true" />
                   <span class="sr-only">GitHub</span>
                 </a>
@@ -49,7 +49,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
             )}
             {linkedinUrl && (
               <li>
-                <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (Opens in new tab)">
+                <a href={linkedinUrl}>
                   <LinkedInIcon width="25" height="25" aria-hidden="true" />
                   <span class="sr-only">LinkedIn</span>
                 </a>
@@ -57,7 +57,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
             )}
             {stackoverflowUrl && (
               <li>
-                <a href={stackoverflowUrl} target="_blank" rel="noopener noreferrer" aria-label="Stack Overflow (Opens in new tab)">
+                <a href={stackoverflowUrl}>
                   <StackOverflowIcon width="25" height="25" aria-hidden="true" />
                   <span class="sr-only">Stack Overflow</span>
                 </a>
@@ -65,7 +65,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
             )}
             {instagramUrl && (
               <li>
-                <a href={instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram (Opens in new tab)">
+                <a href={instagramUrl}>
                   <InstagramIcon width="25" height="25" aria-hidden="true" />
                   <span class="sr-only">Instagram</span>
                 </a>

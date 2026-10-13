@@ -9,11 +9,9 @@
     ul[class], ol[class] { padding: 0; list-style: none; }
     body, h1, h2, h3, h4, p, ul[class], ol[class], li, figure, figcaption, blockquote, dl, dd, hr { margin: 0; }
     body { min-height: 100vh; scroll-behavior: smooth; text-rendering: optimizeSpeed; line-height: 1.5; }
-    a:not([class]) { text-decoration-skip-ink: auto; }
     img { max-width: 100%; display: block; }
     input, button, textarea, select { font: inherit; }
-    a { color: inherit; text-decoration: none; background-color: transparent; text-decoration-skip-ink: auto; cursor: pointer; }
-    a:hover { text-decoration: none; }
+    a { color: inherit; background-color: transparent; cursor: pointer; }
     @media (prefers-reduced-motion: reduce) {
         html:focus-within { scroll-behavior: auto; }
         *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
@@ -77,10 +75,19 @@
     h1 { margin: 0; letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-bold); font-size: var(--font-size-2xl); line-height: var(--line-height-xl); }
     h2 { margin: 0; letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-medium); font-size: var(--font-size-md); line-height: var(--line-height-md); }
     h1, h2, h3, h4, h5, h6 { scroll-margin-top: 100px; }
-    /* :focus-visible only: the browser shows the ring for keyboard focus, not for a mouse click (MDN :focus-visible). */
-    a:focus-visible { outline: 2px solid var(--focus-color); }
-    /* A gap between the focus outline and what it outlines keeps the text readable. The outline shorthand does not set
-       outline-offset (MDN outline), so this reaches every component's focus outline. */
-    :focus-visible { outline-offset: 8px; }
+    /* Links are underlined, so a link in a sentence does not rely on colour alone (WCAG 2.2 F73). Navigation and card
+       links drop the line in their component, where the context marks them as links. Hover thickens the line
+       (https://design-system.service.gov.uk/styles/links/). */
+    a {
+        text-decoration-line: underline;
+        text-decoration-thickness: var(--link-underline-thickness);
+        text-underline-offset: var(--link-underline-offset);
+    }
+    @media (hover: hover) {
+        a:hover { text-decoration-thickness: var(--link-underline-thickness-hover); }
+    }
+    /* :focus-visible only: the browser shows the ring for keyboard focus, not for a mouse click (MDN :focus-visible).
+       It covers every focusable element. A gap between the ring and what it outlines keeps the text readable. */
+    :focus-visible { outline: var(--outline-width-focus) solid var(--focus-color); outline-offset: 8px; }
     ::selection { background-color: var(--theme-primary); }
 }
