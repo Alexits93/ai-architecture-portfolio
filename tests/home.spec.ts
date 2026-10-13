@@ -133,7 +133,8 @@ it('renders the projects block first, in order, with links only where they exist
   const link = linked.querySelector('a');
   assert.exists(link);
   expect(link.getAttribute('href')).toBe('https://github.com/acme/first');
-  expect(link.getAttribute('rel')).toBe('noopener noreferrer');
-  expect(link.getAttribute('aria-label')).toBe('View source of Project first (Opens in new tab)');
+  // Same tab, owner decision on #242: no target attribute.
+  expect(link.hasAttribute('target')).toBe(false);
+  expect(link.getAttribute('aria-label')).toBe('View source of Project first');
   expect(unlinked.querySelector('a')).toBeNull();
 });

@@ -18,7 +18,7 @@ const projects = (await getCollection('projects')).toSorted((a, b) => a.data.ord
 				{data.stack.map((skill) => <SkillTag skill={skill} />)}
 			</div>
 			{data.url && (
-				<a href={data.url} target="_blank" rel="noopener noreferrer" aria-label={`View source of ${data.name} (Opens in new tab)`}>
+				<a href={data.url} aria-label={`View source of ${data.name}`}>
 					View source
 				</a>
 			)}

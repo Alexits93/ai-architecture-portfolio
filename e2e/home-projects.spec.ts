@@ -11,6 +11,6 @@ test('shows the three projects in order, and links only the public repo', async 
   await expect(projects.getByRole('article').nth(2)).toContainText('85% less CSS code');
   const links = projects.getByRole('link');
   await expect(links).toHaveCount(1);
-  await expect(links).toHaveAccessibleName('View source of pa-tech.dev (Opens in new tab)');
+  await expect(links).toHaveAccessibleName('View source of pa-tech.dev');
   await expect(links).toHaveAttribute('href', 'https://github.com/Alexits93/ai-architecture-portfolio');
 });
