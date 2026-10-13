@@ -1,5 +1,6 @@
+import * as fs from 'fs';
 import { describe, it, expect } from 'vitest';
-import { blogSchema, experienceSchema } from '@/content.config';
+import { blogSchema, experienceSchema, nowSchema } from '@/content.config';
 
 // One category per post, strict object: an unknown key such as the removed `tags` fails the build (#90).
 const withoutCategory = {
@@ -52,5 +53,21 @@ describe('experience collection schema', () => {
 
   it('rejects an emphasis term that no highlight contains', () => {
     expect(experienceSchema.safeParse({ ...entry, emphasis: ['Vue.js'] }).success).toBe(false);
+  });
+});
+
+// The now block on home: one Markdown file whose `updated` date shows next to the text (#218).
+describe('now collection schema', () => {
+  it('accepts an updated date', () => {
+    expect(nowSchema.safeParse({ updated: '2026-10-13' }).success).toBe(true);
+  });
+
+  it('rejects a missing updated date or an unknown key', () => {
+    expect(nowSchema.safeParse({}).success).toBe(false);
+    expect(nowSchema.safeParse({ updated: '2026-10-13', title: 'Now' }).success).toBe(false);
+  });
+
+  it('keeps raw HTML out of the now text', () => {
+    expect(fs.readFileSync('src/content/now/now.md', 'utf8')).not.toMatch(/<[a-z!/]/i);
   });
 });

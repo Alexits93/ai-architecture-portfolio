@@ -6,6 +6,7 @@ Target structure: Astro's conventions (ADR 002), imports flow `pages > layouts >
 flowchart TD
     subgraph Pages["src/pages"]
         Index["index.astro"]
+        Now["_Now.astro"]
         CV["cv.astro"]
         BlogIndex["blog/[...page].astro"]
         BlogCategory["blog/category/[category]/[...page].astro"]
@@ -54,7 +55,8 @@ flowchart TD
     BlogPost --> PostLayout
     PostLayout --> Base & Config
     Base --> Header & Menu & Footer & SeoHead
-    Index --> AboutMe & Featured & Recommended & Config
+    Index --> AboutMe & Now & Featured & Recommended & Config
+    Now --> Content
     CV --> AboutMe & Experience
     BlogIndex & BlogCategory --> BlogFeed
     BlogIndex & BlogCategory --> Content & Post

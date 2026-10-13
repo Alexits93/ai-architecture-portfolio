@@ -54,7 +54,18 @@ const experienceCollection = defineCollection({
 	schema: experienceSchema,
 });
 
+/** The now block on home (https://nownownow.com/about): Markdown text plus the date it was last updated. */
+export const nowSchema = z.strictObject({
+	updated: z.coerce.date(),
+});
+
+const nowCollection = defineCollection({
+	loader: glob({ pattern: 'now.md', base: './src/content/now' }),
+	schema: nowSchema,
+});
+
 export const collections = {
 	blog: blogCollection,
 	experience: experienceCollection,
+	now: nowCollection,
 };
