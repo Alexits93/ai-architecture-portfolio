@@ -7,7 +7,7 @@ import Index from '@/pages/index.astro';
 import { ROUTES, SITE } from '@/consts';
 import MockContent from './fixtures/MockContent.astro';
 
-// Vitest has no collection data, so the posts, the now entry and its rendered Markdown are fixtures (#218, #226).
+// Vitest has no collection data, so the posts, the now entry and the rendered Markdown are fixtures (#218, #226, #244).
 // e2e/home-blog.spec.ts checks the real posts on the built page.
 const posts = [
   createTestPost({ id: 'featured-post', isFeatured: true }),
@@ -47,6 +47,7 @@ describe('Home Page (index.astro)', () => {
     expect([...column.children].map((child) => child.id)).toEqual([
       'about-me',
       'work',
+      'principles',
       'open',
       'now',
       'blog-featured',
@@ -86,6 +87,17 @@ it('renders the now block with its updated date', async () => {
   assert.exists(updated);
   expect(updated.getAttribute('datetime')).toBe('2026-10-13');
   expect(updated.textContent).toBe('13 October 2026');
+});
+
+// The principles list after Work, from src/content/principles/principles.md (#244).
+it('renders the principles block with its heading', async () => {
+  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+  const doc = new JSDOM(await container.renderToString(Index)).window.document;
+
+  const principles = doc.querySelector('section#principles');
+  assert.exists(principles);
+  expect(principles.querySelector('h2')).toHaveProperty('textContent', 'Principles');
+  expect(principles.textContent).toContain('Mock Rendered Content');
 });
 
 // The featured card is the featured post; the recommended cards are the others, newest first (#226).
