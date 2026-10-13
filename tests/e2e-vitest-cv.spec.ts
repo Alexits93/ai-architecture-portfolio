@@ -24,7 +24,7 @@ it('renders the experience collection newest first', async () => {
   expect(texts('.experience-item > span')).toEqual(['2024 - Present', '2020 - 2023', '2019 - 2020', '2017 - 2018']);
   expect(texts('.experience-item h3')).toEqual([
     'Frontend Software Engineer - Swiss Learning Hub',
-    'Frontend Developer - Avensys Consulting',
+    'Frontend Developer - IBM iX DACH',
     'Fullstack Developer - Solvistas GmbH',
     'Fullstack Developer - Voov Ltd.',
   ]);

@@ -24,11 +24,11 @@
     - micro frontends
     - SCSS Framework
   skills: [Web Components, Microfrontend, Angular, TypeScript, JavaScript, Accessibility, Context API, TFS, SCSS, Agile, Scrum]
-- id: avensys-consulting
+- id: ibm-ix-dach
   start: 2020
   end: 2023
   role: Frontend Developer
-  company: Avensys Consulting
+  company: IBM iX DACH
   highlights:
     - Spearheaded frontend development on enterprise projects across Banking and Retail sectors, utilizing Angular, Vue.js and Microfrontend architecture.
     - Developed an internal platform combining SAP CX, Adobe Experience Manager, and Vue.js for a Proof of Concept.
