@@ -43,6 +43,24 @@ for (const [theme, icon] of [['light', 'moon'], ['dark', 'sun']]) {
       const bar = await css(page.getByRole('button', { name: 'Close menu' }).locator('span').first(), 'backgroundColor');
       expect(contrast(bar, await css(page.locator('.navigator-menu-overlay'), 'backgroundColor'))).toBeGreaterThanOrEqual(3);
     });
+
+    // #242: the focus ring is at least 2px and 3:1 against the page it sits on
+    // (WCAG 2.2 SC 2.4.13, https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance.html).
+    test('keyboard focus on a button, a link and the theme toggle draws a 2px ring with 3:1 against the page', async ({ page }) => {
+      const background = await css(page.locator('body'), 'backgroundColor');
+      const header = page.locator('.header-wrapper header');
+      for (const control of [header.getByRole('button').first(), header.getByRole('link'), page.locator('.theme-toggle')]) {
+        await page.keyboard.press('Tab');
+        await expect(control).toBeFocused();
+        const ring = await control.evaluate((el) => {
+          const style = getComputedStyle(el);
+          return { visible: el.matches(':focus-visible'), width: parseFloat(style.outlineWidth), color: style.outlineColor };
+        });
+        expect(ring.visible).toBe(true);
+        expect(ring.width).toBeGreaterThanOrEqual(2);
+        expect(contrast(ring.color, background)).toBeGreaterThanOrEqual(3);
+      }
+    });
   });
 }
 

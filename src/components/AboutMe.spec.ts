@@ -73,8 +73,9 @@ describe('AboutMe Widget (Astro) - Social Links', () => {
     const listItems = doc.querySelectorAll('.social-links li');
     expect(listItems.length).toBe(4);
 
-    const githubLink = doc.querySelector('a[aria-label="GitHub (Opens in new tab)"]');
+    const githubLink = doc.querySelector('.social-links a');
     assert.exists(githubLink);
+    expect(githubLink.textContent.trim()).toBe('GitHub');
     expect(githubLink.getAttribute('href')).toBe('https://github.com');
   });
 
@@ -88,7 +89,7 @@ describe('AboutMe Widget (Astro) - Social Links', () => {
   });
 });
 
-// Each icon is a decorative SVG asset with an explicit 25px size (#119). Instagram, the only non-work profile, comes last.
+// Each icon is a decorative SVG asset with an explicit 25px size (#119); the link opens in the same tab (#242). Instagram, the only non-work profile, comes last.
 it('should render each social link with its accessible name and a hidden icon', async () => {
   const container = await AstroContainer.create();
   const props = {
@@ -102,12 +103,12 @@ it('should render each social link with its accessible name and a hidden icon', 
   const links = [...doc.querySelectorAll('.social-links a')].map((link) => {
     const svg = link.querySelector('svg');
     assert.exists(svg);
-    return [link.getAttribute('aria-label'), ...['viewBox', 'fill', 'aria-hidden', 'width', 'height'].map((name) => svg.getAttribute(name))];
+    return [link.textContent.trim(), link.getAttribute('target'), ...['viewBox', 'fill', 'aria-hidden', 'width', 'height'].map((name) => svg.getAttribute(name))];
   });
   expect(links).toEqual([
-    ['GitHub (Opens in new tab)', '0 0 16 16', 'currentColor', 'true', '25', '25'],
-    ['LinkedIn (Opens in new tab)', '0 0 24 24', 'currentColor', 'true', '25', '25'],
-    ['Stack Overflow (Opens in new tab)', '0 0 169.61 200', 'currentColor', 'true', '25', '25'],
-    ['Instagram (Opens in new tab)', '0 0 1000 1000', 'currentColor', 'true', '25', '25'],
+    ['GitHub', null, '0 0 16 16', 'currentColor', 'true', '25', '25'],
+    ['LinkedIn', null, '0 0 24 24', 'currentColor', 'true', '25', '25'],
+    ['Stack Overflow', null, '0 0 169.61 200', 'currentColor', 'true', '25', '25'],
+    ['Instagram', null, '0 0 1000 1000', 'currentColor', 'true', '25', '25'],
   ]);
 });

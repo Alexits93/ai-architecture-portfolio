@@ -109,10 +109,11 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
     margin: var(--space-12) 0;
   }
 
-  /* global.css removes link underlines; without one the category reads as a plain tag. The tag is
-     inline-block, which a parent's text-decoration does not reach (CSS Text Decoration 4, section 2). */
+  /* The tag is inline-block, which the link's underline does not reach (CSS Text Decoration 4, section 2), so it takes
+     the link's own line, hover thickness included. */
   .category a :global(.skill-tag) {
-    text-decoration: underline;
+    text-decoration: inherit;
+    text-underline-offset: inherit;
   }
 
   .prose {
