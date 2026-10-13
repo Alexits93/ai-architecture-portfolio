@@ -1,0 +1,54 @@
+# Positions on /cv/. Each `emphasis` term renders in bold wherever a highlight contains it (src/content.config.ts).
+- id: swiss-learning-hub
+  start: 2024
+  end: null
+  role: Frontend Software Engineer
+  company: Swiss Learning Hub
+  highlights:
+    - Planning and implementing a web-based migration of an enterprise-level Windows application Evento, using web components, Context API, State Machine and web standards to ensure an agnostic way of implementation.
+    - Maintaining and developing Evento’s web-based feature application written in Angular.
+    - Developing Evento’s new, web-components based feature applications using hybrids.js, Typescript and State Machines (xstate).
+    - Researching, documenting micro frontends architechture and web components based application solutions.
+    - Implemented custom SCSS Framework solution, reducing used code by 85%
+  emphasis:
+    - Evento
+    - web components
+    - Context API
+    - State Machine
+    - Evento’s web-based feature application
+    - Angular
+    - Evento’s new, web-components based
+    - hybrids.js
+    - Typescript
+    - State Machines (xstate)
+    - micro frontends
+    - SCSS Framework
+  skills: [Web Components, Microfrontend, Angular, TypeScript, JavaScript, Accessibility, Context API, TFS, SCSS, Agile, Scrum]
+- id: avensys-consulting
+  start: 2020
+  end: 2023
+  role: Frontend Developer
+  company: Avensys Consulting
+  highlights:
+    - Spearheaded frontend development on enterprise projects across Banking and Retail sectors, utilizing Angular, Vue.js and Microfrontend architecture.
+    - Developed an internal platform combining SAP CX, Adobe Experience Manager, and Vue.js for a Proof of Concept.
+  emphasis: [Angular, Vue.js, Microfrontend, SAP CX, Adobe Experience Manager]
+  skills: [Angular, Microfrontend, Vue.js, TypeScript, JavaScript, Accessibility, JQuery, SAP CX, Adobe Experience Manager (AEM), Agile, Scrum, Kanban, SaFe]
+- id: solvistas
+  start: 2019
+  end: 2020
+  role: Fullstack Developer
+  company: Solvistas GmbH
+  highlights:
+    - Developed and maintained 'Easy Arena,' a high-traffic ticketing web app, focusing on frontend enhancements with Angular, TypeScript, and RxJS. Improved app scalability and performance in a multi tenant architecture, utilizing Java, Spring Boot and MySQL on the backend.
+  emphasis: [Angular, TypeScript, RxJS, multi tenant, Java, Spring Boot, MySQL]
+  skills: [Angular, TypeScript, JavaScript, Java, Spring Boot, MySQL, Agile, Scrum]
+- id: voov
+  start: 2017
+  end: 2018
+  role: Fullstack Developer
+  company: Voov Ltd.
+  highlights:
+    - Engineered multiple client websites as a Fullstack Developer, using PHP and the Laravel framework for comprehensive site and backend solutions.
+  emphasis: [PHP, Laravel]
+  skills: [Laravel, PHP, JavaScript, JQuery, Photoshop, Sitebuilding]

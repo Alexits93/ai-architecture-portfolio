@@ -14,3 +14,18 @@ it('renders SITE.role in the CV hero', async () => {
   assert.exists(role);
   expect(role.textContent).toBe(SITE.role);
 });
+
+// /cv/ renders the positions from src/content/experience.yaml, newest first (#215).
+it('renders the experience collection newest first', async () => {
+  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+  const doc = new JSDOM(await container.renderToString(Cv)).window.document;
+
+  const texts = (selector: string) => [...doc.querySelectorAll(selector)].map((el) => el.textContent);
+  expect(texts('.experience-item > span')).toEqual(['2024 - Present', '2020 - 2023', '2019 - 2020', '2017 - 2018']);
+  expect(texts('.experience-item h3')).toEqual([
+    'Frontend Software Engineer - Swiss Learning Hub',
+    'Frontend Developer - Avensys Consulting',
+    'Fullstack Developer - Solvistas GmbH',
+    'Fullstack Developer - Voov Ltd.',
+  ]);
+});

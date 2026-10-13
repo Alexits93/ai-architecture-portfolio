@@ -1,91 +1,28 @@
 ---
+import { getCollection } from 'astro:content';
+import { formatPeriod, sortByStartDesc, splitEmphasis } from '@/lib/experience';
 import { SkillTag } from '@/shared/ui/skill-tag';
+
+const entries = sortByStartDesc(await getCollection('experience'));
 ---
 
 <div class="experience-list-container">
     <h2>Experience</h2>
-    <article class="experience-item">
-        <span>2024 - Present</span>
-        <div class="position">
-            <h3>Frontend Software Engineer - Swiss Learning Hub</h3>
-            <p>Planning and implementing a web-based migration of an enterprise-level Windows application <strong>Evento</strong>, using <strong>web components</strong>, <strong>Context API</strong>, <strong>State Machine</strong> and web standards to ensure an agnostic way of implementation.</p>
-            <p> Maintaining and developing <strong>Evento’s web-based feature application</strong> written in <strong>Angular</strong>.</p>
-            <p>Developing <strong>Evento’s new, web-components based</strong> feature applications using <strong>hybrids.js</strong>, <strong>Typescript</strong> and <strong>State Machines (xstate)</strong>.</p>
-            <p>Researching, documenting <strong>micro frontends</strong> architechture and <strong>web components</strong> based application solutions.</p>
-            <p>Implemented custom <strong>SCSS Framework</strong> solution, reducing used code by 85%</p>
-            <div class="tags">
-                <SkillTag skill="Web Components" />
-                <SkillTag skill="Microfrontend" />
-                <SkillTag skill="Angular" />
-                <SkillTag skill="TypeScript" />
-                <SkillTag skill="JavaScript" />
-                <SkillTag skill="Accessibility" />
-                <SkillTag skill="Context API" />
-                <SkillTag skill="TFS" />
-                <SkillTag skill="SCSS" />
-                <SkillTag skill="Agile" />
-                <SkillTag skill="Scrum" />
+    {entries.map(({ data }) => (
+        <article class="experience-item">
+            <span>{formatPeriod(data)}</span>
+            <div class="position">
+                <h3>{data.role} - {data.company}</h3>
+                {data.highlights.map((highlight) => (
+                    <p>{splitEmphasis(highlight, data.emphasis).map((part) => (part.strong ? <strong>{part.text}</strong> : part.text))}</p>
+                ))}
+                <div class="tags">
+                    {data.skills.map((skill) => <SkillTag skill={skill} />)}
+                </div>
             </div>
-        </div>
-    </article>
-    <article class="experience-item">
-        <span>2020 - 2023</span>
-        <div class="position">
-            <h3>Frontend Developer - Avensys Consulting</h3>
-            <p> Spearheaded frontend development on enterprise projects across Banking and Retail sectors, utilizing <strong>Angular</strong>, <strong>Vue.js</strong> and <strong>Microfrontend</strong> architecture.</p>
-            <p> Developed an internal platform combining <strong>SAP CX</strong>, <strong>Adobe Experience Manager</strong>, and <strong>Vue.js</strong> for a Proof of Concept.</p>
-            <div class="tags">
-                <SkillTag skill="Angular" />
-                <SkillTag skill="Microfrontend" />
-                <SkillTag skill="Vue.js" />
-                <SkillTag skill="TypeScript" />
-                <SkillTag skill="JavaScript" />
-                <SkillTag skill="Accessibility" />
-                <SkillTag skill="JQuery" />
-                <SkillTag skill="SAP CX" />
-                <SkillTag skill="Adobe Experience Manager (AEM)" />
-                <SkillTag skill="Agile" />
-                <SkillTag skill="Scrum" />
-                <SkillTag skill="Kanban" />
-                <SkillTag skill="SaFe" />
-            </div>
-        </div>
-    </article>
-    <article class="experience-item">
-        <span>2019 - 2020</span>
-        <div class="position">
-            <h3>Fullstack Developer - Solvistas GmbH</h3>
-            <p> Developed and maintained 'Easy Arena,' a high-traffic ticketing web app, focusing on frontend enhancements with <strong>Angular</strong>, <strong>TypeScript</strong>, and <strong>RxJS</strong>. Improved app scalability and performance in a <strong>multi tenant</strong> architecture, utilizing <strong>Java</strong>, <strong>Spring Boot</strong> and <strong>MySQL</strong> on the backend.</p>
-            <div class="tags">
-                <SkillTag skill="Angular" />
-                <SkillTag skill="TypeScript" />
-                <SkillTag skill="JavaScript" />
-                <SkillTag skill="Java" />
-                <SkillTag skill="Spring Boot" />
-                <SkillTag skill="MySQL" />
-                <SkillTag skill="Agile" />
-                <SkillTag skill="Scrum" />
-            </div>
-        </div>
-    </article>
-    <article class="experience-item">
-        <span>2017 - 2018</span>
-        <div class="position">
-            <h3>Fullstack Developer - Voov Ltd.</h3>
-            <p> Engineered multiple client websites as a Fullstack Developer, using <strong>PHP</strong> and the <strong>Laravel</strong> framework for comprehensive site and backend solutions.</p>
-            <div class="tags">
-                <SkillTag skill="Laravel" />
-                <SkillTag skill="PHP" />
-                <SkillTag skill="JavaScript" />
-                <SkillTag skill="JQuery" />
-                <SkillTag skill="Photoshop" />
-                <SkillTag skill="Sitebuilding" />
-            </div>
-        </div>
-    </article>
-
+        </article>
+    ))}
 </div>
-
 
 <style>
     .experience-list-container { display: flex; flex-direction: column; gap: var(--space-4); }

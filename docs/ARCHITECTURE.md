@@ -35,6 +35,7 @@ flowchart TD
     end
 
     Content["src/content.config.ts"]
+    ExperienceLib["src/lib/experience.ts"]
 
     subgraph Entities["src/entities"]
         Post["blog-post"]
@@ -64,7 +65,7 @@ flowchart TD
     OG --> OgLib
 
     Header --> Store
-    Experience --> SkillTag
+    Experience --> SkillTag & Content & ExperienceLib
     Featured --> Post
     Recommended --> Post & Config
     Reader --> ArticleNav & SkillTag & Post
