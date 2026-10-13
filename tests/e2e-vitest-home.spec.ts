@@ -2,11 +2,18 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import type { CollectionEntry } from 'astro:content';
 import { JSDOM } from 'jsdom';
 import { describe, it, expect, beforeEach, assert, vi } from 'vitest';
+import { createTestPost } from '@/entities/blog-post/testing';
 import Index from '@/pages/index.astro';
 import { SITE } from '@/shared/config';
 import MockContent from '@/widgets/blog-post-reader/__mocks__/MockContent.astro';
 
-// Vitest has no collection data, so the now entry and its rendered Markdown are fixtures (#218).
+// Vitest has no collection data, so the posts, the now entry and its rendered Markdown are fixtures (#218, #226).
+// tests/pages/home-blog.spec.ts checks the real posts on the built page.
+const posts = [
+  createTestPost({ id: 'featured-post', isFeatured: true }),
+  createTestPost({ id: 'newer-post', publishDate: '2026-05-01' }),
+  createTestPost({ id: 'older-post', publishDate: '2026-02-01' }),
+];
 const nowEntry: CollectionEntry<'now'> = {
   id: 'now',
   collection: 'now',
@@ -18,6 +25,7 @@ vi.mock('astro:content', async (importOriginal) => {
   const actual = await importOriginal<typeof import('astro:content')>();
   return {
     ...actual,
+    getCollection: async () => posts,
     getEntry: async () => nowEntry,
     render: async () => ({ Content: MockContent, headings: [], remarkPluginFrontmatter: {} }),
   };
@@ -87,4 +95,14 @@ it('renders the now block first in the home blocks', async () => {
   assert.exists(updated);
   expect(updated.getAttribute('datetime')).toBe('2026-10-13');
   expect(updated.textContent).toBe('13 October 2026');
+});
+
+// The featured card is the featured post; the recommended cards are the others, newest first (#226).
+it('renders the blog fixtures as featured and recommended cards', async () => {
+  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+  const doc = new JSDOM(await container.renderToString(Index)).window.document;
+
+  const hrefs = (selector: string) => [...doc.querySelectorAll(selector)].map((card) => card.getAttribute('href'));
+  expect(hrefs('#blog-featured .blog-post-thumbnail')).toEqual(['/blog/featured-post/']);
+  expect(hrefs('#blog-section .blog-post-thumbnail')).toEqual(['/blog/newer-post/', '/blog/older-post/']);
 });

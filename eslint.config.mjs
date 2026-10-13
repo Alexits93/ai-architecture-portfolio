@@ -60,7 +60,14 @@ const NULL_SAFETY_BANS = [
   { "selector": "AssignmentExpression[operator='??=']", "message": NULL_GUARD_MESSAGE },
   // page.evaluate serializes its result; a DOM node arrives as "ref: <Node>" and its properties read as undefined (#214).
   { "selector": "CallExpression[callee.property.name='evaluate'] > ArrowFunctionExpression > MemberExpression[object.name='document']", "message": EVALUATE_NODE_MESSAGE },
-  { "selector": "CallExpression[callee.property.name='evaluate'] > ArrowFunctionExpression > CallExpression[callee.object.name='document']", "message": EVALUATE_NODE_MESSAGE }
+  { "selector": "CallExpression[callee.property.name='evaluate'] > ArrowFunctionExpression > CallExpression[callee.object.name='document']", "message": EVALUATE_NODE_MESSAGE },
+  // Vitest has no content store: a route page (no `_` prefix) rendered in a spec reads empty collections, and checks pass
+  // on markup that exists without data (#225, #226). `/` in a selector regex is escaped as `\/`
+  // (https://eslint.org/docs/latest/extend/selectors); `:has()` is esquery syntax (https://github.com/estools/esquery).
+  {
+    "selector": "Program:has(ImportDeclaration[source.value=/^@\\/pages\\/(?:[^_\\/][^\\/]*\\/)*[^_\\/][^\\/]*\\.astro$/]):not(:has(CallExpression[callee.object.name='vi'][callee.property.name='mock'][arguments.0.value='astro:content']))",
+    "message": "Specs: a route page rendered in Vitest reads empty collections (no content store). Mock astro:content with fixtures here, and check real entries in Playwright on the built page."
+  }
 ];
 const SPECS = ["**/*.spec.ts", "tests/**/*.ts", "e2e/**/*.ts"];
 const PROSE_EXEMPT_SPECS = ["tests/architecture/claude-hooks.spec.ts", "tests/config/eslint.spec.ts"];
