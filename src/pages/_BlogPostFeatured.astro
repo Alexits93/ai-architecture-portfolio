@@ -7,7 +7,7 @@ const featuredPost = selectFeaturedPost(await getCollection('blog'));
 ---
 <section id="blog-featured">
   <div class="wrapper">
-    <h1>Featured Article</h1>
+    <h2>Featured Article</h2>
     {featuredPost && <BlogPostThumbnail post={featuredPost} />}
   </div>
 </section>
@@ -24,7 +24,7 @@ const featuredPost = selectFeaturedPost(await getCollection('blog'));
     justify-content: center;
   }
   
-  #blog-featured .wrapper h1 {
+  #blog-featured .wrapper h2 {
     color: var(--font-color-bold);
     text-align: center;
     margin: 0;
@@ -40,7 +40,7 @@ const featuredPost = selectFeaturedPost(await getCollection('blog'));
       justify-content: flex-start;
     }
   
-    #blog-featured .wrapper h1 {
+    #blog-featured .wrapper h2 {
       text-align: left;
     }
   }

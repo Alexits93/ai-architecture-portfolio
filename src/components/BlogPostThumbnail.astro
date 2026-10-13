@@ -12,13 +12,6 @@ const { post } = Astro.props;
 
 <a href={getPostPath(post)} class="blog-post-thumbnail" data-post-card>
   <article>
-    <figure>
-      <img src="/assets/images/placeholder.webp"
-           data-morph="image"
-           alt={post.data.title}
-           height="200" width="420" loading="lazy" />
-      <figcaption>{post.data.title}</figcaption>
-    </figure>
     <div class="thumbnail-body">
       <div class="thumbnail-body-top">
         <h2 data-morph="title">{post.data.title}</h2>
@@ -68,24 +61,6 @@ const { post } = Astro.props;
   .blog-post-thumbnail:active article {
     translate: 0 0;
     transition-duration: .05s;
-  }
-
-  .blog-post-thumbnail article figure {
-    margin: 0;
-    margin-bottom: var(--space-4);
-  }
-
-  .blog-post-thumbnail article figure img {
-    width: 100%;
-    border-radius: var(--radius-lg);
-    object-fit: cover;
-    object-position: center;
-  }
-
-  .blog-post-thumbnail article figure figcaption {
-    height: 0;
-    width: 0;
-    visibility: hidden;
   }
 
   .blog-post-thumbnail article .thumbnail-body {

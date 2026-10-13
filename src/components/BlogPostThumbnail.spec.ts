@@ -37,4 +37,9 @@ describe('BlogPostThumbnail Entity (Astro)', () => {
     expect(doc.querySelectorAll('a')).toHaveLength(1);
     expect(doc.querySelector('svg')).toBeNull();
   });
+
+  it('renders no image', async () => {
+    const doc = await render();
+    expect(doc.querySelector('img, figure')).toBeNull();
+  });
 });

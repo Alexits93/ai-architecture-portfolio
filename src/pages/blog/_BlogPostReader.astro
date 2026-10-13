@@ -35,19 +35,6 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
         </div>
         <p class="publish-date">{formattedDate}</p>
       </div>
-
-      <figure>
-        <picture>
-          <img src="/assets/images/placeholder.webp"
-               data-morph="image"
-               alt={post.data.title}
-               width="728"
-               height="364"
-               loading="eager"
-               fetchpriority="high" />
-        </picture>
-        <figcaption class="sr-only">{post.data.title}</figcaption>
-      </figure>
     </header>
 
     <article class="prose">
@@ -118,29 +105,6 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
     height: var(--size-icon-md);
   }
 
-  figure {
-    margin: 0 0 var(--space-4);
-  }
-
-  figure img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    object-position: center;
-  }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-  }
-
   .category {
     margin: var(--space-12) 0;
   }
@@ -154,6 +118,14 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
   .prose {
     line-height: 1.6;
     margin-bottom: var(--space-8);
+  }
+
+  /* Post section headings are larger than body text. */
+  .prose :global(h2) {
+    margin: var(--space-8) 0 var(--space-2);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xl);
+    line-height: var(--line-height-lg);
   }
 
   /* Prism token classes from markdown.syntaxHighlight: 'prism'. Markdown output carries no scope attribute, hence :global(). */

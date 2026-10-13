@@ -14,7 +14,7 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
 ---
 <section id="blog-section">
   <div class="wrapper-top">
-    <h1>Recommended Articles</h1>
+    <h2>Recommended Articles</h2>
   </div>
   <div class="wrapper">
     {recommendedPosts.map(post => (
@@ -40,7 +40,7 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
     justify-content: center;
   }
 
-  #blog-section .wrapper-top h1 {
+  #blog-section .wrapper-top h2 {
     color: var(--font-color-bold);
     margin: 0;
     letter-spacing: var(--letter-spacing-tight);
@@ -112,7 +112,7 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    #blog-section .wrapper-top h1 {
+    #blog-section .wrapper-top h2 {
       text-align: left;
     }
   }

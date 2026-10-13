@@ -59,6 +59,13 @@ describe('BlogPostReader Widget (Astro)', () => {
     expect(htmlContent).toContain('14 SEP 2026');
   });
 
+  it('renders no image in the post header', async () => {
+    const html = await container.renderToString(BlogPostReader, { props: { post: mockPost } });
+    const header = new JSDOM(html).window.document.querySelector('#post-hero');
+    assert.exists(header);
+    expect(header.querySelector('img, figure')).toBeNull();
+  });
+
   it('should link the category to its category page', async () => {
     const html = await container.renderToString(BlogPostReader, {
       props: { post: mockPost },

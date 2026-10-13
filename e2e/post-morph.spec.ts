@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-// Story #209, Task #210: a card's image and title morph into the post's image and title through a cross-document
+// Story #209, Task #210: a card's title morphs into the post's title through a cross-document
 // view transition. The names are set by pageswap and pagereveal, as in Chrome's cross-document guide
 // (https://developer.chrome.com/docs/web-platform/view-transitions/cross-document). Engines without cross-document
 // view transitions navigate normally.
@@ -31,7 +31,7 @@ test.beforeEach(async ({ page }) => {
   await recordGroups(page);
 });
 
-const MORPH = JSON.stringify(['post-image', 'post-title', 'root']);
+const MORPH = JSON.stringify(['post-title', 'root']);
 
 test('a blog card morphs into the post, and Back morphs it home', async ({ page }) => {
   await page.goto('/blog/');
@@ -64,7 +64,7 @@ test('the names are gone once the transition ran', async ({ page }) => {
   await expect
     .poll(() =>
       page.evaluate(() =>
-        [...document.querySelectorAll('img, h1, h2')].filter((el) => getComputedStyle(el).viewTransitionName !== 'none')
+        [...document.querySelectorAll('h1, h2')].filter((el) => getComputedStyle(el).viewTransitionName !== 'none')
           .length,
       ),
     )

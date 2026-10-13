@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { readFileSync } from 'node:fs';
 import { URL } from 'node:url';
@@ -10,6 +10,21 @@ export default defineConfig({
   site: 'https://www.pa-tech.dev',
   // Legacy permalinks were `/blog/:slug/`. One policy, enforced, preserves link equity.
   trailingSlash: 'always',
+  // Inter from the local files the OG image also reads, served and preloaded by Astro
+  // (https://docs.astro.build/en/guides/fonts/).
+  fonts: [
+    {
+      provider: fontProviders.local(),
+      name: 'Inter',
+      cssVariable: '--font-inter',
+      options: {
+        variants: [
+          { src: ['./src/assets/fonts/Inter-Regular.woff'], weight: 400, style: 'normal' },
+          { src: ['./src/assets/fonts/Inter-Bold.woff'], weight: 700, style: 'normal' },
+        ],
+      },
+    },
+  ],
   integrations: [
     // The pre-paint theme script as an inline <head> script on every page, with no request (#86).
     // Astro hashes head-inline scripts into script-src; e2e/csp.spec.ts fails if it stops doing so
