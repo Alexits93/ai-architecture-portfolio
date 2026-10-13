@@ -20,7 +20,8 @@ const rootRevealRuns = (page: Page) =>
     }),
   );
 
-const HERO = ['.about-me h1', '.about-me h2', '.about-me h3', '.about-me p', '.about-me .social-links'];
+// Home shows no social icons in the hero; they sit in the Connect line (#243).
+const HERO = ['.about-me h1', '.about-me h2', '.about-me h3', '.about-me p'];
 
 test.describe('motion allowed', () => {
   test.use({ reducedMotion: 'no-preference' });

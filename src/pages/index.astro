@@ -1,56 +1,78 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { SITE } from '@/consts';
+import { ROUTES, SITE } from '@/consts';
 import AboutMe from '@/components/AboutMe.astro';
 import BlogPostFeatured from './_BlogPostFeatured.astro';
 import BlogPostRecommended from '@/components/BlogPostRecommended.astro';
 import Now from './_Now.astro';
-import Projects from './_Projects.astro';
 
-const aboutMeData = {
-    name: SITE.name,
-    profession: SITE.role,
-    text: SITE.pitch,
-    githubUrl: "https://github.com/Alexits93",
-    linkedinUrl: "https://www.linkedin.com/in/patrik-alexits/",
-    instagramUrl: "https://www.instagram.com/akelafreestyle/",
-    stackoverflowUrl: "https://stackoverflow.com/users/9327050/patrik-alexits"
-};
+// Public artefacts only: each row links to something a visitor can open (#243, research on #212).
+const openables = [
+	{
+		name: 'pa-tech.dev',
+		line: 'This portfolio and blog, and the agent harness that builds it with Claude Code.',
+		url: 'https://github.com/Alexits93/ai-architecture-portfolio',
+	},
+];
+
+const socials = [
+	{ name: 'GitHub', url: 'https://github.com/Alexits93' },
+	{ name: 'LinkedIn', url: 'https://www.linkedin.com/in/patrik-alexits/' },
+	{ name: 'Stack Overflow', url: 'https://stackoverflow.com/users/9327050/patrik-alexits' },
+	{ name: 'Instagram', url: 'https://www.instagram.com/akelafreestyle/' },
+];
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
 	<main>
-		<div class="home-wrapper">
-			<AboutMe
-				name={aboutMeData.name}
-				profession={aboutMeData.profession}
-				text={aboutMeData.text}
-				githubUrl={aboutMeData.githubUrl}
-				linkedinUrl={aboutMeData.linkedinUrl}
-				instagramUrl={aboutMeData.instagramUrl}
-				stackoverflowUrl={aboutMeData.stackoverflowUrl}
-			/>
-			<div class="home-blocks">
-				<Projects />
-				<Now />
-				<BlogPostFeatured />
-				<BlogPostRecommended />
-			</div>
+		<div class="home">
+			<AboutMe name={SITE.name} profession={SITE.role} text={SITE.pitch} />
+			<section id="work" aria-labelledby="work-title">
+				<h2 id="work-title">Work</h2>
+				<p>
+					I lead the frontend architecture and engineering at Swiss Learning Hub, where we turn features of Evento, an
+					enterprise Windows desktop app, into Nx and Angular web applications that are accessible, responsive and easier
+					to use. Before that, I led frontend development of a B2B webshop for more than 10 professional hair care brands
+					at IBM iX DACH. The full story is on <a href={ROUTES.cv}>my CV</a>.
+				</p>
+			</section>
+			<section id="open" aria-labelledby="open-title">
+				<h2 id="open-title">Things you can open</h2>
+				<ul>
+					{openables.map(({ name, line, url }) => (
+						<li><a href={url}>{name}</a> <span>{line}</span></li>
+					))}
+				</ul>
+			</section>
+			<Now />
+			<BlogPostFeatured />
+			<BlogPostRecommended />
+			<section id="connect" aria-labelledby="connect-title">
+				<h2 id="connect-title">Connect</h2>
+				<ul>
+					{socials.map(({ name, url }) => <li><a href={url}>{name}</a></li>)}
+				</ul>
+			</section>
 		</div>
 	</main>
 </BaseLayout>
 
 <style>
-	/* AboutMe renders its own root, so :global() reaches it from this page. Sticky intro column as on /cv/ (#214). */
-	.home-wrapper { display: flex; flex-direction: column; gap: var(--space-12); }
-	.home-blocks { display: flex; flex-direction: column; gap: var(--space-12); }
-	@media (min-width: 64rem) {
-		.home-wrapper { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
-		.home-wrapper > :global(section#about-me) { position: sticky; top: var(--space-24); }
-		/* The blog widgets size their grids for a full-width page; in the half-width column they start at the left
-		   edge and keep two columns. The .home-wrapper ancestor outranks the widgets' own scoped selectors, which tie
-		   with .home-blocks alone and load later. #219 replaces both widgets on home. */
-		.home-wrapper .home-blocks :global(#blog-featured .wrapper) { justify-content: flex-start; }
-		.home-wrapper .home-blocks :global(#blog-section .wrapper) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	/* One reading column of about 680 px at every width (#243, research on #212). */
+	.home { display: flex; flex-direction: column; gap: var(--space-12); width: 100%; max-width: var(--size-column); margin-inline: auto; }
+	.home section h2 {
+		margin: 0 0 var(--space-4); color: var(--font-color-bold);
+		letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-bold);
+		font-size: var(--font-size-2xl); line-height: var(--line-height-xl);
+	}
+	.home p { margin: 0; color: var(--font-color); }
+	.home ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-2); color: var(--font-color); }
+	#open a, #connect a { color: var(--font-color-bold); font-weight: var(--font-weight-medium); }
+	#connect ul { flex-direction: row; flex-wrap: wrap; column-gap: var(--space-6); }
+	/* BlogPostRecommended is shared with the post pages and sizes three columns for a full-width page. main .home
+	   outranks the widget's own scoped selector, which ties with .home alone and loads later. #219 replaces the widget
+	   on home. */
+	@media (min-width: 48rem) {
+		main .home :global(#blog-section .wrapper) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 	}
 </style>
