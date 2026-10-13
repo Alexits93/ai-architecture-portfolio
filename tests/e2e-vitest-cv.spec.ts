@@ -23,7 +23,7 @@ it('renders the experience collection newest first', async () => {
   const texts = (selector: string) => [...doc.querySelectorAll(selector)].map((el) => el.textContent);
   expect(texts('.experience-item > span')).toEqual(['2024 - Present', '2020 - 2023', '2019 - 2020', '2017 - 2018']);
   expect(texts('.experience-item h3')).toEqual([
-    'Frontend Software Engineer - Swiss Learning Hub',
+    'Lead Frontend Architect & Engineer - Swiss Learning Hub',
     'Frontend Developer - IBM iX DACH',
     'Fullstack Developer - Solvistas GmbH',
     'Fullstack Developer - Voov Ltd.',
@@ -41,4 +41,19 @@ it('renders the owner-confirmed IBM iX DACH highlights', async () => {
     'Led frontend development of a B2B webshop for licensed hair salon professionals, with more than 10 professional brands and about 1,500 products.',
     'Mentored junior frontend developers.',
   ]);
+});
+
+// Owner-written Swiss Learning Hub highlights (#215).
+it('renders the owner-written Swiss Learning Hub highlights', async () => {
+  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+  const doc = new JSDOM(await container.renderToString(Cv)).window.document;
+
+  const current = doc.querySelectorAll('.experience-item')[0];
+  assert.exists(current);
+  expect([...current.querySelectorAll('.position p')].map((p) => p.textContent)).toEqual([
+    'Leading the frontend architecture and engineering of the Evento feature web migration, built with Nx and Angular.',
+    'Mentoring juniors and leading the team with clear terminology, principles and high engineering standards.',
+    'Among the people leading AI adoption at the company, engineering tailored user harnesses for LLM usage.',
+  ]);
+  expect([...current.querySelectorAll('.skill-tag')].map((tag) => tag.textContent)).toContain('#nx');
 });

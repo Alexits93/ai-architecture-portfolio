@@ -2,28 +2,14 @@
 - id: swiss-learning-hub
   start: 2024
   end: null
-  role: Frontend Software Engineer
+  role: Lead Frontend Architect & Engineer
   company: Swiss Learning Hub
   highlights:
-    - Planning and implementing a web-based migration of an enterprise-level Windows application Evento, using web components, Context API, State Machine and web standards to ensure an agnostic way of implementation.
-    - Maintaining and developing Evento’s web-based feature application written in Angular.
-    - Developing Evento’s new, web-components based feature applications using hybrids.js, Typescript and State Machines (xstate).
-    - Researching, documenting micro frontends architechture and web components based application solutions.
-    - Implemented custom SCSS Framework solution, reducing used code by 85%
-  emphasis:
-    - Evento
-    - web components
-    - Context API
-    - State Machine
-    - Evento’s web-based feature application
-    - Angular
-    - Evento’s new, web-components based
-    - hybrids.js
-    - Typescript
-    - State Machines (xstate)
-    - micro frontends
-    - SCSS Framework
-  skills: [Web Components, Microfrontend, Angular, TypeScript, JavaScript, Accessibility, Context API, TFS, SCSS, Agile, Scrum]
+    - Leading the frontend architecture and engineering of the Evento feature web migration, built with Nx and Angular.
+    - Mentoring juniors and leading the team with clear terminology, principles and high engineering standards.
+    - Among the people leading AI adoption at the company, engineering tailored user harnesses for LLM usage.
+  emphasis: [Evento, Nx, Angular, AI adoption, LLM]
+  skills: [Web Components, Microfrontend, Angular, Nx, TypeScript, JavaScript, Accessibility, Context API, TFS, SCSS, Agile, Scrum]
 - id: ibm-ix-dach
   start: 2020
   end: 2023
