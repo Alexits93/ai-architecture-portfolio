@@ -1,0 +1,26 @@
+# Weekly version updates, one grouped PR per ecosystem
+# (https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference).
+# The default 3-day cooldown stays above minimumReleaseAge in pnpm-workspace.yaml, so a Dependabot lockfile
+# never pins a release pnpm refuses to install.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      npm-packages:
+        patterns: ["*"]
+    commit-message:
+      prefix: chore(deps)
+
+  # "/" covers .github/workflows; the composite action needs its own entry.
+  - package-ecosystem: github-actions
+    directories: ["/", "/.github/actions/setup-pnpm-env"]
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: chore(deps)
