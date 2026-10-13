@@ -4,6 +4,7 @@ import { SITE } from '@/shared/config';
 import { AboutMe } from '@/widgets/about-me';
 import { BlogPostFeatured } from '@/widgets/blog-post-featured';
 import { BlogPostRecommended } from '@/widgets/blog-post-recommended';
+import Now from './_Now.astro';
 
 const aboutMeData = {
     name: SITE.name,
@@ -29,6 +30,7 @@ const aboutMeData = {
 				stackoverflowUrl={aboutMeData.stackoverflowUrl}
 			/>
 			<div class="home-blocks">
+				<Now />
 				<BlogPostFeatured />
 				<BlogPostRecommended />
 			</div>
