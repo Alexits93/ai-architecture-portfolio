@@ -1,0 +1,49 @@
+---
+// Page-only component for the home page (ADR 002): the projects block from src/content/projects.yaml (#217).
+import { getCollection } from 'astro:content';
+import SkillTag from '@/components/SkillTag.astro';
+
+const projects = (await getCollection('projects')).toSorted((a, b) => a.data.order - b.data.order);
+---
+
+<section id="projects" aria-labelledby="projects-title">
+	<h2 id="projects-title">Projects</h2>
+	{projects.map(({ data }) => (
+		<article class="project">
+			<h3>{data.name}</h3>
+			<p>{data.description}</p>
+			<p class="project-role">Role: {data.role}</p>
+			<p class="project-outcome">{data.outcome}</p>
+			<div class="project-stack">
+				{data.stack.map((skill) => <SkillTag skill={skill} />)}
+			</div>
+			{data.url && (
+				<a href={data.url} aria-label={`View source of ${data.name}`}>
+					View source
+				</a>
+			)}
+		</article>
+	))}
+</section>
+
+<style>
+	#projects { display: flex; flex-direction: column; gap: var(--space-4); }
+	#projects h2 {
+		margin: 0; color: var(--font-color-bold);
+		letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-bold);
+		font-size: var(--font-size-2xl); line-height: var(--line-height-xl);
+	}
+	.project {
+		display: flex; flex-direction: column; gap: var(--space-2);
+		padding: var(--space-4); border-radius: var(--radius-lg);
+		filter: var(--shadow-card);
+		box-shadow: var(--shadow-card-edge);
+		background-color: var(--theme-secondary); color: var(--font-color);
+	}
+	.project h3 { margin: 0; color: var(--font-color-bold); font-size: var(--font-size-lg); }
+	.project p { margin: 0; }
+	.project-role { font-size: var(--font-size-sm); }
+	.project-outcome { font-weight: var(--font-weight-bold); }
+	.project-stack { display: flex; flex-wrap: wrap; gap: var(--space-1); }
+	.project a { align-self: flex-start; color: var(--font-color-bold); }
+</style>

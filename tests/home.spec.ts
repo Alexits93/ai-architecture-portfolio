@@ -20,12 +20,19 @@ const nowEntry: CollectionEntry<'now'> = {
   data: { updated: new Date('2026-10-13T00:00:00.000Z') },
   body: '- Mock line',
 };
+// Out of order on purpose: the block sorts by `order` (#217).
+const project = (id: string, order: number, url?: string): CollectionEntry<'projects'> => ({
+  id,
+  collection: 'projects',
+  data: { id, order, name: `Project ${id}`, description: 'A web app.', role: 'Lead', stack: ['Angular', 'Nx'], outcome: 'Faster releases.', url },
+});
+const projects = [project('second', 2), project('first', 1, 'https://github.com/acme/first')];
 
 vi.mock('astro:content', async (importOriginal) => {
   const actual = await importOriginal<typeof import('astro:content')>();
   return {
     ...actual,
-    getCollection: async () => posts,
+    getCollection: async (name: string) => (name === 'projects' ? projects : posts),
     getEntry: async () => nowEntry,
     render: async () => ({ Content: MockContent, headings: [], remarkPluginFrontmatter: {} }),
   };
@@ -82,12 +89,12 @@ describe('Home Page (index.astro)', () => {
   });
 });
 
-// The now block comes first in the blocks, with its text and a machine-readable updated date (#218).
-it('renders the now block first in the home blocks', async () => {
+// The now block follows the projects, with its text and a machine-readable updated date (#218, #217).
+it('renders the now block after the projects block', async () => {
   const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
-  const now = doc.querySelector('.home-blocks > section#now:first-child');
+  const now = doc.querySelector('.home-blocks > section#projects + section#now');
   assert.exists(now);
   expect(now.querySelector('h2')).toHaveProperty('textContent', 'Now');
   expect(now.textContent).toContain('Mock Rendered Content');
@@ -105,4 +112,29 @@ it('renders the blog fixtures as featured and recommended cards', async () => {
   const hrefs = (selector: string) => [...doc.querySelectorAll(selector)].map((card) => card.getAttribute('href'));
   expect(hrefs('#blog-featured .blog-post-thumbnail')).toEqual(['/blog/featured-post/']);
   expect(hrefs('#blog-section .blog-post-thumbnail')).toEqual(['/blog/newer-post/', '/blog/older-post/']);
+});
+
+// Projects come first in the home blocks, sorted by `order`; only a project with a public link renders one (#217).
+it('renders the projects block first, in order, with links only where they exist', async () => {
+  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+  const doc = new JSDOM(await container.renderToString(Index)).window.document;
+
+  const block = doc.querySelector('.home-blocks > section#projects:first-child');
+  assert.exists(block);
+  expect(block.querySelector('h2')).toHaveProperty('textContent', 'Projects');
+  expect([...block.querySelectorAll('article h3')].map((name) => name.textContent)).toEqual(['Project first', 'Project second']);
+
+  const [linked, unlinked] = block.querySelectorAll('article');
+  assert.exists(linked);
+  assert.exists(unlinked);
+  expect(linked.textContent).toContain('Lead');
+  expect(linked.textContent).toContain('Faster releases.');
+  expect([...linked.querySelectorAll('.skill-tag')].map((tag) => tag.textContent.trim())).toEqual(['#angular', '#nx']);
+  const link = linked.querySelector('a');
+  assert.exists(link);
+  expect(link.getAttribute('href')).toBe('https://github.com/acme/first');
+  // Same tab, owner decision on #242: no target attribute.
+  expect(link.hasAttribute('target')).toBe(false);
+  expect(link.getAttribute('aria-label')).toBe('View source of Project first');
+  expect(unlinked.querySelector('a')).toBeNull();
 });

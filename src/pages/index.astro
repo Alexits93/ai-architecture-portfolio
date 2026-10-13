@@ -5,6 +5,7 @@ import AboutMe from '@/components/AboutMe.astro';
 import BlogPostFeatured from './_BlogPostFeatured.astro';
 import BlogPostRecommended from '@/components/BlogPostRecommended.astro';
 import Now from './_Now.astro';
+import Projects from './_Projects.astro';
 
 const aboutMeData = {
     name: SITE.name,
@@ -30,6 +31,7 @@ const aboutMeData = {
 				stackoverflowUrl={aboutMeData.stackoverflowUrl}
 			/>
 			<div class="home-blocks">
+				<Projects />
 				<Now />
 				<BlogPostFeatured />
 				<BlogPostRecommended />
