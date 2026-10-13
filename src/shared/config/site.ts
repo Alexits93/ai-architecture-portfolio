@@ -1,6 +1,8 @@
 const name = 'Patrik Alexits';
 // One title for the whole site: the home and CV heroes and the home SEO title (#214).
 const role = 'Frontend Architect';
+// "front-end" keeps the hyphenated form on the home page next to the "Frontend" title (#125).
+const pitch = 'I design front-end architecture, build harnesses for LLM coding agents, and coach engineers.';
 
 /** Site-wide identity used by SEO metadata, the home and CV heroes, and generated OG images. */
 export const SITE = {
@@ -8,10 +10,10 @@ export const SITE = {
   author: name,
   locale: 'en_US',
   role,
-  // "front-end" keeps the hyphenated form on the home page next to the "Frontend" title (#125).
-  pitch: 'I design front-end architecture, build harnesses for LLM coding agents, and coach engineers.',
+  pitch,
   title: `${name} | ${role}`,
-  description: 'Software engineer and architect. I build harnesses for LLM coding agents, and coach and mentor engineers.',
+  // Built from the role and pitch so search results and link previews match the heroes (#223).
+  description: `${role}. ${pitch}`,
   defaultOgImagePath: '/og.png',
 } as const;
 
