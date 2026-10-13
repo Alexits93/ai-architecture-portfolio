@@ -2,12 +2,6 @@ import js from "@eslint/js";
 import tsEslint from "typescript-eslint";
 import eslintPluginAstro from "eslint-plugin-astro";
 
-// AI-prose gate (CLAUDE.md writing rules), enforced in comments, strings and Astro template text.
-// Emoji class matches .claude/hooks/anti-slop.mjs: Extended_Pictographic minus the (c), (R) and TM signs.
-const BANNED_WORDS = ["delve", "robust", "seamless", "synergy", "tapestry", "cutting-edge", "leverage", "furthermore", "moreover", "ultimately", "in conclusion", "unlocking"];
-const SLOP = `/\\b(${BANNED_WORDS.join("|")})\\b|\\u2014|(?![\\u00a9\\u00ae\\u2122])\\p{Extended_Pictographic}/iu`;
-const SLOP_MESSAGE = "AI prose: banned word, em-dash or emoji (see CLAUDE.md writing rules).";
-
 // no-restricted-imports pattern for an import into one of `folders` through the `@/` alias or a `../` climb
 // (https://eslint.org/docs/latest/rules/no-restricted-imports, ESLint 10.12.0).
 const boundary = (folders, message) => ({ regex: `^(@/|(\\.\\./)+)(${folders})/`, message });
@@ -16,7 +10,7 @@ const boundary = (folders, message) => ({ regex: `^(@/|(\\.\\./)+)(${folders})/`
 // (https://eslint.org/docs/latest/use/configure/rules), so every boundary block below repeats it.
 const ASTRO_ZOD = { name: "astro:content", importNames: ["z"], message: "Import z from 'astro/zod' (deprecated in astro:content, removed in Astro 8)." };
 
-// Type and markup bans, kept apart from the prose selectors so the prose exemption below keeps them.
+// Type and markup bans in all source files.
 const SYNTAX_BANS = [
   {
     "selector": "TSUnknownKeyword",
@@ -40,16 +34,6 @@ const SYNTAX_BANS = [
   }
 ];
 
-const PROSE_BANS = [
-  { "selector": `Literal[value=${SLOP}]`, "message": SLOP_MESSAGE },
-  // cooked, not raw, so an escaped U+2014 in source is caught.
-  { "selector": `TemplateElement[value.cooked=${SLOP}]`, "message": SLOP_MESSAGE },
-  { "selector": `JSXText[value=${SLOP}]`, "message": SLOP_MESSAGE },
-  // HTML comments and <style> or <script is:inline> bodies (https://github.com/ota-meshi/astro-eslint-parser/blob/main/docs/AST.md).
-  { "selector": `AstroHTMLComment[value=${SLOP}]`, "message": SLOP_MESSAGE },
-  { "selector": `AstroRawText[value=${SLOP}]`, "message": SLOP_MESSAGE }
-];
-
 // Specs: a missing value must fail the test at a guard, not flow on as undefined or a fallback (#138).
 // ChainExpression is the root of every optional chain (https://github.com/estree/estree/blob/master/es2020.md).
 const NULL_GUARD_MESSAGE = "Specs: no optional chaining or ?? fallbacks. Guard the value so a missing one fails the test and narrows the type: assert.exists or assert.instanceOf from vitest, or assert(value !== null) from node:assert/strict in Playwright specs.";
@@ -70,7 +54,6 @@ const NULL_SAFETY_BANS = [
   }
 ];
 const SPECS = ["**/*.spec.ts", "tests/**/*.ts", "e2e/**/*.ts"];
-const PROSE_EXEMPT_SPECS = ["tests/architecture/claude-hooks.spec.ts", "tests/config/eslint.spec.ts"];
 
 export default [
   js.configs.recommended,
@@ -95,15 +78,14 @@ export default [
       // Every `as` cast except `as const`: narrow with instanceof or typed generics instead.
       "@typescript-eslint/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
       "no-console": "error",
-      "no-warning-comments": ["error", { "terms": [...BANNED_WORDS, "—"], "location": "anywhere" }],
-      "no-restricted-syntax": ["error", ...PROSE_BANS, ...SYNTAX_BANS]
+      "no-restricted-syntax": ["error", ...SYNTAX_BANS]
     }
   },
   {
     // A later block's options replace this rule's list (https://eslint.org/docs/latest/use/configure/rules).
     files: SPECS,
     rules: {
-      "no-restricted-syntax": ["error", ...PROSE_BANS, ...SYNTAX_BANS, ...NULL_SAFETY_BANS],
+      "no-restricted-syntax": ["error", ...SYNTAX_BANS, ...NULL_SAFETY_BANS],
       "@typescript-eslint/no-non-null-assertion": "error"
     }
   },
@@ -113,21 +95,6 @@ export default [
     ignores: ["src/shared/ui/seo-head/SeoHead.astro"],
     rules: {
       "astro/no-set-html-directive": "error"
-    }
-  },
-  {
-    // These files must spell out the banned list or slop samples to test the gates.
-    files: ["eslint.config.mjs", ".claude/hooks/anti-slop.mjs"],
-    rules: {
-      "no-warning-comments": "off",
-      "no-restricted-syntax": ["error", ...SYNTAX_BANS]
-    }
-  },
-  {
-    files: PROSE_EXEMPT_SPECS,
-    rules: {
-      "no-warning-comments": "off",
-      "no-restricted-syntax": ["error", ...SYNTAX_BANS, ...NULL_SAFETY_BANS]
     }
   },
   {

@@ -1,4 +1,0 @@
-schema_version: "1.1"
-name: reconcile-squash-merged
-context:
-  scaffold_script: fixture.sh

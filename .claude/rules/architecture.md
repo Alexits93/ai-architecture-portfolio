@@ -4,7 +4,7 @@ paths:
 ---
 # Project structure (ADR 002)
 
-Astro's documented conventions (https://docs.astro.build/en/basics/project-structure/), decided in `docs/adrs/002-astro-conventions.md`. Target folders under `src/`, created by Stories #53 and #76. Imports flow `pages/ > layouts/ > components/ > lib/`; ESLint `no-restricted-imports` blocks the reverse direction.
+Astro's documented conventions (https://docs.astro.build/en/basics/project-structure/), decided in `docs/adrs/002-astro-conventions.md`. Imports flow `pages/ > layouts/ > components/ > lib/`; ESLint `no-restricted-imports` blocks the reverse direction.
 
 - `pages/`: routes. Markup and scoped `<style>` used by one page stay in that page. A page-only component sits next to the page with a `_` prefix (`src/pages/blog/_BlogFeed.astro`, shared by the `/blog/` routes); the router ignores it.
 - `layouts/`: the document shell (`<html>`, `<head>`, global CSS import, header, menu, footer, `<slot />`) and nested layouts. Every page renders through a layout.
@@ -16,4 +16,3 @@ Astro's documented conventions (https://docs.astro.build/en/basics/project-struc
 - Import with the `@/` alias across folders, relative paths inside one folder.
 - Validate input at boundaries (content schemas, config) and trust it inside.
 - `src/shared`, `src/entities` and `src/widgets` are legacy folders that Story #76 moves into the target folders. New code goes to the target folders.
-- Adding or removing a page, layout or component: update the mermaid map in `docs/ARCHITECTURE.md` in the same change.

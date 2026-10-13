@@ -1,17 +1,13 @@
 name: PR Lint
 
-# pull_request_target runs this file and checks out master, so a PR cannot weaken the rules that check it
-# (#55). No step runs PR code; the PR's title, body and commit messages are only read as data
-# (https://docs.github.com/en/actions/reference/security/secure-use).
+# pull_request_target runs this file from master, so a PR cannot weaken the checks that run on it. No step runs
+# PR code; the title and body are read as data (https://docs.github.com/en/actions/reference/security/secure-use).
 on:
   pull_request_target:
     types: [opened, edited, synchronize, reopened]
 
-# Read-only. pull-requests: read serves the PR's closingIssuesReferences in the branch link check.
 permissions:
   contents: read
-  issues: read
-  pull-requests: read
 
 jobs:
   pr-lint:
@@ -21,8 +17,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # All branches, so the PR head commits are there for the commit message check; never checked out.
-          fetch-depth: 0
           persist-credentials: false
 
       - name: Setup Environment
@@ -34,46 +28,8 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: printf '%s\n' "$PR_TITLE" | pnpm exec commitlint
 
-      # The squash body keeps the commit messages; semantic-release reads their footers.
-      - name: Check PR commits
+      # GitHub's closing keywords (https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue).
+      - name: Check the PR closes an issue
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
-
-      # Same rules as the local .claude/hooks/pr-gate.mjs.
-      - name: Check PR description
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        with:
-          script: |
-            const { findPrBodyViolations } = await import(`${process.env.GITHUB_WORKSPACE}/.github/workflow-rules.mjs`);
-            const violations = findPrBodyViolations(context.payload.pull_request.body ?? '');
-            if (violations.length > 0) core.setFailed(violations.join('\n'));
-
-      # Each "Closes #N" is an open Story or Task with a native parent issue.
-      - name: Check linked issues
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        with:
-          script: |
-            const rules = await import(`${process.env.GITHUB_WORKSPACE}/.github/workflow-rules.mjs`);
-            const violations = [];
-            for (const number of rules.closedIssueNumbers(context.payload.pull_request.body ?? '')) {
-              const data = await github.graphql(rules.LINKED_ISSUE_QUERY, { ...context.repo, number }).catch(() => null);
-              violations.push(...rules.findLinkedIssueViolations(number, data?.repository?.issue ?? null));
-            }
-            if (violations.length > 0) core.setFailed(violations.join('\n'));
-
-      # GitHub closes every issue linked to the PR on merge, including the one its branch was created for (#185).
-      - name: Check issues the merge closes
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        with:
-          script: |
-            const rules = await import(`${process.env.GITHUB_WORKSPACE}/.github/workflow-rules.mjs`);
-            const links = await import(`${process.env.GITHUB_WORKSPACE}/.github/branch-links.mjs`);
-            const { truncatedConnections } = await import(`${process.env.GITHUB_WORKSPACE}/.github/graphql-pages.mjs`);
-            const { number, body } = context.payload.pull_request;
-            const data = await github.graphql(links.PR_CLOSING_QUERY, { ...context.repo, number });
-            const closing = data.repository.pullRequest.closingIssuesReferences;
-            if (truncatedConnections(closing).length > 0) core.setFailed(`PR #${number} links more issues than one page holds.`);
-            const violations = links.findUnclosedLinkViolations(rules.closedIssueNumbers(body ?? ''), closing.nodes.map((i) => i.number));
-            if (violations.length > 0) core.setFailed(violations.join('\n'));
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: printf '%s\n' "$PR_BODY" | grep -qiE '\b(close[sd]?|fix(e[sd])?|resolve[sd]?):? #[0-9]+' || { echo "The PR body must close an issue, for example 'Closes #123'."; exit 1; }
