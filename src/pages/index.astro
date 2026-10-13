@@ -5,6 +5,7 @@ import AboutMe from '@/components/AboutMe.astro';
 import BlogPostFeatured from './_BlogPostFeatured.astro';
 import BlogPostRecommended from '@/components/BlogPostRecommended.astro';
 import Now from './_Now.astro';
+import Principles from './_Principles.astro';
 
 // Public artefacts only: each row links to something a visitor can open (#243, research on #212).
 const openables = [
@@ -36,6 +37,7 @@ const socials = [
 					at IBM iX DACH. The full story is on <a href={ROUTES.cv}>my CV</a>.
 				</p>
 			</section>
+			<Principles />
 			<section id="open" aria-labelledby="open-title">
 				<h2 id="open-title">Things you can open</h2>
 				<ul>

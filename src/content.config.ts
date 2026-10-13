@@ -64,8 +64,14 @@ const nowCollection = defineCollection({
 	schema: nowSchema,
 });
 
+/** The principles list on home (#244): an owner-written Markdown list, no frontmatter. */
+const principlesCollection = defineCollection({
+	loader: glob({ pattern: 'principles.md', base: './src/content/principles' }),
+});
+
 export const collections = {
 	blog: blogCollection,
 	experience: experienceCollection,
 	now: nowCollection,
+	principles: principlesCollection,
 };
