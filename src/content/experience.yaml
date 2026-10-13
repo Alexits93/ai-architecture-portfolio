@@ -30,9 +30,9 @@
   role: Frontend Developer
   company: IBM iX DACH
   highlights:
-    - Spearheaded frontend development on enterprise projects across Banking and Retail sectors, utilizing Angular, Vue.js and Microfrontend architecture.
-    - Developed an internal platform combining SAP CX, Adobe Experience Manager, and Vue.js for a Proof of Concept.
-  emphasis: [Angular, Vue.js, Microfrontend, SAP CX, Adobe Experience Manager]
+    - Led frontend development of a B2B webshop for licensed hair salon professionals, with more than 10 professional brands and about 1,500 products.
+    - Mentored junior frontend developers.
+  emphasis: [more than 10 professional brands, about 1,500 products]
   skills: [Angular, Microfrontend, Vue.js, TypeScript, JavaScript, Accessibility, JQuery, SAP CX, Adobe Experience Manager (AEM), Agile, Scrum, Kanban, SaFe]
 - id: solvistas
   start: 2019

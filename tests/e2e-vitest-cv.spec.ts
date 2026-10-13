@@ -29,3 +29,16 @@ it('renders the experience collection newest first', async () => {
     'Fullstack Developer - Voov Ltd.',
   ]);
 });
+
+// Owner-confirmed IBM iX DACH highlights; the #23 port had invented them. The exact text keeps the client and the shop unnamed (#215).
+it('renders the owner-confirmed IBM iX DACH highlights', async () => {
+  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+  const doc = new JSDOM(await container.renderToString(Cv)).window.document;
+
+  const ibm = doc.querySelectorAll('.experience-item')[1];
+  assert.exists(ibm);
+  expect([...ibm.querySelectorAll('.position p')].map((p) => p.textContent)).toEqual([
+    'Led frontend development of a B2B webshop for licensed hair salon professionals, with more than 10 professional brands and about 1,500 products.',
+    'Mentored junior frontend developers.',
+  ]);
+});
