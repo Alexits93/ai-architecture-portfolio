@@ -6,9 +6,9 @@ import { BlogPostFeatured } from '@/widgets/blog-post-featured';
 import { BlogPostRecommended } from '@/widgets/blog-post-recommended';
 
 const aboutMeData = {
-    name: "Patrik Alexits",
-    profession: "Software Architect and Engineer",
-    text: "I built this static site with Astro to test modern front-end and AI-driven architecture patterns. The codebase follows Astro's own project conventions and uses Satori for Open Graph images. Testing is enforced via Vitest and Playwright. It serves as a practical playground to combine hands-on engineering with autonomous AI agents.",
+    name: SITE.name,
+    profession: SITE.role,
+    text: SITE.pitch,
     githubUrl: "https://github.com/Alexits93",
     linkedinUrl: "https://www.linkedin.com/in/patrik-alexits/",
     instagramUrl: "https://www.instagram.com/akelafreestyle/",
@@ -19,19 +19,17 @@ const aboutMeData = {
 <BaseLayout title={SITE.title} description={SITE.description}>
 	<main>
 		<div class="home-wrapper">
-			<div class="home-top-wrapper">
-				<AboutMe
-					name={aboutMeData.name}
-					profession={aboutMeData.profession}
-					text={aboutMeData.text}
-					githubUrl={aboutMeData.githubUrl}
-					linkedinUrl={aboutMeData.linkedinUrl}
-					instagramUrl={aboutMeData.instagramUrl}
-					stackoverflowUrl={aboutMeData.stackoverflowUrl}
-				/>
+			<AboutMe
+				name={aboutMeData.name}
+				profession={aboutMeData.profession}
+				text={aboutMeData.text}
+				githubUrl={aboutMeData.githubUrl}
+				linkedinUrl={aboutMeData.linkedinUrl}
+				instagramUrl={aboutMeData.instagramUrl}
+				stackoverflowUrl={aboutMeData.stackoverflowUrl}
+			/>
+			<div class="home-blocks">
 				<BlogPostFeatured />
-			</div>
-			<div class="home-bottom-wrapper">
 				<BlogPostRecommended />
 			</div>
 		</div>
@@ -39,8 +37,16 @@ const aboutMeData = {
 </BaseLayout>
 
 <style>
+	/* AboutMe renders its own root, so :global() reaches it from this page. Sticky intro column as on /cv/ (#214). */
 	.home-wrapper { display: flex; flex-direction: column; gap: var(--space-12); }
-	.home-top-wrapper { display: flex; flex-direction: column; gap: var(--space-12); }
-	.home-bottom-wrapper { display: flex; justify-content: center; }
-	@media (min-width: 48rem) { .home-top-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); } }
+	.home-blocks { display: flex; flex-direction: column; gap: var(--space-12); }
+	@media (min-width: 64rem) {
+		.home-wrapper { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }
+		.home-wrapper > :global(section#about-me) { position: sticky; top: var(--space-24); }
+		/* The blog widgets size their grids for a full-width page; in the half-width column they start at the left
+		   edge and keep two columns. The .home-wrapper ancestor outranks the widgets' own scoped selectors, which tie
+		   with .home-blocks alone and load later. #219 replaces both widgets on home. */
+		.home-wrapper .home-blocks :global(#blog-featured .wrapper) { justify-content: flex-start; }
+		.home-wrapper .home-blocks :global(#blog-section .wrapper) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	}
 </style>
