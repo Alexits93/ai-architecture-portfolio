@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { animationsSettled } from './animations';
 import { test, expect, type Locator } from '@playwright/test';
 
 // WCAG 2.2 SC 1.4.11: icons and the marks that identify a control need 3:1 against adjacent colours.
@@ -38,9 +39,7 @@ for (const [theme, icon] of [['light', 'moon'], ['dark', 'sun']]) {
       await page.getByRole('button', { name: 'Open menu' }).click();
       await expect(page.getByRole('button', { name: 'Close menu' })).toBeVisible();
       // The bars transition their colour on open; a mid-transition read could pass falsely.
-      await page.evaluate(async () => {
-        await Promise.allSettled(document.getAnimations().map((animation) => animation.finished));
-      });
+      await animationsSettled(page);
       const bar = await css(page.getByRole('button', { name: 'Close menu' }).locator('span').first(), 'backgroundColor');
       expect(contrast(bar, await css(page.locator('.navigator-menu-overlay'), 'backgroundColor'))).toBeGreaterThanOrEqual(3);
     });
@@ -56,5 +55,27 @@ for (const [theme, raised] of [['dark', true], ['light', false]] as const) {
     const card = luminance(await css(page.locator('.blog-post-thumbnail article').first(), 'backgroundColor'));
     const body = luminance(await css(page.locator('body'), 'backgroundColor'));
     expect(card > body).toBe(raised);
+  });
+}
+
+// #210: the name is painted by a gradient between --accent-a and --accent-b; each end keeps 3:1 against the page,
+// the WCAG 2.2 SC 1.4.3 minimum for large text (the name is 2.25rem bold).
+for (const theme of ['light', 'dark']) {
+  test(`the name's gradient accents keep 3:1 against the page in the ${theme} theme`, async ({ page }) => {
+    await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
+    await page.goto('/');
+    const resolve = (token: string) =>
+      page.evaluate((name) => {
+        const probe = document.createElement('span');
+        probe.style.color = `var(${name})`;
+        document.body.append(probe);
+        const value = getComputedStyle(probe).color;
+        probe.remove();
+        return value;
+      }, token);
+    const body = await css(page.locator('body'), 'backgroundColor');
+    for (const token of ['--accent-a', '--accent-b']) {
+      expect(contrast(await resolve(token), body), token).toBeGreaterThanOrEqual(3);
+    }
   });
 }

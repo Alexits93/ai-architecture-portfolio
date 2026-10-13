@@ -21,6 +21,15 @@ export default defineConfig({
           injectScript('head-inline', readFileSync(new URL('./src/lib/theme.js', import.meta.url), 'utf-8')),
       },
     },
+    // The card-to-post morph listens for pagereveal, which must be registered before the first render, so it is a
+    // classic inline <head> script as well (#210, https://developer.chrome.com/docs/web-platform/view-transitions/cross-document).
+    {
+      name: 'post-morph-script',
+      hooks: {
+        'astro:config:setup': ({ injectScript }) =>
+          injectScript('head-inline', readFileSync(new URL('./src/lib/post-morph.js', import.meta.url), 'utf-8')),
+      },
+    },
     // Sitemap from every built route; the site uses none of the optional namespaces
     // (https://docs.astro.build/en/guides/integrations-guide/sitemap/).
     sitemap({ namespaces: { news: false, xhtml: false, image: false, video: false } }),

@@ -20,6 +20,9 @@
        step away from the page. */
     --thumbnail-bg-color: light-dark(hsl(200, 25%, 85%), hsl(200, 10%, 20%));
     --thumbnail-bg-color-hover: light-dark(hsl(200, 25%, 81%), hsl(200, 10%, 24%));
+    /* The name's gradient accent moves between these two, both at least 3:1 against the page (large text, WCAG 1.4.3). */
+    --accent-a: light-dark(hsl(200, 100%, 25%), hsl(200, 80%, 72%));
+    --accent-b: light-dark(hsl(265, 60%, 42%), hsl(265, 80%, 82%));
     /* Translucent tint behind an icon button on hover, in the icon's own hue. */
     --state-hover: light-dark(hsl(200 30% 30% / .12), hsl(200 5% 75% / .12));
     --focus-color: light-dark(hsl(0, 0%, 0%), hsl(0, 0%, 99%));
@@ -83,9 +86,26 @@
     --page-max-width: 1200px;
     --font-size-menu: 48px;
 
+    /* Motion. The spring overshoots slightly and settles, sampled into linear() stops
+       (https://developer.mozilla.org/en-US/docs/Web/CSS/easing-function/linear). */
+    --ease-spring: linear(0, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017 19.4%, 1.067 21.8%, 1.099 24.3%, 1.106 26.2%, 1.098 28.6%, 1.054 34.4%, 1.023 39.4%, 1.002 45.4%, 0.993 54.2%, 1);
+    --ease-in-out-strong: cubic-bezier(0.76, 0, 0.24, 1);
+    --duration-enter: .7s;
+    --stagger: 90ms;
+    /* Scroll reveal: from the first pixel entering the viewport until 30% of the cover range (MDN animation-range). */
+    --range-reveal: entry 0% cover 30%;
+
     --shadow-card: drop-shadow(0 10px 8px rgba(0, 0, 0, .04)) drop-shadow(0 4px 3px rgba(0, 0, 0, .1));
     --shadow-card-edge: inset 0 1px 0 0 rgba(148, 163, 184, .1);
 }
 
 [data-theme="light"] { color-scheme: light; }
 [data-theme="dark"] { color-scheme: dark; }
+
+/* Registered, so the name's gradient accent interpolates between --accent-a and --accent-b instead of jumping
+   (https://developer.mozilla.org/en-US/docs/Web/CSS/@property). */
+@property --name-accent {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: hsl(200, 100%, 25%);
+}

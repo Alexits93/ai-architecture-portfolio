@@ -144,6 +144,58 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
     transition: .3s;
   }
 
+  .about-me h1,
+  .about-me h2 {
+    text-wrap: balance;
+  }
+
+  /* The name is painted by a gradient between two accents; --name-accent is a registered colour, so it can move.
+     fit-content makes the gradient span the name, not the whole column. */
+  .about-me article .introduction-wrapper h1 {
+    --name-accent: var(--accent-b);
+    width: fit-content;
+    background-image: linear-gradient(100deg, var(--accent-a), var(--name-accent), var(--accent-b));
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Motion only when the visitor allows it; without it every part shows in its final state (#210). */
+  @media (prefers-reduced-motion: no-preference) {
+    .about-me h1,
+    .about-me h2,
+    .about-me h3,
+    .about-me p,
+    .about-me .social-links {
+      animation: hero-enter var(--duration-enter) var(--ease-spring) both;
+      animation-delay: calc(var(--hero-step) * var(--stagger));
+    }
+
+    .about-me h1 { --hero-step: 0; }
+    .about-me h2 { --hero-step: 1; }
+    .about-me h3 { --hero-step: 2; }
+    .about-me p { --hero-step: 3; }
+    .about-me .social-links { --hero-step: 4; }
+
+    .about-me article .introduction-wrapper h1 {
+      animation:
+        hero-enter var(--duration-enter) var(--ease-spring) both,
+        name-gradient 6s ease-in-out infinite alternate;
+      animation-delay: 0s, var(--duration-enter);
+    }
+  }
+
+  @keyframes hero-enter {
+    from {
+      opacity: 0;
+      translate: 0 var(--space-6);
+    }
+  }
+
+  @keyframes name-gradient {
+    from { --name-accent: var(--accent-a); }
+    to { --name-accent: var(--accent-b); }
+  }
+
   .sr-only {
     position: absolute;
     width: 1px;

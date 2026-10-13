@@ -20,8 +20,12 @@ const jsonLd: JsonLdObject = {
   datePublished: publishDate.toISOString(),
   author: { '@type': 'Person', name: SITE.author, url: new URL(ROUTES.cv, Astro.site).href },
 };
+
+// The card-to-post morph names #post-hero on pagereveal, so the head asks the first render to wait until it is
+// parsed (rel="expect", #210, https://developer.chrome.com/docs/web-platform/view-transitions/cross-document).
 ---
 
 <BaseLayout title={`${title} | ${SITE.name}`} description={description} type="article" publishedTime={publishDate} jsonLd={jsonLd}>
+	<link slot="head" rel="expect" href="#post-hero" blocking="render" />
 	<slot />
 </BaseLayout>

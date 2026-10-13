@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { animationsSettled } from './animations';
 import { test, expect, type Page } from '@playwright/test';
 
 // The site menu opens and closes through invoker commands, without a script (#157). A modal dialog
@@ -37,9 +38,7 @@ test('the close button closes the menu and focus returns to the hamburger', asyn
 // Firefox transitions neither display nor overlay, so the close animation used to run in Chromium only (#206).
 test('closing animates the overlay before the menu hides', async ({ page }) => {
   await openWithKeyboard(page);
-  await page.evaluate(async () => {
-    await Promise.allSettled(document.getAnimations().map((animation) => animation.finished));
-  });
+  await animationsSettled(page);
   await closer(page).click();
   const overlay = page.locator('.navigator-menu-overlay');
   expect(await overlay.evaluate((el) => el.getAnimations().length)).toBeGreaterThan(0);

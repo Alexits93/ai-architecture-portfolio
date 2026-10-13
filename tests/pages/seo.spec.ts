@@ -27,10 +27,17 @@ for (const route of ROUTES) {
     await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://www.pa-tech.dev${route}`);
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', title);
-    // One inline theme script in <head>, injected by astro.config.mjs, and no external copy (#86).
+    // Two inline classic scripts in <head>, injected by astro.config.mjs: the theme script (#86) and the card-to-post
+    // morph (#210), whose pagereveal listener must run before the first render. No external copy.
     // Text locators skip <script> content, so read it directly. Astro's bundled scripts are type="module".
     const classicInline = page.locator('head script:not([src]):not([type])');
-    expect(await classicInline.evaluateAll((els) => els.map((el) => el.textContent.includes("localStorage.getItem('theme')")))).toEqual([true]);
+    const kinds = await classicInline.evaluateAll((els) =>
+      els.map((el) => {
+        if (el.textContent.includes("localStorage.getItem('theme')")) return 'theme';
+        return el.textContent.includes("addEventListener('pagereveal'") ? 'morph' : 'other';
+      }),
+    );
+    expect(kinds.toSorted()).toEqual(['morph', 'theme']);
     await expect(page.locator('script[src="/theme.js"]')).toHaveCount(0);
   });
 }

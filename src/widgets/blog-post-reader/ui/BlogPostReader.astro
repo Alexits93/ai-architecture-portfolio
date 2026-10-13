@@ -23,9 +23,9 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
 
 <div class="blog-post-layout">
   <div class="blog-post-reader">
-    <header class="wrapper-top">
+    <header class="wrapper-top" id="post-hero">
       <div class="wrapper-top-heading">
-        <h1>{post.data.title}</h1>
+        <h1 data-morph="title">{post.data.title}</h1>
         <h2>{post.data.subtitle}</h2>
       </div>
       <div class="wrapper-top-post-data">
@@ -39,6 +39,7 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
       <figure>
         <picture>
           <img src="/assets/images/placeholder.webp"
+               data-morph="image"
                alt={post.data.title}
                width="728"
                height="364"
