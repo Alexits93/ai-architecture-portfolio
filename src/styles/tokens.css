@@ -83,6 +83,8 @@
     --size-thumbnail-body: 250px;
     --size-card-max: 400px;
     --size-prose: 800px;
+    /* The home reading column (#243). */
+    --size-column: 680px;
     --page-max-width: 1200px;
     --font-size-menu: 48px;
 

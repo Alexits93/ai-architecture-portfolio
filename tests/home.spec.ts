@@ -4,7 +4,7 @@ import { JSDOM } from 'jsdom';
 import { describe, it, expect, beforeEach, assert, vi } from 'vitest';
 import { createTestPost } from './fixtures/post';
 import Index from '@/pages/index.astro';
-import { SITE } from '@/consts';
+import { ROUTES, SITE } from '@/consts';
 import MockContent from './fixtures/MockContent.astro';
 
 // Vitest has no collection data, so the posts, the now entry and its rendered Markdown are fixtures (#218, #226).
@@ -20,19 +20,11 @@ const nowEntry: CollectionEntry<'now'> = {
   data: { updated: new Date('2026-10-13T00:00:00.000Z') },
   body: '- Mock line',
 };
-// Out of order on purpose: the block sorts by `order` (#217).
-const project = (id: string, order: number, url?: string): CollectionEntry<'projects'> => ({
-  id,
-  collection: 'projects',
-  data: { id, order, name: `Project ${id}`, description: 'A web app.', role: 'Lead', stack: ['Angular', 'Nx'], outcome: 'Faster releases.', url },
-});
-const projects = [project('second', 2), project('first', 1, 'https://github.com/acme/first')];
-
 vi.mock('astro:content', async (importOriginal) => {
   const actual = await importOriginal<typeof import('astro:content')>();
   return {
     ...actual,
-    getCollection: async (name: string) => (name === 'projects' ? projects : posts),
+    getCollection: async () => posts,
     getEntry: async () => nowEntry,
     render: async () => ({ Content: MockContent, headings: [], remarkPluginFrontmatter: {} }),
   };
@@ -46,29 +38,21 @@ describe('Home Page (index.astro)', () => {
     container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   });
 
-  it('should render the layout with AboutMe and stubbed widgets', async () => {
-    const html = await container.renderToString(Index);
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
+  // One column in reading order, no sticky split (#243, research on #212).
+  it('renders the home blocks in one column in reading order', async () => {
+    const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
-    const main = doc.querySelector('main');
-    expect(main).not.toBeNull();
-
-    // The hero, then the blocks, in DOM order (#214).
-    const wrapper = doc.querySelector('.home-wrapper');
-    assert.exists(wrapper);
-    expect([...wrapper.children].map((child) => [child.id, child.classList.contains('home-blocks')])).toEqual([
-      ['about-me', false],
-      ['', true],
+    const column = doc.querySelector('main > .home');
+    assert.exists(column);
+    expect([...column.children].map((child) => child.id)).toEqual([
+      'about-me',
+      'work',
+      'open',
+      'now',
+      'blog-featured',
+      'blog-section',
+      'connect',
     ]);
-
-    // Check for BlogPostFeatured Stub
-    const blogFeatured = doc.querySelector('.home-blocks section#blog-featured');
-    expect(blogFeatured).not.toBeNull();
-
-    // Check for BlogPostRecommended Stub
-    const blogRecommended = doc.querySelector('.home-blocks section#blog-section');
-    expect(blogRecommended).not.toBeNull();
   });
 
   // One site-wide title and the positioning pitch from SITE (#214).
@@ -89,12 +73,12 @@ describe('Home Page (index.astro)', () => {
   });
 });
 
-// The now block follows the projects, with its text and a machine-readable updated date (#218, #217).
-it('renders the now block after the projects block', async () => {
+// The now block, with its text and a machine-readable updated date (#218).
+it('renders the now block with its updated date', async () => {
   const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
-  const now = doc.querySelector('.home-blocks > section#projects + section#now');
+  const now = doc.querySelector('section#now');
   assert.exists(now);
   expect(now.querySelector('h2')).toHaveProperty('textContent', 'Now');
   expect(now.textContent).toContain('Mock Rendered Content');
@@ -114,27 +98,50 @@ it('renders the blog fixtures as featured and recommended cards', async () => {
   expect(hrefs('#blog-section .blog-post-thumbnail')).toEqual(['/blog/newer-post/', '/blog/older-post/']);
 });
 
-// Projects come first in the home blocks, sorted by `order`; only a project with a public link renders one (#217).
-it('renders the projects block first, in order, with links only where they exist', async () => {
+// Work is first-person prose that points to the CV; the hero carries no social icons on home (#243).
+it('renders the Work paragraph with a link to the CV', async () => {
   const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
-  const block = doc.querySelector('.home-blocks > section#projects:first-child');
-  assert.exists(block);
-  expect(block.querySelector('h2')).toHaveProperty('textContent', 'Projects');
-  expect([...block.querySelectorAll('article h3')].map((name) => name.textContent)).toEqual(['Project first', 'Project second']);
+  const work = doc.querySelector('section#work');
+  assert.exists(work);
+  expect(work.querySelector('h2')).toHaveProperty('textContent', 'Work');
+  expect(work.textContent).toContain('I lead the frontend architecture and engineering at Swiss Learning Hub');
+  const cv = work.querySelector('a');
+  assert.exists(cv);
+  expect(cv.getAttribute('href')).toBe(ROUTES.cv);
+  expect(doc.querySelector('#about-me .social-links')).toBeNull();
+});
 
-  const [linked, unlinked] = block.querySelectorAll('article');
-  assert.exists(linked);
-  assert.exists(unlinked);
-  expect(linked.textContent).toContain('Lead');
-  expect(linked.textContent).toContain('Faster releases.');
-  expect([...linked.querySelectorAll('.skill-tag')].map((tag) => tag.textContent.trim())).toEqual(['#angular', '#nx']);
-  const link = linked.querySelector('a');
-  assert.exists(link);
-  expect(link.getAttribute('href')).toBe('https://github.com/acme/first');
-  // Same tab, owner decision on #242: no target attribute.
-  expect(link.hasAttribute('target')).toBe(false);
-  expect(link.getAttribute('aria-label')).toBe('View source of Project first');
-  expect(unlinked.querySelector('a')).toBeNull();
+// Rows of name, one line and a link, only for public artefacts. Same tab, owner decision on #242.
+it('lists the things you can open, each with a same-tab link', async () => {
+  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+  const doc = new JSDOM(await container.renderToString(Index)).window.document;
+
+  const open = doc.querySelector('section#open');
+  assert.exists(open);
+  expect(open.querySelector('h2')).toHaveProperty('textContent', 'Things you can open');
+  const links = [...open.querySelectorAll('li a')];
+  expect(links.map((link) => [link.textContent, link.getAttribute('href')])).toEqual([
+    ['pa-tech.dev', 'https://github.com/Alexits93/ai-architecture-portfolio'],
+  ]);
+  expect(links.some((link) => link.hasAttribute('target'))).toBe(false);
+});
+
+// The socials end the page as a Connect line of named links, in the same tab (#243, #242).
+it('ends with a Connect line of same-tab social links', async () => {
+  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+  const doc = new JSDOM(await container.renderToString(Index)).window.document;
+
+  const connect = doc.querySelector('section#connect');
+  assert.exists(connect);
+  expect(connect.querySelector('h2')).toHaveProperty('textContent', 'Connect');
+  const links = [...connect.querySelectorAll('a')];
+  expect(links.map((link) => [link.textContent, link.getAttribute('href')])).toEqual([
+    ['GitHub', 'https://github.com/Alexits93'],
+    ['LinkedIn', 'https://www.linkedin.com/in/patrik-alexits/'],
+    ['Stack Overflow', 'https://stackoverflow.com/users/9327050/patrik-alexits'],
+    ['Instagram', 'https://www.instagram.com/akelafreestyle/'],
+  ]);
+  expect(links.some((link) => link.hasAttribute('target'))).toBe(false);
 });

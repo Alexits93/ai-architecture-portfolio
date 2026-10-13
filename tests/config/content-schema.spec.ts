@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { describe, it, expect } from 'vitest';
-import { blogSchema, experienceSchema, nowSchema, projectSchema } from '@/content.config';
+import { blogSchema, experienceSchema, nowSchema } from '@/content.config';
 
 // One category per post, strict object: an unknown key such as the removed `tags` fails the build (#90).
 const withoutCategory = {
@@ -69,29 +69,5 @@ describe('now collection schema', () => {
 
   it('keeps raw HTML out of the now text', () => {
     expect(fs.readFileSync('src/content/now/now.md', 'utf8')).not.toMatch(/<[a-z!/]/i);
-  });
-});
-
-// The projects block on home: one YAML file, ordered by `order` because collection order is not guaranteed (#217).
-const project = {
-  id: 'acme-app',
-  order: 1,
-  name: 'Acme app',
-  description: 'A web app.',
-  role: 'Lead',
-  stack: ['Angular'],
-  outcome: 'Faster releases.',
-};
-
-describe('projects collection schema', () => {
-  it('accepts a project with or without a public link', () => {
-    expect(projectSchema.safeParse(project).success).toBe(true);
-    expect(projectSchema.safeParse({ ...project, url: 'https://github.com/acme/app' }).success).toBe(true);
-  });
-
-  it('rejects a link that is not a URL, a missing outcome or an unknown key', () => {
-    expect(projectSchema.safeParse({ ...project, url: 'github.com/acme' }).success).toBe(false);
-    expect(projectSchema.safeParse({ ...project, outcome: undefined }).success).toBe(false);
-    expect(projectSchema.safeParse({ ...project, image: 'x.png' }).success).toBe(false);
   });
 });
