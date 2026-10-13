@@ -12,9 +12,19 @@ Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statich
 ## Working rules
 - Read the code, the git history (`git log -S`) and the official docs of the installed version before you change or recommend something, and cite the doc URL in the commit. Auto memory is off; knowledge lives in git, issues and PRs.
 - Use the stack's native features as their docs describe. If none fits, ask before building something custom. A new dependency needs the owner's approval.
-- No `any`, no `unknown`, no `as` casts (ESLint enforces it). Keep changes minimal: no refactors or defensive code beyond the task.
+- No `any`, no `unknown`, no `as` casts (ESLint enforces it). Keep changes minimal: no refactors or defensive code beyond the task, except removing what the change makes obsolete (see Removing).
 - Done means seen: `pnpm build`, run the site (`pnpm preview` or Playwright), look at the screenshots, and report what you saw.
 - Add a lint rule, hook or test as a gate only for a mistake that recurred and is costly, and retire an obsolete gate in the same change. Content truth (CV text, posts) is checked by the owner, not by gates.
+
+## Removing
+Code, config, tests, docs, rules and dependencies are a cost to keep, not an asset. Remove anything that is demonstrably obsolete:
+- Nothing uses it: no import, caller, link or reference (`git grep`), and the build and tests pass without it.
+- It duplicates something that already does the job; keep the native or official one.
+- Its reason is gone: the bug, decision, feature or dependency it served no longer exists.
+- It only restates config or tests the tooling around the site instead of the site's behavior.
+- An instruction Claude follows without it: ask "would removing this cause a mistake?" If not, cut it.
+
+Before removing, find why it was added (`git log -S`, the PR or issue) and who uses it. If you can't tell why it exists, ask instead of guessing. When you change an area, remove what the change makes obsolete in the same PR. Ask the owner before removing visible content, a security control, or anything an ADR records.
 
 ## Workflow
 1. One GitHub Task issue per change (`.github/ISSUE_TEMPLATE/task.yml`). Read it with `gh issue view <N>`.
