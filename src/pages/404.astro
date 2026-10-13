@@ -1,0 +1,30 @@
+---
+import { ROUTES } from '@/consts';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+// Builds to dist/404.html, which statichost.eu serves for unknown paths (https://docs.astro.build/en/basics/astro-pages/,
+// https://www.statichost.eu/docs/error-pages/). @astrojs/sitemap leaves 404 pages out on its own.
+---
+
+<BaseLayout title="Page not found | Patrik Alexits" description="The page you asked for does not exist." noindex>
+	<main class="page-container">
+		<h1>Page not found</h1>
+		<p>This page does not exist or has moved.</p>
+		<ul>
+			<li><a href={ROUTES.home}>Home</a></li>
+			<li><a href={ROUTES.blog}>Blog</a></li>
+		</ul>
+	</main>
+</BaseLayout>
+
+<style>
+	.page-container { padding: var(--space-8); max-width: var(--size-prose); margin: 0 auto; }
+	h1 {
+		color: var(--font-color-bold);
+		margin: 0 0 var(--space-4);
+		letter-spacing: var(--letter-spacing-tight);
+		font-weight: var(--font-weight-bold);
+		font-size: var(--font-size-2xl);
+		line-height: var(--line-height-xl);
+	}
+</style>
