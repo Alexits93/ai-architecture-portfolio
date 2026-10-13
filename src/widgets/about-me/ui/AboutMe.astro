@@ -55,19 +55,19 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
                 </a>
               </li>
             )}
-            {instagramUrl && (
-              <li>
-                <a href={instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram (Opens in new tab)">
-                  <InstagramIcon width="25" height="25" aria-hidden="true" />
-                  <span class="sr-only">Instagram</span>
-                </a>
-              </li>
-            )}
             {stackoverflowUrl && (
               <li>
                 <a href={stackoverflowUrl} target="_blank" rel="noopener noreferrer" aria-label="Stack Overflow (Opens in new tab)">
                   <StackOverflowIcon width="25" height="25" aria-hidden="true" />
                   <span class="sr-only">Stack Overflow</span>
+                </a>
+              </li>
+            )}
+            {instagramUrl && (
+              <li>
+                <a href={instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram (Opens in new tab)">
+                  <InstagramIcon width="25" height="25" aria-hidden="true" />
+                  <span class="sr-only">Instagram</span>
                 </a>
               </li>
             )}
