@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from '@/pages/og.png';
-import * as ogModule from '@/shared/lib/og/generate-og-image';
-import { SITE } from '@/shared/config';
+import * as ogModule from '@/lib/og-image';
+import { SITE } from '@/consts';
 
 describe('og.png endpoint', () => {
   beforeEach(() => {

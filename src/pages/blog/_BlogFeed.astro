@@ -1,8 +1,10 @@
 ---
 import type { Page } from 'astro';
-import { BlogPostThumbnail, getCategoryPath, type BlogPost, type Category } from '@/entities/blog-post';
+import BlogPostThumbnail from '@/components/BlogPostThumbnail.astro';
+import { type BlogPost, type Category } from '@/lib/posts';
+import { getCategoryPath } from '@/lib/permalink';
 import { CATEGORIES } from '@/content.config';
-import { ROUTES } from '@/shared/config';
+import { ROUTES } from '@/consts';
 
 interface Props {
 	heading: string;

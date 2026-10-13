@@ -1,14 +1,29 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { CookieDisclaimer } from '@/widgets/cookie-disclaimer';
 ---
 
 <BaseLayout title="Cookie Disclaimer | Patrik Alexits" description="Which cookies and storage pa-tech.dev uses.">
 	<main class="page-container">
-		<CookieDisclaimer />
+		<section class="cookie-disclaimer">
+			<h1>Cookie Disclaimer</h1>
+			<p>This site sets no cookies and embeds no third-party content.</p>
+
+			<h2>Theme setting</h2>
+			<p>When you switch between the light and dark theme, your browser stores that choice under the key "theme" in localStorage. It stays on your device and is never sent to a server. Clearing the site data in your browser removes it.</p>
+
+			<p>For more detailed information about how we handle data and cookies, please read our <a href="/privacy-policy/">Privacy Policy.</a></p>
+		</section>
 	</main>
 </BaseLayout>
 
 <style>
 	.page-container { padding: var(--space-8); max-width: var(--size-prose); margin: 0 auto; }
+	.cookie-disclaimer h1 {
+		color: var(--font-color-bold);
+		margin: 0 0 var(--space-4);
+		letter-spacing: var(--letter-spacing-tight);
+		font-weight: var(--font-weight-bold);
+		font-size: var(--font-size-2xl);
+		line-height: var(--line-height-xl);
+	}
 </style>

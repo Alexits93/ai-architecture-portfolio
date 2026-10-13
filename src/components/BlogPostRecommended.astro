@@ -1,0 +1,125 @@
+---
+import { getCollection } from 'astro:content';
+import BlogPostThumbnail from '@/components/BlogPostThumbnail.astro';
+import { selectRecommendedPosts } from '@/lib/posts';
+import { ROUTES } from '@/consts';
+
+interface Props {
+  /** Post to omit, e.g. the article currently being read. */
+  excludeId?: string;
+}
+
+const { excludeId } = Astro.props;
+const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { excludeId });
+---
+<section id="blog-section">
+  <div class="wrapper-top">
+    <h2>Recommended Articles</h2>
+  </div>
+  <div class="wrapper">
+    {recommendedPosts.map(post => (
+      <BlogPostThumbnail post={post} />
+    ))}
+  </div>
+  <div class="wrapper-bottom">
+    <a href={ROUTES.blog}>See all articles</a>
+  </div>
+</section>
+
+<style>
+  #blog-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+  }
+
+  #blog-section .wrapper-top {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #blog-section .wrapper-top h2 {
+    color: var(--font-color-bold);
+    margin: 0;
+    letter-spacing: var(--letter-spacing-tight);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-2xl);
+    line-height: var(--line-height-xl);
+  }
+
+  #blog-section .wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, var(--size-card-max)));
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+    justify-content: center;
+  }
+
+  /* Cards rise into place as they scroll into view. Only where scroll timelines exist and motion is allowed;
+     elsewhere they are static (#210, MDN animation-timeline view()). Longhands only, and not all of them: the CSS
+     minifier folds a complete set into the animation shorthand, and Chromium rejects view() inside that shorthand. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      #blog-section .wrapper > :global(.blog-post-thumbnail) {
+        animation-name: card-reveal;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: var(--range-reveal);
+      }
+    }
+  }
+
+  @keyframes card-reveal {
+    from {
+      opacity: 0;
+      translate: 0 var(--space-12);
+      scale: .94;
+    }
+  }
+
+  #blog-section .wrapper-bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #blog-section .wrapper-bottom a {
+    padding: var(--space-2);
+    background-color: var(--theme-secondary);
+    border-radius: var(--radius-lg);
+    color: var(--font-color);
+    text-decoration: none;
+    transition: background-color .2s ease-out, scale .1s ease-out;
+  }
+
+  /* The card hover surface: --thumbnail-bg-color equals --theme-secondary in dark, so it showed no change (#206). */
+  @media (hover: hover) {
+    #blog-section .wrapper-bottom a:hover {
+      background-color: var(--thumbnail-bg-color-hover);
+    }
+  }
+
+  #blog-section .wrapper-bottom a:active {
+    scale: .96;
+  }
+
+
+  @media (min-width: 48rem) {
+    #blog-section .wrapper {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #blog-section .wrapper-top h2 {
+      text-align: left;
+    }
+  }
+
+  @media (min-width: 80rem) {
+    #blog-section .wrapper {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

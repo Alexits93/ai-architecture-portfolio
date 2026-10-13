@@ -2,8 +2,8 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import type { Page } from 'astro';
 import { JSDOM } from 'jsdom';
 import { describe, it, expect, assert } from 'vitest';
-import { createTestPost } from '@/entities/blog-post/testing';
-import type { BlogPost, Category } from '@/entities/blog-post';
+import { createTestPost } from './fixtures/post';
+import type { BlogPost, Category } from '@/lib/posts';
 import BlogFeed from '@/pages/blog/_BlogFeed.astro';
 
 const PAGE_SIZE = 10;

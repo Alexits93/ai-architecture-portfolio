@@ -11,9 +11,9 @@ const path = fileURLToPath(new URL('./post-morph.js', import.meta.url));
 const script = new Script(readFileSync(path, 'utf-8'), { filename: path });
 
 const LIST = `
-  <a data-post-card href="/blog/a/"><img data-morph="image"><h2 data-morph="title">A</h2></a>
-  <a data-post-card href="/blog/b/"><img data-morph="image"></a>`;
-const POST = `<header id="post-hero"><h1 data-morph="title">B</h1><img data-morph="image"></header>${LIST}`;
+  <a data-post-card href="/blog/a/"><h2 data-morph="title">A</h2></a>
+  <a data-post-card href="/blog/b/"><h2 data-morph="title">B</h2></a>`;
+const POST = `<header id="post-hero"><h1 data-morph="title">B</h1></header>${LIST}`;
 
 interface Options {
   body: string;
@@ -58,32 +58,26 @@ describe('post morph script on pageswap', () => {
     const window = run({ body: LIST });
     const { transition: viewTransition, settle } = transition();
     fire(window, 'pageswap', { viewTransition, activation: swapTo('https://www.pa-tech.dev/blog/a/') });
-    expect(names(window)).toEqual(['post-image', 'post-title', '']);
+    expect(names(window)).toEqual(['post-title', '']);
     settle();
     await flush();
-    expect(names(window)).toEqual(['', '', '']);
-  });
-
-  it('names a card that has no title by its image only', () => {
-    const window = run({ body: LIST });
-    fire(window, 'pageswap', { viewTransition: transition().transition, activation: swapTo('https://www.pa-tech.dev/blog/b/') });
-    expect(names(window)).toEqual(['', '', 'post-image']);
+    expect(names(window)).toEqual(['', '']);
   });
 
   it("names the post's own header when no card matches the target", () => {
     const window = run({ body: POST, url: 'https://www.pa-tech.dev/blog/b/' });
     fire(window, 'pageswap', { viewTransition: transition().transition, activation: swapTo('https://www.pa-tech.dev/blog/') });
-    expect(names(window)).toEqual(['post-title', 'post-image', '', '', '']);
+    expect(names(window)).toEqual(['post-title', '', '']);
   });
 
   it('names nothing on pageswap without a view transition, an activation or a target URL', () => {
     const window = run({ body: POST });
     fire(window, 'pageswap', { viewTransition: null, activation: swapTo('https://www.pa-tech.dev/blog/a/') });
     fire(window, 'pageswap', { viewTransition: transition().transition, activation: null });
-    expect(names(window)).toEqual(['', '', '', '', '']);
+    expect(names(window)).toEqual(['', '', '']);
     const list = run({ body: LIST });
     fire(list, 'pageswap', { viewTransition: transition().transition, activation: swapTo(null) });
-    expect(names(list)).toEqual(['', '', '']);
+    expect(names(list)).toEqual(['', '']);
   });
 
 });
@@ -93,31 +87,31 @@ describe('post morph script on pagereveal', () => {
     const window = run({ body: POST, url: 'https://www.pa-tech.dev/blog/b/', from: 'https://www.pa-tech.dev/blog/' });
     const { transition: viewTransition, settle } = transition();
     fire(window, 'pagereveal', { viewTransition });
-    expect(names(window)).toEqual(['post-title', 'post-image', '', '', '']);
+    expect(names(window)).toEqual(['post-title', '', '']);
     settle();
     await flush();
-    expect(names(window)).toEqual(['', '', '', '', '']);
+    expect(names(window)).toEqual(['', '', '']);
   });
 
   it('names the card of the post we came back from on a list page', () => {
     const window = run({ body: LIST, from: 'https://www.pa-tech.dev/blog/a/' });
     fire(window, 'pagereveal', { viewTransition: transition().transition });
-    expect(names(window)).toEqual(['post-image', 'post-title', '']);
+    expect(names(window)).toEqual(['post-title', '']);
   });
 
   it('names nothing on reveal without a view transition, a matching card or an activation', () => {
     const window = run({ body: LIST, from: 'https://www.pa-tech.dev/blog/a/' });
     fire(window, 'pagereveal', { viewTransition: null });
-    expect(names(window)).toEqual(['', '', '']);
+    expect(names(window)).toEqual(['', '']);
     const unknown = run({ body: LIST, from: 'https://www.pa-tech.dev/cv/' });
     fire(unknown, 'pagereveal', { viewTransition: transition().transition });
-    expect(names(unknown)).toEqual(['', '', '']);
+    expect(names(unknown)).toEqual(['', '']);
     const direct = run({ body: LIST, activation: false });
     fire(direct, 'pagereveal', { viewTransition: transition().transition });
-    expect(names(direct)).toEqual(['', '', '']);
+    expect(names(direct)).toEqual(['', '']);
     const fresh = run({ body: LIST });
     fire(fresh, 'pagereveal', { viewTransition: transition().transition });
-    expect(names(fresh)).toEqual(['', '', '']);
+    expect(names(fresh)).toEqual(['', '']);
   });
 
 });
@@ -126,7 +120,7 @@ describe('post morph script', () => {
   it('names nothing under reduced motion', () => {
     const window = run({ body: LIST, reduce: true });
     fire(window, 'pageswap', { viewTransition: transition().transition, activation: swapTo('https://www.pa-tech.dev/blog/a/') });
-    expect(names(window)).toEqual(['', '', '']);
+    expect(names(window)).toEqual(['', '']);
   });
 
   it('clears the names when the transition is skipped', async () => {
@@ -137,11 +131,11 @@ describe('post morph script', () => {
       activation: swapTo('https://www.pa-tech.dev/blog/a/'),
     });
     await flush();
-    expect(names(window)).toEqual(['', '', '']);
+    expect(names(window)).toEqual(['', '']);
   });
 
   it('declares no globals', () => {
     const window = run({ body: LIST });
-    expect(['PARTS', 'reduceMotion', 'pathOf', 'cardFor', 'hero', 'nameParts'].filter((name) => name in window)).toEqual([]);
+    expect(['reduceMotion', 'pathOf', 'cardFor', 'hero', 'nameTitle'].filter((name) => name in window)).toEqual([]);
   });
 });

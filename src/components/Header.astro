@@ -1,0 +1,193 @@
+---
+import Logo from '@/assets/logo.svg';
+import MoonIcon from '@/assets/moon.svg';
+import SunIcon from '@/assets/sun.svg';
+---
+
+<div class="header-wrapper">
+  <header>
+    <button class="navigator-menu-opener" commandfor="site-menu" command="show-modal" aria-label="Open menu">
+      <span></span>
+      <span></span>
+    </button>
+
+    <a href="/">
+      <span class="sr-only">Back to Home page</span>
+      <Logo width="79.42" height="50" aria-hidden="true" />
+    </a>
+
+    <button class="theme-toggle" aria-label="Dark theme" aria-pressed="false">
+      <MoonIcon class="icon moon" width="50" height="50" aria-hidden="true" />
+      <SunIcon class="icon sun" width="50" height="50" aria-hidden="true" />
+    </button>
+  </header>
+</div>
+
+<script>
+  import { getStoredTheme, onThemeChange, toggleTheme, type Theme } from '@/lib/theme-store';
+
+  const themeBtn = document.querySelector('.theme-toggle');
+  const darkScheme = matchMedia('(prefers-color-scheme: dark)');
+  const systemTheme = (): Theme => (darkScheme.matches ? 'dark' : 'light');
+
+  if (themeBtn) {
+    // Without a stored choice the page keeps no data-theme and shows the OS theme.
+    const render = () => {
+      const stored = getStoredTheme();
+      const theme = stored ?? systemTheme();
+      themeBtn.setAttribute('aria-pressed', String(theme === 'dark'));
+      if (stored) {
+        document.documentElement.setAttribute('data-theme', stored);
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+    };
+
+    // The new theme spreads as a circle from the toggle: a same-document view transition whose new root snapshot
+    // is clipped to a growing circle (developer.chrome.com, same-document view transitions). Without the API, or
+    // under reduced motion, the theme switches at once (#210).
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const root = document.documentElement;
+    themeBtn.addEventListener('click', () => {
+      const toggle = () => toggleTheme(systemTheme());
+      if (!('startViewTransition' in document) || reduceMotion.matches) {
+        toggle();
+        return;
+      }
+      const box = themeBtn.getBoundingClientRect();
+      const x = box.left + box.width / 2;
+      const y = box.top + box.height / 2;
+      const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+      root.dataset.themeReveal = '';
+      const transition = document.startViewTransition(toggle);
+      transition.ready
+        .then(() => {
+          root.animate(
+            { clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+            { duration: 600, easing: 'cubic-bezier(0.76, 0, 0.24, 1)', pseudoElement: '::view-transition-new(root)' },
+          );
+        })
+        .catch(() => undefined);
+      const done = () => delete root.dataset.themeReveal;
+      void transition.finished.then(done, done);
+    });
+    onThemeChange(render);
+    render();
+    darkScheme.addEventListener('change', render);
+  }
+</script>
+
+<style>
+  /* During the theme reveal the old theme stays under the new one, which the script clips to a growing circle;
+     the default root cross-fade would show both themes blended. Page navigations keep the cross-fade. */
+  :global(html[data-theme-reveal]::view-transition-old(root)),
+  :global(html[data-theme-reveal]::view-transition-new(root)) {
+      animation: none;
+      mix-blend-mode: normal;
+  }
+
+  .header-wrapper {
+      position: sticky;
+      top: 0;
+      /* Above positioned page content while sticky; the open menu sits in the top layer. */
+      z-index: 1;
+  }
+  .header-wrapper header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-4);
+      background-color: var(--body-background);
+      color: var(--font-color);
+  }
+  .header-wrapper header a:focus-visible {
+      outline: var(--outline-width-focus) solid var(--focus-color);
+  }
+  .header-wrapper header a {
+      text-decoration: none;
+      color: var(--font-color);
+  }
+  /* Block icons keep the header --space-4 + --size-icon-lg + --space-4 tall in every engine; the menu close button relies on it. */
+  .header-wrapper header svg {
+      display: block;
+  }
+  .header-wrapper header a svg {
+      height: var(--size-icon-lg);
+  }
+  .header-wrapper header button {
+      background: none;
+      border: none;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: background-color .2s ease-out, scale .1s ease-out;
+  }
+  /* Only where the primary input can hover, so a tap on a touch screen leaves no stuck tint (MDN @media hover). */
+  @media (hover: hover) {
+      .header-wrapper header button:hover {
+          background-color: var(--state-hover);
+      }
+  }
+  .header-wrapper header button:active {
+      scale: .92;
+  }
+  /* The icon takes the theme colour and shows the other theme. It follows data-theme (set by the head script) and the
+     OS scheme, both known at first paint; aria-pressed comes from the deferred module script, so the icon flipped on
+     every navigation when it followed that (#206). */
+  .theme-toggle {
+      padding: 0;
+      color: var(--font-color-bold);
+  }
+  .theme-toggle:focus-visible {
+      outline: var(--outline-width-focus) solid var(--focus-color);
+  }
+  /* Anchored on .header-wrapper so these outrank the display: block on every header svg above. */
+  .header-wrapper .theme-toggle .sun,
+  :global([data-theme="dark"]) .header-wrapper .theme-toggle .moon {
+      display: none;
+  }
+  :global([data-theme="dark"]) .header-wrapper .theme-toggle .sun {
+      display: block;
+  }
+  @media (prefers-color-scheme: dark) {
+      :global(:root:not([data-theme="light"])) .header-wrapper .theme-toggle .sun {
+          display: block;
+      }
+      :global(:root:not([data-theme="light"])) .header-wrapper .theme-toggle .moon {
+          display: none;
+      }
+  }
+  .navigator-menu-opener {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0 var(--space-2);
+      width: var(--space-12);
+      height: var(--space-12);
+      gap: var(--space-2);
+      background: none;
+      border: none;
+  }
+  .navigator-menu-opener span {
+      display: block;
+      transition: all .3s ease-in-out;
+      height: .2rem;
+      width: var(--space-8);
+      background-color: var(--font-color-bold);
+      border-radius: var(--radius-xs);
+  }
+  .navigator-menu-opener:focus-visible {
+      outline: var(--outline-width-focus) solid var(--focus-color);
+  }
+  .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+  }
+</style>

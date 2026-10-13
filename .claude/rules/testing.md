@@ -12,8 +12,8 @@ Write the failing test first, then the code (TDD).
 
 ## Tool split
 - Vitest + `experimental_AstroContainer`: component rendering and unit logic, co-located as `src/**/*.spec.ts`. Never use Playwright for isolated component state; it is slower and flakier.
-- Playwright: multi-page journeys and anything that needs client `<script>` code to run (AstroContainer does not execute it). Location: `e2e/`, or `tests/pages/` for page-level browser tests.
-- Tests that import from `src/pages/` live in `tests/pages/`. Astro builds every file in `src/pages/` whose name lacks a `_` prefix (https://docs.astro.build/en/guides/routing/), so a spec there would need one.
+- Playwright: multi-page journeys and anything that needs client `<script>` code to run (AstroContainer does not execute it). Location: `e2e/`.
+- Vitest specs that import from `src/pages/` live in `tests/`. Astro builds every file in `src/pages/` whose name lacks a `_` prefix (https://docs.astro.build/en/guides/routing/), so a spec there would need one.
 
 ## AstroContainer
 - Keep `environment: 'node'` in `vitest.config.ts`; jsdom strips the compiler metadata AstroContainer needs. Parse the rendered string with `new JSDOM(html)` inside the test.
@@ -24,7 +24,7 @@ Write the failing test first, then the code (TDD).
 - Same strictness as production: no `any`, no `unknown`, no `as` casts to bypass types. Use `Partial<T>` or a fixture that matches the real interface.
 - No optional chaining (`?.`), `??` fallbacks or `!` non-null assertions in specs. They route around a missing value: `expect(el?.textContent ?? '').not.toContain(x)` passes when `el` is absent, and the type check stops proving the value exists. Guard instead, so a missing value fails at the guard and the type narrows: `assert.exists(el)` or `assert.instanceOf` from `vitest` (https://vitest.dev/api/assert), `assert(value !== null)` after `import assert from 'node:assert/strict'` in Playwright specs. A value that may legitimately be absent gets an explicit branch (`key in map ? map[key] : fallback`). ESLint enforces this in `**/*.spec.ts`, `tests/**` and `e2e/**` (#138).
 - `vi.mock()` for modules, `vi.fn()` for spies, `vi.clearAllMocks()` in `beforeEach`.
-- Vitest has no content store: `getCollection` and `getEntry` return nothing, and the store a local dev server writes hides that until CI. A spec that renders a route page mocks `astro:content` with fixtures (ESLint enforces it); real entries are checked in Playwright on the built page (`tests/pages/cv-experience.spec.ts`).
+- Vitest has no content store: `getCollection` and `getEntry` return nothing, and the store a local dev server writes hides that until CI. A spec that renders a route page mocks `astro:content` with fixtures (ESLint enforces it); real entries are checked in Playwright on the built page (`e2e/cv-experience.spec.ts`).
 
 ## Coverage
 Per-file 100% lines, branches, functions and statements on `src/**` except `src/pages/` (see `vitest.config.ts`). v8 measures `.astro` frontmatter and template expressions through container renders. A fallback for a value the content schema guarantees is a dead branch: remove it, never fake a fixture to cover it.

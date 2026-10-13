@@ -90,19 +90,19 @@ describe('ESLint XSS gate', () => {
     (await new ESLint().lintText(html, { filePath }))[0].messages.map(m => m.ruleId);
 
   it('bans set:html in Astro components', async () => {
-    expect(await ruleIds('src/widgets/x/ui/X.astro')).toContain('astro/no-set-html-directive');
+    expect(await ruleIds('src/components/X.astro')).toContain('astro/no-set-html-directive');
   });
 
   it('allows set:html only in SeoHead (JSON-LD)', async () => {
-    expect(await ruleIds('src/shared/ui/seo-head/SeoHead.astro')).not.toContain('astro/no-set-html-directive');
+    expect(await ruleIds('src/components/SeoHead.astro')).not.toContain('astro/no-set-html-directive');
   });
 });
 
 describe('ESLint cast and debug bans', () => {
   // https://typescript-eslint.io/rules/consistent-type-assertions/ (typescript-eslint 8.71.1): const assertions stay allowed.
   it.each([
-    ['src/shared/lib/x.ts', 'const a = b as string; const c = <string>b; const d = [1] as const;\n'],
-    ['src/widgets/x/ui/X.astro', '<script>const a = b as string; const d = [1] as const;</script>\n'],
+    ['src/lib/x.ts', 'const a = b as string; const c = <string>b; const d = [1] as const;\n'],
+    ['src/components/X.astro', '<script>const a = b as string; const d = [1] as const;</script>\n'],
   ])('bans every type assertion but as const in %s', async (filePath, code) => {
     const messages = (await new ESLint().lintText(code, { filePath }))[0].messages;
     const casts = messages.filter((m) => m.ruleId === '@typescript-eslint/consistent-type-assertions');
@@ -111,7 +111,7 @@ describe('ESLint cast and debug bans', () => {
 
   // https://eslint.org/docs/latest/rules/no-console (ESLint 10.12.0)
   it('bans console calls', async () => {
-    const messages = (await new ESLint().lintText('console.log(1);\n', { filePath: 'src/shared/lib/x.ts' }))[0].messages;
+    const messages = (await new ESLint().lintText('console.log(1);\n', { filePath: 'src/lib/x.ts' }))[0].messages;
     expect(messages.map((m) => m.ruleId)).toContain('no-console');
   });
 
@@ -121,14 +121,14 @@ describe('ESLint cast and debug bans', () => {
     '/* eslint-disable */\nconsole.log(1);\n',
     '/* eslint no-console: "off" */\nconsole.log(1);\n',
   ])('ignores inline config comments: %j', async (code) => {
-    const messages = (await new ESLint().lintText(code, { filePath: 'src/shared/lib/x.ts' }))[0].messages;
+    const messages = (await new ESLint().lintText(code, { filePath: 'src/lib/x.ts' }))[0].messages;
     expect(messages.map((m) => m.ruleId)).toContain('no-console');
   });
 });
 
 describe('ESLint CSP gate', () => {
   const ruleIds = async (code: string) =>
-    (await new ESLint().lintText(code, { filePath: 'src/widgets/x/ui/X.astro' }))[0].messages.map(m => m.ruleId);
+    (await new ESLint().lintText(code, { filePath: 'src/components/X.astro' }))[0].messages.map(m => m.ruleId);
 
   it('bans inline is:inline scripts', async () => {
     expect(await ruleIds('<script is:inline>console.log(1)</script>\n')).toContain('no-restricted-syntax');
@@ -145,7 +145,7 @@ describe('ESLint inline style message', () => {
   // so the message must point to classes or data-* attributes instead.
   it('points dynamic inline styles to a class or data-* attribute, and says define:vars is blocked too', async () => {
     const code = '---\nconst c = 1;\n---\n<p style={{ color: c }}>x</p>\n';
-    const messages = (await new ESLint().lintText(code, { filePath: 'src/widgets/x/ui/X.astro' }))[0].messages;
+    const messages = (await new ESLint().lintText(code, { filePath: 'src/components/X.astro' }))[0].messages;
     const style = messages.find((m) => m.message.includes('style={...}'));
     assert.exists(style);
     expect(style.message).toContain('data-*');
@@ -181,7 +181,7 @@ describe('ESLint null-safety gate in specs', () => {
 
   it('leaves production code out of scope', async () => {
     const code = "export const a = b?.c ?? '';\nexport const d = e!.f;\n";
-    expect(await messages(code, 'src/shared/lib/x.ts')).toEqual([]);
+    expect(await messages(code, 'src/lib/x.ts')).toEqual([]);
   });
 
   it('keeps the type bans in specs', async () => {
@@ -194,7 +194,7 @@ describe('ESLint null-safety gate in specs', () => {
 // its properties yields undefined and an assertion on them passes for any page (#214 review).
 describe('ESLint gate on DOM nodes returned from evaluate', () => {
   const evaluateBans = async (code: string) =>
-    (await new ESLint().lintText(code, { filePath: 'tests/pages/x.spec.ts' }))[0].messages
+    (await new ESLint().lintText(code, { filePath: 'e2e/x.spec.ts' }))[0].messages
       .filter((m) => m.ruleId === 'no-restricted-syntax')
       .map((m) => m.message);
 

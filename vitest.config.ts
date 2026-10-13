@@ -7,12 +7,12 @@ export default defineConfig(
     test: {
       environment: 'node',
       include: ['src/**/*.spec.ts', 'tests/**/*.spec.ts'],
-      exclude: ['e2e/**', 'tests/pages/**'],
+      exclude: ['e2e/**'],
       coverage: {
         provider: 'v8',
         reporter: ['text', 'json-summary', 'json'],
         include: ['src/**'],
-        exclude: ['tests/**', 'e2e/**', '**/*.config.*', 'src/env.d.ts', 'src/pages/**', '**/*.md', '**/*.yaml'],
+        exclude: ['tests/**', 'e2e/**', '**/*.config.*','src/pages/**', '**/*.md', '**/*.yaml'],
         thresholds: {
           lines: 100,
           functions: 100,

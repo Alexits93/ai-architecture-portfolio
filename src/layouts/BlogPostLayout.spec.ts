@@ -1,7 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
 import { describe, it, expect, assert } from 'vitest';
-import { createTestPost } from '@/entities/blog-post/testing';
+import { createTestPost } from '../../tests/fixtures/post';
 import BlogPostLayout from './BlogPostLayout.astro';
 
 const SITE_URL = 'https://www.pa-tech.dev';

@@ -26,4 +26,4 @@ Imports flow `pages > layouts > components > lib`. ESLint core `no-restricted-im
 ## Consequences
 - Positive: one structure that the Astro docs, examples and agents share. No renamed layers, no third-party architecture plugin.
 - Positive: page-only code stays in the page, so the folder tree shows what is reused.
-- Negative: the current `src/shared`, `src/entities`, `src/features` and `src/widgets` folders stay until the restructure Story (#76) moves them. The FSD lint checks for them are gone in the meantime.
+- The legacy `src/shared`, `src/entities`, `src/features` and `src/widgets` folders were dissolved into these folders in #232.
