@@ -39,7 +39,9 @@ Before removing, find why it was added (`git log -S`, the PR or issue) and who u
 - `CLAUDE.md`, `.claude/`, `.github/`, `.husky/` and the root configs are read-only to sandboxed shell commands; edit them with the Edit or Write tool.
 - `gh issue`, `gh pr`, `gh run` and `git push` have auth only as a standalone call outside the sandbox.
 - Vitest has no content store: mock `astro:content` in specs and check real entries in Playwright on the built site. A running `astro dev` keeps its own store; restart it after a collection or branch change.
-- Write temporary files in `$TMPDIR`; it is shared with other projects, so delete only your own files.
+- Write temporary files in `$TMPDIR`; it is shared with other projects, so delete only your own files. Screenshots you need to look at go to `test-results/`, since the Read tool can't open `$TMPDIR`.
+- Live check: each sandboxed command has its own localhost, and `astro preview` detaches and dies with the command. Start `ASTRO_PREVIEW_BACKGROUND=0 pnpm preview &` and the browser script in one command, then kill the server. A sandboxed server left running pins 0-byte placeholder files (`.bashrc`, `.git/config.lock`) in the tree.
+- `pnpm test:e2e:webkit` is excluded from the sandbox for Podman; run it as a standalone call, not chained after `pnpm build`.
 
 ## Writing
 Docs, commits, PR bodies and chat: active voice, short sentences, no emojis, no em-dashes, no flattery. Avoid: delve, robust, seamless, synergy, tapestry, cutting-edge, leverage, furthermore, moreover, ultimately, in conclusion, unlocking. Be a critical sparring partner. Ask owner decisions with `AskUserQuestion`: your recommendation first, at least one alternative, and a no-op option with its cost. End a hand-back with an "Open items" list, owner actions first.

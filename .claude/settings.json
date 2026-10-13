@@ -31,7 +31,7 @@
   "sandbox": {
     "enabled": true,
     "autoAllowBashIfSandboxed": true,
-    "excludedCommands": ["gh issue *", "gh pr *", "gh run *", "git push *"],
+    "excludedCommands": ["gh issue *", "gh pr *", "gh run *", "git push *", "pnpm test:e2e:webkit"],
     "filesystem": {
       "allowWrite": ["~/.local/share/pnpm", "~/.cache/pnpm"],
       "denyWrite": [
