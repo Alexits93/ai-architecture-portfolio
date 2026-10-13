@@ -53,10 +53,14 @@ const PROSE_BANS = [
 // Specs: a missing value must fail the test at a guard, not flow on as undefined or a fallback (#138).
 // ChainExpression is the root of every optional chain (https://github.com/estree/estree/blob/master/es2020.md).
 const NULL_GUARD_MESSAGE = "Specs: no optional chaining or ?? fallbacks. Guard the value so a missing one fails the test and narrows the type: assert.exists or assert.instanceOf from vitest, or assert(value !== null) from node:assert/strict in Playwright specs.";
+const EVALUATE_NODE_MESSAGE = "Specs: evaluate serializes its return value, so a DOM node arrives as a string. Read the values inside the callback, for example evaluate(() => ({ width: document.body.scrollWidth })).";
 const NULL_SAFETY_BANS = [
   { "selector": "ChainExpression", "message": NULL_GUARD_MESSAGE },
   { "selector": "LogicalExpression[operator='??']", "message": NULL_GUARD_MESSAGE },
-  { "selector": "AssignmentExpression[operator='??=']", "message": NULL_GUARD_MESSAGE }
+  { "selector": "AssignmentExpression[operator='??=']", "message": NULL_GUARD_MESSAGE },
+  // page.evaluate serializes its result; a DOM node arrives as "ref: <Node>" and its properties read as undefined (#214).
+  { "selector": "CallExpression[callee.property.name='evaluate'] > ArrowFunctionExpression > MemberExpression[object.name='document']", "message": EVALUATE_NODE_MESSAGE },
+  { "selector": "CallExpression[callee.property.name='evaluate'] > ArrowFunctionExpression > CallExpression[callee.object.name='document']", "message": EVALUATE_NODE_MESSAGE }
 ];
 const SPECS = ["**/*.spec.ts", "tests/**/*.ts", "e2e/**/*.ts"];
 const PROSE_EXEMPT_SPECS = ["tests/architecture/claude-hooks.spec.ts", "tests/config/eslint.spec.ts"];

@@ -1,7 +1,8 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, assert } from 'vitest';
 import Index from '@/pages/index.astro';
+import { SITE } from '@/shared/config';
 
 describe('Home Page (index.astro)', () => {
   let container: AstroContainer;
@@ -19,26 +20,37 @@ describe('Home Page (index.astro)', () => {
     const main = doc.querySelector('main');
     expect(main).not.toBeNull();
 
-    // Check for the CSS grid structural classes
+    // The hero, then the blocks, in DOM order (#214).
     const wrapper = doc.querySelector('.home-wrapper');
-    expect(wrapper).not.toBeNull();
-
-    const topWrapper = doc.querySelector('.home-top-wrapper');
-    expect(topWrapper).not.toBeNull();
-
-    const bottomWrapper = doc.querySelector('.home-bottom-wrapper');
-    expect(bottomWrapper).not.toBeNull();
-
-    // Check for AboutMe
-    const aboutMe = doc.querySelector('section#about-me');
-    expect(aboutMe).not.toBeNull();
+    assert.exists(wrapper);
+    expect([...wrapper.children].map((child) => [child.id, child.classList.contains('home-blocks')])).toEqual([
+      ['about-me', false],
+      ['', true],
+    ]);
 
     // Check for BlogPostFeatured Stub
-    const blogFeatured = doc.querySelector('section#blog-featured');
+    const blogFeatured = doc.querySelector('.home-blocks section#blog-featured');
     expect(blogFeatured).not.toBeNull();
 
     // Check for BlogPostRecommended Stub
-    const blogRecommended = doc.querySelector('section#blog-section');
+    const blogRecommended = doc.querySelector('.home-blocks section#blog-section');
     expect(blogRecommended).not.toBeNull();
+  });
+
+  // One site-wide title and the positioning pitch from SITE (#214).
+  it('renders SITE.role and SITE.pitch in the hero and the role in the SEO title', async () => {
+    const doc = new JSDOM(await container.renderToString(Index)).window.document;
+
+    const role = doc.querySelector('#about-me h2');
+    assert.exists(role);
+    expect(role.textContent).toBe(SITE.role);
+
+    const pitch = doc.querySelector('#about-me p');
+    assert.exists(pitch);
+    expect(pitch.textContent).toBe(SITE.pitch);
+
+    const title = doc.querySelector('title');
+    assert.exists(title);
+    expect(title.textContent).toBe(`${SITE.name} | ${SITE.role}`);
   });
 });
