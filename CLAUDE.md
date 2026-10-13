@@ -14,7 +14,7 @@ Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statich
 - Use the stack's native features as their docs describe. If none fits, ask before building something custom. A new dependency needs the owner's approval.
 - No `any`, no `unknown`, no `as` casts (ESLint enforces it). Keep changes minimal: no refactors or defensive code beyond the task, except removing what the change makes obsolete (see Removing).
 - Done means seen: `pnpm build`, run the site (`pnpm preview` or Playwright), look at the screenshots, and report what you saw.
-- Add a lint rule, hook or test as a gate only for a mistake that recurred and is costly, and retire an obsolete gate in the same change. Content truth (CV text, posts) is checked by the owner, not by gates.
+- Add a lint rule, hook or test as a gate only for a mistake that recurred and is costly. Its comment names the real failure it answers (a CI run, PR or commit); no real failure, no gate. Retire an obsolete gate in the same change. Content truth (CV text, posts) is checked by the owner, not by gates.
 
 ## Removing
 Code, config, tests, docs, rules and dependencies are a cost to keep, not an asset. Remove anything that is demonstrably obsolete:
@@ -27,10 +27,12 @@ Code, config, tests, docs, rules and dependencies are a cost to keep, not an ass
 Before removing, find why it was added (`git log -S`, the PR or issue) and who uses it. If you can't tell why it exists, ask instead of guessing. When you change an area, remove what the change makes obsolete in the same PR. Ask the owner before removing visible content, a security control, or anything an ADR records.
 
 ## Workflow
-1. One GitHub Task issue per change (`.github/ISSUE_TEMPLATE/task.yml`). Read it with `gh issue view <N>`.
+0. Start of a session: `pnpm build && pnpm exec playwright test --project=chromium`. Fix anything the last session left broken before new work.
+1. One GitHub Task issue per change, and one Task per session (`.github/ISSUE_TEMPLATE/task.yml`). Read it with `gh issue view <N>`.
 2. Branch with `gh issue develop <N> --base master --name <type>/<N>-<slug> --checkout`.
 3. Failing test first, then the code, until `pnpm check` passes. Conventional Commits.
 4. Open the PR once `pnpm check`, the e2e run and the live check pass, with `.github/PULL_REQUEST_TEMPLATE.md`, `Closes #N` and a Conventional Commits title (it becomes the squash commit). The owner reviews and merges; then run the `after-merge` skill.
+5. End of a session: leave a clean state. Everything committed; unfinished work pushed to a draft PR, never a half-done tree.
 
 ## Gotchas
 - Commit by path: `git commit -- <paths>`. `git stash` is denied.
