@@ -137,10 +137,10 @@ describe('Agent context truthfulness', () => {
 // eslint.config.mjs read-only, so a stash cannot restore them and half-applies; commit by path.
 // `cmd *` also matches the bare command (https://code.claude.com/docs/en/sandboxing).
 // Owner rule 2026-10-11 (#138): specs guard a missing value instead of routing around it.
-// tests/config/eslint.spec.ts covers every banned form.
-describe('Learned spec guard', () => {
-  it('bans optional chaining in specs', async () => {
-    const [{ messages }] = await new ESLint().lintText('export const a = b?.c;\n', { filePath: 'src/x/X.spec.ts' });
+// #214: a DOM node returned from page.evaluate arrives as a string. tests/config/eslint.spec.ts covers every banned form.
+describe('Learned spec guards', () => {
+  it.each(['export const a = b?.c;\n', 'export const a = page.evaluate(() => document.documentElement);\n'])('bans %j in specs', async (code) => {
+    const [{ messages }] = await new ESLint().lintText(code, { filePath: 'tests/pages/x.spec.ts' });
     expect(messages.map((m) => m.ruleId)).toContain('no-restricted-syntax');
   });
 });

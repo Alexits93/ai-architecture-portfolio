@@ -222,3 +222,24 @@ describe('ESLint null-safety gate in specs', () => {
     expect(rules).toContain("The 'unknown' type is banned. Define explicit types or interfaces.");
   });
 });
+
+// page.evaluate serializes its return value; a DOM node arrives as the string "ref: <Node>", so destructuring
+// its properties yields undefined and an assertion on them passes for any page (#214 review).
+describe('ESLint gate on DOM nodes returned from evaluate', () => {
+  const evaluateBans = async (code: string) =>
+    (await new ESLint().lintText(code, { filePath: 'tests/pages/x.spec.ts' }))[0].messages
+      .filter((m) => m.ruleId === 'no-restricted-syntax')
+      .map((m) => m.message);
+
+  it.each([
+    'export const a = page.evaluate(() => document.documentElement);\n',
+    'export const a = page.evaluate(() => document.body);\n',
+    "export const a = page.evaluate(() => document.querySelector('main'));\n",
+  ])('flags %j', async (code) => {
+    expect(await evaluateBans(code)).toEqual([expect.stringMatching(/serializ/)]);
+  });
+
+  it('allows reading values inside the callback', async () => {
+    expect(await evaluateBans('export const a = page.evaluate(() => document.documentElement.scrollWidth);\n')).toEqual([]);
+  });
+});

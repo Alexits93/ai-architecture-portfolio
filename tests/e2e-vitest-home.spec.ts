@@ -20,10 +20,13 @@ describe('Home Page (index.astro)', () => {
     const main = doc.querySelector('main');
     expect(main).not.toBeNull();
 
-    // Two grid columns from 64rem: the hero, then the blocks (#214).
+    // The hero, then the blocks, in DOM order (#214).
     const wrapper = doc.querySelector('.home-wrapper');
     assert.exists(wrapper);
-    expect([...wrapper.children].map((child) => child.matches('section#about-me, .home-blocks'))).toEqual([true, true]);
+    expect([...wrapper.children].map((child) => [child.id, child.classList.contains('home-blocks')])).toEqual([
+      ['about-me', false],
+      ['', true],
+    ]);
 
     // Check for BlogPostFeatured Stub
     const blogFeatured = doc.querySelector('.home-blocks section#blog-featured');

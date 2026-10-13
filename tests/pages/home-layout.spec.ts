@@ -19,13 +19,14 @@ test.describe('at 1440 px', () => {
     expect(blocksBox.x).toBeGreaterThanOrEqual(heroBox.x + heroBox.width);
     expect(blocksBox.height).toBeGreaterThan(900);
 
-    await page.mouse.wheel(0, 600);
-    await expect.poll(() => page.evaluate(() => scrollY)).toBe(600);
+    await page.evaluate(() => scrollTo(0, 600));
     const scrolledHero = await hero.boundingBox();
     const scrolledBlocks = await blocks.boundingBox();
     assert(scrolledHero !== null && scrolledBlocks !== null);
     expect(scrolledBlocks.y).toBeCloseTo(blocksBox.y - 600, 0);
-    expect(scrolledHero.y).toBeGreaterThanOrEqual(0);
+    // Stuck at its sticky offset, not scrolled away with the page.
+    const stickyTop = await hero.evaluate((el) => parseFloat(getComputedStyle(el).top));
+    expect(scrolledHero.y).toBeCloseTo(stickyTop, 0);
     expect(scrolledHero.y + scrolledHero.height).toBeLessThanOrEqual(900);
   });
 
@@ -53,9 +54,13 @@ test.describe('at 390 px', () => {
     assert(heroBox !== null && blocksBox !== null);
     expect(blocksBox.y).toBeGreaterThanOrEqual(heroBox.y + heroBox.height);
     expect(blocksBox.x).toBeCloseTo(heroBox.x, 0);
-    // clientWidth excludes a classic scrollbar, so the comparison holds in every engine.
-    const { scrollWidth, clientWidth } = await page.evaluate(() => document.documentElement);
-    expect(scrollWidth).toBe(clientWidth);
+    // Read the numbers inside the callback: evaluate serializes a returned DOM node to a string.
+    // scrollWidth can be below clientWidth where a stable scrollbar gutter narrows the content box.
+    const { scrollWidth, clientWidth } = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }));
+    expect(scrollWidth).toBeLessThanOrEqual(clientWidth);
   });
 });
 
