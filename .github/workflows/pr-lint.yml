@@ -29,7 +29,10 @@ jobs:
         run: printf '%s\n' "$PR_TITLE" | pnpm exec commitlint
 
       # GitHub's closing keywords (https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue).
+      # Dependabot PRs have no Task issue (#238); the login check is GitHub's documented way to identify them
+      # (https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions).
       - name: Check the PR closes an issue
+        if: github.event.pull_request.user.login != 'dependabot[bot]'
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
         # A block scalar: in a plain YAML scalar, " #" starts a comment and cuts the command.
