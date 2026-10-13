@@ -6,7 +6,7 @@ import SeoHead from './SeoHead.astro';
 const SITE_URL = 'https://www.pa-tech.dev';
 const baseProps = { title: 'Post Title', description: 'Post description' };
 
-type SeoProps = { title: string; description: string; ogImagePath?: string; type?: 'website' | 'article'; publishedTime?: Date; jsonLd?: Record<string, string> };
+type SeoProps = { title: string; description: string; ogImagePath?: string; type?: 'website' | 'article'; publishedTime?: Date; jsonLd?: Record<string, string>; noindex?: boolean };
 
 const render = async (props: SeoProps = baseProps, site: string | undefined = SITE_URL) => {
   const container = await AstroContainer.create({ astroConfig: { site } });
@@ -66,6 +66,11 @@ describe('SeoHead (Astro)', () => {
     assert.exists(ld);
     expect(JSON.parse(ld.textContent).headline).toBe('</script>');
   });
+});
 
-
+// The 404 page must stay out of search results (#154).
+it('SeoHead emits robots noindex only when asked', async () => {
+  const doc = await render();
+  expect(doc.querySelector('meta[name="robots"]')).toBeNull();
+  expect(meta(await render({ ...baseProps, noindex: true }), 'robots')).toBe('noindex');
 });

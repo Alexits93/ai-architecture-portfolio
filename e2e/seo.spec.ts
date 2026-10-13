@@ -4,7 +4,10 @@ import { test, expect } from '@playwright/test';
 import { SITE } from '../src/consts';
 
 // Every built page renders through BaseLayout with one complete SEO head (#113).
-const ROUTES = globSync('**/*.html', { cwd: 'dist' }).map((file) => `/${file.replace(/index\.html$/, '')}`);
+// 404.html builds from src/pages/404.astro, whose URL is /404/ (#154).
+const ROUTES = globSync('**/*.html', { cwd: 'dist' }).map((file) => `/${file.replace(/index\.html$/, '').replace(/\.html$/, '/')}`);
+// @astrojs/sitemap leaves status code pages out of the sitemap.
+const SITEMAP_ROUTES = ROUTES.filter((route) => route !== '/404/');
 
 const TITLES: Record<string, string> = {
   '/': SITE.title,
@@ -46,7 +49,7 @@ for (const route of ROUTES) {
 test('sitemap lists every built page', async ({ request }) => {
   const xml = await (await request.get('/sitemap-0.xml')).text();
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
-  expect(locs.toSorted()).toEqual(ROUTES.map((route) => `https://www.pa-tech.dev${route}`).toSorted());
+  expect(locs.toSorted()).toEqual(SITEMAP_ROUTES.map((route) => `https://www.pa-tech.dev${route}`).toSorted());
 });
 
 test('robots.txt points to the sitemap index', async ({ request }) => {
