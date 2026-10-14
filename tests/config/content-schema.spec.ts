@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { describe, it, expect } from 'vitest';
-import { blogSchema, experienceSchema, nowSchema } from '@/content.config';
+import { blogSchema, experienceSchema, nowSchema, servicesSchema } from '@/content.config';
 
 // One category per post, strict object: an unknown key such as the removed `tags` fails the build (#90).
 const withoutCategory = {
@@ -69,5 +69,28 @@ describe('now collection schema', () => {
 
   it('keeps raw HTML out of the now text', () => {
     expect(fs.readFileSync('src/content/now/now.md', 'utf8')).not.toMatch(/<[a-z!/]/i);
+  });
+});
+
+// The "What I do best" cards on home, one YAML entry per card, shown by `order` (#256).
+const withoutTitle = {
+  id: 'frontend-architecture',
+  order: 1,
+  kicker: 'Day job',
+  text: 'I turn features into web applications.',
+  tools: ['Angular'],
+};
+const service = { ...withoutTitle, title: 'Frontend architecture' };
+
+describe('services collection schema', () => {
+  it('accepts a service', () => {
+    expect(servicesSchema.safeParse(service).success).toBe(true);
+  });
+
+  it('rejects a missing field, an unknown key, an empty tool list or a position below 1', () => {
+    expect(servicesSchema.safeParse(withoutTitle).success).toBe(false);
+    expect(servicesSchema.safeParse({ ...service, icon: 'star' }).success).toBe(false);
+    expect(servicesSchema.safeParse({ ...service, tools: [] }).success).toBe(false);
+    expect(servicesSchema.safeParse({ ...service, order: 0 }).success).toBe(false);
   });
 });

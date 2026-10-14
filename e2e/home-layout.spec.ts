@@ -26,7 +26,8 @@ for (const width of [320, 390, 1440]) {
         const previous = blocks[index - 1];
         if (previous !== undefined) expect(block.top).toBeGreaterThanOrEqual(previous.bottom);
       }
-      const sticky = await page.locator('main *').evaluateAll((elements) =>
+      // The service cards stick on purpose (#256); the reading column does not.
+      const sticky = await page.locator('main > .home *').evaluateAll((elements) =>
         elements.filter((element) => getComputedStyle(element).position === 'sticky').length,
       );
       expect(sticky).toBe(0);

@@ -59,10 +59,14 @@
     /* Small enough that each half of the name fits beside the portrait from 64rem (#254). */
     --font-size-display-hero: clamp(3rem, 6vw, 5.5rem);
     --font-size-display-giant: 19vw;
+    /* The title on a service card (#256), between the body sizes and the section titles. */
+    --font-size-display-card: clamp(1.5rem, 3vw, 2.25rem);
     --line-height-display-section: 1.05;
+    --line-height-display-card: 1.1;
     --line-height-display-hero: .9;
     --line-height-display-giant: .8;
     --letter-spacing-display-section: -.04em;
+    --letter-spacing-display-card: -.03em;
     --letter-spacing-display-hero: -.05em;
     --letter-spacing-display-giant: -.06em;
     --line-height-sm: 1.25rem;
@@ -112,6 +116,12 @@
     /* The home hero (#254): the portrait card shrinks with a phone screen, and the pitch wraps at a short measure. */
     --size-portrait: min(70vw, 16rem);
     --size-pitch: 36ch;
+    /* Sticky parts on home (#256) stop this far below the viewport top, clear of the sticky header. */
+    --offset-sticky: 7rem;
+    /* The service cards sit this far apart before they stack; the space after the last one keeps the pile on screen
+       a while longer. */
+    --space-stack: 16vh;
+    --space-stack-end: 24vh;
     --page-max-width: 1200px;
     --font-size-menu: 48px;
 
