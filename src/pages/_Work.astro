@@ -2,6 +2,9 @@
 // Page-only component for the home page (ADR 002): work rows from src/content/experience.yaml and a pill to the full
 // CV (#257, direction A on #252).
 import { getCollection } from 'astro:content';
+import DisplayHeading from '@/components/DisplayHeading.astro';
+import Eyebrow from '@/components/Eyebrow.astro';
+import Pill from '@/components/Pill.astro';
 import { ROUTES } from '@/consts';
 import { formatPeriod, sortByStartDesc } from '@/lib/experience';
 
@@ -11,10 +14,10 @@ const positions = sortByStartDesc(await getCollection('experience'));
 <section id="work" class="work" aria-labelledby="work-title">
 	<div class="head">
 		<div>
-			<p class="eyebrow"><span aria-hidden="true">/ </span>Career</p>
-			<h2 id="work-title">Work <span class="accent">experience</span></h2>
+			<Eyebrow>Career</Eyebrow>
+			<DisplayHeading as="h2" size="section" id="work-title" text="Work" accent="experience" />
 		</div>
-		<a class="pill" href={ROUTES.cv}>Full CV</a>
+		<Pill href={ROUTES.cv}>Full CV</Pill>
 	</div>
 	<ul>
 		{positions.map(({ data }) => (
@@ -29,28 +32,7 @@ const positions = sortByStartDesc(await getCollection('experience'));
 
 <style>
 	.work { padding-block: var(--space-12); }
-	.eyebrow {
-		margin: 0 0 var(--space-2); color: var(--font-color-bold); font-size: var(--font-size-sm);
-		letter-spacing: var(--letter-spacing-wide); text-transform: uppercase;
-	}
-	h2 {
-		margin: 0; color: var(--font-color-bold); font-weight: var(--font-weight-bold);
-		font-size: var(--font-size-display-section); line-height: var(--line-height-display-section);
-		letter-spacing: var(--letter-spacing-display-section);
-	}
-	.accent { background-image: linear-gradient(100deg, var(--accent-a), var(--accent-b)); background-clip: text; color: transparent; }
 	.head { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: var(--space-4); }
-	.pill {
-		padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill); background-color: var(--theme-secondary);
-		color: var(--font-color-bold); font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); text-decoration: none;
-		transition: background-color var(--duration-2) ease-out, scale var(--duration-1) ease-out;
-	}
-	/* The surface changes on hover and the pill gives a little when pressed, as See all articles does (#206, #272). */
-	@media (hover: hover) {
-		.pill:hover { background-color: var(--thumbnail-bg-color-hover); }
-	}
-	.pill:active { scale: .96; }
-
 	/* Role and years on one line, the company under them, a hairline between the rows. */
 	ul { list-style: none; margin: var(--space-8) 0 0; padding: 0; }
 	li {

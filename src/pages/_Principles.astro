@@ -2,6 +2,8 @@
 // Page-only component for the home page (ADR 002): the principles from src/content/principles/principles.md (#244),
 // numbered rows between Work and the writing in direction A's look (#258, decided on #252).
 import { getEntry, render } from 'astro:content';
+import DisplayHeading from '@/components/DisplayHeading.astro';
+import Eyebrow from '@/components/Eyebrow.astro';
 
 const principles = await getEntry('principles', 'principles');
 if (principles === undefined) throw new Error('src/content/principles/principles.md is missing');
@@ -10,24 +12,14 @@ const { Content } = await render(principles);
 
 <section id="principles" class="principles" aria-labelledby="principles-title">
 	<div class="intro">
-		<p class="eyebrow"><span aria-hidden="true">/ </span>How I work</p>
-		<h2 id="principles-title"><span class="accent">Principles</span></h2>
+		<Eyebrow>How I work</Eyebrow>
+		<DisplayHeading as="h2" size="section" id="principles-title" accent="Principles" />
 	</div>
 	<div class="text"><Content /></div>
 </section>
 
 <style>
 	.principles { display: grid; gap: var(--space-8); padding-block: var(--space-12); color: var(--font-color); }
-	.eyebrow {
-		margin: 0 0 var(--space-2); color: var(--font-color-bold); font-size: var(--font-size-sm);
-		letter-spacing: var(--letter-spacing-wide); text-transform: uppercase;
-	}
-	h2 {
-		margin: 0; color: var(--font-color-bold); font-weight: var(--font-weight-bold);
-		font-size: var(--font-size-display-section); line-height: var(--line-height-display-section);
-		letter-spacing: var(--letter-spacing-display-section);
-	}
-	.accent { background-image: linear-gradient(100deg, var(--accent-a), var(--accent-b)); background-clip: text; color: transparent; }
 
 	/* Rows share the list's columns through subgrid, so every text starts at the same x
 	   (https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Subgrid).
