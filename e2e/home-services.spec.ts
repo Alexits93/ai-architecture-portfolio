@@ -62,3 +62,22 @@ test.describe('motion allowed', () => {
   });
 });
 
+
+// At 400% zoom (320x180 CSS px) each card stuck at 112 px or lower and the next card covered its text before it
+// could be read (#312, WCAG 1.4.10). Short viewports let the cards scroll like normal content.
+test.describe('at 320x180', () => {
+  test.use({ reducedMotion: 'reduce', viewport: { width: 320, height: 180 } });
+
+  test('every card text can be read without another card on top', async ({ page }) => {
+    await page.goto('/');
+    for (const text of await page.locator('#services .card > p:not(.eyebrow)').all()) {
+      await text.evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      const uncovered = await text.evaluate((el) => {
+        const box = el.getBoundingClientRect();
+        const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+        return hit !== null && el.contains(hit);
+      });
+      expect(uncovered).toBe(true);
+    }
+  });
+});
