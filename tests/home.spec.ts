@@ -7,7 +7,8 @@ import Index from '@/pages/index.astro';
 import { ROUTES, SITE } from '@/consts';
 import MockContent from './fixtures/MockContent.astro';
 
-// Vitest has no collection data, so the posts, the services, the now entry and the rendered Markdown are fixtures (#218, #226, #244).
+// Vitest has no collection data, so the posts, the services, the positions, the now entry and the rendered Markdown are
+// fixtures (#218, #226, #244, #257).
 // e2e/home-blog.spec.ts checks the real posts on the built page.
 const posts = [
   createTestPost({ id: 'featured-post', isFeatured: true }),
@@ -27,11 +28,19 @@ const service = (id: string, order: number): CollectionEntry<'services'> => ({
 });
 // Out of order on purpose: the cards follow `order`, not the collection order.
 const services = [service('second', 2), service('first', 1)];
+const position = (id: string, start: number, end: number | null): CollectionEntry<'experience'> => ({
+  id,
+  collection: 'experience',
+  data: { id, start, end, role: `Role ${id}`, company: `Company ${id}`, highlights: [`Highlight ${id}`], emphasis: [], skills: [] },
+});
+// Oldest first on purpose: the rows follow the start year, not the collection order.
+const positions = [position('older', 2017, 2018), position('current', 2024, null)];
+const collections: Record<string, readonly object[]> = { services, experience: positions };
 vi.mock('astro:content', async (importOriginal) => {
   const actual = await importOriginal<typeof import('astro:content')>();
   return {
     ...actual,
-    getCollection: async (name: string) => (name === 'services' ? services : posts),
+    getCollection: async (name: string) => (name in collections ? collections[name] : posts),
     getEntry: async () => nowEntry,
     render: async () => ({ Content: MockContent, headings: [], remarkPluginFrontmatter: {} }),
   };
@@ -45,20 +54,18 @@ describe('Home Page (index.astro)', () => {
     container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   });
 
-  // The hero and the service cards span the page above one reading column (#243, #254, #256).
-  it('renders the hero, the services, then the home blocks in one column in reading order', async () => {
+  // The hero, the service cards and the work rows span the page above one reading column (#243, #254, #256, #257).
+  it('renders the hero, the services, the work rows, then the home blocks in one column in reading order', async () => {
     const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
     const main = doc.querySelector('main');
     assert.exists(main);
-    expect(main.children).toHaveLength(3);
-    assert.exists(main.querySelector(':scope > #hero:first-child + #services + .home'));
+    expect(main.children).toHaveLength(4);
+    assert.exists(main.querySelector(':scope > #hero:first-child + #services + #work + .home'));
     const column = doc.querySelector('main > .home');
     assert.exists(column);
     expect([...column.children].map((child) => child.id)).toEqual([
-      'work',
       'principles',
-      'open',
       'now',
       'blog-featured',
       'blog-section',
@@ -156,34 +163,27 @@ it('renders the blog fixtures as featured and recommended cards', async () => {
   expect(hrefs('#blog-section .blog-post-thumbnail')).toEqual(['/blog/newer-post/', '/blog/older-post/']);
 });
 
-// Work is first-person prose that points to the CV; the hero carries no social icons on home (#243).
-it('renders the Work paragraph with a link to the CV', async () => {
+// Work rows from the experience collection, newest first, with a "Full CV" pill (#257, direction A on #252).
+it('renders a work row per position, newest first, and a Full CV link', async () => {
   const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
   const work = doc.querySelector('section#work');
   assert.exists(work);
-  expect(work.querySelector('h2')).toHaveProperty('textContent', 'Work');
-  expect(work.textContent).toContain('I lead the frontend architecture and engineering at Swiss Learning Hub');
+  expect(work.querySelector('h2')).toHaveProperty('textContent', 'Work experience');
+  const rows = [...work.querySelectorAll('ul > li')].map((row) =>
+    ['.role', '.years', '.company'].map((part) => row.querySelector(part)).map((el) => (el === null ? null : el.textContent)),
+  );
+  expect(rows).toEqual([
+    ['Role current', '2024 - Present', 'Company current'],
+    ['Role older', '2017 - 2018', 'Company older'],
+  ]);
   const cv = work.querySelector('a');
   assert.exists(cv);
+  expect(cv.textContent).toBe('Full CV');
   expect(cv.getAttribute('href')).toBe(ROUTES.cv);
   expect(doc.querySelector('#hero a')).toBeNull();
-});
-
-// Rows of name, one line and a link, only for public artefacts. Same tab, owner decision on #242.
-it('lists the things you can open, each with a same-tab link', async () => {
-  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
-  const doc = new JSDOM(await container.renderToString(Index)).window.document;
-
-  const open = doc.querySelector('section#open');
-  assert.exists(open);
-  expect(open.querySelector('h2')).toHaveProperty('textContent', 'Things you can open');
-  const links = [...open.querySelectorAll('li a')];
-  expect(links.map((link) => [link.textContent, link.getAttribute('href')])).toEqual([
-    ['pa-tech.dev', 'https://github.com/Alexits93/ai-architecture-portfolio'],
-  ]);
-  expect(links.some((link) => link.hasAttribute('target'))).toBe(false);
+  expect(doc.querySelector('section#open')).toBeNull();
 });
 
 // The socials end the page as a Connect line of named links, in the same tab (#243, #242).

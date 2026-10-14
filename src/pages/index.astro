@@ -1,21 +1,13 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { ROUTES, SITE } from '@/consts';
+import { SITE } from '@/consts';
 import BlogPostFeatured from './_BlogPostFeatured.astro';
 import Hero from './_Hero.astro';
 import BlogPostRecommended from '@/components/BlogPostRecommended.astro';
 import Now from './_Now.astro';
 import Principles from './_Principles.astro';
 import Services from './_Services.astro';
-
-// Public artefacts only: each row links to something a visitor can open (#243, research on #212).
-const openables = [
-	{
-		name: 'pa-tech.dev',
-		line: 'This portfolio and blog, and the agent harness that builds it with Claude Code.',
-		url: 'https://github.com/Alexits93/ai-architecture-portfolio',
-	},
-];
+import Work from './_Work.astro';
 
 const socials = [
 	{ name: 'GitHub', url: 'https://github.com/Alexits93' },
@@ -29,25 +21,9 @@ const socials = [
 	<main>
 		<Hero />
 		<Services />
+		<Work />
 		<div class="home">
-			<section id="work" aria-labelledby="work-title">
-				<h2 id="work-title">Work</h2>
-				<p>
-					I lead the frontend architecture and engineering at Swiss Learning Hub, where we turn features of Evento, an
-					enterprise Windows desktop app, into Nx and Angular web applications that are accessible, responsive and easier
-					to use. Before that, I led frontend development of a B2B webshop for more than 10 professional hair care brands
-					at IBM iX DACH. The full story is on <a href={ROUTES.cv}>my CV</a>.
-				</p>
-			</section>
 			<Principles />
-			<section id="open" aria-labelledby="open-title">
-				<h2 id="open-title">Things you can open</h2>
-				<ul>
-					{openables.map(({ name, line, url }) => (
-						<li><a href={url}>{name}</a> <span>{line}</span></li>
-					))}
-				</ul>
-			</section>
 			<Now />
 			<BlogPostFeatured />
 			<BlogPostRecommended />
@@ -71,7 +47,7 @@ const socials = [
 	}
 	.home p { margin: 0; color: var(--font-color); }
 	.home ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-2); color: var(--font-color); }
-	#open a, #connect a { color: var(--font-color-bold); font-weight: var(--font-weight-medium); }
+	#connect a { color: var(--font-color-bold); font-weight: var(--font-weight-medium); }
 	#connect ul { flex-direction: row; flex-wrap: wrap; column-gap: var(--space-6); }
 	/* BlogPostRecommended is shared with the post pages and sizes three columns for a full-width page. main .home
 	   outranks the widget's own scoped selector, which ties with .home alone and loads later. #219 replaces the widget

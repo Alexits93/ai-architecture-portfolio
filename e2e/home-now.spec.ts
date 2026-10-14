@@ -19,8 +19,8 @@ test('shows what Patrik works on now with its updated date', async ({ page }) =>
   await expect(now).toContainText('Updated 13 October 2026');
 });
 
-test('sits after the things you can open and before the writing', async ({ page }) => {
+test('sits after the principles and before the writing', async ({ page }) => {
   await page.goto('/');
   const ids = await page.locator('main > .home > *').evaluateAll((blocks) => blocks.map((block) => block.id));
-  expect(ids).toEqual(['work', 'principles', 'open', 'now', 'blog-featured', 'blog-section', 'connect']);
+  expect(ids).toEqual(['principles', 'now', 'blog-featured', 'blog-section', 'connect']);
 });
