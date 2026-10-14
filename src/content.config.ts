@@ -20,7 +20,6 @@ export const blogSchema = z.strictObject({
 	description: z.string(),
 	publishDate: z.coerce.date(),
 	category: z.enum(CATEGORIES),
-	isFeatured: z.boolean().default(false),
 });
 
 const blogCollection = defineCollection({

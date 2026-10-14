@@ -5,7 +5,6 @@ subtitle: "Deterministic gates around non-deterministic models"
 description: "An LLM agent is only as reliable as the system around it. This post breaks down the parts of a harness: context, tools, gates, and handover."
 publishDate: 2026-10-08
 category: AI
-isFeatured: true
 ---
 
 A language model writes plausible code. Plausible is not correct. The harness is the part of the system that closes that gap.

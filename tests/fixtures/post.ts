@@ -3,7 +3,6 @@ import type { BlogPost, Category } from '@/lib/posts';
 interface PostOverrides {
   id: string;
   title?: string;
-  isFeatured?: boolean;
   publishDate?: string;
   category?: Category;
 }
@@ -12,7 +11,6 @@ interface PostOverrides {
 export const createTestPost = ({
   id,
   title = `Title ${id}`,
-  isFeatured = false,
   publishDate = '2026-01-01',
   category = 'AI',
 }: PostOverrides): BlogPost => ({
@@ -26,6 +24,5 @@ export const createTestPost = ({
     description: `Description ${id}`,
     publishDate: new Date(publishDate),
     category,
-    isFeatured,
   },
 });

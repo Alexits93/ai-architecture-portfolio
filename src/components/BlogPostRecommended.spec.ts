@@ -8,7 +8,7 @@ import BlogPostRecommended from './BlogPostRecommended.astro';
 vi.mock('astro:content', () => ({ getCollection: vi.fn() }));
 
 const posts = [
-  createTestPost({ id: 'featured', isFeatured: true }),
+  createTestPost({ id: 'oldest', publishDate: '2025-01-01' }),
   createTestPost({ id: 'first', publishDate: '2026-03-01' }),
   createTestPost({ id: 'second', publishDate: '2026-02-01' }),
 ];
@@ -27,14 +27,14 @@ describe('BlogPostRecommended Widget (Astro)', () => {
   const hrefs = (doc: Document) =>
     [...doc.querySelectorAll('.blog-post-thumbnail')].map((a) => a.getAttribute('href'));
 
-  it('renders non-featured posts newest first with slug permalinks', async () => {
+  it('renders every post newest first with slug permalinks', async () => {
     const doc = await render();
-    expect(hrefs(doc)).toEqual(['/blog/first/', '/blog/second/']);
+    expect(hrefs(doc)).toEqual(['/blog/first/', '/blog/second/', '/blog/oldest/']);
   });
 
   it('omits the excluded post', async () => {
     const doc = await render({ excludeId: 'first' });
-    expect(hrefs(doc)).toEqual(['/blog/second/']);
+    expect(hrefs(doc)).toEqual(['/blog/second/', '/blog/oldest/']);
   });
 
   // Lighthouse link-text: the text names the destination (https://developer.chrome.com/docs/lighthouse/seo/link-text).

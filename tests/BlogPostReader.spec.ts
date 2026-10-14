@@ -15,7 +15,6 @@ const mockPost: CollectionEntry<'blog'> = {
     publishDate: new Date('2026-09-14T00:00:00.000Z'),
     category: 'AI',
     slug: 'test-post',
-    isFeatured: false,
   },
   body: '## Mock Heading\n\nMock body content',
 };
