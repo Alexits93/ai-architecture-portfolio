@@ -1,0 +1,18 @@
+# The FAQ on home, shown by `order` (src/content.config.ts). Draft copy from the #252 sketch; the owner rewrites it
+# in #264.
+- id: frontend-architect
+  order: 1
+  question: What does a frontend architect do?
+  answer: "Draft: decides how a large frontend is split, which rules it follows, and which of those rules CI checks."
+- id: agent-harness
+  order: 2
+  question: What is an agent harness?
+  answer: "Draft: the instructions, permissions, hooks and tests around a coding agent, so its output is checked before a person reviews it."
+- id: stack
+  order: 3
+  question: Which stack do you use?
+  answer: "Draft: Nx, Angular and TypeScript at work. Astro and plain CSS for this site."
+- id: llms
+  order: 4
+  question: How do you work with LLMs?
+  answer: "Draft: the model proposes, I decide. I ask it to argue against the design first."

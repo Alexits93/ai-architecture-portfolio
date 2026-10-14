@@ -83,9 +83,23 @@ const servicesCollection = defineCollection({
 	schema: servicesSchema,
 });
 
+/** The FAQ on home (#259), shown by `order` since collection order is not guaranteed. Answers are plain text. */
+export const faqSchema = z.strictObject({
+	id: z.string().regex(SLUG_PATTERN),
+	order: z.int().positive(),
+	question: z.string(),
+	answer: z.string(),
+});
+
+const faqCollection = defineCollection({
+	loader: file('src/content/faq.yaml'),
+	schema: faqSchema,
+});
+
 export const collections = {
 	blog: blogCollection,
 	experience: experienceCollection,
+	faq: faqCollection,
 	now: nowCollection,
 	principles: principlesCollection,
 	services: servicesCollection,
