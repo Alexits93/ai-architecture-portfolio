@@ -35,7 +35,14 @@ const questions = (await getCollection('faq')).toSorted((a, b) => a.data.order -
 	/* Details with the same name form an exclusive accordion: opening one closes the others
 	   (https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details#name). */
 	.list { display: grid; gap: var(--space-4); margin-block-start: var(--space-8); }
-	details { padding: var(--space-6); border-radius: var(--radius-xl); background-color: var(--theme-secondary); color: var(--font-color); }
+	details {
+		padding: var(--space-6); border-radius: var(--radius-xl); background-color: var(--theme-secondary); color: var(--font-color);
+		transition: background-color .2s ease-out;
+	}
+	/* The card's surface changes while the pointer is on its question, as the pills do (#272). */
+	@media (hover: hover) {
+		details:has(> summary:hover) { background-color: var(--thumbnail-bg-color-hover); }
+	}
 	summary {
 		display: flex; justify-content: space-between; gap: var(--space-4); list-style: none; cursor: pointer;
 		color: var(--font-color-bold); font-size: var(--font-size-xl); font-weight: var(--font-weight-bold);
