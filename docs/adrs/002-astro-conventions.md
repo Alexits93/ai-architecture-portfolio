@@ -15,7 +15,7 @@ Follow Astro's documented project structure (https://docs.astro.build/en/basics/
 |---|---|
 | `src/pages/` | Routes. Page-only markup and scoped styles stay in the page; page-only components sit next to it with a `_` prefix, which the router ignores (https://docs.astro.build/en/guides/routing/). |
 | `src/layouts/` | `BaseLayout.astro` (document shell, head, global CSS, header, menu, footer, `<slot />`) and nested layouts (https://docs.astro.build/en/basics/layouts/). |
-| `src/components/` | Components used by two or more routes or layouts. |
+| `src/components/` | Components rendered on two or more routes, directly or through a layout. |
 | `src/assets/` | Local images and SVGs that components import. An imported `.svg` renders as an inline SVG component (https://docs.astro.build/en/guides/images/#svg-components). |
 | `src/styles/` | Tokens and global CSS (reset, tokens, base element styles). Component styles are scoped (https://docs.astro.build/en/guides/styling/). |
 | `src/content/`, `src/content.config.ts` | Collections: schema and data for repeated structured content (https://docs.astro.build/en/guides/content-collections/). |
@@ -26,4 +26,5 @@ Imports flow `pages > layouts > components > lib`. ESLint core `no-restricted-im
 ## Consequences
 - Positive: one structure that the Astro docs, examples and agents share. No renamed layers, no third-party architecture plugin.
 - Positive: page-only code stays in the page, so the folder tree shows what is reused.
+- A component that `BaseLayout` renders (`Header`, `Footer`, `NavigatorMenu`, `SeoHead`) is on every route, so it belongs in `src/components/`. A component with one route sits next to its page.
 - The legacy `src/shared`, `src/entities`, `src/features` and `src/widgets` folders were dissolved into these folders in #232.

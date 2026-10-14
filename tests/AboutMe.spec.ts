@@ -1,7 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
 import { describe, it, expect, beforeEach, assert } from 'vitest';
-import AboutMe from './AboutMe.astro';
+import AboutMe from '@/pages/_AboutMe.astro';
 
 describe('AboutMe Widget (Astro) - Content', () => {
   let container: AstroContainer;

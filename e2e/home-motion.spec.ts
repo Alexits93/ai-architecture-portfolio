@@ -20,6 +20,18 @@ const rootRevealRuns = (page: Page) =>
     }),
   );
 
+// Duration and easing of the theme reveal on the new root snapshot, or null before it runs.
+const revealTiming = (page: Page) =>
+  page.evaluate(() => {
+    const reveal = document.getAnimations().find((animation) => {
+      const effect = animation.effect;
+      return effect instanceof KeyframeEffect && effect.pseudoElement === '::view-transition-new(root)';
+    });
+    if (reveal === undefined || reveal.effect === null) return null;
+    const { duration, easing } = reveal.effect.getTiming();
+    return { duration, easing };
+  });
+
 // A post page, which renders the recommended cards.
 const POST = '/blog/ai-agent-harness/';
 
@@ -59,6 +71,17 @@ test.describe('motion allowed', () => {
     await expect.poll(() => background(page)).not.toBe(before);
   });
 
+  // The reveal script reads the menu circle's tokens (#311), so both move with the same duration and curve.
+  test('the theme reveal moves like the menu circle', async ({ page }) => {
+    await page.goto('/');
+    const menu = await page.locator('.navigator-menu-overlay').evaluate((el) => {
+      const style = getComputedStyle(el);
+      return { duration: parseFloat(style.transitionDuration) * 1000, easing: style.transitionTimingFunction };
+    });
+    await page.locator('.theme-toggle').click();
+    await expect.poll(() => revealTiming(page)).toEqual(menu);
+  });
+
   // The recommended cards render only on the post pages since home lists the writing as rows (#219).
   test('recommended cards on a post reveal with the scroll where scroll timelines exist', async ({ page }) => {
     await page.goto(POST);
@@ -72,19 +95,22 @@ test.describe('motion allowed, page metrics', () => {
 
   // #283: the entrance started every hero part at opacity 0, which Chrome does not count as contentful, so home had no
   // Largest Contentful Paint (https://web.dev/articles/lcp#what-elements-are-considered). Only Chromium reports it.
-  test('the page records a Largest Contentful Paint while the hero enters', async ({ page, browserName }) => {
-    test.skip(browserName !== 'chromium', 'largest-contentful-paint entries exist only in Chromium');
-    await page.goto('/');
-    await animationsSettled(page);
-    const entries = await page.evaluate(
-      () =>
-        new Promise<number>((resolve) => {
-          new PerformanceObserver((list) => resolve(list.getEntries().length)).observe({ type: 'largest-contentful-paint', buffered: true });
-          setTimeout(() => resolve(0), 500);
-        }),
-    );
-    expect(entries).toBeGreaterThan(0);
-  });
+  // /cv/ runs the same entrance (#309).
+  for (const path of ['/', '/cv/']) {
+    test(`${path} records a Largest Contentful Paint while the hero enters`, async ({ page, browserName }) => {
+      test.skip(browserName !== 'chromium', 'largest-contentful-paint entries exist only in Chromium');
+      await page.goto(path);
+      await animationsSettled(page);
+      const entries = await page.evaluate(
+        () =>
+          new Promise<number>((resolve) => {
+            new PerformanceObserver((list) => resolve(list.getEntries().length)).observe({ type: 'largest-contentful-paint', buffered: true });
+            setTimeout(() => resolve(0), 500);
+          }),
+      );
+      expect(entries).toBeGreaterThan(0);
+    });
+  }
 });
 
 test.describe('reduced motion', () => {

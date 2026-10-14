@@ -1,4 +1,5 @@
 ---
+// Page-only component for the post pages (ADR 002): the recommended posts under an article.
 import { getCollection } from 'astro:content';
 import BlogPostThumbnail from '@/components/BlogPostThumbnail.astro';
 import { selectRecommendedPosts } from '@/lib/posts';
@@ -92,7 +93,7 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
     border-radius: var(--radius-lg);
     color: var(--font-color);
     text-decoration: none;
-    transition: background-color .2s ease-out, scale .1s ease-out;
+    transition: background-color var(--duration-2) ease-out, scale var(--duration-1) ease-out;
   }
 
   /* The card hover surface: --thumbnail-bg-color equals --theme-secondary in dark, so it showed no change (#206). */

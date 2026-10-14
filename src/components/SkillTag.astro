@@ -6,25 +6,16 @@ interface Props {
 const { skill } = Astro.props;
 ---
 
-<span class="skill-tag non-interactive">
+<span class="skill-tag">
   {`#${skill.toLocaleLowerCase()}`}
 </span>
 
 <style>
   .skill-tag {
     display: inline-block;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-
-  span.skill-tag.non-interactive {
     font-size: var(--font-size-base);
     padding: var(--space-1);
     font-style: italic;
     color: var(--font-color);
-  }
-
-  /* Global selection override just for this tag to mimic legacy behavior */
-  .skill-tag::selection {
-    background-color: var(--theme-primary);
   }
 </style>

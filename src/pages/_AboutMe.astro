@@ -1,4 +1,5 @@
 ---
+// Page-only component for /cv/ (ADR 002): the name, the role, the about text and the social links.
 import GitHubIcon from "@/assets/github.svg";
 import LinkedInIcon from "@/assets/linkedin.svg";
 import InstagramIcon from "@/assets/instagram.svg";
@@ -120,7 +121,6 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
   .about-me article .about-wrapper div .social-links li {
     list-style: none;
     display: inline-block;
-    transition: .3s;
     margin-right: var(--space-4);
   }
 
@@ -141,7 +141,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
   .about-me article .about-wrapper div .social-links li a svg {
     width: var(--size-icon-sm);
     height: var(--size-icon-sm);
-    transition: .3s;
+    transition: color var(--duration-3);
   }
 
   .about-me h1,
@@ -179,32 +179,8 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
     .about-me article .introduction-wrapper h1 {
       animation:
         hero-enter var(--duration-enter) var(--ease-spring) both,
-        name-gradient 6s ease-in-out infinite alternate;
+        name-gradient var(--duration-drift) ease-in-out infinite alternate;
       animation-delay: 0s, var(--duration-enter);
     }
-  }
-
-  @keyframes hero-enter {
-    from {
-      opacity: 0;
-      translate: 0 var(--space-6);
-    }
-  }
-
-  @keyframes name-gradient {
-    from { --name-accent: var(--accent-a); }
-    to { --name-accent: var(--accent-b); }
-  }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
   }
 </style>

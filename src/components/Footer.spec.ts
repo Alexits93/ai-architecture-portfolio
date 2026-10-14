@@ -2,7 +2,7 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
 import { describe, it, expect, beforeEach, assert } from 'vitest';
 import Footer from './Footer.astro';
-import { SITE } from '@/consts';
+import { ROUTES, SITE } from '@/consts';
 
 describe('Footer Widget (Astro)', () => {
   let container: AstroContainer;
@@ -30,10 +30,10 @@ describe('Footer Widget (Astro)', () => {
     expect(frameworkLink.textContent).toBe('Astro');
 
     // Check policy links
-    const cookieLink = doc.querySelector('a[href="/cookie-disclaimer/"]');
+    const cookieLink = doc.querySelector(`a[href="${ROUTES.cookieDisclaimer}"]`);
     expect(cookieLink).not.toBeNull();
     
-    const privacyLink = doc.querySelector('a[href="/privacy-policy/"]');
+    const privacyLink = doc.querySelector(`a[href="${ROUTES.privacyPolicy}"]`);
     expect(privacyLink).not.toBeNull();
 
     // Every page offers the contact email (#220).

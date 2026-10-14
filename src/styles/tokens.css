@@ -98,6 +98,8 @@
        (https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix). */
     --hairline-color: color-mix(in srgb, var(--font-color) 20%, transparent);
     --outline-width-focus: 2px;
+    /* A gap between the focus ring and what it outlines keeps the text readable. */
+    --outline-offset-focus: 8px;
     /* GOV.UK Frontend's link underline: the line scales with the text when the user enlarges it
        (govuk-frontend src/govuk/settings/_links.scss). */
     --link-underline-thickness: max(1px, .0625rem);
@@ -128,13 +130,24 @@
     --space-stack: 16vh;
     --space-stack-end: 24vh;
     --page-max-width: 1200px;
+    /* main's widest box, its padding included; the blog grid inside it caps at --page-max-width. */
+    --size-main: 1280px;
     --font-size-menu: 48px;
 
     /* Motion. The spring overshoots slightly and settles, sampled into linear() stops
        (https://developer.mozilla.org/en-US/docs/Web/CSS/easing-function/linear). */
     --ease-spring: linear(0, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017 19.4%, 1.067 21.8%, 1.099 24.3%, 1.106 26.2%, 1.098 28.6%, 1.054 34.4%, 1.023 39.4%, 1.002 45.4%, 0.993 54.2%, 1);
     --ease-in-out-strong: cubic-bezier(0.76, 0, 0.24, 1);
+    /* Transition durations in 100ms steps: a press, a hover, a control that flips, a panel that opens, the menu circle.
+       The theme reveal in Header.astro reads --duration-6 and --ease-in-out-strong, so it moves like the menu. */
+    --duration-1: .1s;
+    --duration-2: .2s;
+    --duration-3: .3s;
+    --duration-4: .4s;
+    --duration-6: .6s;
     --duration-enter: .7s;
+    /* One pass of the name gradient's drift between the accents. */
+    --duration-drift: 6s;
     --stagger: 90ms;
     /* Scroll reveal: from the first pixel entering the viewport until 30% of the cover range (MDN animation-range). */
     --range-reveal: entry 0% cover 30%;

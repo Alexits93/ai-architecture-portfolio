@@ -2,8 +2,8 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { getCollection } from 'astro:content';
 import { JSDOM } from 'jsdom';
 import { describe, it, expect, beforeEach, vi, assert } from 'vitest';
-import { createTestPost } from '../../tests/fixtures/post';
-import BlogPostRecommended from './BlogPostRecommended.astro';
+import { createTestPost } from './fixtures/post';
+import BlogPostRecommended from '@/pages/blog/_BlogPostRecommended.astro';
 
 vi.mock('astro:content', () => ({ getCollection: vi.fn() }));
 

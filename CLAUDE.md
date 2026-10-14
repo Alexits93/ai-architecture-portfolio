@@ -29,10 +29,10 @@ Before removing, find why it was added (`git log -S`, the PR or issue) and who u
 
 ## Workflow
 0. Start of a session: `pnpm build && pnpm exec playwright test --project=chromium`. Fix anything the last session left broken before new work.
-1. One GitHub Task issue per change, and one Task per session (`.github/ISSUE_TEMPLATE/task.yml`). Read it with `gh issue view <N>`.
+1. One GitHub Task issue per change (`.github/ISSUE_TEMPLATE/task.yml`). One PR, and one session, may close several Tasks that touch the same files. Read each with `gh issue view <N>`.
 2. Branch with `gh issue develop <N> --base master --name <type>/<N>-<slug> --checkout`.
 3. Failing test first, then the code, until `pnpm check` passes. Conventional Commits.
-4. Open the PR once `pnpm check`, the e2e run and the live check pass, with `.github/PULL_REQUEST_TEMPLATE.md`, `Closes #N` and a Conventional Commits title (it becomes the squash commit). The owner reviews and merges; then run the `after-merge` skill.
+4. Open the PR once `pnpm check`, the e2e run and the live check pass, with `.github/PULL_REQUEST_TEMPLATE.md`, `Closes #N` for each Task and a Conventional Commits title (it becomes the squash commit). The owner reviews and merges; then run the `after-merge` skill.
 5. End of a session: leave a clean state. Everything committed; unfinished work pushed to a draft PR, never a half-done tree.
 
 ## Gotchas

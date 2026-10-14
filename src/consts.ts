@@ -32,5 +32,3 @@ export const ROUTES = {
   cookieDisclaimer: '/cookie-disclaimer/',
   privacyPolicy: '/privacy-policy/',
 } as const;
-
-export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];

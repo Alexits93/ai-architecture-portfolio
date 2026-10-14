@@ -45,7 +45,7 @@ const posts = selectLatestPosts(await getCollection('blog'));
 	.pill {
 		padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill); background-color: var(--theme-secondary);
 		color: var(--font-color-bold); font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); text-decoration: none;
-		transition: background-color .2s ease-out, scale .1s ease-out;
+		transition: background-color var(--duration-2) ease-out, scale var(--duration-1) ease-out;
 	}
 	/* The surface changes on hover and the pill gives a little when pressed, as See all articles does (#206, #272). */
 	@media (hover: hover) {
@@ -62,7 +62,7 @@ const posts = selectLatestPosts(await getCollection('blog'));
 	li a {
 		justify-self: start; color: var(--font-color-bold); font-weight: var(--font-weight-bold); font-size: var(--font-size-xl);
 		letter-spacing: var(--letter-spacing-tight); text-decoration: underline transparent; text-underline-offset: var(--space-1);
-		transition: text-decoration-color .2s ease-out;
+		transition: text-decoration-color var(--duration-2) ease-out;
 	}
 	/* The title underlines on hover, as the blog cards do; only where the primary input can hover (#206). */
 	@media (hover: hover) {
