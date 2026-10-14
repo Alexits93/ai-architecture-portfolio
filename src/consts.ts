@@ -2,7 +2,7 @@ const name = 'Patrik Alexits';
 // One title for the whole site: the home and CV heroes and the home SEO title (#214).
 const role = 'Frontend Architect';
 // "front-end" keeps the hyphenated form on the home page next to the "Frontend" title (#125).
-const pitch = 'I design front-end architecture, build harnesses for LLM coding agents, and coach engineers.';
+const pitch = 'In my roles I have designed front-end architecture, built harnesses for LLM coding agents and coached engineers, and I still do.';
 
 /** Site-wide identity used by SEO metadata, the home and CV heroes, and generated OG images. */
 export const SITE = {
