@@ -92,6 +92,10 @@ import SunIcon from '@/assets/sun.svg';
       /* Above positioned page content while sticky; the open menu sits in the top layer. */
       z-index: 1;
   }
+  /* At 400% zoom (320x180 CSS px) a sticky header covers almost half the screen, so short viewports let it scroll away (#312). */
+  @media (max-height: 20rem) {
+      .header-wrapper { position: static; }
+  }
   .header-wrapper header {
       display: flex;
       justify-content: space-between;
