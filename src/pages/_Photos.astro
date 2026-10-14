@@ -12,13 +12,42 @@ const photos = [1, 2, 3, 4, 5].map((n) => `Photo placeholder ${n}`);
 	</ul>
 </div>
 
+<script>
+	// Touch, the wheel and the keyboard scroll the row natively; a mouse drag does not, so this script adds it (#279).
+	// Pointer capture keeps the drag going when the mouse leaves the row
+	// (https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture).
+	const row = document.getElementById('photos');
+	if (row !== null) {
+		// The grab cursor shows only where the row overflows and there is something to drag.
+		new ResizeObserver(() => row.toggleAttribute('data-draggable', row.scrollWidth > row.clientWidth)).observe(row);
+		let startX = 0;
+		let startScroll = 0;
+		row.addEventListener('pointerdown', (event) => {
+			if (event.pointerType !== 'mouse' || event.button !== 0 || !row.hasAttribute('data-draggable')) return;
+			row.setPointerCapture(event.pointerId);
+			startX = event.clientX;
+			startScroll = row.scrollLeft;
+			row.toggleAttribute('data-dragging', true);
+		});
+		row.addEventListener('pointermove', (event) => {
+			if (row.hasPointerCapture(event.pointerId)) row.scrollLeft = startScroll - (event.clientX - startX);
+		});
+		row.addEventListener('lostpointercapture', () => row.toggleAttribute('data-dragging', false));
+	}
+</script>
+
 <style>
-	/* Full bleed, tilted like prints on a table, with snap points. The thin scrollbar stays as the hint that it scrolls.
-	   The scroller clips what overflows it, so the end padding is as deep as the tile's shadow. */
+	/* Full bleed, tilted like prints on a table, with snap points. No scrollbar (#279): the last photo peeking past the
+	   edge and the grab cursor show that it scrolls. The scroller clips what overflows it, so the end padding is as
+	   deep as the tile's shadow. */
 	.photos {
 		margin-inline: var(--size-bleed); padding-block: var(--space-8) var(--space-12);
-		overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin;
+		overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
 	}
+	.photos[data-draggable] { cursor: grab; }
+	/* Snapping waits for the release, so the row follows the mouse; when it returns, the row snaps to the nearest photo
+	   (https://drafts.csswg.org/css-scroll-snap-1/#re-snap). */
+	.photos[data-dragging] { cursor: grabbing; scroll-snap-type: none; user-select: none; }
 	ul {
 		display: flex; gap: var(--space-6); inline-size: max-content;
 		margin: 0 auto; padding: 0 var(--space-6); list-style: none;
