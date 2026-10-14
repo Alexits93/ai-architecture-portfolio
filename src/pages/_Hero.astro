@@ -62,7 +62,9 @@ import { SITE } from '@/consts';
 		.hero > :nth-child(5) { animation-delay: calc(3 * var(--stagger)); }
 		.word { animation: name-gradient 6s ease-in-out infinite alternate; animation-delay: var(--duration-enter); }
 	}
-	@keyframes hero-enter { from { opacity: 0; translate: 0 var(--space-6); } }
+	/* Not quite 0: Chrome does not count content at opacity 0 as contentful, so a fade from 0 left home with no Largest
+	   Contentful Paint (#283, https://web.dev/articles/lcp#what-elements-are-considered). */
+	@keyframes hero-enter { from { opacity: .01; translate: 0 var(--space-6); } }
 	@keyframes name-gradient { from { --name-accent: var(--accent-a); } to { --name-accent: var(--accent-b); } }
 
 	.sr-only {
