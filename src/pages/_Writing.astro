@@ -12,7 +12,7 @@ const posts = selectLatestPosts(await getCollection('blog'));
 <section id="writing" class="writing" aria-labelledby="writing-title">
 	<div class="head">
 		<div>
-			<p class="eyebrow">/ Blog</p>
+			<p class="eyebrow"><span aria-hidden="true">/ </span>Blog</p>
 			<h2 id="writing-title">Latest <span class="accent">writing</span></h2>
 		</div>
 		<a class="pill" href={ROUTES.blog}>All posts</a>

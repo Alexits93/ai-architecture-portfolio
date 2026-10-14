@@ -7,7 +7,7 @@ const questions = (await getCollection('faq')).toSorted((a, b) => a.data.order -
 ---
 
 <section id="faq" class="faq" aria-labelledby="faq-title">
-	<p class="eyebrow">/ Questions</p>
+	<p class="eyebrow"><span aria-hidden="true">/ </span>Questions</p>
 	<h2 id="faq-title">Frequently <span class="accent">asked</span></h2>
 	<div class="list">
 		{questions.map(({ data }) => (
