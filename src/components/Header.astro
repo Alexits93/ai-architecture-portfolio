@@ -29,6 +29,13 @@ import SunIcon from '@/assets/sun.svg';
   const themeBtn = document.querySelector('.theme-toggle');
   const darkScheme = matchMedia('(prefers-color-scheme: dark)');
   const systemTheme = (): Theme => (darkScheme.matches ? 'dark' : 'light');
+  // The reveal moves like the menu circle. The CSS minifier picks s or ms for a time, so the unit is read, not assumed.
+  const revealTiming = () => {
+    const tokens = getComputedStyle(document.documentElement);
+    const time = tokens.getPropertyValue('--duration-6').trim();
+    const duration = parseFloat(time) * (time.endsWith('ms') ? 1 : 1000);
+    return { duration, easing: tokens.getPropertyValue('--ease-in-out-strong').trim() };
+  };
 
   if (themeBtn) {
     // Without a stored choice the page keeps no data-theme and shows the OS theme.
@@ -64,7 +71,7 @@ import SunIcon from '@/assets/sun.svg';
         .then(() => {
           root.animate(
             { clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
-            { duration: 600, easing: 'cubic-bezier(0.76, 0, 0.24, 1)', pseudoElement: '::view-transition-new(root)' },
+            { ...revealTiming(), pseudoElement: '::view-transition-new(root)' },
           );
         })
         .catch(() => undefined);
@@ -120,7 +127,7 @@ import SunIcon from '@/assets/sun.svg';
       border: none;
       border-radius: var(--radius-full);
       cursor: pointer;
-      transition: background-color .2s ease-out, scale .1s ease-out;
+      transition: background-color var(--duration-2) ease-out, scale var(--duration-1) ease-out;
   }
   /* Only where the primary input can hover, so a tap on a touch screen leaves no stuck tint (MDN @media hover). */
   @media (hover: hover) {
@@ -168,7 +175,6 @@ import SunIcon from '@/assets/sun.svg';
   }
   .navigator-menu-opener span {
       display: block;
-      transition: all .3s ease-in-out;
       height: .2rem;
       width: var(--space-8);
       background-color: var(--font-color-bold);

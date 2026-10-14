@@ -20,6 +20,18 @@ const rootRevealRuns = (page: Page) =>
     }),
   );
 
+// Duration and easing of the theme reveal on the new root snapshot, or null before it runs.
+const revealTiming = (page: Page) =>
+  page.evaluate(() => {
+    const reveal = document.getAnimations().find((animation) => {
+      const effect = animation.effect;
+      return effect instanceof KeyframeEffect && effect.pseudoElement === '::view-transition-new(root)';
+    });
+    if (reveal === undefined || reveal.effect === null) return null;
+    const { duration, easing } = reveal.effect.getTiming();
+    return { duration, easing };
+  });
+
 // A post page, which renders the recommended cards.
 const POST = '/blog/ai-agent-harness/';
 
@@ -57,6 +69,17 @@ test.describe('motion allowed', () => {
     await page.locator('.theme-toggle').click();
     await expect.poll(() => rootRevealRuns(page)).toBe(true);
     await expect.poll(() => background(page)).not.toBe(before);
+  });
+
+  // The reveal script reads the menu circle's tokens (#311), so both move with the same duration and curve.
+  test('the theme reveal moves like the menu circle', async ({ page }) => {
+    await page.goto('/');
+    const menu = await page.locator('.navigator-menu-overlay').evaluate((el) => {
+      const style = getComputedStyle(el);
+      return { duration: parseFloat(style.transitionDuration) * 1000, easing: style.transitionTimingFunction };
+    });
+    await page.locator('.theme-toggle').click();
+    await expect.poll(() => revealTiming(page)).toEqual(menu);
   });
 
   // The recommended cards render only on the post pages since home lists the writing as rows (#219).

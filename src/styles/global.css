@@ -63,7 +63,9 @@
     }
 
     @media (min-width: 48rem) {
-        main { min-height: calc(100vh - 186px); max-width: min(100%, 1280px); padding: var(--space-12) var(--space-8); margin: 0 auto; }
+        /* 186px is about the header (82px) and the footer (84 to 94px) with some slack, so a short page fills the window
+           and the footer sits near its bottom (b2c1c7f, #30). */
+        main { min-height: calc(100vh - 186px); max-width: min(100%, var(--size-main)); padding: var(--space-12) var(--space-8); margin: 0 auto; }
     }
 
     @media (min-width: 64rem) {
@@ -72,6 +74,7 @@
 
     h1 { margin: 0; letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-bold); font-size: var(--font-size-2xl); line-height: var(--line-height-xl); }
     h2 { margin: 0; letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-medium); font-size: var(--font-size-md); line-height: var(--line-height-md); }
+    /* A heading a link jumps to stops below the 82px sticky header, with a gap. */
     h1, h2, h3, h4, h5, h6 { scroll-margin-top: 100px; }
     /* Links are underlined, so a link in a sentence does not rely on colour alone (WCAG 2.2 F73). Navigation and card
        links drop the line in their component, where the context marks them as links. Hover thickens the line
@@ -85,8 +88,8 @@
         a:hover { text-decoration-thickness: var(--link-underline-thickness-hover); }
     }
     /* :focus-visible only: the browser shows the ring for keyboard focus, not for a mouse click (MDN :focus-visible).
-       It covers every focusable element. A gap between the ring and what it outlines keeps the text readable. */
-    :focus-visible { outline: var(--outline-width-focus) solid var(--focus-color); outline-offset: 8px; }
+       It covers every focusable element. */
+    :focus-visible { outline: var(--outline-width-focus) solid var(--focus-color); outline-offset: var(--outline-offset-focus); }
     ::selection { background-color: var(--theme-primary); }
 
     /* Visually hidden, still read by screen readers. */

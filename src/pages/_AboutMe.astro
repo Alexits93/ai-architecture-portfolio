@@ -121,7 +121,6 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
   .about-me article .about-wrapper div .social-links li {
     list-style: none;
     display: inline-block;
-    transition: .3s;
     margin-right: var(--space-4);
   }
 
@@ -142,7 +141,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
   .about-me article .about-wrapper div .social-links li a svg {
     width: var(--size-icon-sm);
     height: var(--size-icon-sm);
-    transition: .3s;
+    transition: color var(--duration-3);
   }
 
   .about-me h1,
@@ -180,7 +179,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
     .about-me article .introduction-wrapper h1 {
       animation:
         hero-enter var(--duration-enter) var(--ease-spring) both,
-        name-gradient 6s ease-in-out infinite alternate;
+        name-gradient var(--duration-drift) ease-in-out infinite alternate;
       animation-delay: 0s, var(--duration-enter);
     }
   }

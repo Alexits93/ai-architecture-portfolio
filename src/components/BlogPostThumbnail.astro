@@ -37,13 +37,13 @@ const { post } = Astro.props;
     padding: var(--space-4);
     border-radius: var(--radius-lg);
     background-color: var(--thumbnail-bg-color);
-    transition: translate .2s ease-out, background-color .2s ease-out;
+    transition: translate var(--duration-2) ease-out, background-color var(--duration-2) ease-out;
   }
 
   .blog-post-thumbnail h2 {
     text-decoration: underline transparent;
     text-underline-offset: var(--space-1);
-    transition: text-decoration-color .2s ease-out;
+    transition: text-decoration-color var(--duration-2) ease-out;
   }
 
   /* Hover lifts the card one step off the page; only where the primary input can hover (MDN @media hover). */
@@ -60,7 +60,7 @@ const { post } = Astro.props;
 
   .blog-post-thumbnail:active article {
     translate: 0 0;
-    transition-duration: .05s;
+    transition-duration: calc(var(--duration-1) / 2);
   }
 
   .blog-post-thumbnail article .thumbnail-body {
