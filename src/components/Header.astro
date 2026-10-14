@@ -170,6 +170,11 @@ import SunIcon from '@/assets/sun.svg';
       background-color: var(--font-color-bold);
       border-radius: var(--radius-xs);
   }
+  /* Forced colours drop author background colours, which hid the bars (#282). A system colour shows them
+     (https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors). */
+  @media (forced-colors: active) {
+      .navigator-menu-opener span { forced-color-adjust: none; background-color: ButtonText; }
+  }
   .sr-only {
       position: absolute;
       width: 1px;

@@ -35,6 +35,13 @@ describe('NavigatorMenu Widget (Astro)', () => {
     expect(homeLink.textContent.trim()).toBe('Home');
   });
 
+  // The links are navigation, not headings: an h2 in each made the open menu announce three headings and put them
+  // before every page's h1 (#282).
+  it('renders the menu links without headings', async () => {
+    const doc = new JSDOM(await container.renderToString(NavigatorMenu)).window.document;
+    expect(doc.querySelectorAll('dialog#site-menu h1, dialog#site-menu h2, dialog#site-menu h3')).toHaveLength(0);
+  });
+
   // Invoker command: the close button closes the dialog, no inline position (#157).
   it('should render the close button as a close command', async () => {
     const html = await container.renderToString(NavigatorMenu);

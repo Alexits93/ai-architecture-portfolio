@@ -98,6 +98,15 @@ describe('BlogPostReader Widget (Astro) - Secondary Elements', () => {
     expect(navigator).not.toBeNull();
   });
 
+  // The table of contents is one named nav; its wrapper is no unnamed complementary landmark (#282).
+  it('names the table of contents and adds no unnamed aside', async () => {
+    const doc = new JSDOM(await container.renderToString(BlogPostReader, { props: { post: mockPost } })).window.document;
+    const navigator = doc.querySelector('nav.article-navigator');
+    assert.exists(navigator);
+    expect(navigator.getAttribute('aria-label')).toBe('On this page');
+    expect(doc.querySelectorAll('aside')).toHaveLength(0);
+  });
+
   // Same logo asset as the header, 40px high at the viewBox aspect ratio (#119).
   it('should render the logo next to the author name', async () => {
     const html = await container.renderToString(BlogPostReader, {
@@ -110,5 +119,7 @@ describe('BlogPostReader Widget (Astro) - Secondary Elements', () => {
     expect(['viewBox', 'fill', 'width', 'height'].map((name) => svg.getAttribute(name))).toEqual(
       ['0 0 467.68 294.45', 'currentColor', '63.54', '40'],
     );
+    // Decoration next to the author's name, as in the header (#282).
+    expect(svg.getAttribute('aria-hidden')).toBe('true');
   });
 });
