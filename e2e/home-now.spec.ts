@@ -19,9 +19,10 @@ test('shows what Patrik works on now with its updated date', async ({ page }) =>
   await expect(now).toContainText('Updated 13 October 2026');
 });
 
-// #258: the now card sits near the top, the principles between Work and the writing.
+// #258: the now card sits near the top, the principles between Work and the writing. Astro renders a component's
+// processed <script> in place, so the photo row's drag script (#279) is a child of main and is skipped.
 test('sits after the hero, with the principles after the work rows', async ({ page }) => {
   await page.goto('/');
-  const ids = await page.locator('main > *').evaluateAll((blocks) => blocks.map((block) => block.id));
+  const ids = await page.locator('main > :not(script)').evaluateAll((blocks) => blocks.map((block) => block.id));
   expect(ids).toEqual(['hero', 'photos', 'now', 'services', 'work', 'principles', 'writing', 'faq', 'contact']);
 });
