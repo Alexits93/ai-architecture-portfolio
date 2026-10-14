@@ -17,6 +17,7 @@ Migrate to **Astro** with `output: 'static'`: pure static HTML. The code follows
 Host on **statichost.eu**, Hobby plan (free: 1 site, 100 build minutes, 10 GB bandwidth, custom headers and password protection on all plans). `www.pa-tech.dev` is canonical, with a 301 from the apex. Stockholm-based, and states that every layer from git deploy to CDN runs on European infrastructure owned by European companies.
 
 - Build: `statichost.yml` in the repo root (`node:26`, Corepack installed with npm, `pnpm install --frozen-lockfile`, `pnpm build`, public `dist`). The dashboard pnpm preset runs `corepack enable`, which Node.js no longer ships from 25.0.0.
+- Deploy: manual. The owner starts each build in the dashboard; the repo has no push webhook (https://www.statichost.eu/docs/git-providers/#github), so a merge alone does not reach staging.
 - Headers: `public/_headers`, verified live by `pnpm test:e2e:staging`. The site-wide block and the `/_astro/*` wildcard are both served exactly on Hobby.
 - Staging: HTTP Basic Auth set in the dashboard. Authenticated responses carry the `_headers` values unchanged; the 401 carries only the host's own headers and no page content.
 
