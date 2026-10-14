@@ -7,8 +7,8 @@ import Index from '@/pages/index.astro';
 import { ROUTES, SITE } from '@/consts';
 import MockContent from './fixtures/MockContent.astro';
 
-// Vitest has no collection data, so the posts, the services, the positions, the now entry and the rendered Markdown are
-// fixtures (#218, #226, #244, #257).
+// Vitest has no collection data, so the posts, the services, the positions, the questions, the now entry and the rendered
+// Markdown are fixtures (#218, #226, #244, #257, #259).
 // e2e/home-blog.spec.ts checks the real posts on the built page.
 const posts = [
   createTestPost({ id: 'oldest-post' }),
@@ -35,7 +35,14 @@ const position = (id: string, start: number, end: number | null): CollectionEntr
 });
 // Oldest first on purpose: the rows follow the start year, not the collection order.
 const positions = [position('older', 2017, 2018), position('current', 2024, null)];
-const collections: Record<string, readonly object[]> = { services, experience: positions };
+const question = (id: string, order: number): CollectionEntry<'faq'> => ({
+  id,
+  collection: 'faq',
+  data: { id, order, question: `Question ${id}`, answer: `Answer ${id}` },
+});
+// Out of order on purpose: the questions follow `order`, not the collection order.
+const faq = [question('second', 2), question('first', 1)];
+const collections: Record<string, readonly object[]> = { services, experience: positions, faq };
 vi.mock('astro:content', async (importOriginal) => {
   const actual = await importOriginal<typeof import('astro:content')>();
   return {
@@ -54,15 +61,15 @@ describe('Home Page (index.astro)', () => {
     container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   });
 
-  // The hero, the now card, the service cards, the work rows, the principles and the writing list span the page above
-  // one reading column (#243, #254, #256, #257, #258, #219).
-  it('renders the hero, now, the services, the work rows, the principles, the writing, then the home blocks in one column', async () => {
+  // The hero, the now card, the service cards, the work rows, the principles, the writing list and the FAQ span the page
+  // above one reading column (#243, #254, #256, #257, #258, #219, #259).
+  it('renders the hero, now, the services, the work rows, the principles, the writing, the FAQ, then the home blocks in one column', async () => {
     const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
     const main = doc.querySelector('main');
     assert.exists(main);
-    expect(main.children).toHaveLength(7);
-    assert.exists(main.querySelector(':scope > #hero:first-child + #now + #services + #work + #principles + #writing + .home'));
+    expect(main.children).toHaveLength(8);
+    assert.exists(main.querySelector(':scope > #hero:first-child + #now + #services + #work + #principles + #writing + #faq + .home'));
     const column = doc.querySelector('main > .home');
     assert.exists(column);
     expect([...column.children].map((child) => child.id)).toEqual(['connect']);
@@ -201,6 +208,26 @@ it('renders a work row per position, newest first, and a Full CV link', async ()
   expect(cv.getAttribute('href')).toBe(ROUTES.cv);
   expect(doc.querySelector('#hero a')).toBeNull();
   expect(doc.querySelector('section#open')).toBeNull();
+});
+
+// The FAQ: one native details per question in `order`, all in one exclusive group (#259).
+it('renders the FAQ as one exclusive group of details in order, all closed', async () => {
+  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+  const doc = new JSDOM(await container.renderToString(Index)).window.document;
+
+  const faqSection = doc.querySelector('section#faq');
+  assert.exists(faqSection);
+  expect(faqSection.querySelector('h2')).toHaveProperty('textContent', 'Frequently asked');
+  expect(faqSection.querySelector('.eyebrow')).toHaveProperty('textContent', '/ Questions');
+  const items = [...faqSection.querySelectorAll('details')];
+  expect(items.map((item) => [item.getAttribute('name'), item.hasAttribute('open')])).toEqual([
+    ['faq', false],
+    ['faq', false],
+  ]);
+  expect(items.map((item) => [...item.children].map((child) => [child.localName, child.textContent]))).toEqual([
+    [['summary', 'Question first'], ['p', 'Answer first']],
+    [['summary', 'Question second'], ['p', 'Answer second']],
+  ]);
 });
 
 // The socials end the page as a Connect line of named links, in the same tab (#243, #242).

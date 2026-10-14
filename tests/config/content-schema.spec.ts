@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { describe, it, expect } from 'vitest';
-import { blogSchema, experienceSchema, nowSchema, servicesSchema } from '@/content.config';
+import { blogSchema, experienceSchema, faqSchema, nowSchema, servicesSchema } from '@/content.config';
 
 // One category per post, strict object: an unknown key such as the removed `tags` fails the build (#90).
 const withoutCategory = {
@@ -92,5 +92,21 @@ describe('services collection schema', () => {
     expect(servicesSchema.safeParse({ ...service, icon: 'star' }).success).toBe(false);
     expect(servicesSchema.safeParse({ ...service, tools: [] }).success).toBe(false);
     expect(servicesSchema.safeParse({ ...service, order: 0 }).success).toBe(false);
+  });
+});
+
+// The FAQ on home, one YAML entry per question, shown by `order` (#259).
+const withoutAnswer = { id: 'stack', order: 1, question: 'Which stack do you use?' };
+const question = { ...withoutAnswer, answer: 'Astro and plain CSS.' };
+
+describe('faq collection schema', () => {
+  it('accepts a question', () => {
+    expect(faqSchema.safeParse(question).success).toBe(true);
+  });
+
+  it('rejects a missing answer, an unknown key or a position below 1', () => {
+    expect(faqSchema.safeParse(withoutAnswer).success).toBe(false);
+    expect(faqSchema.safeParse({ ...question, open: true }).success).toBe(false);
+    expect(faqSchema.safeParse({ ...question, order: 0 }).success).toBe(false);
   });
 });
