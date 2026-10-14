@@ -11,6 +11,9 @@ const BLOG_ROUTES = [
   { route: '/blog/category/architecture/', current: 'Architecture', tag: '#architecture' },
 ];
 
+const cardHrefs = (page: Page, scope: string) =>
+  page.locator(`${scope} .blog-post-thumbnail`).evaluateAll((cards) => cards.map((card) => card.getAttribute('href')));
+
 const categoryNav = (page: Page) => page.getByRole('navigation', { name: 'Blog categories' });
 
 // Each card's category, from the tag the thumbnail renders.
@@ -123,11 +126,12 @@ test.describe('Recommended articles on a post page', () => {
   test('finds the built post pages', () => expect(POST_ROUTES.length).toBeGreaterThan(0));
 
   for (const route of POST_ROUTES) {
-    test(`${route} does not recommend itself`, async ({ page }) => {
+    // Every other post, newest first, up to 3; the blog index lists the posts newest first (#269).
+    test(`${route} recommends the newest other posts`, async ({ page }) => {
+      await page.goto('/blog/');
+      const newest = await cardHrefs(page, '.blog-grid');
       await page.goto(route);
-      const cards = page.locator('#blog-section .blog-post-thumbnail');
-      await expect(cards.first()).toBeVisible();
-      await expect(page.locator(`#blog-section a[href="${route}"]`)).toHaveCount(0);
+      expect(await cardHrefs(page, '#blog-section')).toEqual(newest.filter((href) => href !== route).slice(0, 3));
     });
   }
 });

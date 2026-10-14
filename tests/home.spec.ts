@@ -11,7 +11,7 @@ import MockContent from './fixtures/MockContent.astro';
 // fixtures (#218, #226, #244, #257).
 // e2e/home-blog.spec.ts checks the real posts on the built page.
 const posts = [
-  createTestPost({ id: 'featured-post', isFeatured: true }),
+  createTestPost({ id: 'oldest-post' }),
   createTestPost({ id: 'newer-post', publishDate: '2026-05-01' }),
   createTestPost({ id: 'older-post', publishDate: '2026-02-01' }),
 ];
@@ -162,7 +162,7 @@ it('renders the writing list newest first with category, date and an All posts l
   expect(rows.map((row) => [...row.querySelectorAll('a')].map((link) => [link.textContent, link.getAttribute('href')]))).toEqual([
     [['Title newer-post', '/blog/newer-post/']],
     [['Title older-post', '/blog/older-post/']],
-    [['Title featured-post', '/blog/featured-post/']],
+    [['Title oldest-post', '/blog/oldest-post/']],
   ]);
   const [first] = rows;
   assert.exists(first);
