@@ -1,38 +1,42 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE } from '@/consts';
 ---
 
 <BaseLayout title="Privacy Policy | Patrik Alexits" description="How pa-tech.dev handles your data.">
 	<main class="page-container">
 		<section class="privacy-policy">
 			<h1>Privacy Policy</h1>
-			<h2>1. Introduction</h2>
+			<p>Last updated: 14 October 2026</p>
 
-			<p>Welcome to our website. This Privacy Policy explains how we handle information collected and received from your use of our website.</p>
+			<h2>Who is responsible</h2>
+			<p>{SITE.name} is responsible for this website and the data processing described here. This is a personal site; I offer no goods or services through it. You can reach me at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
 
-			<h2>2. Information Collection</h2>
+			<h2>Visiting the site</h2>
+			<p>To deliver the pages, the host processes your IP address. It does not store it after the request. I see no IP addresses and no visit logs.</p>
+			<p>This site sets no cookies. It has no analytics, tracking, forms or third-party content. Your light or dark theme choice is stored in your browser's localStorage and never leaves your device.</p>
 
-			<p>We do not collect personal information about our visitors. The site has no forms, analytics, tracking or third-party embeds. Like every web host, our hosting provider processes your IP address to deliver the pages.</p>
+			<h2>Writing to me</h2>
+			<p>If you email me, I process your address and your message to reply. I delete them when the conversation is over, unless the law requires me to keep them.</p>
 
-			<h2>3. Use of Cookies</h2>
+			<h2>Recipients</h2>
+			<ul>
+				<li>statichost.eu, Sweden, hosts the site under a data processing agreement. It uses Hetzner Online GmbH, Germany, and BunnyWay d.o.o., Slovenia.</li>
+				<li>Proton AG, Switzerland, handles my email.</li>
+			</ul>
+			<p>Your data stays in Switzerland and the EEA. I share it with no one else.</p>
 
-			<p>This site sets no cookies. Your light or dark theme choice is stored in your browser's localStorage and never leaves your device.</p>
+			<h2>Legal basis</h2>
+			<p>I process this data out of a legitimate interest in delivering a working, secure website and in answering your messages (Swiss revDSG Art. 31(1); where the GDPR applies, Art. 6(1)(f)).</p>
 
-			<h2>4. Data Security</h2>
+			<h2>Your rights</h2>
+			<p>You can ask me what data I hold about you and ask me to correct or delete it, or object to its processing. Write to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. You can also complain to the Swiss <a href="https://www.edoeb.admin.ch/en">Federal Data Protection and Information Commissioner (FDPIC)</a> or, in the EU or EEA, to the data protection authority where you live.</p>
 
-			<p>We take data security seriously and ensure reasonable steps to protect your information. However, no internet transmission is entirely secure, and we cannot guarantee the security of data transmitted to our site.</p>
+			<h2>Links to other sites</h2>
+			<p>This site links to other websites. Their own privacy policies apply there.</p>
 
-			<h2>5. Third-Party Websites</h2>
-
-			<p>Our website may contain links to other websites. We are not responsible for the privacy practices or content of such other websites.</p>
-
-			<h2>6. Changes to This Policy</h2>
-
-			<p>We may update this Privacy Policy periodically. We encourage you to review this policy occasionally to stay informed about how we are protecting the information we collect.</p>
-
-			<h2>7. Contact Us</h2>
-
-			<p>If you have any questions about this Privacy Policy, please contact us at pa-tech@gmail.com.</p>
+			<h2>Changes</h2>
+			<p>When the site changes how it handles data, I update this page and its date.</p>
 		</section>
 	</main>
 </BaseLayout>
@@ -47,4 +51,13 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 		font-size: var(--font-size-2xl);
 		line-height: var(--line-height-xl);
 	}
+	.privacy-policy h2 {
+		color: var(--font-color-bold);
+		margin: var(--space-10) 0 var(--space-2);
+		font-weight: var(--font-weight-bold);
+		font-size: var(--font-size-xl);
+		line-height: var(--line-height-lg);
+	}
+	.privacy-policy p + p { margin-block-start: var(--space-4); }
+	.privacy-policy ul { margin-block: 0 var(--space-4); padding-inline-start: var(--space-6); }
 </style>
