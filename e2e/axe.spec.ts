@@ -27,7 +27,7 @@ test('finds the built pages', () => expect(ROUTES.length).toBeGreaterThan(5));
 // through a scroll-driven animation and sit at opacity .4 until scrolled into view, so animationsSettled() would
 // leave them mid-fade and color-contrast would flag text a reader only sees at full opacity.
 // axe reports gradient text (the hero name, the .accent heading words) as incomplete, not as a violation: it cannot
-// compute a contrast ratio against a gradient. Those need a manual check.
+// compute a contrast ratio against a gradient. e2e/contrast.spec.ts samples those gradients instead (#275).
 test.describe('built pages', () => {
   test.use({ reducedMotion: 'reduce' });
 
