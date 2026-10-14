@@ -90,4 +90,16 @@
        It covers every focusable element. A gap between the ring and what it outlines keeps the text readable. */
     :focus-visible { outline: var(--outline-width-focus) solid var(--focus-color); outline-offset: 8px; }
     ::selection { background-color: var(--theme-primary); }
+
+    /* Visually hidden, still read by screen readers. */
+    .sr-only {
+        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+        overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+    }
+
+    /* The hero entrance on home and /cv/: a spring rise, then the name gradient drifts (#210). Not quite 0: Chrome does
+       not count content at opacity 0 as contentful, so a fade from 0 left home with no Largest Contentful Paint
+       (#283, https://web.dev/articles/lcp#what-elements-are-considered). */
+    @keyframes hero-enter { from { opacity: .01; translate: 0 var(--space-6); } }
+    @keyframes name-gradient { from { --name-accent: var(--accent-a); } to { --name-accent: var(--accent-b); } }
 }

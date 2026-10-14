@@ -1,7 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import type { CollectionEntry } from 'astro:content';
+import { render, type CollectionEntry } from 'astro:content';
 import { JSDOM } from 'jsdom';
-import { describe, it, expect, beforeEach, assert, vi } from 'vitest';
+import { it, expect, beforeEach, assert, vi } from 'vitest';
 import { createTestPost } from './fixtures/post';
 import Index from '@/pages/index.astro';
 import { ROUTES, SITE } from '@/consts';
@@ -21,6 +21,8 @@ const nowEntry: CollectionEntry<'now'> = {
   data: { updated: new Date('2026-10-13T00:00:00.000Z') },
   body: '- Mock line',
 };
+const principlesEntry: CollectionEntry<'principles'> = { id: 'principles', collection: 'principles', data: {}, body: '- Mock principle' };
+const entries: Record<string, object> = { now: nowEntry, principles: principlesEntry };
 const service = (id: string, order: number): CollectionEntry<'services'> => ({
   id,
   collection: 'services',
@@ -48,35 +50,34 @@ vi.mock('astro:content', async (importOriginal) => {
   return {
     ...actual,
     getCollection: async (name: string) => (name in collections ? collections[name] : posts),
-    getEntry: async () => nowEntry,
-    render: async () => ({ Content: MockContent, headings: [], remarkPluginFrontmatter: {} }),
+    // Each single-entry collection holds one entry named after it; any other key is missing, as in the real store.
+    getEntry: async (collection: string, id: string) => (collection === id && id in entries ? entries[id] : undefined),
+    render: vi.fn(async () => ({ Content: MockContent, headings: [], remarkPluginFrontmatter: {} })),
   };
 });
 
-describe('Home Page (index.astro)', () => {
-  let container: AstroContainer;
+let container: AstroContainer;
 
-  beforeEach(async () => {
-    // The page renders SeoHead through BaseLayout, which needs `site` for absolute URLs.
-    container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
-  });
+beforeEach(async () => {
+  vi.clearAllMocks();
+  // The page renders SeoHead through BaseLayout, which needs `site` for absolute URLs.
+  container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+});
 
-  // The nine blocks span the page (#243, #254, #255, #256, #257, #258, #219, #259, #260). The photo row's <script>
-  // renders in place inside main (#279) and is not a block.
-  it('renders the hero, the photos, now, the services, the work rows, the principles, the writing, the FAQ, then the contact block', async () => {
-    const doc = new JSDOM(await container.renderToString(Index)).window.document;
+// The nine blocks span the page (#243, #254, #255, #256, #257, #258, #219, #259, #260). The photo row's <script>
+// renders in place inside main (#279) and is not a block.
+it('renders the hero, the photos, now, the services, the work rows, the principles, the writing, the FAQ, then the contact block', async () => {
+  const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
-    const main = doc.querySelector('main');
-    assert.exists(main);
-    const blocks = [...main.querySelectorAll(':scope > :not(script)')].map((block) => block.id);
-    expect(blocks).toEqual(['hero', 'photos', 'now', 'services', 'work', 'principles', 'writing', 'faq', 'contact']);
-  });
+  const main = doc.querySelector('main');
+  assert.exists(main);
+  const blocks = [...main.querySelectorAll(':scope > :not(script)')].map((block) => block.id);
+  expect(blocks).toEqual(['hero', 'photos', 'now', 'services', 'work', 'principles', 'writing', 'faq', 'contact']);
 });
 
 // One site-wide title and the positioning pitch from SITE (#214). The h1 holds the full name for screen readers;
 // the two big halves around the portrait are presentation (#254).
 it('renders the name, SITE.role and SITE.pitch in the hero and the role in the SEO title', async () => {
-  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
   const h1 = doc.querySelector('#hero h1');
@@ -106,7 +107,6 @@ it('renders the name, SITE.role and SITE.pitch in the hero and the role in the S
 
 // "What I do best": numbered cards in `order`, each with its kicker, text and tools (#256).
 it('renders the service cards in order with their number, kicker, text and tools', async () => {
-  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
   const section = doc.querySelector('section#services');
@@ -128,7 +128,6 @@ it('renders the service cards in order with their number, kicker, text and tools
 
 // The now card, with its eyebrow, text and a machine-readable updated date (#218, #258).
 it('renders the now block with its updated date', async () => {
-  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
   const now = doc.querySelector('section#now');
@@ -144,7 +143,6 @@ it('renders the now block with its updated date', async () => {
 
 // The principles list after Work, from src/content/principles/principles.md (#244, #258).
 it('renders the principles block with its heading', async () => {
-  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
   const principles = doc.querySelector('section#principles');
@@ -152,11 +150,11 @@ it('renders the principles block with its heading', async () => {
   expect(principles.querySelector('h2')).toHaveProperty('textContent', 'Principles');
   expect(principles.querySelector('.eyebrow')).toHaveProperty('textContent', '/ How I work');
   expect(principles.textContent).toContain('Mock Rendered Content');
+  expect(render).toHaveBeenCalledWith(principlesEntry);
 });
 
 // The writing list: one title link per post, newest first, its category and date, then a link to /blog/ (#219).
 it('renders the writing list newest first with category, date and an All posts link', async () => {
-  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
   const writing = doc.querySelector('section#writing');
@@ -186,7 +184,6 @@ it('renders the writing list newest first with category, date and an All posts l
 
 // Work rows from the experience collection, newest first, with a "Full CV" pill (#257, direction A on #252).
 it('renders a work row per position, newest first, and a Full CV link', async () => {
-  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
   const work = doc.querySelector('section#work');
@@ -209,7 +206,6 @@ it('renders a work row per position, newest first, and a Full CV link', async ()
 
 // The FAQ: one native details per question in `order`, all in one exclusive group (#259).
 it('renders the FAQ as one exclusive group of details in order, all closed', async () => {
-  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
   const faqSection = doc.querySelector('section#faq');
@@ -229,7 +225,6 @@ it('renders the FAQ as one exclusive group of details in order, all closed', asy
 
 // The page ends with the email and the socials as named same-tab links, then one decorative giant word (#260, #220, #242).
 it('ends with the email and the social links, then a decorative Say hello', async () => {
-  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
   const contact = doc.querySelector('section#contact');

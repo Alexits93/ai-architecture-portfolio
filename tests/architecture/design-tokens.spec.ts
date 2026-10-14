@@ -83,8 +83,6 @@ const LENGTH =
   /(?<![\w.#])-?(?:\d+\.?\d*|\.\d+)(?:px|rem|em|ex|ch|vmin|vmax|vw|vh|svh|lvh|dvh|svw|lvw|dvw|cqw|cqh|cqi|cqb|pt|pc|cm|mm|in|Q|%)(?![\w-])/g;
 const DECLARATION = /[\w-]+\s*:\s*([^;{}]+)/g;
 const MEDIA = /@media([^{]+)\{/g;
-// The visually-hidden pattern clips the element to 1px; those values are a technique, not a design value.
-const VISUALLY_HIDDEN_RULE = /\{[^{}]*clip:\s*rect\(0,\s*0,\s*0,\s*0\)[^{}]*\}/g;
 
 const styleBlocks = (source: string) =>
   [...source.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((match) => match[1]).join('\n');
@@ -98,9 +96,7 @@ const findViolations = (file: string, css: string) => {
       if (!BREAKPOINTS.includes(value)) violations.push(`${file}: @media ${value}`);
     }
   }
-  rest = rest
-    .replace(MEDIA, '{')
-    .replace(VISUALLY_HIDDEN_RULE, (rule) => rule.replace(/(?<![\w.])-?1px\b/g, '0'));
+  rest = rest.replace(MEDIA, '{');
   for (const [, value] of rest.matchAll(DECLARATION)) {
     if (COLOR_LITERAL.test(value)) violations.push(`${file}: ${value.trim()}`);
     for (const [length] of value.matchAll(LENGTH)) {
@@ -123,7 +119,6 @@ describe('raw-literal gate', () => {
     ['@media (min-width: 900px) { .a { display: grid; } }', ['x.astro: @media 900px']],
     ['@media (min-width: 48rem) { .a { display: grid; } }', []],
     ['.a { width: 100%; margin: 0; translate: 0 -1px; }', ['x.astro: -1px']],
-    ['.sr { width: 1px; height: 1px; margin: -1px; clip: rect(0, 0, 0, 0); }', []],
     ['.line { border-top: 1px solid var(--font-color); }', ['x.astro: 1px']],
     ['#abc-menu .a { gap: var(--space-2); }', []],
   ])('checks %s', (css, expected) => {
