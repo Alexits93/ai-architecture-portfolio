@@ -30,7 +30,7 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
       </div>
       <div class="wrapper-top-post-data">
         <div class="author-info">
-          <Logo width="63.54" height="40" />
+          <Logo width="63.54" height="40" aria-hidden="true" />
           <p>Patrik Alexits</p>
         </div>
         <p class="publish-date">{formattedDate}</p>
@@ -46,9 +46,10 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
     </p>
   </div>
 
-  <aside class="navigator-sidebar">
+  <!-- A layout column, not a landmark: the nav inside carries the name (#282). -->
+  <div class="navigator-sidebar">
     <ArticleNavigator headings={headings} />
-  </aside>
+  </div>
 </div>
 
 

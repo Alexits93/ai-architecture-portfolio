@@ -12,7 +12,7 @@ export interface Props {
 const { headings = [] } = Astro.props;
 ---
 
-<nav class="article-navigator">
+<nav class="article-navigator" aria-label="On this page">
 	{headings.map((heading) => (
 		<a href={`#${heading.slug}`} class:list={[`h${heading.depth}-link`]}>
 			{heading.text}

@@ -22,6 +22,25 @@ for (const width of [320, 390, 1440, 1920]) {
   });
 }
 
+// WCAG 1.4.12: with the text spacing a user may set, nothing widens the page (#282). The spacing goes in as a style
+// tag, which the hashed CSP would block, so this test bypasses it.
+test.describe('with the WCAG 1.4.12 text spacing at 390 px', () => {
+  test.use({ viewport: { width: 390, height: 900 }, bypassCSP: true });
+
+  test('the page has no horizontal scroll', async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() => document.fonts.ready);
+    await page.addStyleTag({
+      content: '* { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important; } p { margin-bottom: 2em !important; }',
+    });
+    const { scrollWidth, clientWidth } = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }));
+    expect(scrollWidth).toBeLessThanOrEqual(clientWidth);
+  });
+});
+
 // Home shows the role as the hero's first kicker (#254); /cv/ keeps it as the AboutMe h2.
 test('home and /cv/ show the same site-wide title', async ({ page }) => {
   await page.goto('/');
