@@ -20,6 +20,9 @@ const rootRevealRuns = (page: Page) =>
     }),
   );
 
+// A post page, which renders the recommended cards.
+const POST = '/blog/ai-agent-harness/';
+
 // The visible hero parts in reading order: the name halves with their kickers around the portrait, then the
 // pitch (#254). The h1 is visually hidden and does not move.
 const HERO = ['#hero .hero-side >> nth=0', '#hero .portrait', '#hero .hero-side >> nth=1', '#hero .pitch'];
@@ -56,8 +59,9 @@ test.describe('motion allowed', () => {
     await expect.poll(() => background(page)).not.toBe(before);
   });
 
-  test('recommended cards reveal with the scroll where scroll timelines exist', async ({ page }) => {
-    await page.goto('/');
+  // The recommended cards render only on the post pages since home lists the writing as rows (#219).
+  test('recommended cards on a post reveal with the scroll where scroll timelines exist', async ({ page }) => {
+    await page.goto(POST);
     test.skip(!(await page.evaluate(() => CSS.supports('animation-timeline: view()'))), 'no scroll-driven animations');
     expect(await cssAnimations(page, '#blog-section .blog-post-thumbnail')).toContain('card-reveal');
   });
@@ -80,8 +84,8 @@ test.describe('reduced motion', () => {
     await expect.poll(() => background(page)).not.toBe(before);
   });
 
-  test('recommended cards do not reveal with the scroll', async ({ page }) => {
-    await page.goto('/');
+  test('recommended cards on a post do not reveal with the scroll', async ({ page }) => {
+    await page.goto(POST);
     expect(await cssAnimations(page, '#blog-section .blog-post-thumbnail')).toEqual([]);
   });
 });

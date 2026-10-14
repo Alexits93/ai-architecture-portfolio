@@ -30,3 +30,7 @@ export const selectRecommendedPosts = (
     .filter((post) => post.id !== featuredId && post.id !== excludeId)
     .slice(0, limit);
 };
+
+/** The home writing list: the newest posts, at most `limit` (#219). */
+export const selectLatestPosts = (posts: readonly BlogPost[], limit = 5): BlogPost[] =>
+  sortByNewest(posts).slice(0, limit);

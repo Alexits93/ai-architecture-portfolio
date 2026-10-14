@@ -42,21 +42,6 @@ for (const width of [320, 390, 1440]) {
   });
 }
 
-// BlogPostRecommended sizes three columns for a full-width page; in the home column two cards fill the width.
-test.describe('at 1440 px', () => {
-  test.use({ viewport: { width: 1440, height: 900 } });
-
-  test('the recommended cards fill the column in two columns', async ({ page }) => {
-    await page.goto('/');
-    const column = await page.locator('main > .home').boundingBox();
-    const cards = page.locator('#blog-section .wrapper > .blog-post-thumbnail');
-    const first = await cards.nth(0).boundingBox();
-    const second = await cards.nth(1).boundingBox();
-    assert(column !== null && first !== null && second !== null);
-    expect(first.width + second.width).toBeGreaterThan(column.width * 0.9);
-  });
-});
-
 // Home shows the role as the hero's first kicker (#254); /cv/ keeps it as the AboutMe h2.
 test('home and /cv/ show the same site-wide title', async ({ page }) => {
   await page.goto('/');

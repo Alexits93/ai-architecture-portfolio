@@ -1,5 +1,5 @@
 import { describe, it, expect, assert } from 'vitest';
-import { selectFeaturedPost, selectRecommendedPosts, sortByNewest } from './posts';
+import { selectFeaturedPost, selectLatestPosts, selectRecommendedPosts, sortByNewest } from './posts';
 import { createTestPost } from '../../tests/fixtures/post';
 
 const oldest = createTestPost({ id: 'oldest', publishDate: '2026-01-01' });
@@ -53,5 +53,18 @@ describe('selectRecommendedPosts', () => {
 
   it('returns an empty list for an empty collection', () => {
     expect(selectRecommendedPosts([])).toEqual([]);
+  });
+});
+
+describe('selectLatestPosts', () => {
+  it('returns every post newest first when there are fewer than five', () => {
+    expect(selectLatestPosts([oldest, newest, middle]).map((p) => p.id)).toEqual(['newest', 'middle', 'oldest']);
+  });
+
+  it('keeps the five newest of seven', () => {
+    const seven = ['01', '02', '03', '04', '05', '06', '07'].map((day) =>
+      createTestPost({ id: day, publishDate: `2026-01-${day}` }),
+    );
+    expect(selectLatestPosts(seven).map((p) => p.id)).toEqual(['07', '06', '05', '04', '03']);
   });
 });

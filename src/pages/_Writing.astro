@@ -1,0 +1,66 @@
+---
+// Page-only component for the home page (ADR 002): the newest posts as rows of title, category and date, then a pill
+// to /blog/ (#219; heading from direction A, rows from direction C, decided on #252).
+import { getCollection } from 'astro:content';
+import { ROUTES } from '@/consts';
+import { getPostPath } from '@/lib/permalink';
+import { selectLatestPosts } from '@/lib/posts';
+
+const posts = selectLatestPosts(await getCollection('blog'));
+---
+
+<section id="writing" class="writing" aria-labelledby="writing-title">
+	<div class="head">
+		<div>
+			<p class="eyebrow">/ Blog</p>
+			<h2 id="writing-title">Latest <span class="accent">writing</span></h2>
+		</div>
+		<a class="pill" href={ROUTES.blog}>All posts</a>
+	</div>
+	<ul>
+		{posts.map((post) => (
+			<li>
+				<a href={getPostPath(post)} data-post-card><span data-morph="title">{post.data.title}</span></a>
+				<span class="meta">
+					{post.data.category} &middot; <time datetime={post.data.publishDate.toISOString().slice(0, 10)}>{post.data.publishDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })}</time>
+				</span>
+			</li>
+		))}
+	</ul>
+</section>
+
+<style>
+	.writing { padding-block: var(--space-12); }
+	.eyebrow {
+		margin: 0 0 var(--space-2); color: var(--font-color-bold); font-size: var(--font-size-sm);
+		letter-spacing: var(--letter-spacing-wide); text-transform: uppercase;
+	}
+	h2 {
+		margin: 0; color: var(--font-color-bold); font-weight: var(--font-weight-bold);
+		font-size: var(--font-size-display-section); line-height: var(--line-height-display-section);
+		letter-spacing: var(--letter-spacing-display-section);
+	}
+	.accent { background-image: linear-gradient(100deg, var(--accent-a), var(--accent-b)); background-clip: text; color: transparent; }
+	.head { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: var(--space-4); }
+	.pill {
+		padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill); background-color: var(--theme-secondary);
+		color: var(--font-color-bold); font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); text-decoration: none;
+	}
+
+	/* The title link, its category and date in small text under it, a hairline between the rows. */
+	ul { list-style: none; margin: var(--space-8) 0 0; padding: 0; }
+	li {
+		display: grid; gap: var(--space-1); padding-block: var(--space-6);
+		border-block-start: var(--border-width-hairline) solid var(--hairline-color); color: var(--font-color);
+	}
+	li a {
+		justify-self: start; color: var(--font-color-bold); font-weight: var(--font-weight-bold); font-size: var(--font-size-xl);
+		letter-spacing: var(--letter-spacing-tight); text-decoration: underline transparent; text-underline-offset: var(--space-1);
+		transition: text-decoration-color .2s ease-out;
+	}
+	/* The title underlines on hover, as the blog cards do; only where the primary input can hover (#206). */
+	@media (hover: hover) {
+		li a:hover { text-decoration-color: currentColor; }
+	}
+	.meta { font-size: var(--font-size-sm); font-variant-numeric: tabular-nums; }
+</style>
