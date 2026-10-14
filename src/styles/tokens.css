@@ -111,8 +111,9 @@
     --size-thumbnail-body: 250px;
     --size-card-max: 400px;
     --size-prose: 800px;
-    /* The home reading column (#243). */
-    --size-column: 680px;
+    /* A negative end margin that takes a block from the right edge of its centred column to the window edge (#260).
+       The percentage resolves against the column where the token is used. */
+    --size-bleed-end: calc(50% - 50vw);
     /* The home hero (#254): the portrait card shrinks with a phone screen, and the pitch wraps at a short measure. */
     --size-portrait: min(70vw, 16rem);
     --size-pitch: 36ch;

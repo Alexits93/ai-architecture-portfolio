@@ -1,0 +1,42 @@
+---
+// Page-only component for the home page (ADR 002): the email and the socials in one row, then one oversized word that
+// runs off the right edge (#260, direction A on #252, from the zainarts reference). The links carry the meaning; the
+// word is decoration.
+import { SITE } from '@/consts';
+
+const links = [
+	{ name: SITE.email, url: `mailto:${SITE.email}` },
+	{ name: 'GitHub', url: 'https://github.com/Alexits93' },
+	{ name: 'LinkedIn', url: 'https://www.linkedin.com/in/patrik-alexits/' },
+	{ name: 'Stack Overflow', url: 'https://stackoverflow.com/users/9327050/patrik-alexits' },
+	{ name: 'Instagram', url: 'https://www.instagram.com/akelafreestyle/' },
+];
+---
+
+<section id="contact" class="contact" aria-labelledby="contact-title">
+	<h2 id="contact-title" class="sr-only">Contact</h2>
+	<ul>
+		{links.map(({ name, url }) => <li><a href={url}>{name}</a></li>)}
+	</ul>
+	<p class="giant" aria-hidden="true">Say hello</p>
+</section>
+
+<style>
+	.contact { padding-block: var(--space-12) 0; }
+	ul {
+		display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-4) var(--space-8);
+		margin: 0 0 var(--space-12); padding: 0; list-style: none; font-size: var(--font-size-xl);
+	}
+	a { color: var(--font-color-bold); font-weight: var(--font-weight-medium); }
+	/* The word starts at the column's left edge, reaches the right edge of the window and is clipped there. clip, unlike
+	   hidden, makes no scroll container (https://developer.mozilla.org/en-US/docs/Web/CSS/overflow#clip). */
+	.giant {
+		margin: 0 var(--size-bleed-end) 0 0; overflow-x: clip; white-space: nowrap; text-transform: uppercase; color: var(--font-color-bold);
+		font-weight: var(--font-weight-bold); font-size: var(--font-size-display-giant);
+		line-height: var(--line-height-display-giant); letter-spacing: var(--letter-spacing-display-giant);
+	}
+	.sr-only {
+		position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+		overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+	}
+</style>

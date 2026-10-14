@@ -1,36 +1,16 @@
-import assert from 'node:assert/strict';
 import { test, expect } from '@playwright/test';
 import { SITE } from '../src/consts';
 
-// #243: one column of about 680 px at every width, no sticky hero (research on #212). Reduced motion keeps the hero
-// in its final position, so the boxes do not move while the test measures them.
+// Reduced motion keeps the hero in its final position, so the boxes do not move while the tests measure them.
 test.use({ reducedMotion: 'reduce' });
 
-for (const width of [320, 390, 1440]) {
+// No block widens the page; the giant contact word is clipped, not scrolled to (#243, #260).
+for (const width of [320, 390, 1440, 1920]) {
   test.describe(`at ${width} px`, () => {
     test.use({ viewport: { width, height: 900 } });
 
-    test('the blocks stack in one column without sticky parts or horizontal scroll', async ({ page }) => {
+    test('the page has no horizontal scroll', async ({ page }) => {
       await page.goto('/');
-      const column = await page.locator('main > .home').boundingBox();
-      assert(column !== null);
-      expect(column.width).toBeLessThanOrEqual(680);
-      const blocks = await page.locator('main > .home > *').evaluateAll((elements) =>
-        elements.map((element) => {
-          const box = element.getBoundingClientRect();
-          return { left: box.left, top: box.top, bottom: box.bottom };
-        }),
-      );
-      for (const [index, block] of blocks.entries()) {
-        expect(block.left).toBeCloseTo(column.x, 0);
-        const previous = blocks[index - 1];
-        if (previous !== undefined) expect(block.top).toBeGreaterThanOrEqual(previous.bottom);
-      }
-      // The service cards stick on purpose (#256); the reading column does not.
-      const sticky = await page.locator('main > .home *').evaluateAll((elements) =>
-        elements.filter((element) => getComputedStyle(element).position === 'sticky').length,
-      );
-      expect(sticky).toBe(0);
       // Read the numbers inside the callback: evaluate serializes a returned DOM node to a string.
       // scrollWidth can be below clientWidth where a stable scrollbar gutter narrows the content box.
       const { scrollWidth, clientWidth } = await page.evaluate(() => ({

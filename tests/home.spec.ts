@@ -61,18 +61,15 @@ describe('Home Page (index.astro)', () => {
     container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   });
 
-  // The hero, the now card, the service cards, the work rows, the principles, the writing list and the FAQ span the page
-  // above one reading column (#243, #254, #256, #257, #258, #219, #259).
-  it('renders the hero, now, the services, the work rows, the principles, the writing, the FAQ, then the home blocks in one column', async () => {
+  // The hero, the now card, the service cards, the work rows, the principles, the writing list, the FAQ and the contact
+  // block span the page (#243, #254, #256, #257, #258, #219, #259, #260).
+  it('renders the hero, now, the services, the work rows, the principles, the writing, the FAQ, then the contact block', async () => {
     const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
     const main = doc.querySelector('main');
     assert.exists(main);
     expect(main.children).toHaveLength(8);
-    assert.exists(main.querySelector(':scope > #hero:first-child + #now + #services + #work + #principles + #writing + #faq + .home'));
-    const column = doc.querySelector('main > .home');
-    assert.exists(column);
-    expect([...column.children].map((child) => child.id)).toEqual(['connect']);
+    assert.exists(main.querySelector(':scope > #hero:first-child + #now + #services + #work + #principles + #writing + #faq + #contact'));
   });
 });
 
@@ -230,20 +227,24 @@ it('renders the FAQ as one exclusive group of details in order, all closed', asy
   ]);
 });
 
-// The socials end the page as a Connect line of named links, in the same tab (#243, #242).
-it('ends with a Connect line of same-tab social links', async () => {
+// The page ends with the email and the socials as named same-tab links, then one decorative giant word (#260, #220, #242).
+it('ends with the email and the social links, then a decorative Say hello', async () => {
   const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
-  const connect = doc.querySelector('section#connect');
-  assert.exists(connect);
-  expect(connect.querySelector('h2')).toHaveProperty('textContent', 'Connect');
-  const links = [...connect.querySelectorAll('a')];
+  const contact = doc.querySelector('section#contact');
+  assert.exists(contact);
+  expect(contact.querySelector('h2')).toHaveProperty('textContent', 'Contact');
+  const links = [...contact.querySelectorAll('a')];
   expect(links.map((link) => [link.textContent, link.getAttribute('href')])).toEqual([
+    [SITE.email, `mailto:${SITE.email}`],
     ['GitHub', 'https://github.com/Alexits93'],
     ['LinkedIn', 'https://www.linkedin.com/in/patrik-alexits/'],
     ['Stack Overflow', 'https://stackoverflow.com/users/9327050/patrik-alexits'],
     ['Instagram', 'https://www.instagram.com/akelafreestyle/'],
   ]);
   expect(links.some((link) => link.hasAttribute('target'))).toBe(false);
+  const giant = contact.querySelector('.giant');
+  assert.exists(giant);
+  expect([giant.textContent, giant.getAttribute('aria-hidden')]).toEqual(['Say hello', 'true']);
 });

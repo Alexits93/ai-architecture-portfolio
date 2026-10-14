@@ -1,10 +1,13 @@
 ---
+import { SITE } from "@/consts";
+
 const currentYear = new Date().getFullYear();
 ---
 
 <footer class="app-footer">
   <p>&copy;{currentYear} Patrik Alexits - Made with <a href="https://astro.build/">Astro</a></p>
   <div>
+    <p><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
     <p><a href="/cookie-disclaimer/">Cookie disclaimer</a></p>
     <p><a href="/privacy-policy/">Privacy policy</a></p>
   </div>

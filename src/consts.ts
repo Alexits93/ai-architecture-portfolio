@@ -14,6 +14,8 @@ export const SITE = {
   title: `${name} | ${role}`,
   // Built from the role and pitch so search results and link previews match the heroes (#223).
   description: `${role}. ${pitch}`,
+  // A pa-tech.dev alias, not a personal address, because the link is public and scraped (owner decision on #220).
+  email: 'hello@pa-tech.dev',
   defaultOgImagePath: '/og.png',
 } as const;
 
