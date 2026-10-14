@@ -22,6 +22,6 @@ test('shows what Patrik works on now with its updated date', async ({ page }) =>
 // #258: the now card sits near the top, the principles between Work and the writing.
 test('sits after the hero, with the principles after the work rows', async ({ page }) => {
   await page.goto('/');
-  const ids = await page.locator('main > *').evaluateAll((blocks) => blocks.map((block) => block.id || block.className));
-  expect(ids.map((id) => id.split(' ')[0])).toEqual(['hero', 'now', 'services', 'work', 'principles', 'writing', 'faq', 'home']);
+  const ids = await page.locator('main > *').evaluateAll((blocks) => blocks.map((block) => block.id));
+  expect(ids).toEqual(['hero', 'now', 'services', 'work', 'principles', 'writing', 'faq', 'contact']);
 });

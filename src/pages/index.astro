@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { SITE } from '@/consts';
+import Contact from './_Contact.astro';
 import Faq from './_Faq.astro';
 import Hero from './_Hero.astro';
 import Now from './_Now.astro';
@@ -8,13 +9,6 @@ import Principles from './_Principles.astro';
 import Services from './_Services.astro';
 import Work from './_Work.astro';
 import Writing from './_Writing.astro';
-
-const socials = [
-	{ name: 'GitHub', url: 'https://github.com/Alexits93' },
-	{ name: 'LinkedIn', url: 'https://www.linkedin.com/in/patrik-alexits/' },
-	{ name: 'Stack Overflow', url: 'https://stackoverflow.com/users/9327050/patrik-alexits' },
-	{ name: 'Instagram', url: 'https://www.instagram.com/akelafreestyle/' },
-];
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
@@ -26,26 +20,7 @@ const socials = [
 		<Principles />
 		<Writing />
 		<Faq />
-		<div class="home">
-			<section id="connect" aria-labelledby="connect-title">
-				<h2 id="connect-title">Connect</h2>
-				<ul>
-					{socials.map(({ name, url }) => <li><a href={url}>{name}</a></li>)}
-				</ul>
-			</section>
-		</div>
+		<Contact />
 	</main>
 </BaseLayout>
 
-<style>
-	/* One reading column of about 680 px at every width (#243, research on #212). */
-	.home { display: flex; flex-direction: column; gap: var(--space-12); width: 100%; max-width: var(--size-column); margin-inline: auto; }
-	.home section h2 {
-		margin: 0 0 var(--space-4); color: var(--font-color-bold);
-		letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-bold);
-		font-size: var(--font-size-2xl); line-height: var(--line-height-xl);
-	}
-	.home ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-2); color: var(--font-color); }
-	#connect a { color: var(--font-color-bold); font-weight: var(--font-weight-medium); }
-	#connect ul { flex-direction: row; flex-wrap: wrap; column-gap: var(--space-6); }
-</style>
