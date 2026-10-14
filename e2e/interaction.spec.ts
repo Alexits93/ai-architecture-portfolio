@@ -59,3 +59,31 @@ for (const theme of ['dark', 'light']) {
     expect(await button.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe(before);
   });
 }
+
+// Owner 2026-10-14 (#272): the home pills and the FAQ questions react to the pointer like the button above.
+for (const theme of ['dark', 'light']) {
+  test(`the hovered home pills and FAQ questions change their surface in the ${theme} theme`, async ({ page }) => {
+    await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
+    await page.goto('/');
+    for (const [target, surface] of [
+      [page.getByRole('link', { name: 'Full CV' }), page.getByRole('link', { name: 'Full CV' })],
+      [page.getByRole('link', { name: 'All posts' }), page.getByRole('link', { name: 'All posts' })],
+      [page.locator('#faq summary').first(), page.locator('#faq details').first()],
+    ]) {
+      const before = await surface.evaluate((el) => getComputedStyle(el).backgroundColor);
+      await target.hover();
+      await animationsSettled(page);
+      expect(await surface.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe(before);
+    }
+  });
+}
+
+test('a pressed home pill scales down', async ({ page }) => {
+  await page.goto('/');
+  const pill = page.getByRole('link', { name: 'Full CV' });
+  await pill.hover();
+  await page.mouse.down();
+  await animationsSettled(page);
+  expect(await pill.evaluate((el) => getComputedStyle(el).scale)).not.toBe('none');
+  await page.mouse.up();
+});
