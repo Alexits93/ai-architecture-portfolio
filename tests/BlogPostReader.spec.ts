@@ -45,17 +45,17 @@ describe('BlogPostReader Widget (Astro)', () => {
     const dom = new JSDOM(html);
     const doc = dom.window.document;
 
-    const title = doc.querySelector('h1');
+    // A display h1 with its subtitle as a paragraph in one hgroup, not a second heading (#300, #307, WCAG 1.3.1).
+    const title = doc.querySelector('#post-hero hgroup h1.display[data-size="section"][data-morph="title"]');
     assert.exists(title);
     expect(title.textContent).toBe('Test Post Title');
+    expect(doc.querySelector('#post-hero h2')).toBeNull();
 
-    const subtitle = doc.querySelector('h2');
+    const subtitle = doc.querySelector('#post-hero hgroup p.subtitle');
     assert.exists(subtitle);
     expect(subtitle.textContent).toBe('Test Subtitle');
 
-    // Should format date
-    const htmlContent = doc.body.innerHTML;
-    expect(htmlContent).toContain('14 SEP 2026');
+    expect(doc.body.innerHTML).toContain('14 SEP 2026');
   });
 
   it('renders no image in the post header', async () => {
@@ -65,18 +65,19 @@ describe('BlogPostReader Widget (Astro)', () => {
     expect(header.querySelector('img, figure')).toBeNull();
   });
 
+  // The category is the eyebrow over the title and links to its category page (#300).
   it('should link the category to its category page', async () => {
     const html = await container.renderToString(BlogPostReader, {
       props: { post: mockPost },
     });
     const doc = new JSDOM(html).window.document;
 
-    const tags = doc.querySelectorAll('span.skill-tag');
-    expect(tags).toHaveLength(1);
-    const link = tags.item(0).closest('a');
-    assert.exists(link);
+    const links = doc.querySelectorAll('a[href^="/blog/category/"]');
+    expect(links).toHaveLength(1);
+    const link = links.item(0);
+    expect(link.closest('#post-hero hgroup .eyebrow')).not.toBeNull();
     expect(link.getAttribute('href')).toBe('/blog/category/ai/');
-    expect(link.textContent.trim()).toBe('#ai');
+    expect(link.textContent).toBe('AI');
   });
 });
 

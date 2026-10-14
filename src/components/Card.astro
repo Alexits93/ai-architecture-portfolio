@@ -5,7 +5,7 @@
 import type { HTMLAttributes } from 'astro/types';
 
 interface Props extends HTMLAttributes<'section'> {
-  as: 'section' | 'li';
+  as: 'section' | 'li' | 'article';
 }
 
 const { as: Tag, class: className, ...rest } = Astro.props;

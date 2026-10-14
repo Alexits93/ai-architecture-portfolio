@@ -35,7 +35,7 @@ const pageOf = (posts: BlogPost[], currentPage: number, base = '/blog/'): Page<B
 
 const render = async (page: Page<BlogPost>, current?: Category) => {
   const container = await AstroContainer.create();
-  const html = await container.renderToString(BlogFeed, { props: { heading: 'Blog', page, current } });
+  const html = await container.renderToString(BlogFeed, { props: { text: 'All', accent: 'posts', page, current } });
   return new JSDOM(html).window.document;
 };
 
@@ -50,6 +50,21 @@ const inPagination = (doc: Document, selector: string) => {
   assert.exists(el);
   return el;
 };
+
+// The home design system (#299): an eyebrow over a display h1, the categories as pills, the posts as raised cards.
+describe('BlogFeed head', () => {
+  it('renders the Blog eyebrow, a display h1 and the category pills', async () => {
+    const doc = await render(pageOf(postsOf(1), 1), 'AI');
+    expect(doc.querySelector('.eyebrow')).toHaveProperty('textContent', '/ Blog');
+    const heading = doc.querySelector('h1.display[data-size="section"]');
+    assert.exists(heading);
+    expect(heading.textContent).toBe('All posts');
+    const pills = [...doc.querySelectorAll('nav[aria-label="Blog categories"] a.pill')];
+    expect(pills.map((pill) => pill.textContent)).toEqual(['All', 'AI', 'Architecture']);
+    expect(pills.map((pill) => pill.getAttribute('aria-current'))).toEqual([null, 'page', null]);
+    expect(doc.querySelectorAll('.blog-grid h2.display')).toHaveLength(1);
+  });
+});
 
 describe('BlogFeed pagination (#160)', () => {
   it('renders no cards and no pagination nav for an empty list', async () => {

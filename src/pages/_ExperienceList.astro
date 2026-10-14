@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import { formatPeriod, sortByStartDesc, splitEmphasis } from '@/lib/experience';
-import SkillTag from '@/components/SkillTag.astro';
+import SkillTag from './_SkillTag.astro';
 
 const entries = sortByStartDesc(await getCollection('experience'));
 ---

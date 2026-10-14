@@ -15,10 +15,8 @@
     --theme-secondary: light-dark(hsl(200, 20%, 95%), hsl(200, 10%, 20%));
     --font-color: light-dark(hsl(200, 100%, 15%), hsl(200, 10%, 75%));
     --font-color-bold: light-dark(hsl(200, 30%, 30%), hsl(200, 5%, 75%));
-    /* Cards sit on their own surface: darker than the page in light, lighter in dark, where Material raises
-       containers above the surface tone (material-color-utilities color_spec_2021.ts). Hover moves one more
-       step away from the page. */
-    --thumbnail-bg-color: light-dark(hsl(200, 25%, 85%), hsl(200, 10%, 20%));
+    /* The hover surface of the blog cards, the pills and the FAQ questions: darker than the page in light, lighter in
+       dark, where Material raises containers above the surface tone (material-color-utilities color_spec_2021.ts). */
     --thumbnail-bg-color-hover: light-dark(hsl(200, 25%, 81%), hsl(200, 10%, 24%));
     /* The name's gradient accent moves between these two, both at least 3:1 against the page (large text, WCAG 1.4.3). */
     --accent-a: light-dark(hsl(200, 100%, 25%), hsl(200, 80%, 72%));
@@ -52,7 +50,6 @@
     --font-size-lg: 1.2rem;
     --font-size-xl: 1.5rem;
     --font-size-2xl: 2.25rem;
-    --font-size-3xl: 2.5rem;
     /* Display type for the home redesign (#253): section titles, the hero name and the contact word that
        fills its column. Each size grows with the viewport or its column and keeps its own tight leading and tracking. */
     --font-size-display-section: clamp(2rem, 5vw, 3.5rem);
@@ -112,7 +109,6 @@
     --size-icon-lg: 50px;
     --size-toc: 205px;
     --size-sidebar: 230px;
-    --size-thumbnail-body: 250px;
     --size-card-max: 400px;
     --size-prose: 800px;
     /* A negative inline margin that takes a block from its centred column to the window edges (the photo row, #255).

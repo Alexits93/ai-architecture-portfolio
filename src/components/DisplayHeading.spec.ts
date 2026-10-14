@@ -10,7 +10,7 @@ describe('DisplayHeading', () => {
     container = await AstroContainer.create();
   });
 
-  type Props = { as: 'h2' | 'h3'; size: 'section' | 'card'; text?: string; accent?: string; id?: string; class?: string };
+  type Props = { as: 'h1' | 'h2' | 'h3'; size: 'section' | 'card'; text?: string; accent?: string; id?: string; class?: string };
 
   const render = async (props: Props) => {
     const html = await container.renderToString(DisplayHeading, { props });
@@ -31,6 +31,13 @@ describe('DisplayHeading', () => {
   it('renders an accent-only heading without a leading space', async () => {
     const heading = await render({ as: 'h2', size: 'card', accent: 'Now' });
     expect(heading.textContent).toBe('Now');
+  });
+
+  // A page title, such as the blog index (#299).
+  it('renders a page title as an h1', async () => {
+    const heading = await render({ as: 'h1', size: 'section', text: 'All', accent: 'posts' });
+    expect(heading.tagName).toBe('H1');
+    expect(heading.textContent).toBe('All posts');
   });
 
   it('renders plain words at card size as an h3 that keeps the class it is given', async () => {

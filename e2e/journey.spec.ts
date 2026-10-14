@@ -17,8 +17,8 @@ const activate = async (page: Page, target: Locator, input: Input) => {
 const categoryNav = (page: Page) => page.getByRole('navigation', { name: 'Blog categories' });
 
 interface BlogPage { path: string; heading: string; current: string }
-const ALL: BlogPage = { path: '/blog/', heading: 'Blog', current: 'All' };
-const AI: BlogPage = { path: '/blog/category/ai/', heading: 'Blog: AI', current: 'AI' };
+const ALL: BlogPage = { path: '/blog/', heading: 'All posts', current: 'All' };
+const AI: BlogPage = { path: '/blog/category/ai/', heading: 'Posts on AI', current: 'AI' };
 
 const expectBlogPage = async (page: Page, { path, heading, current }: BlogPage) => {
   await expect(page).toHaveURL(new RegExp(`${path}$`));
@@ -27,7 +27,7 @@ const expectBlogPage = async (page: Page, { path, heading, current }: BlogPage) 
 };
 
 const expectOnlyCategory = async (page: Page, tag: string) => {
-  const tags = await page.locator('.blog-grid .skill-tag').allTextContents();
+  const tags = await page.locator('.blog-grid .eyebrow').allTextContents();
   expect(tags.length).toBeGreaterThan(0);
   expect(new Set(tags.map((text) => text.trim()))).toEqual(new Set([tag]));
 };
@@ -42,7 +42,7 @@ const journey = async (page: Page, input: Input) => {
 
   await activate(page, categoryNav(page).getByRole('link', { name: 'AI', exact: true }), input);
   await expectBlogPage(page, AI);
-  await expectOnlyCategory(page, '#ai');
+  await expectOnlyCategory(page, 'AI');
 
   const card = page.locator('.blog-grid .blog-post-thumbnail').first();
   const postPath = await card.getAttribute('href');
@@ -50,14 +50,14 @@ const journey = async (page: Page, input: Input) => {
   await activate(page, card, input);
   await expect(page).toHaveURL(new RegExp(`${postPath}$`));
 
-  await activate(page, page.locator('.blog-post-reader .category a'), input);
+  await activate(page, page.locator('#post-hero .eyebrow a'), input);
   await expectBlogPage(page, AI);
 
   await page.goBack();
   await expect(page).toHaveURL(new RegExp(`${postPath}$`));
   await page.goBack();
   await expectBlogPage(page, AI);
-  await expectOnlyCategory(page, '#ai');
+  await expectOnlyCategory(page, 'AI');
 };
 
 for (const width of [1280, 375]) {

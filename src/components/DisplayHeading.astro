@@ -1,11 +1,11 @@
 ---
-// A display heading (#253, direction A on #252): section or card size, with its last words in the accent gradient.
+// A display heading (#253, direction A on #252): a page or section title, or a card title, with its last words in the accent gradient.
 // The page passes its own class for margins; the rest props carry the page's data-astro-cid-*, so the page's scoped
 // styles reach the heading (https://docs.astro.build/en/guides/styling/).
 import type { HTMLAttributes } from 'astro/types';
 
 interface Props extends HTMLAttributes<'h2'> {
-  as: 'h2' | 'h3';
+  as: 'h1' | 'h2' | 'h3';
   size: 'section' | 'card';
   text?: string;
   accent?: string;

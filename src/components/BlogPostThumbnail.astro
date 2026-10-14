@@ -1,27 +1,26 @@
 ---
-import SkillTag from '@/components/SkillTag.astro';
+// A post as one link around a raised card: the category as kicker, the title, the description (#299, #300).
+import Card from '@/components/Card.astro';
+import DisplayHeading from '@/components/DisplayHeading.astro';
+import Eyebrow from '@/components/Eyebrow.astro';
 import { getPostPath } from '@/lib/permalink';
 import type { BlogPost } from '@/lib/posts';
 
 interface Props {
   post: BlogPost;
+  /** h2 under the blog index h1, h3 under the "Recommended articles" h2 (#307). */
+  heading: 'h2' | 'h3';
 }
 
-const { post } = Astro.props;
+const { post, heading } = Astro.props;
 ---
 
 <a href={getPostPath(post)} class="blog-post-thumbnail" data-post-card>
-  <article>
-    <div class="thumbnail-body">
-      <div class="thumbnail-body-top">
-        <h2 data-morph="title">{post.data.title}</h2>
-        <p>{post.data.description}</p>
-      </div>
-      <div class="tags">
-        <SkillTag skill={post.data.category} />
-      </div>
-    </div>
-  </article>
+  <Card as="article">
+    <Eyebrow slash={false}>{post.data.category}</Eyebrow>
+    <DisplayHeading as={heading} size="card" class="title" data-morph="title" text={post.data.title} />
+    <p>{post.data.description}</p>
+  </Card>
 </a>
 
 <style>
@@ -30,17 +29,17 @@ const { post } = Astro.props;
     display: block;
     text-decoration: none;
     color: inherit;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-2xl);
   }
 
+  /* Cards in one grid row share its height. */
   .blog-post-thumbnail article {
-    padding: var(--space-4);
-    border-radius: var(--radius-lg);
-    background-color: var(--thumbnail-bg-color);
+    block-size: 100%;
     transition: translate var(--duration-2) ease-out, background-color var(--duration-2) ease-out;
   }
 
-  .blog-post-thumbnail h2 {
+  .title {
+    margin: 0 0 var(--space-4);
     text-decoration: underline transparent;
     text-underline-offset: var(--space-1);
     transition: text-decoration-color var(--duration-2) ease-out;
@@ -53,7 +52,7 @@ const { post } = Astro.props;
       background-color: var(--thumbnail-bg-color-hover);
     }
 
-    .blog-post-thumbnail:hover h2 {
+    .blog-post-thumbnail:hover .title {
       text-decoration-color: currentColor;
     }
   }
@@ -61,44 +60,5 @@ const { post } = Astro.props;
   .blog-post-thumbnail:active article {
     translate: 0 0;
     transition-duration: calc(var(--duration-1) / 2);
-  }
-
-  .blog-post-thumbnail article .thumbnail-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: var(--space-4);
-  }
-
-  .blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2 {
-    color: var(--font-color-bold);
-    margin: 0 0 var(--space-4);
-    letter-spacing: var(--letter-spacing-tight);
-    font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-md);
-    line-height: var(--line-height-md);
-  }
-
-  .blog-post-thumbnail article .thumbnail-body .thumbnail-body-top p {
-    margin: 0;
-  }
-
-  .blog-post-thumbnail article .thumbnail-body .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-  }
-
-  @media (min-width: 48rem) {
-    .blog-post-thumbnail article .thumbnail-body {
-      min-height: var(--size-thumbnail-body);
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .blog-post-thumbnail article .thumbnail-body .thumbnail-body-top h2 {
-      font-size: var(--font-size-xl);
-      line-height: var(--line-height-lg);
-    }
   }
 </style>

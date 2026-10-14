@@ -37,12 +37,23 @@ describe('BlogPostRecommended Widget (Astro)', () => {
     expect(hrefs(doc)).toEqual(['/blog/second/', '/blog/oldest/']);
   });
 
-  // Lighthouse link-text: the text names the destination (https://developer.chrome.com/docs/lighthouse/seo/link-text).
-  it('links "See all articles" to the blog index route', async () => {
+  // The home Writing head (#300): eyebrow, display h2, and the All posts pill. Card titles nest under it as h3 (#307).
+  it('renders the head as on home, with h3 card titles', async () => {
     const doc = await render();
-    const el = doc.querySelector('.wrapper-bottom a');
+    const heading = doc.querySelector('#blog-section h2.display[data-size="section"]');
+    assert.exists(heading);
+    expect(heading.textContent).toBe('Recommended articles');
+    expect(doc.querySelector(`#blog-section[aria-labelledby="${heading.id}"]`)).not.toBeNull();
+    expect(doc.querySelectorAll('.blog-post-thumbnail h3')).toHaveLength(3);
+    expect(doc.querySelectorAll('.blog-post-thumbnail h2')).toHaveLength(0);
+  });
+
+  // Lighthouse link-text: the text names the destination (https://developer.chrome.com/docs/lighthouse/seo/link-text).
+  it('links "All posts" to the blog index route', async () => {
+    const doc = await render();
+    const el = doc.querySelector('#blog-section a.pill');
     assert.exists(el);
     expect(el.getAttribute('href')).toBe('/blog/');
-    expect(el.textContent).toBe('See all articles');
+    expect(el.textContent).toBe('All posts');
   });
 });

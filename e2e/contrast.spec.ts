@@ -64,15 +64,17 @@ for (const [theme, icon] of [['light', 'moon'], ['dark', 'sun']]) {
   });
 }
 
-// Owner 2026-10-12 (#206): a card sits on its own surface. In dark the surface is lighter than the page,
-// as Material's dark scheme raises containers above the surface tone; in light it is darker.
-for (const [theme, raised] of [['dark', true], ['light', false]] as const) {
-  test(`blog cards in the ${theme} theme sit on a ${raised ? 'lighter' : 'darker'} surface than the page`, async ({ page }) => {
+// Owner 2026-10-12 (#206): a card sits on its own surface. Since #299 the blog cards are the home Card (#252), so they
+// share its surface: lighter than the page in both themes.
+for (const theme of ['dark', 'light']) {
+  test(`blog cards in the ${theme} theme sit on the home card surface, lighter than the page`, async ({ page }) => {
     await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
+    await page.goto('/');
+    const home = await css(page.locator('#services .card').first(), 'backgroundColor');
     await page.goto('/blog/');
-    const card = luminance(await css(page.locator('.blog-post-thumbnail article').first(), 'backgroundColor'));
-    const body = luminance(await css(page.locator('body'), 'backgroundColor'));
-    expect(card > body).toBe(raised);
+    const card = await css(page.locator('.blog-post-thumbnail article').first(), 'backgroundColor');
+    expect(card).toBe(home);
+    expect(luminance(card)).toBeGreaterThan(luminance(await css(page.locator('body'), 'backgroundColor')));
   });
 }
 
