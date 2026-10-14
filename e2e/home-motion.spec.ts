@@ -67,6 +67,26 @@ test.describe('motion allowed', () => {
   });
 });
 
+test.describe('motion allowed, page metrics', () => {
+  test.use({ reducedMotion: 'no-preference' });
+
+  // #283: the entrance started every hero part at opacity 0, which Chrome does not count as contentful, so home had no
+  // Largest Contentful Paint (https://web.dev/articles/lcp#what-elements-are-considered). Only Chromium reports it.
+  test('the page records a Largest Contentful Paint while the hero enters', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'largest-contentful-paint entries exist only in Chromium');
+    await page.goto('/');
+    await animationsSettled(page);
+    const entries = await page.evaluate(
+      () =>
+        new Promise<number>((resolve) => {
+          new PerformanceObserver((list) => resolve(list.getEntries().length)).observe({ type: 'largest-contentful-paint', buffered: true });
+          setTimeout(() => resolve(0), 500);
+        }),
+    );
+    expect(entries).toBeGreaterThan(0);
+  });
+});
+
 test.describe('reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
 
