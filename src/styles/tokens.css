@@ -53,6 +53,17 @@
     --font-size-xl: 1.5rem;
     --font-size-2xl: 2.25rem;
     --font-size-3xl: 2.5rem;
+    /* Display type for the home redesign (#253): section titles, the hero name and the contact word that
+       runs off the edge. Each size grows with the viewport and keeps its own tight leading and tracking. */
+    --font-size-display-section: clamp(2rem, 5vw, 3.5rem);
+    --font-size-display-hero: clamp(3rem, 9vw, 7rem);
+    --font-size-display-giant: 19vw;
+    --line-height-display-section: 1.05;
+    --line-height-display-hero: .9;
+    --line-height-display-giant: .8;
+    --letter-spacing-display-section: -.04em;
+    --letter-spacing-display-hero: -.05em;
+    --letter-spacing-display-giant: -.06em;
     --line-height-sm: 1.25rem;
     --line-height-md: 1.75rem;
     --line-height-lg: 2rem;
@@ -69,9 +80,16 @@
     --radius-sm: .25rem;
     --radius-md: .5rem;
     --radius-lg: 10px;
+    --radius-xl: 1.25rem;
+    --radius-2xl: 1.75rem;
     --radius-full: 50%;
+    /* Larger than any pill's half height, so both ends stay round at any width; 50% would draw an ellipse. */
+    --radius-pill: 999px;
 
     --border-width-hairline: 1px;
+    /* Dividers and pill outlines: the text colour thinned, so they follow the theme with it
+       (https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix). */
+    --hairline-color: color-mix(in srgb, var(--font-color) 20%, transparent);
     --outline-width-focus: 2px;
     /* GOV.UK Frontend's link underline: the line scales with the text when the user enlarges it
        (govuk-frontend src/govuk/settings/_links.scss). */
@@ -104,6 +122,8 @@
 
     --shadow-card: drop-shadow(0 10px 8px rgba(0, 0, 0, .04)) drop-shadow(0 4px 3px rgba(0, 0, 0, .1));
     --shadow-card-edge: inset 0 1px 0 0 rgba(148, 163, 184, .1);
+    /* A raised card: one long soft shadow below it. The dark page needs a deeper shadow to show at all. */
+    --shadow-raised: 0 24px 48px -24px light-dark(hsl(200 50% 15% / .35), hsl(0 0% 0% / .6));
 }
 
 [data-theme="light"] { color-scheme: light; }
