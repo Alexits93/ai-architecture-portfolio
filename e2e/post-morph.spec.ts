@@ -47,6 +47,14 @@ test('a blog card morphs into the post, and Back morphs it home', async ({ page 
   await expect.poll(() => groups(page)).toBe(MORPH);
 });
 
+// The home writing rows carry [data-post-card] like the blog cards (#219).
+test('a home writing row morphs into the post', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#writing [data-post-card]').first().click();
+  await expect(page).toHaveURL(/\/blog\/.+\/$/);
+  await expect.poll(() => groups(page)).toBe(MORPH);
+});
+
 test('a recommended card on a post morphs into the next post', async ({ page }) => {
   await page.goto('/blog/');
   await page.locator('.blog-post-thumbnail').first().click();

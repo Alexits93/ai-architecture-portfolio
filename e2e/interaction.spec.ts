@@ -48,9 +48,10 @@ test('the current blog category is underlined', async ({ page }) => {
 });
 
 for (const theme of ['dark', 'light']) {
+  // The button sits under the recommended cards, which render only on the post pages (#219).
   test(`the hovered See all articles button changes its surface in the ${theme} theme`, async ({ page }) => {
     await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
-    await page.goto('/');
+    await page.goto('/blog/ai-agent-harness/');
     const button = page.getByRole('link', { name: 'See all articles' });
     const before = await button.evaluate((el) => getComputedStyle(el).backgroundColor);
     await button.hover();

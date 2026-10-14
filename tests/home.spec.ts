@@ -54,22 +54,18 @@ describe('Home Page (index.astro)', () => {
     container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   });
 
-  // The hero, the now card, the service cards, the work rows and the principles span the page above one reading column
-  // (#243, #254, #256, #257, #258).
-  it('renders the hero, now, the services, the work rows, the principles, then the home blocks in one column', async () => {
+  // The hero, the now card, the service cards, the work rows, the principles and the writing list span the page above
+  // one reading column (#243, #254, #256, #257, #258, #219).
+  it('renders the hero, now, the services, the work rows, the principles, the writing, then the home blocks in one column', async () => {
     const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
     const main = doc.querySelector('main');
     assert.exists(main);
-    expect(main.children).toHaveLength(6);
-    assert.exists(main.querySelector(':scope > #hero:first-child + #now + #services + #work + #principles + .home'));
+    expect(main.children).toHaveLength(7);
+    assert.exists(main.querySelector(':scope > #hero:first-child + #now + #services + #work + #principles + #writing + .home'));
     const column = doc.querySelector('main > .home');
     assert.exists(column);
-    expect([...column.children].map((child) => child.id)).toEqual([
-      'blog-featured',
-      'blog-section',
-      'connect',
-    ]);
+    expect([...column.children].map((child) => child.id)).toEqual(['connect']);
   });
 });
 
@@ -154,14 +150,34 @@ it('renders the principles block with its heading', async () => {
   expect(principles.textContent).toContain('Mock Rendered Content');
 });
 
-// The featured card is the featured post; the recommended cards are the others, newest first (#226).
-it('renders the blog fixtures as featured and recommended cards', async () => {
+// The writing list: one title link per post, newest first, its category and date, then a link to /blog/ (#219).
+it('renders the writing list newest first with category, date and an All posts link', async () => {
   const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
-  const hrefs = (selector: string) => [...doc.querySelectorAll(selector)].map((card) => card.getAttribute('href'));
-  expect(hrefs('#blog-featured .blog-post-thumbnail')).toEqual(['/blog/featured-post/']);
-  expect(hrefs('#blog-section .blog-post-thumbnail')).toEqual(['/blog/newer-post/', '/blog/older-post/']);
+  const writing = doc.querySelector('section#writing');
+  assert.exists(writing);
+  expect(writing.querySelector('h2')).toHaveProperty('textContent', 'Latest writing');
+  const rows = [...writing.querySelectorAll('ul > li')];
+  expect(rows.map((row) => [...row.querySelectorAll('a')].map((link) => [link.textContent, link.getAttribute('href')]))).toEqual([
+    [['Title newer-post', '/blog/newer-post/']],
+    [['Title older-post', '/blog/older-post/']],
+    [['Title featured-post', '/blog/featured-post/']],
+  ]);
+  const [first] = rows;
+  assert.exists(first);
+  expect(first.querySelector('.meta')).toHaveProperty('textContent', 'AI · 1 May 2026');
+  const date = first.querySelector('time');
+  assert.exists(date);
+  expect(date.getAttribute('datetime')).toBe('2026-05-01');
+  // The morph script pairs [data-post-card] links with the post header (#210).
+  const link = first.querySelector('a[data-post-card] [data-morph="title"]');
+  assert.exists(link);
+
+  const all = writing.querySelector(':scope > .head a');
+  assert.exists(all);
+  expect([all.textContent, all.getAttribute('href')]).toEqual(['All posts', ROUTES.blog]);
+  expect(doc.querySelector('#blog-featured, #blog-section')).toBeNull();
 });
 
 // Work rows from the experience collection, newest first, with a "Full CV" pill (#257, direction A on #252).
