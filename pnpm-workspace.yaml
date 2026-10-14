@@ -10,7 +10,6 @@ overrides:
 allowBuilds:
   '@resvg/resvg-js': true
   esbuild: true
-  unrs-resolver: false
 trustPolicy: no-downgrade
 trustPolicyExclude:
   - chokidar@4.0.3

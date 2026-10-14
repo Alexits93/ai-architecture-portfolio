@@ -1,13 +1,11 @@
 ---
-export interface Props {
-    menuItems?: { name: string; path: string }[];
-}
-const defaultMenuItems = [
-    { name: 'Home', path: '/' },
-    { name: 'Blog', path: '/blog/' },
-    { name: 'CV', path: '/cv/' }
+import { ROUTES } from '@/consts';
+
+const menuItems = [
+    { name: 'Home', path: ROUTES.home },
+    { name: 'Blog', path: ROUTES.blog },
+    { name: 'CV', path: ROUTES.cv }
 ];
-const { menuItems = defaultMenuItems } = Astro.props;
 ---
 <dialog id="site-menu" aria-label="Site navigation">
     <div class="navigator-menu-overlay" aria-hidden="true"></div>

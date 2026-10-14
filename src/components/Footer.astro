@@ -1,5 +1,5 @@
 ---
-import { SITE } from "@/consts";
+import { ROUTES, SITE } from "@/consts";
 
 const currentYear = new Date().getFullYear();
 ---
@@ -8,8 +8,8 @@ const currentYear = new Date().getFullYear();
   <p>&copy;{currentYear} Patrik Alexits - Made with <a href="https://astro.build/">Astro</a></p>
   <div>
     <p><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
-    <p><a href="/cookie-disclaimer/">Cookie disclaimer</a></p>
-    <p><a href="/privacy-policy/">Privacy policy</a></p>
+    <p><a href={ROUTES.cookieDisclaimer}>Cookie disclaimer</a></p>
+    <p><a href={ROUTES.privacyPolicy}>Privacy policy</a></p>
   </div>
 </footer>
 

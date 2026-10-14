@@ -8,12 +8,11 @@
     *, *::before, *::after { box-sizing: border-box; }
     ul[class], ol[class] { padding: 0; list-style: none; }
     body, h1, h2, h3, h4, p, ul[class], ol[class], li, figure, figcaption, blockquote, dl, dd, hr { margin: 0; }
-    body { min-height: 100vh; scroll-behavior: smooth; text-rendering: optimizeSpeed; line-height: 1.5; }
+    body { min-height: 100vh; text-rendering: optimizeSpeed; }
     img { max-width: 100%; display: block; }
     input, button, textarea, select { font: inherit; }
     a { color: inherit; background-color: transparent; cursor: pointer; }
     @media (prefers-reduced-motion: reduce) {
-        html:focus-within { scroll-behavior: auto; }
         *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
     }
 }
@@ -21,11 +20,11 @@
 @view-transition { navigation: auto; }
 
 @layer base {
+    /* html has no background, so body's paints the whole canvas
+       (https://www.w3.org/TR/css-backgrounds-3/#body-background). */
     html {
-        background-color: var(--body-background);
         scrollbar-gutter: stable;
         scroll-behavior: smooth;
-        line-height: 1.5;
         -webkit-text-size-adjust: 100%;
         tab-size: 4;
         font-family: var(--font-family);
@@ -37,7 +36,6 @@
         background-color: var(--body-background);
         overflow-x: hidden;
         color: var(--font-color);
-        inset: 0;
         font-size: var(--font-size-base);
         line-height: var(--line-height-body);
         letter-spacing: var(--letter-spacing-body);
