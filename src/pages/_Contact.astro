@@ -1,6 +1,6 @@
 ---
 // Page-only component for the home page (ADR 002): the email and the socials in one row, then one oversized word that
-// runs off the right edge (#260, direction A on #252, from the zainarts reference). The links carry the meaning; the
+// fills the column (#260, #278, direction A on #252, from the zainarts reference). The links carry the meaning; the
 // word is decoration.
 import { SITE } from '@/consts';
 
@@ -22,16 +22,15 @@ const links = [
 </section>
 
 <style>
-	.contact { padding-block: var(--space-12) 0; }
+	/* The section is the container the giant word sizes against (cqi). */
+	.contact { padding-block: var(--space-12) 0; container-type: inline-size; }
 	ul {
 		display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-4) var(--space-8);
 		margin: 0 0 var(--space-12); padding: 0; list-style: none; font-size: var(--font-size-xl);
 	}
 	a { color: var(--font-color-bold); font-weight: var(--font-weight-medium); }
-	/* The word starts at the column's left edge, reaches the right edge of the window and is clipped there. clip, unlike
-	   hidden, makes no scroll container (https://developer.mozilla.org/en-US/docs/Web/CSS/overflow#clip). */
 	.giant {
-		margin: 0 var(--size-bleed) 0 0; overflow-x: clip; white-space: nowrap; text-transform: uppercase; color: var(--font-color-bold);
+		margin: 0; white-space: nowrap; text-align: center; text-transform: uppercase; color: var(--font-color-bold);
 		font-weight: var(--font-weight-bold); font-size: var(--font-size-display-giant);
 		line-height: var(--line-height-display-giant); letter-spacing: var(--letter-spacing-display-giant);
 	}
