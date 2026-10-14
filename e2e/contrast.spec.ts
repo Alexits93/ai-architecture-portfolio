@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { animationsSettled } from './animations';
-import { test, expect, type Locator } from '@playwright/test';
+import { test, expect, type Locator, type Page } from '@playwright/test';
 
 // WCAG 2.2 SC 1.4.11: icons and the marks that identify a control need 3:1 against adjacent colours.
 // Relative luminance and contrast ratio as defined in the WCAG 2.2 glossary (https://www.w3.org/TR/WCAG22/).
@@ -76,24 +76,75 @@ for (const [theme, raised] of [['dark', true], ['light', false]] as const) {
   });
 }
 
-// #210: the name is painted by a gradient between --accent-a and --accent-b; each end keeps 3:1 against the page,
-// the WCAG 2.2 SC 1.4.3 minimum for large text (the name is 2.25rem bold).
+// #275: axe cannot compute contrast for text painted by a gradient (background-clip: text) and reports it as
+// incomplete. WCAG 2.2 SC 1.4.3 takes the gradient's lowest-contrast point
+// (https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html), so each gradient is sampled between its stops and
+// the worst sample is held against the background behind the text. Legacy rgb()/hsl() stops interpolate in sRGB
+// (https://www.w3.org/TR/css-color-4/#interpolation-legacy). The name's drifting middle stop stays on the line between
+// --accent-a and --accent-b, so the samples cover every frame.
+interface GradientText { name: string; stops: string[]; background: string; large: boolean }
+
+// Every element painted with background-clip: text, found in the page rather than from a list.
+const gradientTexts = (page: Page) =>
+  page.evaluate(() =>
+    [...document.querySelectorAll('body *')].flatMap((el): GradientText[] => {
+      const style = getComputedStyle(el);
+      if (!style.backgroundClip.includes('text')) return [];
+      let parent = el.parentElement;
+      while (parent !== null && getComputedStyle(parent).backgroundColor === 'rgba(0, 0, 0, 0)') parent = parent.parentElement;
+      const size = parseFloat(style.fontSize);
+      const stops = style.backgroundImage.match(/rgba?\([^)]*\)/g);
+      const text = el instanceof HTMLElement ? el.innerText.trim() : '';
+      return [{
+        name: `${el.tagName.toLowerCase()}.${[...el.classList].join('.')} "${text}"`,
+        stops: stops === null ? [] : [...stops],
+        background: getComputedStyle(parent === null ? document.body : parent).backgroundColor,
+        // Large text: at least 24px, or at least 18.66px bold (WCAG 2.2 glossary, large scale).
+        large: size >= 24 || (size >= 18.66 && Number(style.fontWeight) >= 700),
+      }];
+    }),
+  );
+
+const channels = (rgb: string) => {
+  const values = rgb.match(/[\d.]+/g);
+  assert(values !== null, `not an rgb() colour: ${rgb}`);
+  return values.slice(0, 3).map(Number);
+};
+// Ten samples between each pair of neighbouring stops, mixed per channel.
+const samples = (stops: string[]) =>
+  stops.slice(1).flatMap((stop, i) => {
+    const [from, to] = [channels(stops[i]), channels(stop)];
+    return Array.from({ length: 11 }, (_, step) => `rgb(${from.map((c, k) => c + ((to[k] - c) * step) / 10).join(', ')})`);
+  });
+// The elements whose worst sampled colour misses its threshold, named so a failure points at them.
+const gradientFailures = (texts: GradientText[]) =>
+  texts.flatMap(({ name, stops, background, large }) => {
+    const worst = Math.min(...samples(stops).map((colour) => contrast(colour, background)));
+    return worst < (large ? 3 : 4.5) ? [`${name}: ${worst.toFixed(2)}:1`] : [];
+  });
+
+test('the gradient text check names an element whose gradient is too light', async ({ page }) => {
+  // Injected, not a built route: a page under src/pages/ would ship.
+  await page.setContent(
+    '<body style="background: rgb(255, 255, 255)"><p class="faint" style="background-image: linear-gradient(90deg, rgb(0, 0, 0), rgb(220, 220, 220)); background-clip: text; color: transparent">Faint</p></body>',
+  );
+  const texts = await gradientTexts(page);
+  expect(texts).toHaveLength(1);
+  expect(gradientFailures(texts)).toEqual([expect.stringContaining('p.faint "Faint"')]);
+});
+
 for (const theme of ['light', 'dark']) {
-  test(`the name's gradient accents keep 3:1 against the page in the ${theme} theme`, async ({ page }) => {
-    await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
-    await page.goto('/');
-    const resolve = (token: string) =>
-      page.evaluate((name) => {
-        const probe = document.createElement('span');
-        probe.style.color = `var(${name})`;
-        document.body.append(probe);
-        const value = getComputedStyle(probe).color;
-        probe.remove();
-        return value;
-      }, token);
-    const body = await css(page.locator('body'), 'backgroundColor');
-    for (const token of ['--accent-a', '--accent-b']) {
-      expect(contrast(await resolve(token), body), token).toBeGreaterThanOrEqual(3);
+  test.describe(`gradient text in the ${theme} theme`, () => {
+    test.use({ reducedMotion: 'reduce' });
+
+    for (const route of ['/', '/cv/']) {
+      test(`every gradient text on ${route} keeps its contrast at the gradient's worst point`, async ({ page }) => {
+        await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
+        await page.goto(route);
+        const texts = await gradientTexts(page);
+        expect(texts.length).toBeGreaterThan(0);
+        expect(gradientFailures(texts)).toEqual([]);
+      });
     }
   });
 }
