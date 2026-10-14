@@ -54,19 +54,18 @@ describe('Home Page (index.astro)', () => {
     container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   });
 
-  // The hero, the service cards and the work rows span the page above one reading column (#243, #254, #256, #257).
-  it('renders the hero, the services, the work rows, then the home blocks in one column in reading order', async () => {
+  // The hero, the now card, the service cards, the work rows and the principles span the page above one reading column
+  // (#243, #254, #256, #257, #258).
+  it('renders the hero, now, the services, the work rows, the principles, then the home blocks in one column', async () => {
     const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
     const main = doc.querySelector('main');
     assert.exists(main);
-    expect(main.children).toHaveLength(4);
-    assert.exists(main.querySelector(':scope > #hero:first-child + #services + #work + .home'));
+    expect(main.children).toHaveLength(6);
+    assert.exists(main.querySelector(':scope > #hero:first-child + #now + #services + #work + #principles + .home'));
     const column = doc.querySelector('main > .home');
     assert.exists(column);
     expect([...column.children].map((child) => child.id)).toEqual([
-      'principles',
-      'now',
       'blog-featured',
       'blog-section',
       'connect',
@@ -127,7 +126,7 @@ it('renders the service cards in order with their number, kicker, text and tools
   expect([...first.querySelectorAll('ul > li')].map((tool) => tool.textContent)).toEqual(['Tool first']);
 });
 
-// The now block, with its text and a machine-readable updated date (#218).
+// The now card, with its eyebrow, text and a machine-readable updated date (#218, #258).
 it('renders the now block with its updated date', async () => {
   const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
@@ -135,6 +134,7 @@ it('renders the now block with its updated date', async () => {
   const now = doc.querySelector('section#now');
   assert.exists(now);
   expect(now.querySelector('h2')).toHaveProperty('textContent', 'Now');
+  expect(now.querySelector('.eyebrow')).toHaveProperty('textContent', '/ Currently');
   expect(now.textContent).toContain('Mock Rendered Content');
   const updated = now.querySelector('time');
   assert.exists(updated);
@@ -142,7 +142,7 @@ it('renders the now block with its updated date', async () => {
   expect(updated.textContent).toBe('13 October 2026');
 });
 
-// The principles list after Work, from src/content/principles/principles.md (#244).
+// The principles list after Work, from src/content/principles/principles.md (#244, #258).
 it('renders the principles block with its heading', async () => {
   const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Index)).window.document;
@@ -150,6 +150,7 @@ it('renders the principles block with its heading', async () => {
   const principles = doc.querySelector('section#principles');
   assert.exists(principles);
   expect(principles.querySelector('h2')).toHaveProperty('textContent', 'Principles');
+  expect(principles.querySelector('.eyebrow')).toHaveProperty('textContent', '/ How I work');
   expect(principles.textContent).toContain('Mock Rendered Content');
 });
 
