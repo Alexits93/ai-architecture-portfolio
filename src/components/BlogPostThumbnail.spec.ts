@@ -13,14 +13,14 @@ describe('BlogPostThumbnail Entity (Astro)', () => {
     container = await AstroContainer.create();
   });
 
-  const render = async () => {
-    const html = await container.renderToString(BlogPostThumbnail, { props: { post: mockPost } });
+  const render = async (heading: 'h2' | 'h3' = 'h2') => {
+    const html = await container.renderToString(BlogPostThumbnail, { props: { post: mockPost, heading } });
     return new JSDOM(html).window.document;
   };
 
   it('renders title, description, and a slug permalink with trailing slash', async () => {
     const doc = await render();
-    const [title, description, link] = [doc.querySelector('h2'), doc.querySelector('p'), doc.querySelector('a')];
+    const [title, description, link] = [doc.querySelector('h2'), doc.querySelector('p:not(.eyebrow)'), doc.querySelector('a')];
     assert.exists(title);
     assert.exists(description);
     assert.exists(link);
@@ -29,17 +29,30 @@ describe('BlogPostThumbnail Entity (Astro)', () => {
     expect(link.getAttribute('href')).toBe('/blog/test-post/');
   });
 
-  // The card is one link, so the category is text, not a nested link (#90).
-  it('renders the category as text and no arrow icon', async () => {
+  // The home design system (#299): a raised card with the category as its kicker and a display title. The morph
+  // script names the title (#210).
+  it('renders a raised card with the category kicker and a display title', async () => {
     const doc = await render();
-    const tags = [...doc.querySelectorAll('.skill-tag')].map((t) => t.textContent.trim());
-    expect(tags).toEqual(['#architecture']);
-    expect(doc.querySelectorAll('a')).toHaveLength(1);
-    expect(doc.querySelector('svg')).toBeNull();
+    const card = doc.querySelector('a > article.card');
+    assert.exists(card);
+    const kicker = card.querySelector('.eyebrow');
+    assert.exists(kicker);
+    expect(kicker.textContent).toBe('Architecture');
+    const title = card.querySelector('h2.display[data-size="card"][data-morph="title"]');
+    assert.exists(title);
   });
 
-  it('renders no image', async () => {
+  // Under the "Recommended articles" h2, the card titles are h3 (#307, WCAG 1.3.1).
+  it('renders the title at the heading level it is given', async () => {
+    const doc = await render('h3');
+    expect(doc.querySelector('h2')).toBeNull();
+    expect(doc.querySelector('h3')).toHaveProperty('textContent', 'Title test-post');
+  });
+
+  // The card is one link, so the category is text, not a nested link (#90).
+  it('renders the category as text, and no arrow icon or image', async () => {
     const doc = await render();
-    expect(doc.querySelector('img, figure')).toBeNull();
+    expect(doc.querySelectorAll('a')).toHaveLength(1);
+    expect(doc.querySelector('svg, img, figure')).toBeNull();
   });
 });

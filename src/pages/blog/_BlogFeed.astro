@@ -1,20 +1,25 @@
 ---
 import type { Page } from 'astro';
 import BlogPostThumbnail from '@/components/BlogPostThumbnail.astro';
+import DisplayHeading from '@/components/DisplayHeading.astro';
+import Eyebrow from '@/components/Eyebrow.astro';
+import Pill from '@/components/Pill.astro';
 import { type BlogPost, type Category } from '@/lib/posts';
 import { getCategoryPath } from '@/lib/permalink';
 import { CATEGORIES } from '@/content.config';
 import { ROUTES } from '@/consts';
 
 interface Props {
-	heading: string;
+	/** The h1 words before the accent words, which get the gradient. */
+	text: string;
+	accent: string;
 	/** One page of newest-first posts from paginate() (https://docs.astro.build/en/reference/routing-reference/#page-prop). */
 	page: Page<BlogPost>;
 	/** The category page being rendered; undefined on /blog/. */
 	current?: Category;
 }
 
-const { heading, page, current } = Astro.props;
+const { text, accent, page, current } = Astro.props;
 const links = [
 	{ name: 'All', href: ROUTES.blog, isCurrent: current === undefined },
 	...CATEGORIES.map((category) => ({ name: category, href: getCategoryPath(category), isCurrent: category === current })),
@@ -22,18 +27,19 @@ const links = [
 ---
 
 <div class="blog-feed-container">
-	<h1>{heading}</h1>
-	<nav aria-label="Blog categories">
+	<Eyebrow>Blog</Eyebrow>
+	<DisplayHeading as="h1" size="section" text={text} accent={accent} />
+	<nav aria-label="Blog categories" class="categories">
 		<ul>
 			{links.map(({ name, href, isCurrent }) => (
-				<li><a href={href} aria-current={isCurrent ? 'page' : undefined}>{name}</a></li>
+				<li><Pill href={href} aria-current={isCurrent ? 'page' : undefined}>{name}</Pill></li>
 			))}
 		</ul>
 	</nav>
 	<div class="blog-grid">
 		{page.data.map((post) => (
 			<div class="blog-post-wrapper">
-				<BlogPostThumbnail post={post} />
+				<BlogPostThumbnail post={post} heading="h2" />
 			</div>
 		))}
 	</div>
@@ -47,30 +53,24 @@ const links = [
 </div>
 
 <style>
+	/* main pads the page; the feed adds no padding of its own, as the home sections do. */
 	.blog-feed-container {
+		width: 100%;
 		max-width: var(--page-max-width);
 		margin: 0 auto;
-		padding: var(--space-8) var(--space-4);
 	}
 
-	h1 {
-		text-align: center;
-		margin-bottom: var(--space-8);
-		font-size: var(--font-size-3xl);
-		color: var(--font-color);
-	}
-
-	nav ul {
+	/* The pills wrap with room for their focus ring between the rows. */
+	.categories ul {
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: center;
-		gap: var(--space-2) var(--space-6);
-		margin: 0;
+		gap: var(--space-4) var(--space-2);
+		margin: var(--space-8) 0 0;
 		padding: 0;
 		list-style: none;
 	}
 
-	nav a {
+	.pagination a {
 		color: var(--font-color);
 		text-decoration: underline transparent;
 		text-decoration-thickness: var(--outline-width-focus);
@@ -79,7 +79,7 @@ const links = [
 	}
 
 	@media (hover: hover) {
-		nav a:hover {
+		.pagination a:hover {
 			text-decoration-color: currentColor;
 		}
 	}
@@ -91,7 +91,7 @@ const links = [
 		margin-top: var(--space-8);
 	}
 
-	nav a[aria-current='page'] {
+	.pagination a[aria-current='page'] {
 		color: var(--font-color-bold);
 		font-weight: var(--font-weight-bold);
 		text-decoration-color: currentColor;

@@ -16,5 +16,14 @@ describe('Pill', () => {
     assert.exists(pill);
     expect(pill.getAttribute('href')).toBe('/cv/');
     expect(pill.textContent).toBe('Full CV');
+    expect(pill.hasAttribute('aria-current')).toBe(false);
+  });
+
+  // The blog category filter marks the page the visitor is on (#299).
+  it('marks the current page', async () => {
+    const html = await container.renderToString(Pill, { props: { href: '/blog/', 'aria-current': 'page' }, slots: { default: 'All' } });
+    const pill = new JSDOM(html).window.document.querySelector('a.pill');
+    assert.exists(pill);
+    expect(pill.getAttribute('aria-current')).toBe('page');
   });
 });

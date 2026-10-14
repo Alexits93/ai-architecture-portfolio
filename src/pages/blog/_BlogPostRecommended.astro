@@ -2,6 +2,9 @@
 // Page-only component for the post pages (ADR 002): the recommended posts under an article.
 import { getCollection } from 'astro:content';
 import BlogPostThumbnail from '@/components/BlogPostThumbnail.astro';
+import DisplayHeading from '@/components/DisplayHeading.astro';
+import Eyebrow from '@/components/Eyebrow.astro';
+import Pill from '@/components/Pill.astro';
 import { selectRecommendedPosts } from '@/lib/posts';
 import { ROUTES } from '@/consts';
 
@@ -13,17 +16,19 @@ interface Props {
 const { excludeId } = Astro.props;
 const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { excludeId });
 ---
-<section id="blog-section">
-  <div class="wrapper-top">
-    <h2>Recommended Articles</h2>
+<!-- The head of the home Writing section: eyebrow, display title, and the All posts pill (#300). -->
+<section id="blog-section" aria-labelledby="recommended-title">
+  <div class="head">
+    <div>
+      <Eyebrow>Blog</Eyebrow>
+      <DisplayHeading as="h2" size="section" id="recommended-title" text="Recommended" accent="articles" />
+    </div>
+    <Pill href={ROUTES.blog}>All posts</Pill>
   </div>
   <div class="wrapper">
     {recommendedPosts.map(post => (
-      <BlogPostThumbnail post={post} />
+      <BlogPostThumbnail post={post} heading="h3" />
     ))}
-  </div>
-  <div class="wrapper-bottom">
-    <a href={ROUTES.blog}>See all articles</a>
   </div>
 </section>
 
@@ -31,30 +36,17 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
   #blog-section {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-8);
     width: 100%;
+    padding-block: var(--space-12);
   }
 
-  #blog-section .wrapper-top {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  #blog-section .wrapper-top h2 {
-    color: var(--font-color-bold);
-    margin: 0;
-    letter-spacing: var(--letter-spacing-tight);
-    font-weight: var(--font-weight-bold);
-    font-size: var(--font-size-2xl);
-    line-height: var(--line-height-xl);
-  }
+  #blog-section .head { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: var(--space-4); }
 
   #blog-section .wrapper {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(0, var(--size-card-max)));
-    gap: var(--space-4);
-    margin-bottom: var(--space-4);
+    gap: var(--space-8);
     justify-content: center;
   }
 
@@ -81,40 +73,9 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
     }
   }
 
-  #blog-section .wrapper-bottom {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  #blog-section .wrapper-bottom a {
-    padding: var(--space-2);
-    background-color: var(--theme-secondary);
-    border-radius: var(--radius-lg);
-    color: var(--font-color);
-    text-decoration: none;
-    transition: background-color var(--duration-2) ease-out, scale var(--duration-1) ease-out;
-  }
-
-  /* The card hover surface: --thumbnail-bg-color equals --theme-secondary in dark, so it showed no change (#206). */
-  @media (hover: hover) {
-    #blog-section .wrapper-bottom a:hover {
-      background-color: var(--thumbnail-bg-color-hover);
-    }
-  }
-
-  #blog-section .wrapper-bottom a:active {
-    scale: .96;
-  }
-
-
   @media (min-width: 48rem) {
     #blog-section .wrapper {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    #blog-section .wrapper-top h2 {
-      text-align: left;
     }
   }
 

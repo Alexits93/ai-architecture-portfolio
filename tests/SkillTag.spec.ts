@@ -1,7 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { JSDOM } from 'jsdom';
 import { describe, it, expect, beforeEach, assert } from 'vitest';
-import SkillTag from './SkillTag.astro';
+import SkillTag from '@/pages/_SkillTag.astro';
 
 describe('SkillTag Component', () => {
   let container: AstroContainer;

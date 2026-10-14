@@ -7,8 +7,8 @@ const POST_ROUTES = globSync('blog/*/index.html', { cwd: 'dist' }).map((file) =>
 
 const BLOG_ROUTES = [
   { route: '/blog/', current: 'All', tag: null },
-  { route: '/blog/category/ai/', current: 'AI', tag: '#ai' },
-  { route: '/blog/category/architecture/', current: 'Architecture', tag: '#architecture' },
+  { route: '/blog/category/ai/', current: 'AI', tag: 'AI' },
+  { route: '/blog/category/architecture/', current: 'Architecture', tag: 'Architecture' },
 ];
 
 const cardHrefs = (page: Page, scope: string) =>
@@ -16,8 +16,8 @@ const cardHrefs = (page: Page, scope: string) =>
 
 const categoryNav = (page: Page) => page.getByRole('navigation', { name: 'Blog categories' });
 
-// Each card's category, from the tag the thumbnail renders.
-const cardCategories = (page: Page) => page.locator('.blog-grid .blog-post-thumbnail .skill-tag').allTextContents();
+// Each card's category, from the kicker the thumbnail renders.
+const cardCategories = (page: Page) => page.locator('.blog-grid .blog-post-thumbnail .eyebrow').allTextContents();
 
 test.describe('Blog category pages', () => {
   for (const { route, current, tag } of BLOG_ROUTES) {
@@ -63,7 +63,7 @@ test.describe('Blog category listing', () => {
     await expect(page).toHaveURL(/\/blog\/[a-z0-9-]+\/$/);
     await page.goBack();
     await expect(page).toHaveURL(/\/blog\/category\/ai\/$/);
-    expect(new Set((await cardCategories(page)).map((text) => text.trim()))).toEqual(new Set(['#ai']));
+    expect(new Set((await cardCategories(page)).map((text) => text.trim()))).toEqual(new Set(['AI']));
   });
 });
 
@@ -113,11 +113,11 @@ test.describe('Category link on a post page', () => {
   for (const route of POST_ROUTES) {
     test(`${route} links its category to the category page`, async ({ page }) => {
       await page.goto(route);
-      const link = page.locator('.blog-post-reader a:has(.skill-tag)');
+      const link = page.locator('#post-hero .eyebrow a');
       await expect(link).toHaveCount(1);
       const name = await link.textContent();
       assert(name !== null);
-      expect(await link.getAttribute('href')).toBe(`/blog/category/${name.trim().slice(1)}/`);
+      expect(await link.getAttribute('href')).toBe(`/blog/category/${name.trim().toLowerCase()}/`);
     });
   }
 });

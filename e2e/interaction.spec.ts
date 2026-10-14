@@ -47,20 +47,8 @@ test('the current blog category is underlined', async ({ page }) => {
   expect(decoration.color).toBe(decoration.text);
 });
 
-for (const theme of ['dark', 'light']) {
-  // The button sits under the recommended cards, which render only on the post pages (#219).
-  test(`the hovered See all articles button changes its surface in the ${theme} theme`, async ({ page }) => {
-    await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
-    await page.goto('/blog/ai-agent-harness/');
-    const button = page.getByRole('link', { name: 'See all articles' });
-    const before = await button.evaluate((el) => getComputedStyle(el).backgroundColor);
-    await button.hover();
-    await animationsSettled(page);
-    expect(await button.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe(before);
-  });
-}
-
-// Owner 2026-10-14 (#272): the home pills and the FAQ questions react to the pointer like the button above.
+// Owner 2026-10-14 (#272): the pills and the FAQ questions react to the pointer like the blog cards above. The pills
+// under a post (#300) are the same Pill component.
 for (const theme of ['dark', 'light']) {
   test(`the hovered home pills and FAQ questions change their surface in the ${theme} theme`, async ({ page }) => {
     await page.addInitScript((value) => localStorage.setItem('theme', value), theme);

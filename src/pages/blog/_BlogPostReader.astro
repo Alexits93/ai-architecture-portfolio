@@ -2,7 +2,8 @@
 import { render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import ArticleNavigator from './_ArticleNavigator.astro';
-import SkillTag from '@/components/SkillTag.astro';
+import DisplayHeading from '@/components/DisplayHeading.astro';
+import Eyebrow from '@/components/Eyebrow.astro';
 import { getCategoryPath } from '@/lib/permalink';
 import Logo from '@/assets/logo.svg';
 
@@ -24,10 +25,12 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
 <div class="blog-post-layout">
   <div class="blog-post-reader">
     <header class="wrapper-top" id="post-hero">
-      <div class="wrapper-top-heading">
-        <h1 data-morph="title">{post.data.title}</h1>
-        <h2>{post.data.subtitle}</h2>
-      </div>
+      <!-- The subtitle belongs to the title, so it is a paragraph in the hgroup, not a second heading (#307). -->
+      <hgroup>
+        <Eyebrow><a href={getCategoryPath(post.data.category)}>{post.data.category}</a></Eyebrow>
+        <DisplayHeading as="h1" size="section" data-morph="title" text={post.data.title} />
+        <p class="subtitle">{post.data.subtitle}</p>
+      </hgroup>
       <div class="wrapper-top-post-data">
         <div class="author-info">
           <Logo width="63.54" height="40" aria-hidden="true" />
@@ -40,10 +43,6 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
     <article class="prose">
       <Content />
     </article>
-
-    <p class="category">
-      <a href={getCategoryPath(post.data.category)}><SkillTag skill={post.data.category} /></a>
-    </p>
   </div>
 
   <!-- A layout column, not a landmark: the nav inside carries the name (#282). -->
@@ -71,17 +70,11 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
     display: none;
   }
 
-  .wrapper-top-heading h1 {
-    color: var(--font-color-bold);
-    margin: 0 0 var(--space-4);
-    letter-spacing: var(--letter-spacing-tight);
-    font-weight: var(--font-weight-bold);
-    font-size: var(--font-size-2xl);
-    line-height: var(--line-height-xl);
-  }
-
-  .wrapper-top-heading h2 {
-    margin: 0 0 var(--space-4);
+  .subtitle {
+    margin: var(--space-4) 0 var(--space-6);
+    color: var(--font-color);
+    font-size: var(--font-size-xl);
+    line-height: var(--line-height-lg);
   }
 
   .wrapper-top-post-data {
@@ -91,8 +84,7 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
     align-items: center;
     padding: var(--space-4) 0;
     margin-bottom: var(--space-4);
-    border-top: var(--border-width-hairline) solid var(--font-color);
-    border-bottom: var(--border-width-hairline) solid var(--font-color);
+    border-block: var(--border-width-hairline) solid var(--hairline-color);
   }
 
   .author-info {
@@ -104,17 +96,6 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
 
   .author-info svg {
     height: var(--size-icon-md);
-  }
-
-  .category {
-    margin: var(--space-12) 0;
-  }
-
-  /* The tag is inline-block, which the link's underline does not reach (CSS Text Decoration 4, section 2), so it takes
-     the link's own line, hover thickness included. */
-  .category a :global(.skill-tag) {
-    text-decoration: inherit;
-    text-underline-offset: inherit;
   }
 
   .prose {

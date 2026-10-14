@@ -24,6 +24,6 @@ const { category, page } = Astro.props;
 
 <BaseLayout title={`${category} | Blog | Patrik Alexits`} description={`Articles by Patrik Alexits in the ${category} category.`}>
 	<main>
-		<BlogFeed heading={`Blog: ${category}`} page={page} current={category} />
+		<BlogFeed text="Posts on" accent={category} page={page} current={category} />
 	</main>
 </BaseLayout>
