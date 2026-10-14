@@ -1,0 +1,42 @@
+---
+// Page-only component for the home page (ADR 002): a full-width row of tilted photos under the hero (#255, direction C
+// on #252, from the Mitrakos reference). Gradient placeholders stand in until the real photos land (#261).
+const photos = [1, 2, 3, 4, 5].map((n) => `Photo placeholder ${n}`);
+---
+
+<!-- The row scrolls where it overflows. tabindex lets keyboard users scroll it: WebKit does not focus a scroller on its
+     own (axe scrollable-region-focusable). -->
+<div id="photos" class="photos" role="region" aria-label="Photos" tabindex="0">
+	<ul>
+		{photos.map((label) => <li><div class="photo" role="img" aria-label={label}></div></li>)}
+	</ul>
+</div>
+
+<style>
+	/* Full bleed, tilted like prints on a table, with snap points. The thin scrollbar stays as the hint that it scrolls.
+	   The scroller clips what overflows it, so the end padding is as deep as the tile's shadow. */
+	.photos {
+		margin-inline: var(--size-bleed); padding-block: var(--space-8) var(--space-12);
+		overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin;
+	}
+	ul {
+		display: flex; gap: var(--space-6); inline-size: max-content;
+		margin: 0 auto; padding: 0 var(--space-6); list-style: none;
+	}
+	/* A fixed size and aspect ratio reserve the box before anything loads, so the row does not shift. */
+	.photo {
+		inline-size: var(--size-photo); aspect-ratio: 9 / 10; scroll-snap-align: center;
+		border-radius: var(--radius-2xl); box-shadow: var(--shadow-raised);
+		background-image: linear-gradient(160deg, var(--accent-a), var(--accent-b));
+	}
+	/* The site's two accents only: each photo varies the angle or the stop order. */
+	li:nth-child(1) .photo { rotate: 2deg; }
+	li:nth-child(2) .photo { rotate: -2deg; background-image: linear-gradient(200deg, var(--accent-b), var(--accent-a)); }
+	li:nth-child(3) .photo { rotate: 1.5deg; background-image: linear-gradient(120deg, var(--accent-a), var(--accent-b)); }
+	li:nth-child(4) .photo { rotate: -1.5deg; background-image: linear-gradient(340deg, var(--accent-b), var(--accent-a)); }
+	li:nth-child(5) .photo { rotate: 2.5deg; background-image: linear-gradient(60deg, var(--accent-a), var(--accent-b)); }
+	@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+		.photo { transition: rotate var(--duration-enter) var(--ease-spring), scale var(--duration-enter) var(--ease-spring); }
+		li .photo:hover { rotate: 0deg; scale: 1.04; }
+	}
+</style>
