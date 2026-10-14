@@ -20,6 +20,10 @@ const photos = [1, 2, 3, 4, 5].map((n) => `Photo placeholder ${n}`);
 	if (row !== null) {
 		// The grab cursor shows only where the row overflows and there is something to drag.
 		new ResizeObserver(() => row.toggleAttribute('data-draggable', row.scrollWidth > row.clientWidth)).observe(row);
+		// The row starts at its middle, so both outer photos sit partly off screen. A scroller starts at its left edge,
+		// and scroll-initial-target, which could pick the middle photo in CSS, ships in Chromium only
+		// (https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-initial-target).
+		row.scrollLeft = (row.scrollWidth - row.clientWidth) / 2;
 		let startX = 0;
 		let startScroll = 0;
 		row.addEventListener('pointerdown', (event) => {
