@@ -98,6 +98,16 @@ export default [
     }
   },
   {
+    // A scroll container with no focusable child needs tabindex="0" so keyboard users can scroll it (axe
+    // scrollable-region-focusable); WebKit does not focus one on its own. The home photo row is one (#255). The plugin's
+    // recommended options allow tabpanel; region is added for named scrollers
+    // (https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/main/docs/rules/no-noninteractive-tabindex.md).
+    files: ["**/*.astro"],
+    rules: {
+      "astro/jsx-a11y/no-noninteractive-tabindex": ["error", { tags: [], roles: ["tabpanel", "region"], allowExpressionValues: true }]
+    }
+  },
+  {
     // Classic browser script outside Astro's bundler, injected inline by astro.config.mjs.
     files: ["src/lib/theme.js"],
     languageOptions: {
