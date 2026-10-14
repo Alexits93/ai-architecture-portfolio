@@ -1,5 +1,6 @@
 ---
-// Page-only component for the home page (ADR 002): the now block from src/content/now/now.md (#218).
+// Page-only component for the home page (ADR 002): the now card from src/content/now/now.md (#218), restyled as a card
+// near the top in direction A's look (#258, decided on #252).
 import { getEntry, render } from 'astro:content';
 
 const now = await getEntry('now', 'now');
@@ -8,28 +9,44 @@ const { Content } = await render(now);
 const { updated } = now.data;
 ---
 
-<section id="now" aria-labelledby="now-title">
-	<h2 id="now-title">Now</h2>
-	<div class="now-text"><Content /></div>
-	<p class="now-updated">
-		Updated <time datetime={updated.toISOString().slice(0, 10)}>{updated.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}</time>
-	</p>
+<section id="now" class="now" aria-labelledby="now-title">
+	<div class="head">
+		<p class="eyebrow">/ Currently</p>
+		<h2 id="now-title"><span class="accent">Now</span></h2>
+		<p class="updated">
+			Updated <time datetime={updated.toISOString().slice(0, 10)}>{updated.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}</time>
+		</p>
+	</div>
+	<div class="text"><Content /></div>
 </section>
 
 <style>
-	#now {
-		display: flex; flex-direction: column; gap: var(--space-4);
-		padding: var(--space-4); border-radius: var(--radius-lg);
-		filter: var(--shadow-card);
-		box-shadow: var(--shadow-card-edge);
-		background-color: var(--theme-secondary); color: var(--font-color);
+	.now {
+		display: grid; gap: var(--space-6); margin-block: var(--space-12) 0; padding: var(--space-8);
+		border-radius: var(--radius-2xl); background-color: var(--theme-secondary);
+		box-shadow: var(--shadow-card-edge), var(--shadow-raised); color: var(--font-color);
 	}
-	#now h2 {
-		margin: 0; color: var(--font-color-bold);
-		letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-bold);
-		font-size: var(--font-size-2xl); line-height: var(--line-height-xl);
+	.eyebrow {
+		margin: 0 0 var(--space-2); color: var(--font-color-bold); font-size: var(--font-size-sm);
+		letter-spacing: var(--letter-spacing-wide); text-transform: uppercase;
 	}
+	h2 {
+		margin: 0 0 var(--space-2); color: var(--font-color-bold); font-weight: var(--font-weight-bold);
+		font-size: var(--font-size-display-card); line-height: var(--line-height-display-card);
+		letter-spacing: var(--letter-spacing-display-card);
+	}
+	.accent { background-image: linear-gradient(100deg, var(--accent-a), var(--accent-b)); background-clip: text; color: transparent; }
+	.updated { margin: 0; font-size: var(--font-size-sm); }
 	/* Content renders Markdown outside this component's scope, so :global() reaches its list. */
-	#now .now-text :global(ul) { margin: 0; padding-inline-start: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
-	#now .now-updated { margin: 0; font-size: var(--font-size-sm); }
+	.text :global(ul) { list-style: none; margin: 0; padding: 0; }
+	.text :global(li) {
+		padding-block: var(--space-4); border-block-start: var(--border-width-hairline) solid var(--hairline-color);
+		font-size: var(--font-size-lg);
+	}
+	.text :global(li:first-child) { padding-block-start: 0; border-block-start: 0; }
+
+	/* On wide screens the heading sits on the left, the list on the right. */
+	@media (min-width: 48rem) {
+		.now { grid-template-columns: 1fr 2fr; gap: var(--space-8); }
+	}
 </style>

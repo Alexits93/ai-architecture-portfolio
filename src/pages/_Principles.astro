@@ -1,5 +1,6 @@
 ---
-// Page-only component for the home page (ADR 002): the principles from src/content/principles/principles.md (#244).
+// Page-only component for the home page (ADR 002): the principles from src/content/principles/principles.md (#244),
+// numbered rows between Work and the writing in direction A's look (#258, decided on #252).
 import { getEntry, render } from 'astro:content';
 
 const principles = await getEntry('principles', 'principles');
@@ -7,18 +8,50 @@ if (principles === undefined) throw new Error('src/content/principles/principles
 const { Content } = await render(principles);
 ---
 
-<section id="principles" aria-labelledby="principles-title">
-	<h2 id="principles-title">Principles</h2>
-	<div class="principles-text"><Content /></div>
+<section id="principles" class="principles" aria-labelledby="principles-title">
+	<div class="intro">
+		<p class="eyebrow">/ How I work</p>
+		<h2 id="principles-title"><span class="accent">Principles</span></h2>
+	</div>
+	<div class="text"><Content /></div>
 </section>
 
 <style>
-	#principles { color: var(--font-color); }
-	#principles h2 {
-		margin: 0 0 var(--space-4); color: var(--font-color-bold);
-		letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-bold);
-		font-size: var(--font-size-2xl); line-height: var(--line-height-xl);
+	.principles { display: grid; gap: var(--space-8); padding-block: var(--space-12); color: var(--font-color); }
+	.eyebrow {
+		margin: 0 0 var(--space-2); color: var(--font-color-bold); font-size: var(--font-size-sm);
+		letter-spacing: var(--letter-spacing-wide); text-transform: uppercase;
 	}
-	/* Content renders Markdown outside this component's scope, so :global() reaches its list. */
-	#principles .principles-text :global(ul) { margin: 0; padding-inline-start: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
+	h2 {
+		margin: 0; color: var(--font-color-bold); font-weight: var(--font-weight-bold);
+		font-size: var(--font-size-display-section); line-height: var(--line-height-display-section);
+		letter-spacing: var(--letter-spacing-display-section);
+	}
+	.accent { background-image: linear-gradient(100deg, var(--accent-a), var(--accent-b)); background-clip: text; color: transparent; }
+
+	/* Rows share the list's columns through subgrid, so every text starts at the same x
+	   (https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Subgrid).
+	   Content renders Markdown outside this component's scope, so :global() reaches its list. A grid row is no longer a
+	   list-item, so the built-in list-item counter stays at 0; a named counter numbers the rows
+	   (https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_counter_styles/Using_CSS_counters). */
+	.text :global(ul) {
+		list-style: none; margin: 0; padding: 0; counter-reset: principle;
+		display: grid; grid-template-columns: auto 1fr; column-gap: var(--space-4);
+	}
+	.text :global(li) {
+		counter-increment: principle;
+		display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; padding-block: var(--space-4);
+		border-block-start: var(--border-width-hairline) solid var(--hairline-color);
+		color: var(--font-color-bold); font-size: var(--font-size-xl); letter-spacing: var(--letter-spacing-tight);
+	}
+	.text :global(li::before) {
+		content: counter(principle, decimal-leading-zero); color: var(--font-color);
+		font-size: var(--font-size-sm); font-variant-numeric: tabular-nums; line-height: inherit;
+	}
+
+	/* On wide screens the intro sticks on the left while the rows pass on the right, as in the services. */
+	@media (min-width: 64rem) {
+		.principles { grid-template-columns: 2fr 3fr; align-items: start; }
+		.intro { position: sticky; top: var(--offset-sticky); }
+	}
 </style>
