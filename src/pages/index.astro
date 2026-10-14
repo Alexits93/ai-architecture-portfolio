@@ -1,8 +1,8 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { ROUTES, SITE } from '@/consts';
-import AboutMe from '@/components/AboutMe.astro';
 import BlogPostFeatured from './_BlogPostFeatured.astro';
+import Hero from './_Hero.astro';
 import BlogPostRecommended from '@/components/BlogPostRecommended.astro';
 import Now from './_Now.astro';
 import Principles from './_Principles.astro';
@@ -26,8 +26,8 @@ const socials = [
 
 <BaseLayout title={SITE.title} description={SITE.description}>
 	<main>
+		<Hero />
 		<div class="home">
-			<AboutMe name={SITE.name} profession={SITE.role} text={SITE.pitch} />
 			<section id="work" aria-labelledby="work-title">
 				<h2 id="work-title">Work</h2>
 				<p>

@@ -20,8 +20,9 @@ const rootRevealRuns = (page: Page) =>
     }),
   );
 
-// Home shows no social icons in the hero; they sit in the Connect line (#243).
-const HERO = ['.about-me h1', '.about-me h2', '.about-me h3', '.about-me p'];
+// The visible hero parts in reading order: the name halves with their kickers around the portrait, then the
+// pitch (#254). The h1 is visually hidden and does not move.
+const HERO = ['#hero .hero-side >> nth=0', '#hero .portrait', '#hero .hero-side >> nth=1', '#hero .pitch'];
 
 test.describe('motion allowed', () => {
   test.use({ reducedMotion: 'no-preference' });
@@ -39,9 +40,11 @@ test.describe('motion allowed', () => {
     for (const selector of HERO) await expect(page.locator(selector).first()).toHaveCSS('opacity', '1');
   });
 
-  test('the name carries a moving gradient accent', async ({ page }) => {
+  test('both name halves carry a moving gradient accent', async ({ page }) => {
     await page.goto('/');
-    expect(await cssAnimations(page, '.about-me h1')).toContain('name-gradient');
+    for (const word of ['#hero .word >> nth=0', '#hero .word >> nth=1']) {
+      expect(await cssAnimations(page, word)).toContain('name-gradient');
+    }
   });
 
   test('the theme toggle reveals the new theme as a view transition', async ({ page }) => {

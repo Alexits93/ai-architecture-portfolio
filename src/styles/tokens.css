@@ -56,7 +56,8 @@
     /* Display type for the home redesign (#253): section titles, the hero name and the contact word that
        runs off the edge. Each size grows with the viewport and keeps its own tight leading and tracking. */
     --font-size-display-section: clamp(2rem, 5vw, 3.5rem);
-    --font-size-display-hero: clamp(3rem, 9vw, 7rem);
+    /* Small enough that each half of the name fits beside the portrait from 64rem (#254). */
+    --font-size-display-hero: clamp(3rem, 6vw, 5.5rem);
     --font-size-display-giant: 19vw;
     --line-height-display-section: 1.05;
     --line-height-display-hero: .9;
@@ -108,6 +109,9 @@
     --size-prose: 800px;
     /* The home reading column (#243). */
     --size-column: 680px;
+    /* The home hero (#254): the portrait card shrinks with a phone screen, and the pitch wraps at a short measure. */
+    --size-portrait: min(70vw, 16rem);
+    --size-pitch: 36ch;
     --page-max-width: 1200px;
     --font-size-menu: 48px;
 

@@ -38,14 +38,17 @@ describe('Home Page (index.astro)', () => {
     container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   });
 
-  // One column in reading order, no sticky split (#243, research on #212).
-  it('renders the home blocks in one column in reading order', async () => {
+  // The hero spans the page above one reading column (#243, #254, research on #212).
+  it('renders the hero, then the home blocks in one column in reading order', async () => {
     const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
+    const main = doc.querySelector('main');
+    assert.exists(main);
+    expect(main.children).toHaveLength(2);
+    assert.exists(main.querySelector(':scope > #hero:first-child + .home'));
     const column = doc.querySelector('main > .home');
     assert.exists(column);
     expect([...column.children].map((child) => child.id)).toEqual([
-      'about-me',
       'work',
       'principles',
       'open',
@@ -55,23 +58,37 @@ describe('Home Page (index.astro)', () => {
       'connect',
     ]);
   });
+});
 
-  // One site-wide title and the positioning pitch from SITE (#214).
-  it('renders SITE.role and SITE.pitch in the hero and the role in the SEO title', async () => {
-    const doc = new JSDOM(await container.renderToString(Index)).window.document;
+// One site-wide title and the positioning pitch from SITE (#214). The h1 holds the full name for screen readers;
+// the two big halves around the portrait are presentation (#254).
+it('renders the name, SITE.role and SITE.pitch in the hero and the role in the SEO title', async () => {
+  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+  const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
-    const role = doc.querySelector('#about-me h2');
-    assert.exists(role);
-    expect(role.textContent).toBe(SITE.role);
+  const h1 = doc.querySelector('#hero h1');
+  assert.exists(h1);
+  expect(h1.textContent).toBe(SITE.name);
+  const halves = [...doc.querySelectorAll('#hero .word')];
+  expect(halves.map((half) => [half.textContent, half.getAttribute('aria-hidden')])).toEqual([
+    ['Patrik', 'true'],
+    ['Alexits', 'true'],
+  ]);
 
-    const pitch = doc.querySelector('#about-me p');
-    assert.exists(pitch);
-    expect(pitch.textContent).toBe(SITE.pitch);
+  const kickers = [...doc.querySelectorAll('#hero .kicker')].map((kicker) => kicker.textContent);
+  expect(kickers[0]).toBe(SITE.role);
 
-    const title = doc.querySelector('title');
-    assert.exists(title);
-    expect(title.textContent).toBe(`${SITE.name} | ${SITE.role}`);
-  });
+  const portrait = doc.querySelector('#hero .portrait');
+  assert.exists(portrait);
+  expect(portrait.getAttribute('role')).toBe('img');
+
+  const pitch = doc.querySelector('#hero .pitch');
+  assert.exists(pitch);
+  expect(pitch.textContent).toBe(SITE.pitch);
+
+  const title = doc.querySelector('title');
+  assert.exists(title);
+  expect(title.textContent).toBe(`${SITE.name} | ${SITE.role}`);
 });
 
 // The now block, with its text and a machine-readable updated date (#218).
@@ -122,7 +139,7 @@ it('renders the Work paragraph with a link to the CV', async () => {
   const cv = work.querySelector('a');
   assert.exists(cv);
   expect(cv.getAttribute('href')).toBe(ROUTES.cv);
-  expect(doc.querySelector('#about-me .social-links')).toBeNull();
+  expect(doc.querySelector('#hero a')).toBeNull();
 });
 
 // Rows of name, one line and a link, only for public artefacts. Same tab, owner decision on #242.
