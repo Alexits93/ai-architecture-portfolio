@@ -54,11 +54,13 @@
     --font-size-2xl: 2.25rem;
     --font-size-3xl: 2.5rem;
     /* Display type for the home redesign (#253): section titles, the hero name and the contact word that
-       runs off the edge. Each size grows with the viewport and keeps its own tight leading and tracking. */
+       fills its column. Each size grows with the viewport or its column and keeps its own tight leading and tracking. */
     --font-size-display-section: clamp(2rem, 5vw, 3.5rem);
     /* Small enough that each half of the name fits beside the portrait from 64rem (#254). */
     --font-size-display-hero: clamp(3rem, 6vw, 5.5rem);
-    --font-size-display-giant: 19vw;
+    /* A share of the container's inline size (cqi), so the contact word fills its column at any width (#278). In Inter
+       bold at the giant tracking, SAY HELLO is about 4.96em wide; 19.5cqi leaves a few percent to spare. */
+    --font-size-display-giant: 19.5cqi;
     /* The title on a service card (#256), between the body sizes and the section titles. */
     --font-size-display-card: clamp(1.5rem, 3vw, 2.25rem);
     --line-height-display-section: 1.05;
@@ -111,9 +113,8 @@
     --size-thumbnail-body: 250px;
     --size-card-max: 400px;
     --size-prose: 800px;
-    /* A negative inline margin that takes a block from an edge of its centred column to the window edge: the contact
-       word on the right (#260), the photo row on both sides (#255). The percentage resolves against the column where the
-       token is used. */
+    /* A negative inline margin that takes a block from its centred column to the window edges (the photo row, #255).
+       The percentage resolves against the column where the token is used. */
     --size-bleed: calc(50% - 50vw);
     /* The home hero (#254): the portrait card shrinks with a phone screen, and the pitch wraps at a short measure. */
     --size-portrait: min(70vw, 16rem);
