@@ -29,8 +29,11 @@ const links = [
 		margin: 0 0 var(--space-12); padding: 0; list-style: none; font-size: var(--font-size-xl);
 	}
 	a { color: var(--font-color-bold); font-weight: var(--font-weight-medium); }
+	/* clip, unlike hidden, makes no scroll container (https://developer.mozilla.org/en-US/docs/Web/CSS/overflow#clip).
+	   The word fits at normal spacing; under a user's wider text spacing (WCAG 1.4.12) it clips instead of widening
+	   the page (#282). */
 	.giant {
-		margin: 0; white-space: nowrap; text-align: center; text-transform: uppercase; color: var(--font-color-bold);
+		margin: 0; overflow-x: clip; white-space: nowrap; text-align: center; text-transform: uppercase; color: var(--font-color-bold);
 		font-weight: var(--font-weight-bold); font-size: var(--font-size-display-giant);
 		line-height: var(--line-height-display-giant); letter-spacing: var(--letter-spacing-display-giant);
 	}

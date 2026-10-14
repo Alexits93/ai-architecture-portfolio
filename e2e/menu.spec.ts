@@ -114,3 +114,19 @@ for (const route of ['/', '/blog/ai-agent-harness/']) {
     expect(onTop).toBe(true);
   });
 }
+
+// #282: forced colours (Windows high contrast) drop author background colours, which hid the bars of both menu
+// buttons. The bars use a system colour there. Chromium is the only engine Playwright can put in forced colours.
+test.describe('in forced colours', () => {
+  test.use({ forcedColors: 'active' });
+
+  test('the bars of the open and close buttons differ from the page colour', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'forced colours emulation exists only in Chromium');
+    const bars = (button: ReturnType<typeof opener>) =>
+      button.locator('span').evaluateAll((spans) => spans.map((span) => getComputedStyle(span).backgroundColor));
+    const page_ = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    for (const colour of await bars(opener(page))) expect(colour).not.toBe(page_);
+    await openWithKeyboard(page);
+    for (const colour of await bars(closer(page))) expect(colour).not.toBe(page_);
+  });
+});

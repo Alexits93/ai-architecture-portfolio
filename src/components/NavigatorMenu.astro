@@ -18,7 +18,7 @@ const { menuItems = defaultMenuItems } = Astro.props;
     <div class="navigator-menu-body">
         <ul>
             {menuItems.map(item => (
-                <li><a href={item.path}><h2>{item.name}</h2></a></li>
+                <li><a href={item.path}><span>{item.name}</span></a></li>
             ))}
         </ul>
     </div>
@@ -99,6 +99,10 @@ const { menuItems = defaultMenuItems } = Astro.props;
         height: .2rem; width: var(--space-8); background-color: var(--font-color-bold);
         border-radius: var(--radius-xs); transform: translateY(0) rotate(0deg);
     }
+    /* Forced colours drop author background colours; a system colour keeps the bars visible (#282). */
+    @media (forced-colors: active) {
+        .navigator-menu-opener span { forced-color-adjust: none; background-color: ButtonText; }
+    }
     .navigator-menu-opener { border-radius: var(--radius-full); }
     @media (hover: hover) {
         .navigator-menu-opener:hover { background-color: var(--state-hover); }
@@ -141,12 +145,13 @@ const { menuItems = defaultMenuItems } = Astro.props;
     dialog#site-menu[open]:not([data-closing]) .navigator-menu-body li:nth-child(3) { transition-delay: 0.41s; }
 
     .navigator-menu-body ul li a { display: flex; color: var(--font-color); text-decoration: none; }
-    .navigator-menu-body ul li a h2 { text-decoration: underline transparent; text-underline-offset: var(--space-2); transition: text-decoration-color .2s ease-out; }
+    /* Plain text, not headings (#282): the links are navigation. */
+    .navigator-menu-body ul li a span { text-decoration: underline transparent; text-underline-offset: var(--space-2); transition: text-decoration-color .2s ease-out; }
     @media (hover: hover) {
-        .navigator-menu-body ul li a:hover h2 { text-decoration-color: currentColor; }
+        .navigator-menu-body ul li a:hover span { text-decoration-color: currentColor; }
     }
-    .navigator-menu-body ul li a h2 {
-        display: inline-block; margin: 0; font-size: var(--font-size-menu);
-        line-height: 1.2; color: var(--font-color-bold);
+    .navigator-menu-body ul li a span {
+        display: inline-block; font-size: var(--font-size-menu); font-weight: var(--font-weight-medium);
+        line-height: 1.2; letter-spacing: var(--letter-spacing-tight); color: var(--font-color-bold);
     }
 </style>
