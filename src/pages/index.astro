@@ -6,6 +6,7 @@ import Hero from './_Hero.astro';
 import BlogPostRecommended from '@/components/BlogPostRecommended.astro';
 import Now from './_Now.astro';
 import Principles from './_Principles.astro';
+import Services from './_Services.astro';
 
 // Public artefacts only: each row links to something a visitor can open (#243, research on #212).
 const openables = [
@@ -27,6 +28,7 @@ const socials = [
 <BaseLayout title={SITE.title} description={SITE.description}>
 	<main>
 		<Hero />
+		<Services />
 		<div class="home">
 			<section id="work" aria-labelledby="work-title">
 				<h2 id="work-title">Work</h2>

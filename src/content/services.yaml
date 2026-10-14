@@ -1,0 +1,20 @@
+# The "What I do best" cards on home, shown by `order` (src/content.config.ts). Draft copy from the #252 sketch;
+# the owner rewrites it in #264.
+- id: frontend-architecture
+  order: 1
+  kicker: Day job
+  title: Frontend architecture
+  text: I turn features of a Windows desktop app into Nx and Angular web applications that are accessible, responsive and easier to use.
+  tools: [Nx, Angular, TypeScript, Accessibility, Microfrontends]
+- id: agent-harnesses
+  order: 2
+  kicker: Side work
+  title: Harnesses for LLM coding agents
+  text: Rules, hooks and tests that keep a coding agent honest. This site is built that way, in the open.
+  tools: [Claude Code, CI gates, Playwright, Vitest, ADRs]
+- id: coaching
+  order: 3
+  kicker: With people
+  title: Coaching engineers
+  text: I mentor juniors and lead teams with shared terminology, written principles and high standards.
+  tools: [Mentoring, Code review, Principles, Scrum]

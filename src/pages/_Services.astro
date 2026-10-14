@@ -1,0 +1,83 @@
+---
+// Page-only component for the home page (ADR 002): "What I do best", cards from src/content/services.yaml that stack
+// while the page scrolls (#256, direction A on #252).
+import { getCollection } from 'astro:content';
+
+const services = (await getCollection('services')).toSorted((a, b) => a.data.order - b.data.order);
+---
+
+<section id="services" class="services" aria-labelledby="services-title">
+	<div class="intro">
+		<p class="eyebrow">/ Services, skills</p>
+		<h2 id="services-title">What I do <span class="accent">best</span></h2>
+		<p>Three things I do every week, at work and on this site.</p>
+	</div>
+	<ol class="stack">
+		{services.map(({ data }) => (
+			<li class="card">
+				<p class="eyebrow">{data.kicker}</p>
+				<h3>{String(data.order).padStart(2, '0')}. {data.title}</h3>
+				<p>{data.text}</p>
+				<ul>{data.tools.map((tool) => <li>{tool}</li>)}</ul>
+			</li>
+		))}
+	</ol>
+</section>
+
+<style>
+	.services { display: grid; gap: var(--space-12); padding-block: var(--space-12); }
+	.eyebrow {
+		margin: 0 0 var(--space-2); color: var(--font-color-bold); font-size: var(--font-size-sm);
+		letter-spacing: var(--letter-spacing-wide); text-transform: uppercase;
+	}
+	h2 {
+		margin: 0 0 var(--space-4); color: var(--font-color-bold); font-weight: var(--font-weight-bold);
+		font-size: var(--font-size-display-section); line-height: var(--line-height-display-section);
+		letter-spacing: var(--letter-spacing-display-section);
+	}
+	.accent { background-image: linear-gradient(100deg, var(--accent-a), var(--accent-b)); background-clip: text; color: transparent; }
+	.intro > p:last-child { margin: 0; max-inline-size: var(--size-pitch); color: var(--font-color); }
+
+	/* Each card sticks a little lower than the one before, so they pile up while the page scrolls. position: sticky
+	   works in every engine (https://developer.mozilla.org/en-US/docs/Web/CSS/position#sticky). */
+	.stack { list-style: none; margin: 0; padding: 0 0 var(--space-stack-end); display: grid; gap: var(--space-stack); }
+	.card {
+		position: sticky; top: calc(var(--offset-sticky) + var(--i) * var(--space-8));
+		padding: var(--space-8); border-radius: var(--radius-2xl); background-color: var(--theme-secondary);
+		box-shadow: var(--shadow-card-edge), var(--shadow-raised); color: var(--font-color);
+		rotate: calc((var(--i) - 1) * 1.2deg);
+	}
+	.card:nth-child(1) { --i: 0; }
+	.card:nth-child(2) { --i: 1; }
+	.card:nth-child(3) { --i: 2; }
+	.card h3 {
+		margin: 0 0 var(--space-4); color: var(--font-color-bold);
+		font-size: var(--font-size-display-card); line-height: var(--line-height-display-card);
+		letter-spacing: var(--letter-spacing-display-card);
+	}
+	.card > p:not(.eyebrow) { margin: 0 0 var(--space-6); }
+	.card ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+	.card ul li {
+		padding: var(--space-1) var(--space-4); border-radius: var(--radius-pill); font-size: var(--font-size-sm);
+		border: var(--border-width-hairline) solid var(--hairline-color);
+	}
+
+	/* On wide screens the intro sticks on the left while the cards pass on the right. */
+	@media (min-width: 64rem) {
+		.services { grid-template-columns: 2fr 3fr; align-items: start; }
+		.intro { position: sticky; top: var(--offset-sticky); }
+	}
+
+	/* Where scroll-driven animations exist, a card settles from a stronger tilt as it enters. Firefox shows the
+	   resting tilt (https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline#browser_compatibility). */
+	@supports (animation-timeline: view()) {
+		@media (prefers-reduced-motion: no-preference) {
+			/* Longhands: the minifier folds a separate animation-timeline into the shorthand, which Chromium rejects. */
+			.card {
+				animation-name: card-settle; animation-timing-function: linear; animation-fill-mode: both;
+				animation-timeline: view(); animation-range: var(--range-reveal);
+			}
+		}
+	}
+	@keyframes card-settle { from { rotate: 6deg; translate: 0 var(--space-16); opacity: .4; } }
+</style>

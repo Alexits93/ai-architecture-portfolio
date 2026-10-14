@@ -69,9 +69,25 @@ const principlesCollection = defineCollection({
 	loader: glob({ pattern: 'principles.md', base: './src/content/principles' }),
 });
 
+/** The "What I do best" cards on home (#256), shown by `order` since collection order is not guaranteed. */
+export const servicesSchema = z.strictObject({
+	id: z.string().regex(SLUG_PATTERN),
+	order: z.int().positive(),
+	kicker: z.string(),
+	title: z.string(),
+	text: z.string(),
+	tools: z.array(z.string()).min(1),
+});
+
+const servicesCollection = defineCollection({
+	loader: file('src/content/services.yaml'),
+	schema: servicesSchema,
+});
+
 export const collections = {
 	blog: blogCollection,
 	experience: experienceCollection,
 	now: nowCollection,
 	principles: principlesCollection,
+	services: servicesCollection,
 };

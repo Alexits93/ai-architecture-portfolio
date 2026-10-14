@@ -7,7 +7,7 @@ import Index from '@/pages/index.astro';
 import { ROUTES, SITE } from '@/consts';
 import MockContent from './fixtures/MockContent.astro';
 
-// Vitest has no collection data, so the posts, the now entry and the rendered Markdown are fixtures (#218, #226, #244).
+// Vitest has no collection data, so the posts, the services, the now entry and the rendered Markdown are fixtures (#218, #226, #244).
 // e2e/home-blog.spec.ts checks the real posts on the built page.
 const posts = [
   createTestPost({ id: 'featured-post', isFeatured: true }),
@@ -20,11 +20,18 @@ const nowEntry: CollectionEntry<'now'> = {
   data: { updated: new Date('2026-10-13T00:00:00.000Z') },
   body: '- Mock line',
 };
+const service = (id: string, order: number): CollectionEntry<'services'> => ({
+  id,
+  collection: 'services',
+  data: { id, order, kicker: `Kicker ${id}`, title: `Title ${id}`, text: `Text ${id}`, tools: [`Tool ${id}`] },
+});
+// Out of order on purpose: the cards follow `order`, not the collection order.
+const services = [service('second', 2), service('first', 1)];
 vi.mock('astro:content', async (importOriginal) => {
   const actual = await importOriginal<typeof import('astro:content')>();
   return {
     ...actual,
-    getCollection: async () => posts,
+    getCollection: async (name: string) => (name === 'services' ? services : posts),
     getEntry: async () => nowEntry,
     render: async () => ({ Content: MockContent, headings: [], remarkPluginFrontmatter: {} }),
   };
@@ -38,14 +45,14 @@ describe('Home Page (index.astro)', () => {
     container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   });
 
-  // The hero spans the page above one reading column (#243, #254, research on #212).
-  it('renders the hero, then the home blocks in one column in reading order', async () => {
+  // The hero and the service cards span the page above one reading column (#243, #254, #256).
+  it('renders the hero, the services, then the home blocks in one column in reading order', async () => {
     const doc = new JSDOM(await container.renderToString(Index)).window.document;
 
     const main = doc.querySelector('main');
     assert.exists(main);
-    expect(main.children).toHaveLength(2);
-    assert.exists(main.querySelector(':scope > #hero:first-child + .home'));
+    expect(main.children).toHaveLength(3);
+    assert.exists(main.querySelector(':scope > #hero:first-child + #services + .home'));
     const column = doc.querySelector('main > .home');
     assert.exists(column);
     expect([...column.children].map((child) => child.id)).toEqual([
@@ -89,6 +96,28 @@ it('renders the name, SITE.role and SITE.pitch in the hero and the role in the S
   const title = doc.querySelector('title');
   assert.exists(title);
   expect(title.textContent).toBe(`${SITE.name} | ${SITE.role}`);
+});
+
+// "What I do best": numbered cards in `order`, each with its kicker, text and tools (#256).
+it('renders the service cards in order with their number, kicker, text and tools', async () => {
+  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+  const doc = new JSDOM(await container.renderToString(Index)).window.document;
+
+  const section = doc.querySelector('section#services');
+  assert.exists(section);
+  const heading = section.querySelector('h2');
+  assert.exists(heading);
+  expect(heading.textContent).toBe('What I do best');
+  const cards = [...section.querySelectorAll('ol > li.card')];
+  expect(cards.map((card) => card.querySelector('h3')).map((h3) => (h3 === null ? null : h3.textContent))).toEqual([
+    '01. Title first',
+    '02. Title second',
+  ]);
+  const [first] = cards;
+  assert.exists(first);
+  expect(first.querySelector('.eyebrow')).toHaveProperty('textContent', 'Kicker first');
+  expect(first.textContent).toContain('Text first');
+  expect([...first.querySelectorAll('ul > li')].map((tool) => tool.textContent)).toEqual(['Tool first']);
 });
 
 // The now block, with its text and a machine-readable updated date (#218).
