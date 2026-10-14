@@ -11,7 +11,7 @@ const { updated } = now.data;
 
 <section id="now" class="now" aria-labelledby="now-title">
 	<div class="head">
-		<p class="eyebrow">/ Currently</p>
+		<p class="eyebrow"><span aria-hidden="true">/ </span>Currently</p>
 		<h2 id="now-title"><span class="accent">Now</span></h2>
 		<p class="updated">
 			Updated <time datetime={updated.toISOString().slice(0, 10)}>{updated.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}</time>
