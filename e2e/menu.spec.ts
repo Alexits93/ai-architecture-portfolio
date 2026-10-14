@@ -95,7 +95,7 @@ for (const viewport of [{ width: 320, height: 640 }, { width: 1280, height: 800 
   });
 }
 
-// The sticky header keeps z-index 1, enough to stay above positioned page content (#about-me, the post reader)
+// The sticky header keeps z-index 1, enough to stay above positioned page content (the home hero, the post reader)
 // once the old 10000 is gone; the open menu needs none, it sits in the top layer (#157).
 for (const route of ['/', '/blog/ai-agent-harness/']) {
   test(`the scrolled header on ${route} stays above the page content`, async ({ page }) => {

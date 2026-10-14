@@ -1,0 +1,72 @@
+---
+// Page-only component for the home page (ADR 002): the name split around a tilted portrait (#254, direction A on #252).
+// The h1 carries the full name for screen readers; the two big halves are presentation.
+import { SITE } from '@/consts';
+---
+
+<section id="hero" class="hero" aria-labelledby="hero-name">
+	<h1 id="hero-name" class="sr-only">{SITE.name}</h1>
+	<div class="hero-side">
+		<p class="kicker">{SITE.role}</p>
+		<p class="word" aria-hidden="true">Patrik</p>
+	</div>
+	<!-- Placeholder until the owner's photo lands as an astro:assets image (#261). -->
+	<div class="portrait" role="img" aria-label="Portrait placeholder"><span>Portrait</span></div>
+	<div class="hero-side end">
+		<p class="kicker">Architecture, agents, coaching</p>
+		<p class="word" aria-hidden="true">Alexits</p>
+	</div>
+	<p class="pitch">{SITE.pitch}</p>
+</section>
+
+<style>
+	/* One column on small screens; from 64rem the halves sit left and right of the portrait. */
+	.hero { display: grid; gap: var(--space-6); justify-items: center; text-align: center; padding-block: var(--space-12); }
+	.kicker { margin: 0 0 var(--space-2); color: var(--font-color); }
+	.word {
+		margin: 0; font-weight: var(--font-weight-bold); text-transform: uppercase;
+		font-size: var(--font-size-display-hero); line-height: var(--line-height-display-hero);
+		letter-spacing: var(--letter-spacing-display-hero);
+		--name-accent: var(--accent-b);
+		background-image: linear-gradient(100deg, var(--accent-a), var(--name-accent), var(--accent-b));
+		background-clip: text; color: transparent;
+	}
+	/* A fixed size and aspect ratio reserve the box before anything loads, so the hero does not shift. */
+	.portrait {
+		inline-size: var(--size-portrait); aspect-ratio: 3 / 4; display: grid; place-items: center;
+		border-radius: var(--radius-2xl); rotate: -3deg;
+		background-image: linear-gradient(160deg, var(--accent-a), var(--accent-b));
+		box-shadow: var(--shadow-raised);
+		color: var(--body-background); font-size: var(--font-size-sm);
+		letter-spacing: var(--letter-spacing-wide); text-transform: uppercase;
+	}
+	.pitch {
+		max-inline-size: var(--size-pitch); margin: 0; text-wrap: balance;
+		font-size: var(--font-size-xl); line-height: var(--line-height-lg); color: var(--font-color-bold);
+	}
+	@media (min-width: 64rem) {
+		.hero { grid-template-columns: 1fr auto 1fr; align-items: center; column-gap: var(--space-8); }
+		.hero-side { justify-self: end; text-align: end; }
+		/* One line each, so both halves of the name sit at the same height. */
+		.kicker { white-space: nowrap; }
+		.hero-side.end { justify-self: start; text-align: start; }
+		.pitch { grid-column: 1 / -1; }
+	}
+
+	/* The site's entrance: a spring rise in steps, then the name gradient drifts (#210). Without motion every part
+	   shows in its final state. */
+	@media (prefers-reduced-motion: no-preference) {
+		.hero > :not(h1) { animation: hero-enter var(--duration-enter) var(--ease-spring) both; }
+		.hero > :nth-child(3) { animation-delay: calc(1 * var(--stagger)); }
+		.hero > :nth-child(4) { animation-delay: calc(2 * var(--stagger)); }
+		.hero > :nth-child(5) { animation-delay: calc(3 * var(--stagger)); }
+		.word { animation: name-gradient 6s ease-in-out infinite alternate; animation-delay: var(--duration-enter); }
+	}
+	@keyframes hero-enter { from { opacity: 0; translate: 0 var(--space-6); } }
+	@keyframes name-gradient { from { --name-accent: var(--accent-a); } to { --name-accent: var(--accent-b); } }
+
+	.sr-only {
+		position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+		overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+	}
+</style>
