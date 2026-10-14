@@ -131,3 +131,21 @@ test.describe('in forced colours', () => {
     for (const colour of await bars(closer(page))) expect(colour).not.toBe(page_);
   });
 });
+
+// At 400% zoom a centred list taller than the dialog overflowed above its top edge, where neither scrolling nor
+// Tab reaches it: Home sat at -44 px at 320x180 (#298, WCAG 1.4.10).
+for (const height of [180, 256]) {
+  test.describe(`at 320x${height}`, () => {
+    test.use({ viewport: { width: 320, height } });
+
+    test('Tab brings every menu link fully into view', async ({ page }) => {
+      await openWithKeyboard(page);
+      await animationsSettled(page);
+      for (const link of await menu(page).getByRole('link').all()) {
+        await page.keyboard.press('Tab');
+        await expect(link).toBeFocused();
+        await expect(link).toBeInViewport({ ratio: 1 });
+      }
+    });
+  });
+}
