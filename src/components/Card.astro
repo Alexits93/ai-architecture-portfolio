@@ -1,0 +1,21 @@
+---
+// A raised card on its own surface (#256, #258, direction A on #252). The page passes its own class for layout; the
+// rest props carry the page's data-astro-cid-*, so the page's scoped styles reach the card
+// (https://docs.astro.build/en/guides/styling/).
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'section'> {
+  as: 'section' | 'li';
+}
+
+const { as: Tag, class: className, ...rest } = Astro.props;
+---
+
+<Tag class:list={['card', className]} {...rest}><slot /></Tag>
+
+<style>
+  .card {
+    padding: var(--space-8); border-radius: var(--radius-2xl); background-color: var(--theme-secondary);
+    box-shadow: var(--shadow-card-edge), var(--shadow-raised); color: var(--font-color);
+  }
+</style>

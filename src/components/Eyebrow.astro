@@ -1,0 +1,18 @@
+---
+// The small uppercase line above a heading (#253, direction A on #252). A section eyebrow starts with a slash that
+// stays out of the accessible text (#286); a card kicker has none.
+interface Props {
+  slash?: boolean;
+}
+
+const { slash = true } = Astro.props;
+---
+
+<p class="eyebrow">{slash && <span aria-hidden="true">/ </span>}<slot /></p>
+
+<style>
+  .eyebrow {
+    margin: 0 0 var(--space-2); color: var(--font-color-bold); font-size: var(--font-size-sm);
+    letter-spacing: var(--letter-spacing-wide); text-transform: uppercase;
+  }
+</style>
