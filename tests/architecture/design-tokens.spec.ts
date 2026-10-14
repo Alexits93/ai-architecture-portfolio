@@ -60,7 +60,7 @@ describe('design tokens', () => {
 
 // Raw-literal gate (#198): component <style> blocks take colours, lengths, radii and shadows from tokens.css,
 // and @media uses only the documented breakpoints. src/styles/ is exempt, since it defines the tokens.
-const BREAKPOINTS = ['48rem', '64rem', '80rem'];
+const BREAKPOINTS = ['48rem', '64rem', '80rem', '20rem'];
 const ALLOWED_EVERYWHERE = ['100%'];
 // Owner decision 2026-10-12: one-off geometry stays a literal, pinned to the file that needs it.
 const ALLOWED_IN_FILE: Record<string, { values: string[]; reason: string }> = {

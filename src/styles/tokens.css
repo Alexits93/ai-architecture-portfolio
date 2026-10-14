@@ -3,7 +3,7 @@
    set is written once (https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark).
    theme.js and the header toggle set data-theme; without it the OS preference applies.
 
-   Breakpoints: 48rem, 64rem and 80rem. They are not custom properties, because var() does not work in media
+   Breakpoints: 48rem, 64rem and 80rem wide; 20rem high for short viewports such as 400% zoom (#298). They are not custom properties, because var() does not work in media
    conditions and @custom-media ships in no browser
    (https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@custom-media). */
 
