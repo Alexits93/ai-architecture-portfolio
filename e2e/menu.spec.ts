@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { animationsSettled } from './animations';
 import { test, expect, type Page } from '@playwright/test';
 
-// The site menu opens and closes through invoker commands, without a script (#157). A modal dialog
+// The site menu opens and closes through invoker commands (#157). The component script holds the close command and Esc
+// while the closing transitions play, then closes the dialog, and closes it on pagehide (#206). A modal dialog
 // without closedby behaves as closerequest: Esc closes it, a click outside the items does not
 // (https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog).
 const opener = (page: Page) => page.getByRole('button', { name: 'Open menu' });
