@@ -152,6 +152,11 @@
     --shadow-card-edge: inset 0 1px 0 0 rgba(148, 163, 184, .1);
     /* A raised card: one long soft shadow below it. The dark page needs a deeper shadow to show at all. */
     --shadow-raised: 0 24px 48px -24px light-dark(hsl(200 50% 15% / .35), hsl(0 0% 0% / .6));
+    /* The portrait tilt (#341): the depth of the 3D view, and the light that follows the pointer, fading out by
+       --glare-reach from it. */
+    --perspective-card: 60rem;
+    --glare-light: hsl(0 0% 100% / .45);
+    --glare-reach: 60%;
 }
 
 [data-theme="light"] { color-scheme: light; }

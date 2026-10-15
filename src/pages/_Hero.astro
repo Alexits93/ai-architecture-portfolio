@@ -12,7 +12,7 @@ import { SITE } from '@/consts';
 		<p class="word" aria-hidden="true">Patrik</p>
 	</div>
 	<!-- Placeholder until the owner's photo lands as an astro:assets image (#261). -->
-	<div class="portrait" role="img" aria-label="Portrait placeholder"><span>Portrait</span></div>
+	<div class="portrait" role="img" aria-label="Portrait placeholder"><div class="portrait-face"><span>Portrait</span></div></div>
 	<div class="hero-side end">
 		<p class="kicker">Architecture, agents, coaching</p>
 		<p class="word" aria-hidden="true">Alexits</p>
@@ -32,14 +32,34 @@ import { SITE } from '@/consts';
 		background-image: linear-gradient(100deg, var(--accent-a), var(--name-accent), var(--accent-b));
 		background-clip: text; color: transparent;
 	}
-	/* A fixed size and aspect ratio reserve the box before anything loads, so the hero does not shift. */
+	/* A fixed size and aspect ratio reserve the box before anything loads, so the hero does not shift. The card keeps
+	   still and takes the pointer; the face inside it tilts (#341), so the hit area does not move under the pointer. */
 	.portrait {
-		inline-size: var(--size-portrait); aspect-ratio: 3 / 4; display: grid; place-items: center;
-		border-radius: var(--radius-2xl); rotate: -3deg;
+		inline-size: var(--size-portrait); aspect-ratio: 3 / 4; display: grid; rotate: -3deg; perspective: var(--perspective-card);
+		--tilt-x: 0deg; --tilt-y: 0deg; --glare: 0;
+	}
+	.portrait-face {
+		position: relative; display: grid; place-items: center;
+		border-radius: var(--radius-2xl);
 		background-image: linear-gradient(160deg, var(--accent-a), var(--accent-b));
 		box-shadow: var(--shadow-raised);
 		color: var(--body-background); font-size: var(--font-size-sm);
 		letter-spacing: var(--letter-spacing-wide); text-transform: uppercase;
+	}
+	/* The glare: a soft light where the pointer is, shown only while it is over the card. --glare-x and --glare-y
+	   exist only then. */
+	.portrait-face::after {
+		content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+		background-image: radial-gradient(circle at var(--glare-x) var(--glare-y), var(--glare-light), transparent var(--glare-reach));
+		mix-blend-mode: overlay; opacity: var(--glare); transition: opacity var(--duration-3) ease-out;
+	}
+	/* Steam-style tilt (#341): the face turns towards the pointer and lifts a little. Mouse and pen only, and none
+	   under reduced motion, so the face keeps no transform there. */
+	@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+		.portrait-face {
+			transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(calc(1 + var(--glare) * 0.04));
+			transition: transform var(--duration-2) ease-out;
+		}
 	}
 	.pitch {
 		max-inline-size: var(--size-pitch); margin: 0; text-wrap: balance;
@@ -64,3 +84,30 @@ import { SITE } from '@/consts';
 		.word { animation: name-gradient var(--duration-drift) ease-in-out infinite alternate; animation-delay: var(--duration-enter); }
 	}
 </style>
+
+<script>
+	// No CSS follows the pointer yet: Pointer-driven Animations is an editor's draft with no implementation
+	// (https://drafts.csswg.org/pointer-animations-1/). So the pointer position goes into custom properties and CSS
+	// renders the tilt and the glare (#341). Custom properties set through the CSSOM pass the hashed CSP, which blocks
+	// only style attributes. Browsers fire pointermove at most once per frame (https://w3c.github.io/pointerevents/).
+	const card = document.querySelector('#hero .portrait');
+	const canTilt = matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
+	const MAX_TILT = 12;
+	if (card instanceof HTMLElement) {
+		card.addEventListener('pointermove', (event) => {
+			if (!canTilt.matches) return;
+			const box = card.getBoundingClientRect();
+			const x = (event.clientX - box.left) / box.width;
+			const y = (event.clientY - box.top) / box.height;
+			// The side under the pointer moves back: rotateX(+) takes the top edge back, rotateY(-) the left edge.
+			card.style.setProperty('--tilt-x', `${(0.5 - y) * 2 * MAX_TILT}deg`);
+			card.style.setProperty('--tilt-y', `${(x - 0.5) * 2 * MAX_TILT}deg`);
+			card.style.setProperty('--glare-x', `${x * 100}%`);
+			card.style.setProperty('--glare-y', `${y * 100}%`);
+			card.style.setProperty('--glare', '1');
+		});
+		card.addEventListener('pointerleave', () => {
+			for (const name of ['--tilt-x', '--tilt-y', '--glare-x', '--glare-y', '--glare']) card.style.removeProperty(name);
+		});
+	}
+</script>
