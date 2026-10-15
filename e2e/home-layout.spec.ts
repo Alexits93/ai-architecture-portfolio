@@ -41,13 +41,14 @@ test.describe('with the WCAG 1.4.12 text spacing at 390 px', () => {
   });
 });
 
-// Home shows the role as the hero's first kicker (#254); /cv/ keeps it as the AboutMe h2.
+// Home shows the role as the hero's first kicker (#254); /cv/ shows it under the name in the hgroup (#307).
 test('home and /cv/ show the same site-wide title', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#hero .kicker').first()).toHaveText(SITE.role);
   await expect(page.locator('#hero .kicker').first()).toBeVisible();
   await page.goto('/cv/');
-  await expect(page.getByRole('heading', { level: 2, name: SITE.role })).toBeVisible();
+  await expect(page.locator('#about-me hgroup .role')).toHaveText(SITE.role);
+  await expect(page.locator('#about-me hgroup .role')).toBeVisible();
 });
 
 // The placeholder portrait has a fixed size, so nothing moves while the page loads (#254). Chromium is the only

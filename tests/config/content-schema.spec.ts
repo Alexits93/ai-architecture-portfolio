@@ -27,6 +27,12 @@ describe('blog collection schema', () => {
   it('rejects a tags field', () => {
     expect(blogSchema.safeParse({ ...frontmatter, tags: ['AI'] }).success).toBe(false);
   });
+
+  // dateModified and the sitemap lastmod read it (#306, #307).
+  it('accepts an optional updated date', () => {
+    expect(blogSchema.safeParse({ ...frontmatter, updatedDate: '2026-10-12' }).success).toBe(true);
+    expect(blogSchema.safeParse({ ...frontmatter, updatedDate: 'later' }).success).toBe(false);
+  });
 });
 
 // Experience entries feed /cv/ and later the home timeline from one YAML file (#215).

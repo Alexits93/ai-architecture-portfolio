@@ -4,6 +4,7 @@ interface PostOverrides {
   id: string;
   title?: string;
   publishDate?: string;
+  updatedDate?: string;
   category?: Category;
 }
 
@@ -12,6 +13,7 @@ export const createTestPost = ({
   id,
   title = `Title ${id}`,
   publishDate = '2026-01-01',
+  updatedDate,
   category = 'AI',
 }: PostOverrides): BlogPost => ({
   id,
@@ -23,6 +25,7 @@ export const createTestPost = ({
     subtitle: `Subtitle ${id}`,
     description: `Description ${id}`,
     publishDate: new Date(publishDate),
+    ...(updatedDate === undefined ? {} : { updatedDate: new Date(updatedDate) }),
     category,
   },
 });

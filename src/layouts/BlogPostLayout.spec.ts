@@ -37,20 +37,31 @@ describe('BlogPostLayout (Astro)', () => {
     expect(meta(doc, 'description')).toBe('Description hello');
     expect(meta(doc, 'og:type')).toBe('article');
     expect(meta(doc, 'article:published_time')).toBe('2026-03-04T00:00:00.000Z');
+    expect(meta(doc, 'og:image')).toBe(`${SITE_URL}/blog/hello/og.png`);
+    expect(meta(doc, 'og:image:alt')).toBe('Title hello. Subtitle hello');
     const main = doc.getElementById('page-main');
     assert.exists(main);
     expect(main.textContent).toBe('Post body');
   });
 
-  it('describes the post as BlogPosting with the CV page as author URL', async () => {
+  // https://developers.google.com/search/docs/appearance/structured-data/article (#306)
+  it('describes the post as BlogPosting with its image, page and the CV page as author URL', async () => {
     expect(jsonLd(await render())).toEqual({
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
       headline: 'Title hello',
       description: 'Description hello',
+      image: `${SITE_URL}/blog/hello/og.png`,
       datePublished: '2026-03-04T00:00:00.000Z',
+      dateModified: '2026-03-04T00:00:00.000Z',
+      mainEntityOfPage: `${SITE_URL}/blog/hello/`,
       author: { '@type': 'Person', name: 'Patrik Alexits', url: `${SITE_URL}/cv/` },
     });
+  });
+
+  it('takes dateModified from updatedDate when the post has one', async () => {
+    const doc = await render(createTestPost({ id: 'hello', publishDate: '2026-03-04', updatedDate: '2026-05-06' }));
+    expect(jsonLd(doc).dateModified).toBe('2026-05-06T00:00:00.000Z');
   });
 
   it('keeps a title with a closing script tag inside one JSON-LD block', async () => {

@@ -3,7 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import { JSDOM } from 'jsdom';
 import { it, expect, assert, vi } from 'vitest';
 import Cv from '@/pages/cv.astro';
-import { SITE } from '@/consts';
+import { SITE, SOCIAL_LINKS } from '@/consts';
 
 // Vitest has no collection data, so the experience entry is a fixture (#226).
 // e2e/cv-experience.spec.ts checks the real entries on the built page.
@@ -21,7 +21,7 @@ it('renders SITE.role in the CV hero', async () => {
   const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Cv)).window.document;
 
-  const role = doc.querySelector('#about-me h2');
+  const role = doc.querySelector('#about-me .role');
   assert.exists(role);
   expect(role.textContent).toBe(SITE.role);
 });
@@ -40,4 +40,20 @@ it('renders the experience list from the collection', async () => {
   const doc = new JSDOM(await container.renderToString(Cv)).window.document;
 
   expect([...doc.querySelectorAll('.experience-item h3')].map((h3) => h3.textContent)).toEqual(['Role - Acme']);
+});
+
+// /cv/ is the owner's profile page (#306, https://developers.google.com/search/docs/appearance/structured-data/profile-page).
+it('describes the page as a ProfilePage and links every social profile', async () => {
+  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+  const doc = new JSDOM(await container.renderToString(Cv)).window.document;
+
+  const script = doc.querySelector('script[type="application/ld+json"]');
+  assert.exists(script);
+  expect(JSON.parse(script.textContent)['@type']).toBe('ProfilePage');
+  expect([...doc.querySelectorAll('.social-links a')].map((link) => link.getAttribute('href'))).toEqual([
+    SOCIAL_LINKS.github,
+    SOCIAL_LINKS.linkedin,
+    SOCIAL_LINKS.stackoverflow,
+    SOCIAL_LINKS.instagram,
+  ]);
 });

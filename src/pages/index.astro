@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { SITE } from '@/consts';
+import { ROUTES, SITE } from '@/consts';
+import { homeJsonLd } from '@/lib/json-ld';
 import Contact from './_Contact.astro';
 import Faq from './_Faq.astro';
 import Hero from './_Hero.astro';
@@ -10,9 +11,11 @@ import Principles from './_Principles.astro';
 import Services from './_Services.astro';
 import Work from './_Work.astro';
 import Writing from './_Writing.astro';
+
+const jsonLd = homeJsonLd(new URL(ROUTES.home, Astro.site).href);
 ---
 
-<BaseLayout title={SITE.title} description={SITE.description}>
+<BaseLayout title={SITE.title} description={SITE.description} jsonLd={jsonLd}>
 	<main>
 		<Hero />
 		<Photos />
