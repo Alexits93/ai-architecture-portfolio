@@ -7,7 +7,7 @@ test.use({ reducedMotion: 'reduce' });
 
 test('renders the positions newest first', async ({ page }) => {
   await page.goto('/cv/');
-  await expect(page.locator('.experience-item > span')).toHaveText(['2024 - Present', '2020 - 2023', '2019 - 2020', '2017 - 2018']);
+  await expect(page.locator('.experience-item > .eyebrow')).toHaveText(['2024 - Present', '2020 - 2023', '2019 - 2020', '2017 - 2018']);
   await expect(page.locator('.experience-item h3')).toHaveText([
     'Lead Frontend Architect & Engineer - Swiss Learning Hub',
     'Frontend Developer - IBM iX DACH',
@@ -25,8 +25,8 @@ test('renders the owner-written Swiss Learning Hub highlights and tags', async (
     'Among the people leading AI adoption at the company, engineering tailored user harnesses for LLM usage.',
   ]);
   await expect(current.locator('.skill-tag')).toHaveText([
-    '#architecture', '#engineering', '#leadership', '#mentoring', '#nx', '#angular',
-    '#frontend', '#scrum', '#git', '#accessibility', '#typescript',
+    'Architecture', 'Engineering', 'Leadership', 'Mentoring', 'Nx', 'Angular',
+    'Frontend', 'Scrum', 'Git', 'Accessibility', 'TypeScript',
   ]);
 });
 

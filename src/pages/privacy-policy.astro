@@ -1,12 +1,15 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import DisplayHeading from '@/components/DisplayHeading.astro';
+import Eyebrow from '@/components/Eyebrow.astro';
 import { SITE } from '@/consts';
 ---
 
 <BaseLayout title="Privacy Policy | Patrik Alexits" description="How pa-tech.dev handles your data.">
-	<main class="page-container">
-		<section class="privacy-policy">
-			<h1>Privacy Policy</h1>
+	<main>
+		<section class="page-container privacy-policy">
+			<Eyebrow>Legal</Eyebrow>
+			<DisplayHeading as="h1" size="section" class="title" text="Privacy" accent="Policy" />
 			<p>Last updated: 14 October 2026</p>
 
 			<h2>Who is responsible</h2>
@@ -42,18 +45,14 @@ import { SITE } from '@/consts';
 </BaseLayout>
 
 <style>
-	.page-container { padding: var(--space-8); max-width: var(--size-prose); margin: 0 auto; }
-	.privacy-policy h1 {
-		color: var(--font-color-bold);
-		margin: 0 0 var(--space-4);
-		letter-spacing: var(--letter-spacing-tight);
-		font-weight: var(--font-weight-bold);
-		font-size: var(--font-size-2xl);
-		line-height: var(--line-height-xl);
-	}
+	/* main pads the page; the text keeps a readable line length inside the page width, as the blog head does. */
+	.page-container { width: 100%; max-width: var(--page-max-width); margin: 0 auto; }
+	.privacy-policy > :not(.title) { max-width: var(--size-prose); }
+	.title { margin: 0 0 var(--space-6); }
 	.privacy-policy h2 {
 		color: var(--font-color-bold);
 		margin: var(--space-10) 0 var(--space-2);
+		letter-spacing: var(--letter-spacing-tight);
 		font-weight: var(--font-weight-bold);
 		font-size: var(--font-size-xl);
 		line-height: var(--line-height-lg);

@@ -33,12 +33,11 @@ const aboutMeData = {
 </BaseLayout>
 
 <style>
-	/* AboutMe and ExperienceList render their own roots, so :global() reaches them from this page. */
-	section#page-wrapper { display: flex; flex-direction: column; gap: var(--space-12); }
-	section#page-wrapper > :global(.experience-list-container) { align-self: flex-end; }
-	@media (min-width: 48rem) {
-		section#page-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-12); align-items: start; }
-		section#page-wrapper > :global(.experience-list-container) { align-self: auto; }
-		section#page-wrapper :global(section#about-me) { position: sticky; top: var(--space-24); }
+	/* AboutMe and ExperienceList render their own roots, so :global() reaches them from this page. On wide screens the
+	   about block sticks on the left while the positions pass on the right, as the home services do. */
+	section#page-wrapper { display: grid; gap: var(--space-16); }
+	@media (min-width: 64rem) {
+		section#page-wrapper { grid-template-columns: 2fr 3fr; align-items: start; }
+		section#page-wrapper :global(section#about-me) { position: sticky; top: var(--offset-sticky); }
 	}
 </style>

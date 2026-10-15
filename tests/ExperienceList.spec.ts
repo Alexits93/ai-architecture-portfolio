@@ -38,8 +38,16 @@ describe('ExperienceList Widget (Astro)', () => {
     const doc = await render([createEntry('old', 2017, 2018), createEntry('new', 2024, null)]);
     expect(getCollection).toHaveBeenCalledWith('experience');
     const texts = (selector: string) => [...doc.querySelectorAll(selector)].map((el) => el.textContent);
-    expect(texts('.experience-list-container .experience-item > span')).toEqual(['2024 - Present', '2017 - 2018']);
+    expect(texts('.experience-list-container .experience-item > .eyebrow')).toEqual(['2024 - Present', '2017 - 2018']);
     expect(texts('.experience-item .position h3')).toEqual(['Role new - Company new', 'Role old - Company old']);
+  });
+
+  // The home design system (#301): an eyebrow over a display h2, each position a raised card with a display title.
+  it('renders the Career head and each position as a card', async () => {
+    const doc = await render([createEntry('a', 2020, 2023)]);
+    expect(doc.querySelector('.eyebrow')).toHaveProperty('textContent', '/ Career');
+    expect(doc.querySelector('h2.display[data-size="section"]')).toHaveProperty('textContent', 'Work experience');
+    expect(doc.querySelectorAll('article.card.experience-item h3.display[data-size="card"]')).toHaveLength(1);
   });
 
   it('renders highlights as text with the emphasis terms in strong', async () => {
@@ -53,6 +61,6 @@ describe('ExperienceList Widget (Astro)', () => {
     const doc = await render([createEntry('a', 2020, 2023)]);
     const tags = doc.querySelector('.position .tags');
     assert.exists(tags);
-    expect(tags.querySelectorAll('.skill-tag')).toHaveLength(2);
+    expect(tags.querySelectorAll('li > .skill-tag')).toHaveLength(2);
   });
 });

@@ -26,6 +26,15 @@ it('renders SITE.role in the CV hero', async () => {
   expect(role.textContent).toBe(SITE.role);
 });
 
+// The home design system (#301): the CV eyebrow over the name as a display h1.
+it('renders the CV eyebrow and the name as a display h1', async () => {
+  const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
+  const doc = new JSDOM(await container.renderToString(Cv)).window.document;
+
+  expect(doc.querySelector('#about-me .eyebrow')).toHaveProperty('textContent', '/ CV');
+  expect(doc.querySelector('#about-me h1.display[data-size="section"]')).toHaveProperty('textContent', SITE.name);
+});
+
 it('renders the experience list from the collection', async () => {
   const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Cv)).window.document;
