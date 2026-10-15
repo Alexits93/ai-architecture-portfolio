@@ -13,13 +13,17 @@ interface Props {
 }
 
 const { post, heading } = Astro.props;
+// Firefox computes no name from content for a link that only wraps an <article> (#338), so the title names the link
+// and the description describes it. A post appears once per page, so its id keeps them unique.
+const titleId = `card-title-${post.id}`;
+const descriptionId = `card-description-${post.id}`;
 ---
 
-<a href={getPostPath(post)} class="blog-post-thumbnail" data-post-card>
+<a href={getPostPath(post)} class="blog-post-thumbnail" data-post-card aria-labelledby={titleId} aria-describedby={descriptionId}>
   <Card as="article">
     <Eyebrow slash={false}>{post.data.category}</Eyebrow>
-    <DisplayHeading as={heading} size="card" class="title" data-morph="title" text={post.data.title} />
-    <p>{post.data.description}</p>
+    <DisplayHeading as={heading} size="card" class="title" data-morph="title" id={titleId} text={post.data.title} />
+    <p id={descriptionId}>{post.data.description}</p>
   </Card>
 </a>
 

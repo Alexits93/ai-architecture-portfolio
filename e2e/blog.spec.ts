@@ -138,3 +138,14 @@ test.describe('Recommended articles on a post page', () => {
     });
   }
 });
+
+// #338: Firefox gave a card link that only wraps an <article> no name, so Orca read "link". Each card link is named by
+// its title, on the blog index and under a post.
+for (const route of ['/blog/', POST_ROUTES[0]]) {
+  test(`card links on ${route} are named by their post title`, async ({ page }) => {
+    await page.goto(route);
+    const cards = await page.locator('.blog-post-thumbnail').all();
+    expect(cards.length).toBeGreaterThan(0);
+    for (const card of cards) await expect(card).toHaveAccessibleName(await card.locator('.title').innerText());
+  });
+}

@@ -21,15 +21,18 @@ interface Options {
   reduce?: boolean;
   from?: string | null;
   activation?: boolean;
+  navigationApi?: boolean;
 }
 
-const run = ({ body, url = 'https://www.pa-tech.dev/blog/', reduce = false, from = null, activation = true }: Options) => {
+const run = ({ body, url = 'https://www.pa-tech.dev/blog/', reduce = false, from = null, activation = true, navigationApi = true }: Options) => {
   const dom = new JSDOM(body, { url, runScripts: 'outside-only' });
   const { window } = dom;
   Object.defineProperty(window, 'matchMedia', { value: () => ({ matches: reduce }) });
-  Object.defineProperty(window, 'navigation', {
-    value: { activation: activation ? { from: from === null ? null : { url: from } } : null },
-  });
+  if (navigationApi) {
+    Object.defineProperty(window, 'navigation', {
+      value: { activation: activation ? { from: from === null ? null : { url: from } } : null },
+    });
+  }
   script.runInContext(dom.getInternalVMContext());
   return window;
 };
@@ -132,6 +135,24 @@ describe('post morph script', () => {
     });
     await flush();
     expect(names(window)).toEqual(['', '']);
+  });
+
+  // #338: an engine with view transitions but no Navigation API, or a card without a title, skips the morph instead
+  // of throwing.
+  it('skips the morph without the Navigation API or a title in the card', () => {
+    // jsdom reports a listener's exception as an error event on the window instead of throwing it.
+    const errorsIn = (window: JSDOM['window']) => {
+      const errors: string[] = [];
+      window.addEventListener('error', (event) => errors.push(event.message));
+      return errors;
+    };
+    const noApi = run({ body: LIST, navigationApi: false });
+    const noApiErrors = errorsIn(noApi);
+    fire(noApi, 'pagereveal', { viewTransition: transition().transition });
+    const untitled = run({ body: '<a data-post-card href="/blog/a/">A</a>' });
+    const untitledErrors = errorsIn(untitled);
+    fire(untitled, 'pageswap', { viewTransition: transition().transition, activation: swapTo('https://www.pa-tech.dev/blog/a/') });
+    expect([...noApiErrors, ...untitledErrors]).toEqual([]);
   });
 
   it('declares no globals', () => {
