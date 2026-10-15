@@ -4475,7 +4475,7 @@ snapshots:
 
   '@types/sax@1.2.7':
     dependencies:
-      '@types/node': 26.6.4
+      '@types/node': 24.19.2
 
   '@types/tough-cookie@4.0.5': {}
 
