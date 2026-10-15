@@ -26,7 +26,7 @@ const meta = (doc: Document, key: string) => {
 describe('BaseLayout (Astro)', () => {
   it('renders the document shell with the SEO head', async () => {
     const doc = await render();
-    expect(doc.documentElement.lang).toBe('en');
+    expect(doc.documentElement.lang).toBe('en-GB');
     expect(doc.querySelectorAll('title')).toHaveLength(1);
     expect(doc.title).toBe('Page Title');
     expect(meta(doc, 'description')).toBe('Page description');

@@ -11,7 +11,7 @@ const description =
 export const SITE = {
   name,
   author: name,
-  locale: 'en_US',
+  locale: 'en_GB',
   role,
   pitch,
   title,

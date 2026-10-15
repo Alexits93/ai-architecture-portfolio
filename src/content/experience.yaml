@@ -19,15 +19,15 @@
     - Led frontend development of a B2B webshop for licensed hair salon professionals, with more than 10 professional brands and about 1,500 products.
     - Mentored junior frontend developers.
   emphasis: [more than 10 professional brands, about 1,500 products]
-  skills: [Angular, Microfrontend, Vue.js, TypeScript, JavaScript, Accessibility, JQuery, SAP CX, Adobe Experience Manager (AEM), Agile, Scrum, Kanban, SaFe]
+  skills: [Angular, Micro frontends, Vue.js, TypeScript, JavaScript, Accessibility, jQuery, SAP CX, Adobe Experience Manager (AEM), Agile, Scrum, Kanban, SAFe]
 - id: solvistas
   start: 2019
   end: 2020
   role: Fullstack Developer
   company: Solvistas GmbH
   highlights:
-    - Developed and maintained 'Easy Arena,' a high-traffic ticketing web app, focusing on frontend enhancements with Angular, TypeScript, and RxJS. Improved app scalability and performance in a multi tenant architecture, utilizing Java, Spring Boot and MySQL on the backend.
-  emphasis: [Angular, TypeScript, RxJS, multi tenant, Java, Spring Boot, MySQL]
+    - Developed and maintained 'Easy Arena', a high-traffic ticketing web app, focusing on frontend enhancements with Angular, TypeScript, and RxJS. Improved app scalability and performance in a multi-tenant architecture, utilising Java, Spring Boot and MySQL on the backend.
+  emphasis: [Angular, TypeScript, RxJS, multi-tenant, Java, Spring Boot, MySQL]
   skills: [Angular, TypeScript, JavaScript, Java, Spring Boot, MySQL, Agile, Scrum]
 - id: voov
   start: 2017
@@ -37,4 +37,4 @@
   highlights:
     - Engineered multiple client websites as a Fullstack Developer, using PHP and the Laravel framework for comprehensive site and backend solutions.
   emphasis: [PHP, Laravel]
-  skills: [Laravel, PHP, JavaScript, JQuery, Photoshop, Sitebuilding]
+  skills: [Laravel, PHP, JavaScript, jQuery, Photoshop, Sitebuilding]
