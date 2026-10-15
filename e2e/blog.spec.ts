@@ -85,13 +85,16 @@ test.describe('Blog category navigation by keyboard', () => {
   });
 });
 
-test.describe('Blog pages on a small viewport', () => {
-  for (const { route } of BLOG_ROUTES) {
-    for (const width of [320, 375]) {
+// test.use sets the viewport before the page opens (https://playwright.dev/docs/emulation#viewport);
+// page.setViewportSize hangs headed Firefox on KDE Wayland (#150).
+for (const width of [320, 375]) {
+  test.describe(`Blog pages on a ${width} px viewport`, () => {
+    test.use({ viewport: { width, height: 800 } });
+
+    for (const { route } of BLOG_ROUTES) {
       for (const theme of ['light', 'dark']) {
         test(`${route} fits a ${width} px viewport in the ${theme} theme`, async ({ page }) => {
           await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
-          await page.setViewportSize({ width, height: 800 });
           await page.goto(route);
           await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
           // Names every element past the right edge, so a failure shows the cause.
@@ -106,8 +109,8 @@ test.describe('Blog pages on a small viewport', () => {
         });
       }
     }
-  }
-});
+  });
+}
 
 test.describe('Category link on a post page', () => {
   for (const route of POST_ROUTES) {
