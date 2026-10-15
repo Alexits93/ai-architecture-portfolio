@@ -34,11 +34,14 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
   <article>
     <div class="introduction-wrapper">
       <Eyebrow>CV</Eyebrow>
-      <DisplayHeading as="h1" size="section" text={name} />
-      <h2>{profession}</h2>
+      <!-- The role belongs to the name, so it is a paragraph in the hgroup and "About" is the next h2 (#307). -->
+      <hgroup>
+        <DisplayHeading as="h1" size="section" text={name} />
+        <p class="role">{profession}</p>
+      </hgroup>
     </div>
     <div class="about-wrapper">
-      <h3>About</h3>
+      <h2>About</h2>
       <div>
         <p>{text}</p>
         {hasSocials && (
@@ -87,7 +90,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
     margin: 0 0 var(--space-4);
   }
 
-  .about-me article .introduction-wrapper h2 {
+  .about-me article .introduction-wrapper .role {
     color: var(--font-color-bold);
     margin: 0 0 var(--space-4);
     letter-spacing: var(--letter-spacing-tight);
@@ -96,7 +99,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
     line-height: var(--line-height-lg);
   }
 
-  .about-me article .about-wrapper h3 {
+  .about-me article .about-wrapper h2 {
     color: var(--font-color-bold);
     letter-spacing: var(--letter-spacing-wide);
     text-transform: uppercase;
@@ -142,7 +145,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
   }
 
   .about-me h1,
-  .about-me h2 {
+  .about-me .role {
     text-wrap: balance;
   }
 
@@ -160,8 +163,8 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
   @media (prefers-reduced-motion: no-preference) {
     .about-me .introduction-wrapper > :global(.eyebrow),
     .about-me h1,
+    .about-me .role,
     .about-me h2,
-    .about-me h3,
     .about-me p,
     .about-me .social-links {
       animation: hero-enter var(--duration-enter) var(--ease-spring) both;
@@ -169,9 +172,9 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
     }
 
     .about-me h1 { --hero-step: 0; }
-    .about-me h2 { --hero-step: 1; }
-    .about-me h3 { --hero-step: 2; }
     .about-me p { --hero-step: 3; }
+    .about-me .role { --hero-step: 1; }
+    .about-me h2 { --hero-step: 2; }
     .about-me .social-links { --hero-step: 4; }
 
     .about-me article .introduction-wrapper h1 {

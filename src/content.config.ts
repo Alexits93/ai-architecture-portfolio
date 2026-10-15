@@ -19,6 +19,8 @@ export const blogSchema = z.strictObject({
 	subtitle: z.string(),
 	description: z.string(),
 	publishDate: z.coerce.date(),
+	/** The last substantial change, for dateModified and the sitemap lastmod (#306, #307). */
+	updatedDate: z.coerce.date().optional(),
 	category: z.enum(CATEGORIES),
 });
 

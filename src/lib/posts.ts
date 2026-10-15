@@ -22,3 +22,7 @@ export const selectRecommendedPosts = (
 /** The home writing list: the newest posts, at most `limit` (#219). */
 export const selectLatestPosts = (posts: readonly BlogPost[], limit = 5): BlogPost[] =>
   sortByNewest(posts).slice(0, limit);
+
+/** The last change to a post: its `updatedDate`, else its `publishDate` (#306). */
+export const modifiedDate = ({ publishDate, updatedDate }: { publishDate: Date; updatedDate?: Date }): Date =>
+  updatedDate ?? publishDate;

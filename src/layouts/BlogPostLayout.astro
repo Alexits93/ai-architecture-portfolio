@@ -2,6 +2,8 @@
 import type { CollectionEntry } from 'astro:content';
 import { ROUTES, SITE } from '@/consts';
 import type { JsonLdObject } from '@/lib/json-ld';
+import { getPostPath } from '@/lib/permalink';
+import { modifiedDate } from '@/lib/posts';
 import BaseLayout from './BaseLayout.astro';
 
 interface Props {
@@ -9,15 +11,22 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { title, description, publishDate } = post.data;
+const { title, subtitle, description, publishDate } = post.data;
+const pageUrl = new URL(getPostPath(post), Astro.site).href;
+// Each post shares its own image, drawn by src/pages/blog/[slug]/og.png.ts from the title and subtitle (#305).
+const ogImage = { path: `${getPostPath(post)}og.png`, alt: `${title}. ${subtitle}` };
 
-// https://developers.google.com/search/docs/appearance/structured-data/article
+// https://developers.google.com/search/docs/appearance/structured-data/article. Google does not read mainEntityOfPage;
+// Schema.org does, and it ties the post to its canonical URL (#306).
 const jsonLd: JsonLdObject = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
   headline: title,
   description,
+  image: new URL(ogImage.path, Astro.site).href,
   datePublished: publishDate.toISOString(),
+  dateModified: modifiedDate(post.data).toISOString(),
+  mainEntityOfPage: pageUrl,
   author: { '@type': 'Person', name: SITE.author, url: new URL(ROUTES.cv, Astro.site).href },
 };
 
@@ -25,7 +34,7 @@ const jsonLd: JsonLdObject = {
 // parsed (rel="expect", #210, https://developer.chrome.com/docs/web-platform/view-transitions/cross-document).
 ---
 
-<BaseLayout title={`${title} | ${SITE.name}`} description={description} type="article" publishedTime={publishDate} jsonLd={jsonLd}>
+<BaseLayout title={`${title} | ${SITE.name}`} description={description} type="article" ogImage={ogImage} publishedTime={publishDate} jsonLd={jsonLd}>
 	<link slot="head" rel="expect" href="#post-hero" blocking="render" />
 	<slot />
 </BaseLayout>

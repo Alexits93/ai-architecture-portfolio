@@ -3,6 +3,10 @@ import { defineConfig, fontProviders } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { readFileSync } from 'node:fs';
 import { URL } from 'node:url';
+import { PRIVACY_POLICY_UPDATED, ROUTES } from './src/consts';
+import { lastmodFor, readPostDates } from './src/lib/sitemap-lastmod';
+
+const posts = readPostDates('./src/content/blog');
 
 // https://astro.build/config
 export default defineConfig({
@@ -46,8 +50,15 @@ export default defineConfig({
       },
     },
     // Sitemap from every built route; the site uses none of the optional namespaces
-    // (https://docs.astro.build/en/guides/integrations-guide/sitemap/).
-    sitemap({ namespaces: { news: false, xhtml: false, image: false, video: false } }),
+    // (https://docs.astro.build/en/guides/integrations-guide/sitemap/). serialize adds lastmod from content dates
+    // (https://docs.astro.build/en/guides/integrations-guide/sitemap/#serialize, owner decision on #307).
+    sitemap({
+      namespaces: { news: false, xhtml: false, image: false, video: false },
+      serialize: (item) => {
+        const lastmod = lastmodFor(new URL(item.url).pathname, posts, { [ROUTES.privacyPolicy]: PRIVACY_POLICY_UPDATED });
+        return lastmod === undefined ? item : { ...item, lastmod: lastmod.toISOString() };
+      },
+    }),
   ],
   // Shiki writes inline style attributes, which the hashed style-src blocks. Prism emits classes only;
   // BlogPostReader styles the token classes (https://docs.astro.build/en/reference/configuration-reference/#securitycsp).

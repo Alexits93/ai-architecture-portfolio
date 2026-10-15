@@ -19,7 +19,7 @@ describe('AboutMe Widget (Astro) - Content', () => {
     assert.exists(name);
     expect(name.textContent).toBe('John Doe');
 
-    const profession = doc.querySelector('h2');
+    const profession = doc.querySelector('hgroup > h1 + p.role');
     assert.exists(profession);
     expect(profession.textContent).toBe('Jedi Council Member (Not Master though)');
 
@@ -42,7 +42,7 @@ describe('AboutMe Widget (Astro) - Content', () => {
     assert.exists(name);
     expect(name.textContent).toBe('Jane Doe');
 
-    const profession = doc.querySelector('h2');
+    const profession = doc.querySelector('hgroup > h1 + p.role');
     assert.exists(profession);
     expect(profession.textContent).toBe('Sith Lord');
 
@@ -110,5 +110,16 @@ it('should render each social link with its accessible name and a hidden icon', 
     ['LinkedIn', null, '0 0 24 24', 'currentColor', 'true', '25', '25'],
     ['Stack Overflow', null, '0 0 169.61 200', 'currentColor', 'true', '25', '25'],
     ['Instagram', null, '0 0 1000 1000', 'currentColor', 'true', '25', '25'],
+  ]);
+});
+
+// The role belongs to the name, so it is a paragraph in the hgroup, and "About" is the next h2 (#307).
+it('renders the role in the name hgroup and About as an h2', async () => {
+  const container = await AstroContainer.create();
+  const doc = new JSDOM(await container.renderToString(AboutMe)).window.document;
+
+  expect([...doc.querySelectorAll('h1, h2, h3')].map((heading) => `${heading.tagName} ${heading.textContent}`)).toEqual([
+    'H1 John Doe',
+    'H2 About',
   ]);
 });

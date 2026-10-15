@@ -22,7 +22,7 @@ export const getStaticPaths = (async ({ paginate }) => {
 const { category, page } = Astro.props;
 ---
 
-<BaseLayout title={`${category} | Blog | Patrik Alexits`} description={`Articles by Patrik Alexits in the ${category} category.`}>
+<BaseLayout title={`${category} | Blog | Patrik Alexits`} description={`Every post by Patrik Alexits in the ${category} category, newest first, from a blog on frontend architecture and LLM coding agents.`}>
 	<main>
 		<BlogFeed text="Posts on" accent={category} page={page} current={category} />
 	</main>

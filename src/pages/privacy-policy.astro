@@ -2,15 +2,15 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import DisplayHeading from '@/components/DisplayHeading.astro';
 import Eyebrow from '@/components/Eyebrow.astro';
-import { SITE } from '@/consts';
+import { PRIVACY_POLICY_UPDATED, SITE } from '@/consts';
 ---
 
-<BaseLayout title="Privacy Policy | Patrik Alexits" description="How pa-tech.dev handles your data.">
+<BaseLayout title="Privacy Policy | Patrik Alexits" description="How pa-tech.dev handles your data: no cookies, no analytics, no tracking. Who hosts the site, what the host processes, and your rights.">
 	<main>
 		<section class="page-container privacy-policy">
 			<Eyebrow>Legal</Eyebrow>
 			<DisplayHeading as="h1" size="section" class="title" text="Privacy" accent="Policy" />
-			<p>Last updated: 14 October 2026</p>
+			<p>Last updated: {PRIVACY_POLICY_UPDATED.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}</p>
 
 			<h2>Who is responsible</h2>
 			<p>{SITE.name} is responsible for this website and the data processing described here. This is a personal site; I offer no goods or services through it. You can reach me at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
