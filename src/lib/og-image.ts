@@ -17,8 +17,8 @@ const generateMarkup = (title: string, description: string) => html`
 `;
 
 export async function renderOgSvg(title: string, description: string): Promise<string> {
-  const fontRegular = loadFont('Inter-Regular.woff');
-  const fontBold = loadFont('Inter-Bold.woff');
+  const fontRegular = loadFont('Inter-Regular.woff2');
+  const fontBold = loadFont('Inter-Bold.woff2');
   const markup = generateMarkup(title, description);
 
   return satori(markup, {

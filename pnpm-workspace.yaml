@@ -4,9 +4,6 @@ minimumReleaseAge: 1440
 ignoreWorkspaceRootCheck: true
 overrides:
   fflate: '>=0.7.5'
-  # satori decodes WOFF with the fflate 0.7 inflateSync API; 0.8 draws .notdef: https://github.com/vercel/satori/issues/802
-  '@shuding/opentype.js>fflate': 0.7.5
-  satori>fflate: 0.7.5
 allowBuilds:
   '@resvg/resvg-js': true
   esbuild: true
