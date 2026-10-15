@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest';
 
 // Every file in public/ ships to production as-is, so an unreferenced file is dead weight
 // (often left behind by the web-components migration). Host files are read by convention.
-const HOST_FILES = new Set(['_headers', 'robots.txt']);
+const HOST_FILES = new Set(['_headers', '_redirects', 'robots.txt', '.well-known/security.txt']);
 
 const root = process.cwd();
 const walk = (dir: string): string[] =>
