@@ -22,7 +22,7 @@ test.describe('at 320 px', () => {
 
   test('keyboard users can focus the row and scroll it with the arrow keys', async ({ page }) => {
     await page.goto('/');
-    const row = page.getByRole('region', { name: 'Photos' });
+    const row = page.getByRole('group', { name: 'Photos' });
     await row.focus();
     await expect(row).toBeFocused();
     await page.keyboard.press('ArrowRight');
@@ -30,7 +30,7 @@ test.describe('at 320 px', () => {
   });
 });
 
-const tile = '#photos [role="img"] >> nth=0';
+const tile = '#photos img >> nth=0';
 const rotate = (page: Page) => page.locator(tile).evaluate((el) => getComputedStyle(el).rotate);
 
 test.describe('motion allowed', () => {
@@ -60,7 +60,7 @@ test.describe('reduced motion', () => {
 // How far the centre of photo `index` sits from the centre of the row, in px.
 const offCentre = (page: Page, index: number) =>
   page.locator('#photos').evaluate((row, i) => {
-    const tile = row.querySelectorAll('[role="img"]')[i].getBoundingClientRect();
+    const tile = row.querySelectorAll('img')[i].getBoundingClientRect();
     return Math.abs(tile.left + tile.width / 2 - (row.getBoundingClientRect().left + row.clientWidth / 2));
   }, index);
 

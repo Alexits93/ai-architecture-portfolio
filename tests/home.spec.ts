@@ -96,9 +96,10 @@ it('renders the name, SITE.role and SITE.pitch in the hero and the role in the S
   const kickers = [...doc.querySelectorAll('#hero .kicker')].map((kicker) => kicker.textContent);
   expect(kickers[0]).toBe(SITE.role);
 
-  const portrait = doc.querySelector('#hero .portrait');
+  const portrait = doc.querySelector('#hero .portrait-face img'); // The owner's photo, the mobile LCP element (#261).
   assert.exists(portrait);
-  expect(portrait.getAttribute('role')).toBe('img');
+  expect(['alt', 'loading', 'fetchpriority'].map((name) => portrait.getAttribute(name))).toEqual([`${SITE.name} in a winter hat in front of snowy mountains`, 'eager', 'high']);
+  expect(doc.querySelector('#hero [role="img"]')).toBeNull();
 
   const pitch = doc.querySelector('#hero .pitch');
   assert.exists(pitch);

@@ -10,7 +10,8 @@ export default defineConfig(
         provider: 'v8',
         reporter: ['text', 'json-summary', 'json'],
         include: ['src/**'],
-        exclude: ['**/*.config.*', 'src/pages/**', '**/*.md', '**/*.yaml'],
+        // Content, not code: an imported image is a module Astro generates (#261), like the collections' Markdown and YAML.
+        exclude: ['**/*.config.*', 'src/pages/**', '**/*.md', '**/*.yaml', '**/*.jpg'],
         thresholds: {
           lines: 100,
           functions: 100,
