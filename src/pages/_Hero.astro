@@ -2,6 +2,8 @@
 // Page-only component for the home page (ADR 002): the name split around a tilted portrait (#254, direction A on #252).
 // The h1 carries the full name for screen readers; the two big halves are presentation. aria-label names the region:
 // Orca reads a hidden heading that labels its section as "blank" (#337).
+import { Image } from 'astro:assets';
+import portrait from '@/assets/photos/portrait.jpg';
 import { SITE } from '@/consts';
 ---
 
@@ -11,8 +13,13 @@ import { SITE } from '@/consts';
 		<p class="kicker">{SITE.role}</p>
 		<p class="word" aria-hidden="true">Patrik</p>
 	</div>
-	<!-- Placeholder until the owner's photo lands as an astro:assets image (#261). -->
-	<div class="portrait" role="img" aria-label="Portrait placeholder"><div class="portrait-face"><span>Portrait</span></div></div>
+	<!-- The owner's photo (#261) is the mobile LCP element: priority loads it eagerly at high priority, and the widths
+	     cover --size-portrait up to 3x (https://docs.astro.build/en/reference/modules/astro-assets/#priority). -->
+	<div class="portrait">
+		<div class="portrait-face">
+			<Image src={portrait} alt={`${SITE.name} travelling in Austria in winter`} widths={[256, 512, 768]} sizes="min(70vw, 16rem)" priority />
+		</div>
+	</div>
 	<div class="hero-side end">
 		<p class="kicker">Architecture, agents, coaching</p>
 		<p class="word" aria-hidden="true">Alexits</p>
@@ -38,13 +45,12 @@ import { SITE } from '@/consts';
 		inline-size: var(--size-portrait); aspect-ratio: 3 / 4; display: grid; rotate: -3deg; perspective: var(--perspective-card);
 		--tilt-x: 0deg; --tilt-y: 0deg; --glare: 0;
 	}
-	.portrait-face {
-		position: relative; display: grid; place-items: center;
-		border-radius: var(--radius-2xl);
+	.portrait-face { position: relative; border-radius: var(--radius-2xl); box-shadow: var(--shadow-raised); }
+	/* The gradient shows until the photo has loaded. It sits on the image itself: on the face behind it, it showed
+	   through the image's anti-aliased rounded edge as a thin line. */
+	.portrait-face img {
+		display: block; inline-size: 100%; block-size: 100%; object-fit: cover; border-radius: inherit;
 		background-image: linear-gradient(160deg, var(--accent-a), var(--accent-b));
-		box-shadow: var(--shadow-raised);
-		color: var(--body-background); font-size: var(--font-size-sm);
-		letter-spacing: var(--letter-spacing-wide); text-transform: uppercase;
 	}
 	/* The glare: a soft light where the pointer is, shown only while it is over the card. --glare-x and --glare-y
 	   exist only then. */

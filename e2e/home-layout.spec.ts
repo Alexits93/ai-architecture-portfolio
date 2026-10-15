@@ -77,6 +77,31 @@ for (const width of [320, 1280]) {
   });
 }
 
+// #261 and the #295 audit: on a phone the owner's portrait is the Largest Contentful Paint, which is why it loads
+// eagerly at high priority. With motion allowed, as most visitors have it; under reduced motion the hero text paints at
+// once and its block is a few percent larger, which costs no time.
+test.describe('at 390 px with motion allowed', () => {
+  test.use({ viewport: { width: 390, height: 844 }, reducedMotion: 'no-preference' });
+
+  test('the portrait photo is the Largest Contentful Paint', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'largest-contentful-paint entries exist only in Chromium');
+    await page.goto('/');
+    // The latest LCP candidate so far; until the photo paints, it is text.
+    const latestIsPortrait = () =>
+      page.evaluate(
+        () =>
+          new Promise<boolean>((resolve) => {
+            new PerformanceObserver((list) => {
+              const entries = list.getEntries();
+              const last = entries[entries.length - 1];
+              resolve(last instanceof LargestContentfulPaint && last.element !== null && last.element.matches('#hero .portrait-face img'));
+            }).observe({ type: 'largest-contentful-paint', buffered: true });
+          }),
+      );
+    await expect.poll(latestIsPortrait).toBe(true);
+  });
+});
+
 // From 64rem the name halves sit beside the portrait; each half and its one-line kicker must fit its column, not run
 // into the page padding (#254).
 for (const width of [1024, 1280, 1440]) {

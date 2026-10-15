@@ -1,14 +1,30 @@
 ---
 // Page-only component for the home page (ADR 002): a full-width row of tilted photos under the hero (#255, direction C
-// on #252, from the Mitrakos reference). Gradient placeholders stand in until the real photos land (#261).
-const photos = [1, 2, 3, 4, 5].map((n) => `Photo placeholder ${n}`);
+// on #252, from the Mitrakos reference), with the owner's photos (#261).
+import { Image } from 'astro:assets';
+import balloon from '@/assets/photos/row-1-balloon.jpg';
+import stadium from '@/assets/photos/row-2-stadium.jpg';
+import seoul from '@/assets/photos/row-3-seoul.jpg';
+import porsche from '@/assets/photos/row-4-porsche.jpg';
+import alpinePass from '@/assets/photos/row-5-alpine-pass.jpg';
+
+const photos = [
+	{ src: balloon, alt: 'My wife and me at The ICE festival in St. Moritz, Switzerland' },
+	{ src: stadium, alt: 'In the Santiago Bernabéu stadium in Madrid, Spain. Hala Madrid!' },
+	{ src: seoul, alt: 'My wife in a hanbok, seen from behind, in front of a Korean pagoda' },
+	{ src: porsche, alt: 'Sitting in my dream Porsche, a 911 930 Turbo Slant Nose' },
+	{ src: alpinePass, alt: 'My wife and me on the Gotthard Pass, Switzerland' },
+];
 ---
 
 <!-- The row scrolls where it overflows. tabindex lets keyboard users scroll it: WebKit does not focus a scroller on its
-     own (axe scrollable-region-focusable). -->
-<div id="photos" class="photos" role="region" aria-label="Photos" tabindex="0">
+     own (axe scrollable-region-focusable). The focusable row needs a role and a name; a group, not a region landmark,
+     because Orca 51's next-landmark command loops on a landmark whose first content is an image (#304, #261). -->
+<div id="photos" class="photos" role="group" aria-label="Photos" tabindex="0">
 	<ul>
-		{photos.map((label) => <li><div class="photo" role="img" aria-label={label}></div></li>)}
+		{/* Below the fold, so Astro's default loading="lazy" applies. The widths cover --size-photo up to 3x. draggable="false"
+		    stops the browser's native image drag, which would cancel the row's mouse drag. */}
+		{photos.map(({ src, alt }) => <li><Image class="photo" src={src} alt={alt} widths={[200, 400, 600, 816]} sizes="clamp(12rem, 22vw, 17rem)" quality={70} draggable="false" /></li>)}
 	</ul>
 </div>
 
@@ -56,18 +72,18 @@ const photos = [1, 2, 3, 4, 5].map((n) => `Photo placeholder ${n}`);
 		display: flex; gap: var(--space-6); inline-size: max-content;
 		margin: 0 auto; padding: 0 var(--space-6); list-style: none;
 	}
-	/* A fixed size and aspect ratio reserve the box before anything loads, so the row does not shift. */
+	/* A fixed size and aspect ratio reserve the box before anything loads, so the row does not shift. The gradient shows
+	   until a photo has loaded. */
 	.photo {
-		inline-size: var(--size-photo); aspect-ratio: 9 / 10; scroll-snap-align: center;
-		border-radius: var(--radius-2xl); box-shadow: var(--shadow-raised);
+		display: block; inline-size: var(--size-photo); block-size: auto; aspect-ratio: 9 / 10; object-fit: cover;
+		scroll-snap-align: center; border-radius: var(--radius-2xl); box-shadow: var(--shadow-raised);
 		background-image: linear-gradient(160deg, var(--accent-a), var(--accent-b));
 	}
-	/* The site's two accents only: each photo varies the angle or the stop order. */
 	li:nth-child(1) .photo { rotate: 2deg; }
-	li:nth-child(2) .photo { rotate: -2deg; background-image: linear-gradient(200deg, var(--accent-b), var(--accent-a)); }
-	li:nth-child(3) .photo { rotate: 1.5deg; background-image: linear-gradient(120deg, var(--accent-a), var(--accent-b)); }
-	li:nth-child(4) .photo { rotate: -1.5deg; background-image: linear-gradient(340deg, var(--accent-b), var(--accent-a)); }
-	li:nth-child(5) .photo { rotate: 2.5deg; background-image: linear-gradient(60deg, var(--accent-a), var(--accent-b)); }
+	li:nth-child(2) .photo { rotate: -2deg; }
+	li:nth-child(3) .photo { rotate: 1.5deg; }
+	li:nth-child(4) .photo { rotate: -1.5deg; }
+	li:nth-child(5) .photo { rotate: 2.5deg; }
 	@media (hover: hover) and (prefers-reduced-motion: no-preference) {
 		.photo { transition: rotate var(--duration-enter) var(--ease-spring), scale var(--duration-enter) var(--ease-spring); }
 		li .photo:hover { rotate: 0deg; scale: 1.04; }
