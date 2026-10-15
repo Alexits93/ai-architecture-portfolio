@@ -12,11 +12,16 @@
   const cardFor = (path) =>
     [...document.querySelectorAll('[data-post-card]')].find((card) => card.getAttribute('href') === path) ?? null;
   const hero = () => document.getElementById('post-hero');
+  // The entry this page was reached from. An engine can have view transitions without the Navigation API; then only
+  // the post header is named (#338).
+  const previousEntry = () =>
+    typeof navigation !== 'undefined' && navigation.activation ? navigation.activation.from : null;
 
   // Names the title inside scope until the given transition promise settles.
   const nameTitle = (scope, until) => {
     if (!scope || reduceMotion.matches) return;
     const title = scope.querySelector('[data-morph="title"]');
+    if (!title) return;
     title.style.viewTransitionName = 'post-title';
     const clear = () => (title.style.viewTransitionName = '');
     until.then(clear, clear);
@@ -31,7 +36,7 @@
   // New page: this post's header, else the card of the post we came back from.
   addEventListener('pagereveal', (event) => {
     if (!event.viewTransition) return;
-    const from = navigation.activation && navigation.activation.from;
+    const from = previousEntry();
     nameTitle(hero() ?? cardFor(pathOf(from && from.url)), event.viewTransition.ready);
   });
 }

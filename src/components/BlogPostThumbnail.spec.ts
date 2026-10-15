@@ -56,3 +56,19 @@ describe('BlogPostThumbnail Entity (Astro)', () => {
     expect(doc.querySelector('svg, img, figure')).toBeNull();
   });
 });
+
+describe('BlogPostThumbnail link name', () => {
+  // #338: Firefox computes no name from content for a link that only wraps an <article>, so Orca read "link". The
+  // title names the link and the description describes it.
+  it('names the link by the title and describes it by the description', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(BlogPostThumbnail, { props: { post: mockPost, heading: 'h2' } });
+    const doc = new JSDOM(html).window.document;
+    const link = doc.querySelector('a');
+    assert.exists(link);
+    const byIds = (attribute: string) =>
+      String(link.getAttribute(attribute)).split(' ').map((id) => doc.getElementById(id)).map((el) => el && el.textContent);
+    expect(byIds('aria-labelledby')).toEqual(['Title test-post']);
+    expect(byIds('aria-describedby')).toEqual(['Description test-post']);
+  });
+});
