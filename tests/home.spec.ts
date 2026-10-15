@@ -83,6 +83,10 @@ it('renders the name, SITE.role and SITE.pitch in the hero and the role in the S
   const h1 = doc.querySelector('#hero h1');
   assert.exists(h1);
   expect(h1.textContent).toBe(SITE.name);
+  // #337: Orca reads a 1 px heading that labels its section as "blank", so the hidden headings label nothing.
+  expect(doc.querySelector('#hero[aria-labelledby], #contact[aria-labelledby]')).toBeNull();
+  expect(doc.querySelector('section#hero')).toHaveProperty('ariaLabel', SITE.name);
+  expect(doc.querySelector('section#contact')).toHaveProperty('ariaLabel', 'Contact');
   const halves = [...doc.querySelectorAll('#hero .word')];
   expect(halves.map((half) => [half.textContent, half.getAttribute('aria-hidden')])).toEqual([
     ['Patrik', 'true'],

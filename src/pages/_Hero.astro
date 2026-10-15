@@ -1,11 +1,12 @@
 ---
 // Page-only component for the home page (ADR 002): the name split around a tilted portrait (#254, direction A on #252).
-// The h1 carries the full name for screen readers; the two big halves are presentation.
+// The h1 carries the full name for screen readers; the two big halves are presentation. aria-label names the region:
+// Orca reads a hidden heading that labels its section as "blank" (#337).
 import { SITE } from '@/consts';
 ---
 
-<section id="hero" class="hero" aria-labelledby="hero-name">
-	<h1 id="hero-name" class="sr-only">{SITE.name}</h1>
+<section id="hero" class="hero" aria-label={SITE.name}>
+	<h1 class="sr-only">{SITE.name}</h1>
 	<div class="hero-side">
 		<p class="kicker">{SITE.role}</p>
 		<p class="word" aria-hidden="true">Patrik</p>

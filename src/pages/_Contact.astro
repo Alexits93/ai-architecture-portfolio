@@ -1,7 +1,7 @@
 ---
 // Page-only component for the home page (ADR 002): the email and the socials in one row, then one oversized word that
 // fills the column (#260, #278, direction A on #252, from the zainarts reference). The links carry the meaning; the
-// word is decoration.
+// word is decoration. aria-label names the region: Orca reads a hidden heading that labels its section as "blank" (#337).
 import { SITE } from '@/consts';
 
 const links = [
@@ -13,8 +13,8 @@ const links = [
 ];
 ---
 
-<section id="contact" class="contact" aria-labelledby="contact-title">
-	<h2 id="contact-title" class="sr-only">Contact</h2>
+<section id="contact" class="contact" aria-label="Contact">
+	<h2 class="sr-only">Contact</h2>
 	<ul>
 		{links.map(({ name, url }) => <li><a href={url}>{name}</a></li>)}
 	</ul>
