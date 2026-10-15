@@ -41,3 +41,12 @@ test('the cookie disclaimer explains localStorage and links the privacy policy',
   await expect(page.locator('main')).not.toContainText(/spotify|by continuing/i);
   await expect(page.locator('main').getByRole('link', { name: /Privacy Policy/ })).toHaveAttribute('href', '/privacy-policy/');
 });
+
+// The legal pages take the home design system (#302): a Legal eyebrow over a display h1.
+for (const [path, title] of [['/privacy-policy/', 'Privacy Policy'], ['/cookie-disclaimer/', 'Cookie Disclaimer']]) {
+  test(`${path} shows the Legal eyebrow over a display h1`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator('main .eyebrow')).toHaveText('/ Legal');
+    await expect(page.locator('main h1.display[data-size="section"]')).toHaveText(title);
+  });
+}

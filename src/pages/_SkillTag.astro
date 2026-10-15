@@ -1,4 +1,5 @@
 ---
+// A skill under a CV position, drawn like the tool tags on the home service cards (#301).
 interface Props {
   skill: string;
 }
@@ -6,16 +7,11 @@ interface Props {
 const { skill } = Astro.props;
 ---
 
-<span class="skill-tag">
-  {`#${skill.toLocaleLowerCase()}`}
-</span>
+<span class="skill-tag">{skill}</span>
 
 <style>
   .skill-tag {
-    display: inline-block;
-    font-size: var(--font-size-base);
-    padding: var(--space-1);
-    font-style: italic;
-    color: var(--font-color);
+    display: block; padding: var(--space-1) var(--space-4); border-radius: var(--radius-pill);
+    font-size: var(--font-size-sm); border: var(--border-width-hairline) solid var(--hairline-color);
   }
 </style>

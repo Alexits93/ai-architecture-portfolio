@@ -10,7 +10,8 @@ describe('SkillTag Component', () => {
     container = await AstroContainer.create();
   });
 
-  it('renders the skill as a lowercased hashtag span', async () => {
+  // The tag shows the skill as written, like the tool tags on the home service cards (#301).
+  it('renders the skill name as written', async () => {
     const html = await container.renderToString(SkillTag, {
       props: { skill: 'Vue.js' }
     });
@@ -21,6 +22,6 @@ describe('SkillTag Component', () => {
     const tag = tags.item(0);
     assert.exists(tag);
     expect(tag.tagName).toBe('SPAN');
-    expect(tag.textContent.trim()).toBe('#vue.js');
+    expect(tag.textContent.trim()).toBe('Vue.js');
   });
 });

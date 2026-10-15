@@ -4,6 +4,8 @@ import GitHubIcon from "@/assets/github.svg";
 import LinkedInIcon from "@/assets/linkedin.svg";
 import InstagramIcon from "@/assets/instagram.svg";
 import StackOverflowIcon from "@/assets/stackoverflow.svg";
+import DisplayHeading from "@/components/DisplayHeading.astro";
+import Eyebrow from "@/components/Eyebrow.astro";
 
 interface Props {
   name?: string;
@@ -31,7 +33,8 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
 <section id="about-me" class="about-me">
   <article>
     <div class="introduction-wrapper">
-      <h1>{name}</h1>
+      <Eyebrow>CV</Eyebrow>
+      <DisplayHeading as="h1" size="section" text={name} />
       <h2>{profession}</h2>
     </div>
     <div class="about-wrapper">
@@ -81,12 +84,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
 
 <style>
   .about-me article .introduction-wrapper h1 {
-    color: var(--font-color-bold);
     margin: 0 0 var(--space-4);
-    letter-spacing: var(--letter-spacing-tight);
-    font-weight: var(--font-weight-bold);
-    font-size: var(--font-size-2xl);
-    line-height: var(--line-height-xl);
   }
 
   .about-me article .introduction-wrapper h2 {
@@ -94,8 +92,8 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
     margin: 0 0 var(--space-4);
     letter-spacing: var(--letter-spacing-tight);
     font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-md);
-    line-height: var(--line-height-md);
+    font-size: var(--font-size-xl);
+    line-height: var(--line-height-lg);
   }
 
   .about-me article .about-wrapper h3 {
@@ -104,8 +102,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
     text-transform: uppercase;
     font-size: var(--font-size-sm);
     line-height: var(--line-height-sm);
-    padding: var(--space-5) var(--space-6);
-    margin: 0 calc(-1 * var(--space-6)) var(--space-4);
+    margin: var(--space-8) 0 var(--space-2);
   }
 
   .about-me article .about-wrapper p {
@@ -161,6 +158,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
 
   /* Motion only when the visitor allows it; without it every part shows in its final state (#210). */
   @media (prefers-reduced-motion: no-preference) {
+    .about-me .introduction-wrapper > :global(.eyebrow),
     .about-me h1,
     .about-me h2,
     .about-me h3,
