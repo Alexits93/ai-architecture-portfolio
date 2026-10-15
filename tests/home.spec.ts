@@ -98,7 +98,7 @@ it('renders the name, SITE.role and SITE.pitch in the hero and the role in the S
 
   const portrait = doc.querySelector('#hero .portrait-face img'); // The owner's photo, the mobile LCP element (#261).
   assert.exists(portrait);
-  expect(['alt', 'loading', 'fetchpriority'].map((name) => portrait.getAttribute(name))).toEqual([`${SITE.name} in a winter hat in front of snowy mountains`, 'eager', 'high']);
+  expect(['alt', 'loading', 'fetchpriority'].map((name) => portrait.getAttribute(name))).toEqual([`${SITE.name} travelling in Austria in winter`, 'eager', 'high']);
   expect(doc.querySelector('#hero [role="img"]')).toBeNull();
 
   const pitch = doc.querySelector('#hero .pitch');
