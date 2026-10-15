@@ -134,4 +134,42 @@ test.describe('reduced motion', () => {
     await page.goto(POST);
     expect(await cssAnimations(page, '#blog-section .blog-post-thumbnail')).toEqual([]);
   });
+
+  test('the portrait does not tilt under the pointer', async ({ page }) => {
+    await page.goto('/');
+    await hoverPortrait(page, 0.1, 0.1);
+    await expect(page.locator(FACE)).toHaveCSS('transform', 'none');
+  });
+});
+
+// #341: the portrait tilts in 3D towards the pointer with a glare that follows it, as Steam's cards do. The face tilts
+// and the untilted card around it takes the pointer, so the hit area stays still.
+const FACE = '#hero .portrait-face';
+const hoverPortrait = async (page: Page, x: number, y: number) => {
+  await animationsSettled(page);
+  const box = await page.locator('#hero .portrait').boundingBox();
+  if (box === null) throw new Error('no portrait');
+  await page.mouse.move(box.x + box.width * x, box.y + box.height * y, { steps: 4 });
+};
+const tilt = (page: Page) =>
+  page.locator('#hero .portrait').evaluate((card) => {
+    const style = getComputedStyle(card);
+    return [style.getPropertyValue('--tilt-x'), style.getPropertyValue('--tilt-y'), style.getPropertyValue('--glare')].map(parseFloat);
+  });
+
+test.describe('portrait tilt', () => {
+  test.use({ reducedMotion: 'no-preference' });
+
+  test('tilts the portrait towards the pointer with a glare, and settles when the pointer leaves', async ({ page }) => {
+    await page.goto('/');
+    await hoverPortrait(page, 0.1, 0.1);
+    // Top left: the top edge and the left edge move back.
+    const [x, y, glare] = await tilt(page);
+    expect(x).toBeGreaterThan(0);
+    expect(y).toBeLessThan(0);
+    expect(glare).toBe(1);
+    await expect(page.locator(FACE)).not.toHaveCSS('transform', 'none');
+    await page.mouse.move(0, 0);
+    expect(await tilt(page)).toEqual([0, 0, 0]);
+  });
 });
