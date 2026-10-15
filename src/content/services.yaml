@@ -5,7 +5,7 @@
   kicker: Day job
   title: Frontend architecture
   text: I turn features of a Windows desktop app into Nx and Angular web applications that are accessible, responsive and easier to use.
-  tools: [Nx, Angular, TypeScript, Accessibility, Microfrontends]
+  tools: [Nx, Angular, TypeScript, Accessibility, Micro frontends]
 - id: agent-harnesses
   order: 2
   kicker: Side work

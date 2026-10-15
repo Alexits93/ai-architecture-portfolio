@@ -41,6 +41,7 @@ describe('SeoHead (Astro)', () => {
     expect(el.textContent).toBe('Post Title');
     expect(meta(doc, 'description')).toBe('Post description');
     expect(meta(doc, 'og:type')).toBe('website');
+    expect(meta(doc, 'og:locale')).toBe('en_GB');
     expect(meta(doc, 'og:image')).toBe(`${SITE_URL}/og.png`);
     expect(meta(doc, 'og:image:alt')).toBe(SITE.defaultOgImage.alt);
     expect(meta(doc, 'twitter:image:alt')).toBe(SITE.defaultOgImage.alt);
