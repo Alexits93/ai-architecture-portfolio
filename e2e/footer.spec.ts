@@ -28,10 +28,15 @@ const linkGap = async (page: Page) => {
   return Math.max(horizontal, vertical);
 };
 
+// test.use sets the viewport before the page opens (https://playwright.dev/docs/emulation#viewport);
+// page.setViewportSize hangs headed Firefox on KDE Wayland (#150).
 for (const width of [1280, 320]) {
-  test(`policy links do not touch at ${width}px`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 800 });
-    await page.goto('/');
-    expect(await linkGap(page)).toBeGreaterThanOrEqual(8);
+  test.describe(`Footer at ${width}px`, () => {
+    test.use({ viewport: { width, height: 800 } });
+
+    test(`policy links do not touch at ${width}px`, async ({ page }) => {
+      await page.goto('/');
+      expect(await linkGap(page)).toBeGreaterThanOrEqual(8);
+    });
   });
 }

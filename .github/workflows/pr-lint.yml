@@ -12,6 +12,9 @@ permissions:
 jobs:
   pr-lint:
     runs-on: ubuntu-latest
+    # About twice the slowest run in the last 50 runs (#313)
+    # (https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes).
+    timeout-minutes: 2
     steps:
       # No ref: for this event it is master (https://github.com/actions/checkout, v7.0.1).
       - name: Checkout Repository

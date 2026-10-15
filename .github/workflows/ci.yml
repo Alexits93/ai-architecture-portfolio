@@ -3,9 +3,7 @@ name: CI/CD Pipeline
 # No push trigger: ruleset 24675871 requires up-to-date branches, so a push run on master would repeat the PR run.
 on:
   pull_request:
-    branches: ["master", "main"]
-  merge_group:
-    branches: ["master", "main"]
+    branches: ["master"]
 
 # Cancel a superseded run for the same branch
 concurrency:
@@ -15,10 +13,13 @@ concurrency:
 permissions:
   contents: read
 
+# Each timeout-minutes is about twice the job's slowest run in the last 50 runs (#313); the default is 360
+# (https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes).
 jobs:
   quality-gate:
     name: Code Quality (Lint, Typecheck, Test)
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     permissions:
       contents: read
       checks: write # dorny/test-reporter creates the check run
@@ -59,6 +60,7 @@ jobs:
   security-gate:
     name: Security & Dependency Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -72,6 +74,7 @@ jobs:
   build-gate:
     name: Build Verification
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     needs: [quality-gate, security-gate]
     steps:
       - name: Checkout Repository
@@ -88,7 +91,8 @@ jobs:
   e2e-engine:
     name: E2E (${{ matrix.engine }})
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Leaves room for setup after the 7-minute Playwright globalTimeout, so Playwright stops first and reports.
+    timeout-minutes: 10
     # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idpermissions
     permissions:
       contents: read
@@ -126,6 +130,7 @@ jobs:
   e2e-gate:
     name: E2E (Playwright, all engines)
     runs-on: ubuntu-latest
+    timeout-minutes: 1
     needs: [e2e-engine]
     if: ${{ always() }}
     permissions:
