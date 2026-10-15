@@ -23,8 +23,8 @@ export default defineConfig({
       cssVariable: '--font-inter',
       options: {
         variants: [
-          { src: ['./src/assets/fonts/Inter-Regular.woff'], weight: 400, style: 'normal' },
-          { src: ['./src/assets/fonts/Inter-Bold.woff'], weight: 700, style: 'normal' },
+          { src: ['./src/assets/fonts/Inter-Regular.woff2'], weight: 400, style: 'normal' },
+          { src: ['./src/assets/fonts/Inter-Bold.woff2'], weight: 700, style: 'normal' },
         ],
       },
     },
