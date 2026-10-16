@@ -5,6 +5,7 @@ test('/about/ shows the heading and the hobbies, causes and goals in order', asy
   await page.goto('/about/');
   await expect(page.locator('main .eyebrow').first()).toHaveText('/ About');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Get to know me');
+  await expect(page.locator('main .lead')).toContainText('This is me outside the code.');
   await expect(page.getByRole('heading', { level: 2 })).toHaveText(['Hobbies', 'Causes', 'Goals']);
 });
 

@@ -15,7 +15,11 @@ import Hobbies from './_Hobbies.astro';
 	<main>
 		<div class="head">
 			<Eyebrow>About</Eyebrow>
-			<DisplayHeading as="h1" size="section" text="Get to know" accent="me" />
+			<DisplayHeading as="h1" size="section" class="title" text="Get to know" accent="me" />
+			<p class="lead">
+				I'm an exceptionally extroverted person who loves stories, fast cars and seeing the world, and who wants to help
+				others find their voice. This is me outside the code.
+			</p>
 		</div>
 		<Hobbies />
 		<Causes />
@@ -25,4 +29,6 @@ import Hobbies from './_Hobbies.astro';
 
 <style>
 	.head { padding-block: var(--space-12) 0; }
+	.title { margin: 0 0 var(--space-4); }
+	.lead { margin: 0; max-inline-size: var(--size-pitch); color: var(--font-color); font-size: var(--font-size-lg); }
 </style>
