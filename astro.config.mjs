@@ -71,15 +71,9 @@ export default defineConfig({
     },
     // Sitemap from every built route; the site uses none of the optional namespaces
     // (https://docs.astro.build/en/guides/integrations-guide/sitemap/). serialize adds lastmod from content dates
-    // (https://docs.astro.build/en/guides/integrations-guide/sitemap/#serialize). filter leaves out
-    // the noindex draft posts (https://docs.astro.build/en/guides/integrations-guide/sitemap/#filter).
+    // (https://docs.astro.build/en/guides/integrations-guide/sitemap/#serialize).
     sitemap({
       namespaces: { news: false, xhtml: false, image: false, video: false },
-      filter: (page) =>
-        !posts.some(
-          (post) =>
-            post.draft && new URL(page).pathname === `/blog/${post.id}/`,
-        ),
       serialize: (item) => {
         const lastmod = lastmodFor(new URL(item.url).pathname, posts, {
           [ROUTES.privacyPolicy]: PRIVACY_POLICY_UPDATED,

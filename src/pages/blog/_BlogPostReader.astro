@@ -3,7 +3,6 @@ import { render } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import ArticleNavigator from "./_ArticleNavigator.astro";
 import DisplayHeading from "@/components/DisplayHeading.astro";
-import DraftLabel from "@/components/DraftLabel.astro";
 import Eyebrow from "@/components/Eyebrow.astro";
 import { SITE } from "@/consts";
 import { displayDate, isoDate } from "@/lib/dates";
@@ -24,13 +23,9 @@ const { Content, headings } = await render(post);
       {/* The subtitle belongs to the title, so it is a paragraph in the hgroup, not a second heading. */}
       <hgroup>
         <Eyebrow>
-          <a href={getCategoryPath(post.data.category)}>{post.data.category}</a>
-          {post.data.draft && (
-            <>
-              {" "}
-              <DraftLabel />
-            </>
-          )}
+          <a href={getCategoryPath(post.data.category)}>
+            {post.data.category}
+          </a>{" "}
         </Eyebrow>
         <DisplayHeading
           as="h1"

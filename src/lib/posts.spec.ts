@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  categoriesWithPosts,
   selectLatestPosts,
   selectRecommendedPosts,
   sortByNewest,
@@ -19,6 +20,22 @@ describe("sortByNewest", () => {
       "oldest",
     ]);
     expect(input.map((p) => p.id)).toEqual(["oldest", "newest", "middle"]);
+  });
+});
+
+describe("categoriesWithPosts", () => {
+  it("keeps the categories that have a post, in the given order", () => {
+    const architecture = createTestPost({
+      id: "arch",
+      category: "Architecture",
+    });
+    expect(categoriesWithPosts(["AI", "Architecture"], [oldest])).toEqual([
+      "AI",
+    ]);
+    expect(
+      categoriesWithPosts(["AI", "Architecture"], [architecture, oldest]),
+    ).toEqual(["AI", "Architecture"]);
+    expect(categoriesWithPosts(["AI", "Architecture"], [])).toEqual([]);
   });
 });
 

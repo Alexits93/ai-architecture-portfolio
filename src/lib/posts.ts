@@ -9,6 +9,15 @@ const byNewest = (a: BlogPost, b: BlogPost): number =>
 export const sortByNewest = (posts: readonly BlogPost[]): BlogPost[] =>
   [...posts].sort(byNewest);
 
+/** The categories at least one post belongs to, in the given order, so no category page or pill lists nothing. */
+export const categoriesWithPosts = (
+  categories: readonly Category[],
+  posts: readonly BlogPost[],
+): Category[] =>
+  categories.filter((category) =>
+    posts.some((post) => post.data.category === category),
+  );
+
 interface RecommendedOptions {
   limit?: number;
   excludeId?: string;

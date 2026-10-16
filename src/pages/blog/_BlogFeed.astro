@@ -2,12 +2,10 @@
 import type { Page } from "astro";
 import BlogPostThumbnail from "@/components/BlogPostThumbnail.astro";
 import DisplayHeading from "@/components/DisplayHeading.astro";
-import DraftNotice from "@/components/DraftNotice.astro";
 import Eyebrow from "@/components/Eyebrow.astro";
 import Pill from "@/components/Pill.astro";
 import { type BlogPost, type Category } from "@/lib/posts";
 import { getCategoryPath } from "@/lib/permalink";
-import { CATEGORIES } from "@/content.config";
 import { ROUTES } from "@/consts";
 
 interface Props {
@@ -16,14 +14,16 @@ interface Props {
   accent: string;
   /** One page of newest-first posts from paginate() (https://docs.astro.build/en/reference/routing-reference/#page-prop). */
   page: Page<BlogPost>;
+  /** The categories that have a page, from categoriesWithPosts. */
+  categories: readonly Category[];
   /** The category page being rendered; undefined on /blog/. */
   current?: Category;
 }
 
-const { text, accent, page, current } = Astro.props;
+const { text, accent, page, categories, current } = Astro.props;
 const links = [
   { name: "All", href: ROUTES.blog, isCurrent: current === undefined },
-  ...CATEGORIES.map((category) => ({
+  ...categories.map((category) => ({
     name: category,
     href: getCategoryPath(category),
     isCurrent: category === current,
@@ -34,7 +34,6 @@ const links = [
 <div class="blog-feed-container">
   <Eyebrow>Blog</Eyebrow>
   <DisplayHeading as="h1" size="section" text={text} accent={accent} />
-  {page.data.some((post) => post.data.draft) && <DraftNotice />}
   <nav aria-label="Blog categories" class="categories">
     <ul>
       {links.map(({ name, href, isCurrent }) => (

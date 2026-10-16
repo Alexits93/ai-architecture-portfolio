@@ -2,7 +2,7 @@
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 import { CATEGORIES } from "@/content.config";
-import { sortByNewest } from "@/lib/posts";
+import { categoriesWithPosts, sortByNewest } from "@/lib/posts";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import BlogFeed from "../../_BlogFeed.astro";
 
@@ -10,19 +10,20 @@ import BlogFeed from "../../_BlogFeed.astro";
 // (https://docs.astro.build/en/reference/routing-reference/#paginate, Astro 7).
 export const getStaticPaths = (async ({ paginate }) => {
   const posts = sortByNewest(await getCollection("blog"));
-  return CATEGORIES.flatMap((category) =>
+  const categories = categoriesWithPosts(CATEGORIES, posts);
+  return categories.flatMap((category) =>
     paginate(
       posts.filter((post) => post.data.category === category),
       {
         params: { category: category.toLowerCase() },
-        props: { category },
+        props: { category, categories },
         pageSize: 10,
       },
     ),
   );
 }) satisfies GetStaticPaths;
 
-const { category, page } = Astro.props;
+const { category, categories, page } = Astro.props;
 import { SITE } from "@/consts";
 ---
 
@@ -35,6 +36,7 @@ import { SITE } from "@/consts";
       text="Posts on"
       accent={category}
       page={page}
+      categories={categories}
       current={category}
     />
   </main>

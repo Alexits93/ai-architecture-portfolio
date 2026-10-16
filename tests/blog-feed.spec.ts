@@ -43,7 +43,13 @@ const pageOf = (
 const render = async (page: Page<BlogPost>, current?: Category) => {
   const container = await AstroContainer.create();
   const html = await container.renderToString(BlogFeed, {
-    props: { text: "All", accent: "posts", page, current },
+    props: {
+      text: "All",
+      accent: "posts",
+      page,
+      categories: ["AI", "Architecture"],
+      current,
+    },
   });
   return new JSDOM(html).window.document;
 };
@@ -89,29 +95,6 @@ describe("BlogFeed head", () => {
       null,
     ]);
     expect(doc.querySelectorAll(".blog-grid h2.display")).toHaveLength(1);
-  });
-});
-
-// while test articles are listed, a notice says the blog will only hold articles the owner writes.
-describe("BlogFeed draft notice", () => {
-  it("shows the notice when the page lists a draft post", async () => {
-    const doc = await render(
-      pageOf(
-        [
-          createTestPost({ id: "real" }),
-          createTestPost({ id: "test", draft: true }),
-        ],
-        1,
-      ),
-    );
-    const notice = doc.querySelector(".draft-notice");
-    assert.exists(notice);
-    expect(notice.textContent).toContain("test articles");
-  });
-
-  it("shows no notice when no post is a draft", async () => {
-    const doc = await render(pageOf(postsOf(2), 1));
-    expect(doc.querySelector(".draft-notice")).toBeNull();
   });
 });
 
