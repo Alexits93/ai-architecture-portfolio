@@ -57,7 +57,7 @@ export default [
   ...eslintPluginAstro.configs.recommended,
   ...eslintPluginAstro.configs["jsx-a11y-strict"],
   {
-    ignores: ["dist/**", ".astro/**", "coverage/**", "playwright-report/**"]
+    ignores: ["dist/**", ".astro/**", "playwright-report/**"]
   },
   {
     files: ["**/*.{ts,js,mjs,cjs,astro}"],

@@ -3,7 +3,7 @@
 Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statichost.eu: vanilla CSS, Markdown and YAML content collections, Satori OG image, Vitest, Playwright. Structure follows Astro's conventions (`docs/adrs/002-astro-conventions.md`); path-scoped rules in `.claude/rules/` load when you touch matching files.
 
 ## Commands
-- `pnpm check`: lint, `astro check`, unit tests with coverage. Run it before every commit.
+- `pnpm check`: lint, `astro check`, unit tests. Run it before every commit.
 - `pnpm exec vitest run <path>` for one test file while iterating.
 - `pnpm build`, then `pnpm test:e2e`. WebKit runs in Podman: `pnpm test:e2e:webkit`.
 - `pnpm astro sync` after editing `src/content.config.ts`.
