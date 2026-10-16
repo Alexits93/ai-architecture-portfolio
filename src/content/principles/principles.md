@@ -1,12 +1,12 @@
-- If CI cannot fail on it, it is not a rule.
+- A rule counts once CI enforces it.
 - A test that cannot fail is worse than none.
-- Done means I ran it, not that I wrote it.
+- Done means I ran it.
 - Make invalid states unrepresentable.
-- Plausible is not correct.
+- Generated code gets the same review as mine.
 - The model proposes. I decide.
 - Ask the model to argue against the design first.
-- Context is a budget. Give the contract, not the repo.
+- Give the model the contract it needs and nothing more.
 - One concern per pull request.
 - Write the decision down so nobody relitigates it.
-- Shared words first. A team that names things alike moves fast.
+- A team that uses the same names for the same things moves fast.
 - Break work into pieces you can review in one sitting.

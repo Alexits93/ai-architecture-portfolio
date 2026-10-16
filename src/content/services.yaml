@@ -9,7 +9,7 @@
   order: 2
   kicker: Side work
   title: Harnesses for LLM coding agents
-  text: Rules, hooks and tests that keep a coding agent honest. This site is built that way, in the open.
+  text: Rules, permissions and tests that check a coding agent's work before I review it. This site is built that way, and its repository is public.
   tools: [Claude Code, CI gates, Playwright, Vitest, ADRs]
 - id: coaching
   order: 3
