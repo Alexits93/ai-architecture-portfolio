@@ -46,7 +46,9 @@ const hobbies = [
 	<ul class="grid">
 		{hobbies.map(({ title, text, photo }) => (
 			<Card as="li" class="hobby">
-				{photo && <Image class="photo" src={photo.src} alt={photo.alt} widths={[400, 600, 816]} sizes="(min-width: 64rem) 30vw, (min-width: 48rem) 45vw, 90vw" quality={70} />}
+				{/* sizes follows the grid (#358): main and card padding take 7rem on a phone, two columns from 48rem, and at most
+				    about 17.3rem per column from 64rem, where main stops growing. */}
+				{photo && <Image class="photo" src={photo.src} alt={photo.alt} widths={[300, 400, 600, 816]} sizes="(min-width: 64rem) 18rem, (min-width: 48rem) calc(50vw - 7rem), calc(100vw - 7rem)" quality={70} />}
 				<DisplayHeading as="h3" size="card" class="name" text={title} />
 				<p>{text}</p>
 			</Card>
