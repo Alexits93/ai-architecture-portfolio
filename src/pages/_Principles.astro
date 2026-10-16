@@ -25,20 +25,27 @@ const { Content } = await render(principles);
 	   (https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout/Subgrid).
 	   Content renders Markdown outside this component's scope, so :global() reaches its list. A grid row is no longer a
 	   list-item, so the built-in list-item counter stays at 0; a named counter numbers the rows
-	   (https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_counter_styles/Using_CSS_counters). */
+	   (https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_counter_styles/Using_CSS_counters).
+	   Each row holds two paragraphs, the principle's name and its description. Both go to the text column, and the
+	   number sits on the name's baseline. */
 	.text :global(ul) {
 		list-style: none; margin: 0; padding: 0; counter-reset: principle;
 		display: grid; grid-template-columns: auto 1fr; column-gap: var(--space-4);
 	}
 	.text :global(li) {
 		counter-increment: principle;
-		display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; padding-block: var(--space-4);
-		border-block-start: var(--border-width-hairline) solid var(--hairline-color);
-		color: var(--font-color-bold); font-size: var(--font-size-xl); letter-spacing: var(--letter-spacing-tight);
+		display: grid; grid-column: 1 / -1; grid-template-columns: subgrid; align-items: baseline;
+		padding-block: var(--space-4); border-block-start: var(--border-width-hairline) solid var(--hairline-color);
 	}
 	.text :global(li::before) {
-		content: counter(principle, decimal-leading-zero); color: var(--font-color);
-		font-size: var(--font-size-sm); font-variant-numeric: tabular-nums; line-height: inherit;
+		content: counter(principle, decimal-leading-zero);
+		font-size: var(--font-size-sm); font-variant-numeric: tabular-nums;
+	}
+	.text :global(li > p) { grid-column: 2; margin: 0; }
+	.text :global(li > p:first-child) {
+		margin-block-end: var(--space-2);
+		color: var(--font-color-bold); font-size: var(--font-size-xl); letter-spacing: var(--letter-spacing-tight);
+		line-height: var(--line-height-display-card);
 	}
 
 	/* On wide screens the intro sticks on the left while the rows pass on the right, as in the services. */

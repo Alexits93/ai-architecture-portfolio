@@ -1,12 +1,39 @@
-- A rule counts once CI enforces it.
-- A test that cannot fail is worse than none.
-- Done means I ran it.
-- Make invalid states unrepresentable.
-- Generated code gets the same review as mine.
-- The model proposes. I decide.
-- Ask the model to argue against the design first.
-- Give the model the contract it needs and nothing more.
-- One concern per pull request.
-- Write the decision down so nobody relitigates it.
-- A team that uses the same names for the same things moves fast.
-- Break work into pieces you can review in one sitting.
+- **Fitness functions**
+
+  CI checks the rules I care about, so reviewers don't have to.
+
+- **Red, green, refactor**
+
+  I watch a test fail before I trust it.
+
+- **Definition of Done**
+
+  Done means I ran it and saw it work, not that it compiles.
+
+- **Make invalid states unrepresentable**
+
+  The types reject a state the app must never be in.
+
+- **Human in the loop**
+
+  I review generated code like my own, and the design decisions stay with me.
+
+- **Pre-mortem**
+
+  Before I build, I ask the model why the design would fail.
+
+- **Context engineering**
+
+  The model gets the contract it needs and nothing more.
+
+- **Small batches**
+
+  One concern per pull request, small enough to review in one sitting.
+
+- **Architecture Decision Records**
+
+  Each decision is written down with its context and the options it rejected, so nobody argues it again.
+
+- **Ubiquitous language**
+
+  The team uses the same names for the same things, in code and in conversation.

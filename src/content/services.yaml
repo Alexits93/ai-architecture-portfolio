@@ -21,5 +21,5 @@
   order: 4
   kicker: Free time
   title: Learning and experimenting
-  text: I keep up to date with the latest trends and technologies, and experiment with web and game development.
+  text: I try new tools on my own projects first. This site runs on Astro and plain CSS, and my game on Godot.
   tools: [Astro, CSS, Godot, GDScript]
