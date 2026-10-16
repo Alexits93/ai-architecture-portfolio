@@ -23,8 +23,28 @@ const photos = [
 <div id="photos" class="photos" role="group" aria-label="Photos" tabindex="0">
 	<ul>
 		{/* Below the fold, so Astro's default loading="lazy" applies. The widths cover --size-photo up to 3x. draggable="false"
-		    stops the browser's native image drag, which would cancel the row's mouse drag. */}
-		{photos.map(({ src, alt }) => <li><Image class="photo" src={src} alt={alt} widths={[200, 400, 600, 816]} sizes="clamp(12rem, 22vw, 17rem)" quality={70} draggable="false" /></li>)}
+		    stops the browser's native image drag, which would cancel the row's mouse drag.
+		    #350: each photo opens its own dialog through an invoker command, no script needed
+		    (https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#commandfor). closedby="any" closes it
+		    on Esc and on a click outside. The caption repeats the alt text and names the dialog, so the large image has an
+		    empty alt and is not read twice. A closed dialog is not rendered, so its lazy image loads only when opened. */}
+		{photos.map(({ src, alt }, index) => {
+			const id = `photo-${index + 1}`;
+			return (
+				<li>
+					<button type="button" class="open" commandfor={id} command="show-modal">
+						<Image class="photo" src={src} alt={alt} widths={[200, 400, 600, 816]} sizes="clamp(12rem, 22vw, 17rem)" quality={70} draggable="false" />
+					</button>
+					<dialog id={id} class="viewer" closedby="any" aria-labelledby={`${id}-caption`}>
+						<button type="button" class="close" commandfor={id} command="close" aria-label="Close photo"><span></span><span></span></button>
+						<figure>
+							<Image class="large" src={src} alt="" widths={[600, 900]} sizes="min(90vw, 72vh)" quality={80} />
+							<figcaption id={`${id}-caption`}>{alt}</figcaption>
+						</figure>
+					</dialog>
+				</li>
+			);
+		})}
 	</ul>
 </div>
 
@@ -42,17 +62,70 @@ const photos = [
 		row.scrollLeft = (row.scrollWidth - row.clientWidth) / 2;
 		let startX = 0;
 		let startScroll = 0;
+		let pressed: number | null = null;
+		// The open photo's dialog sits inside the row; a press there is not a drag.
+		const inDialog = (target: EventTarget | null) => target instanceof Element && target.closest('dialog') !== null;
 		row.addEventListener('pointerdown', (event) => {
-			if (event.pointerType !== 'mouse' || event.button !== 0 || !row.hasAttribute('data-draggable')) return;
-			row.setPointerCapture(event.pointerId);
+			if (event.pointerType !== 'mouse' || event.button !== 0 || !row.hasAttribute('data-draggable') || inDialog(event.target)) return;
+			pressed = event.pointerId;
 			startX = event.clientX;
 			startScroll = row.scrollLeft;
-			row.toggleAttribute('data-dragging', true);
 		});
+		// The capture starts only once the mouse moves: a captured press ends on the row, so a click would no longer
+		// reach the photo and open it (#350).
 		row.addEventListener('pointermove', (event) => {
-			if (row.hasPointerCapture(event.pointerId)) row.scrollLeft = startScroll - (event.clientX - startX);
+			if (event.pointerId !== pressed || event.buttons !== 1) return;
+			if (!row.hasPointerCapture(event.pointerId)) {
+				if (Math.abs(event.clientX - startX) < 4) return;
+				row.setPointerCapture(event.pointerId);
+				row.toggleAttribute('data-dragging', true);
+			}
+			row.scrollLeft = startScroll - (event.clientX - startX);
 		});
+		row.addEventListener('pointerup', () => { pressed = null; });
 		row.addEventListener('lostpointercapture', () => row.toggleAttribute('data-dragging', false));
+
+		// #350: where same-document View Transitions exist and motion is allowed, the photo morphs between the row and its
+		// dialog. The invoker command is held, and the transition opens or closes the dialog while one view-transition-name
+		// moves from one image to the other (https://developer.mozilla.org/en-US/docs/Web/API/Document/startViewTransition).
+		// Elsewhere the command runs natively.
+		const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+		const canMorph = () => 'startViewTransition' in document && !reducedMotion.matches;
+		const morph = async (from: HTMLElement, to: HTMLElement, update: () => void) => {
+			from.style.viewTransitionName = 'photo';
+			const transition = document.startViewTransition(() => {
+				from.style.viewTransitionName = '';
+				to.style.viewTransitionName = 'photo';
+				update();
+			});
+			await transition.finished;
+			to.style.viewTransitionName = '';
+		};
+		for (const dialog of row.querySelectorAll('dialog')) {
+			const thumb = dialog.parentElement === null ? null : dialog.parentElement.querySelector('img');
+			const large = dialog.querySelector('img');
+			if (thumb === null || large === null) continue;
+			const close = () => morph(large, thumb, () => dialog.close());
+			// The large image loads on open; the morph waits for it, so it does not fly in empty.
+			const open = async () => {
+				large.loading = 'eager';
+				await large.decode().catch(() => undefined);
+				await morph(thumb, large, () => dialog.showModal());
+			};
+			// Only the photo's show-modal and the close button's close target the dialog. While it is open the page behind it
+			// is inert, so neither command arrives in the wrong state.
+			dialog.addEventListener('command', (event) => {
+				if (!(event instanceof CommandEvent) || !canMorph()) return;
+				event.preventDefault();
+				void (event.command === 'show-modal' ? open() : close());
+			});
+			// Esc and a click outside fire cancel before the dialog closes.
+			dialog.addEventListener('cancel', (event) => {
+				if (!canMorph()) return;
+				event.preventDefault();
+				void close();
+			});
+		}
 	}
 </script>
 
@@ -88,4 +161,55 @@ const photos = [
 		.photo { transition: rotate var(--duration-enter) var(--ease-spring), scale var(--duration-enter) var(--ease-spring); }
 		li .photo:hover { rotate: 0deg; scale: 1.04; }
 	}
+
+	/* #350: the photo is a button that opens its dialog. The focus ring follows the photo's corners. */
+	.open {
+		display: block; padding: 0; border: none; border-radius: var(--radius-2xl); background: none; cursor: zoom-in;
+	}
+	.photos[data-dragging] .open { cursor: inherit; }
+
+	/* The open photo on a raised surface with the card shadow, over a dimmed page. */
+	.viewer {
+		padding: var(--space-4); border: none; border-radius: var(--radius-2xl);
+		max-inline-size: calc(100% - 2 * var(--space-4)); max-block-size: calc(100% - 2 * var(--space-4)); overflow: auto;
+		background-color: var(--theme-secondary); color: var(--font-color); box-shadow: var(--shadow-card-edge), var(--shadow-raised);
+	}
+	.viewer[open] { display: grid; justify-items: end; gap: var(--space-2); }
+	.viewer::backdrop { background-color: var(--backdrop-color); }
+	figure { display: grid; gap: var(--space-4); margin: 0; }
+	.large {
+		display: block; block-size: var(--size-photo-large); inline-size: auto;
+		aspect-ratio: 9 / 10; object-fit: cover; border-radius: var(--radius-xl);
+	}
+	/* A zero inline size with a 100% minimum keeps a long caption from widening the figure past the photo. */
+	figcaption { inline-size: 0; min-inline-size: 100%; text-align: center; }
+
+	/* The menu's close button in its open state: two bars crossed in a round hit area (#350, look only). */
+	.close {
+		display: grid; place-items: center; inline-size: var(--space-12); block-size: var(--space-12); padding: 0;
+		border: none; border-radius: var(--radius-full); background: none; cursor: pointer;
+	}
+	.close span {
+		grid-area: 1 / 1; inline-size: var(--space-8); block-size: .2rem; border-radius: var(--radius-xs);
+		background-color: var(--font-color-bold); rotate: 45deg;
+	}
+	.close span:last-child { rotate: -45deg; }
+	@media (hover: hover) {
+		.close:hover { background-color: var(--state-hover); }
+	}
+	.close:active { scale: .92; }
+	/* Forced colours drop author background colours; a system colour keeps the bars visible, as in the menu (#282). */
+	@media (forced-colors: active) {
+		.close span { forced-color-adjust: none; background-color: ButtonText; }
+	}
+
+	/* Without the morph the dialog fades in (https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style). */
+	@media (prefers-reduced-motion: no-preference) {
+		.viewer[open] { transition: opacity var(--duration-3) ease-out; }
+		@starting-style {
+			.viewer[open] { opacity: 0; }
+		}
+	}
+	/* The morph: the photo's group moves and resizes from the row to the dialog and back. */
+	:global(::view-transition-group(photo)) { animation-duration: var(--duration-4); animation-timing-function: var(--ease-in-out-strong); }
 </style>

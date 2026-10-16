@@ -94,6 +94,8 @@
     /* Dividers and pill outlines: the text colour thinned, so they follow the theme with it
        (https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix). */
     --hairline-color: color-mix(in srgb, var(--font-color) 20%, transparent);
+    /* The page behind an open photo (#350): the page colour, mostly opaque, so the photo stands out in both themes. */
+    --backdrop-color: color-mix(in srgb, var(--body-background) 85%, transparent);
     --outline-width-focus: 2px;
     /* A gap between the focus ring and what it outlines keeps the text readable. */
     --outline-offset-focus: 8px;
@@ -119,6 +121,9 @@
     --size-pitch: 36ch;
     /* A photo in the home row (#255): narrow enough on a phone that the next one peeks in as a hint to scroll. */
     --size-photo: clamp(12rem, 22vw, 17rem);
+    /* An open photo (#350): the height left after the close button and the caption, no wider than the window allows at
+       the files' 9:10 ratio, and at most the files' 1000px. */
+    --size-photo-large: min(calc(100dvh - 12rem), calc((100vw - 4rem) * 10 / 9), 1000px);
     /* Sticky parts on home (#256) stop this far below the viewport top, clear of the sticky header. */
     --offset-sticky: 7rem;
     /* The service cards sit this far apart before they stack; the space after the last one keeps the pile on screen
