@@ -5,6 +5,7 @@ subtitle: "Treat the model as a fast junior engineer with no memory"
 description: "Practical habits for pairing with LLMs on real codebases: scoping tasks, feeding context, challenging output, and keeping ownership of design decisions."
 publishDate: 2026-10-07
 category: AI
+draft: true
 ---
 
 LLMs are good at producing code quickly. They are bad at knowing when that code is wrong. The architect's job does not go away. It moves.

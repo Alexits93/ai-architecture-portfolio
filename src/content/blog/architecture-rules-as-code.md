@@ -5,6 +5,7 @@ subtitle: "If CI cannot fail on it, it is not a rule"
 description: "Turn architecture principles into ESLint selectors, Stylelint rules, schema checks and tests, so violations break the build instead of slipping through review."
 publishDate: 2026-10-06
 category: Architecture
+draft: true
 ---
 
 Most architecture documents describe intent. Few of them are enforced. Over time the code drifts and the document becomes fiction.

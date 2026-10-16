@@ -15,6 +15,7 @@ const mockPost: CollectionEntry<'blog'> = {
     publishDate: new Date('2026-09-14T00:00:00.000Z'),
     category: 'AI',
     slug: 'test-post',
+    draft: false,
   },
   body: '## Mock Heading\n\nMock body content',
 };
@@ -78,6 +79,21 @@ describe('BlogPostReader Widget (Astro)', () => {
     expect(link.closest('#post-hero hgroup .eyebrow')).not.toBeNull();
     expect(link.getAttribute('href')).toBe('/blog/category/ai/');
     expect(link.textContent).toBe('AI');
+  });
+});
+
+// #347: a test article shows a Draft label next to its category; a real post shows none.
+describe('BlogPostReader draft label', () => {
+  it('labels a draft post next to its category', async () => {
+    const container = await AstroContainer.create();
+    const draft = { ...mockPost, data: { ...mockPost.data, draft: true } };
+    const doc = new JSDOM(await container.renderToString(BlogPostReader, { props: { post: draft } })).window.document;
+    const label = doc.querySelector('#post-hero hgroup .eyebrow .draft-label');
+    assert.exists(label);
+    expect(label.textContent).toBe('Draft');
+
+    const real = new JSDOM(await container.renderToString(BlogPostReader, { props: { post: mockPost } })).window.document;
+    expect(real.querySelector('.draft-label')).toBeNull();
   });
 });
 

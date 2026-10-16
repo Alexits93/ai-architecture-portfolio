@@ -33,6 +33,13 @@ describe('blog collection schema', () => {
     expect(blogSchema.safeParse({ ...frontmatter, updatedDate: '2026-10-12' }).success).toBe(true);
     expect(blogSchema.safeParse({ ...frontmatter, updatedDate: 'later' }).success).toBe(false);
   });
+
+  // Test articles for design and features carry a Draft label until the owner's own posts replace them (#347).
+  it('marks a post as draft, and a post without the flag as not draft', () => {
+    expect(blogSchema.parse({ ...frontmatter, draft: true }).draft).toBe(true);
+    expect(blogSchema.parse(frontmatter).draft).toBe(false);
+    expect(blogSchema.safeParse({ ...frontmatter, draft: 'yes' }).success).toBe(false);
+  });
 });
 
 // Experience entries feed /cv/ and later the home timeline from one YAML file (#215).

@@ -2,6 +2,7 @@
 // A post as one link around a raised card: the category as kicker, the title, the description (#299, #300).
 import Card from '@/components/Card.astro';
 import DisplayHeading from '@/components/DisplayHeading.astro';
+import DraftLabel from '@/components/DraftLabel.astro';
 import Eyebrow from '@/components/Eyebrow.astro';
 import { getPostPath } from '@/lib/permalink';
 import type { BlogPost } from '@/lib/posts';
@@ -17,11 +18,17 @@ const { post, heading } = Astro.props;
 // and the description describes it. A post appears once per page, so its id keeps them unique.
 const titleId = `card-title-${post.id}`;
 const descriptionId = `card-description-${post.id}`;
+// A draft's label starts the link description, so a screen reader hears it with the title (#347).
+const draftId = `card-draft-${post.id}`;
+const describedBy = post.data.draft ? `${draftId} ${descriptionId}` : descriptionId;
 ---
 
-<a href={getPostPath(post)} class="blog-post-thumbnail" data-post-card aria-labelledby={titleId} aria-describedby={descriptionId}>
+<a href={getPostPath(post)} class="blog-post-thumbnail" data-post-card aria-labelledby={titleId} aria-describedby={describedBy}>
   <Card as="article">
-    <Eyebrow slash={false}>{post.data.category}</Eyebrow>
+    <div class="kicker">
+      <Eyebrow slash={false}>{post.data.category}</Eyebrow>
+      {post.data.draft && <DraftLabel id={draftId} />}
+    </div>
     <DisplayHeading as={heading} size="card" class="title" data-morph="title" id={titleId} text={post.data.title} />
     <p id={descriptionId}>{post.data.description}</p>
   </Card>
@@ -40,6 +47,18 @@ const descriptionId = `card-description-${post.id}`;
   .blog-post-thumbnail article {
     block-size: 100%;
     transition: translate var(--duration-2) ease-out, background-color var(--duration-2) ease-out;
+  }
+
+  .kicker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin-block-end: var(--space-2);
+  }
+
+  .kicker :global(.eyebrow) {
+    margin: 0;
   }
 
   .title {

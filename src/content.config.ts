@@ -22,6 +22,8 @@ export const blogSchema = z.strictObject({
 	/** The last substantial change, for dateModified and the sitemap lastmod (#306, #307). */
 	updatedDate: z.coerce.date().optional(),
 	category: z.enum(CATEGORIES),
+	/** A test article for design and features, shown with a Draft label until the owner's posts replace it (#347). */
+	draft: z.boolean().default(false),
 });
 
 const blogCollection = defineCollection({
