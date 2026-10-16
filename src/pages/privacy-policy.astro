@@ -1,62 +1,38 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
+import LegalLayout from '@/layouts/LegalLayout.astro';
 import { PRIVACY_POLICY_UPDATED, SITE } from '@/consts';
+import { displayDate, isoDate } from '@/lib/dates';
 ---
 
-<BaseLayout title="Privacy Policy | Patrik Alexits" description="How pa-tech.dev handles your data: no cookies, no analytics, no tracking. Who hosts the site, what the host processes, and your rights.">
-	<main>
-		<section class="page-container privacy-policy">
-			<Eyebrow>Legal</Eyebrow>
-			<DisplayHeading as="h1" size="section" class="title" text="Privacy" accent="Policy" />
-			<p>Last updated: {PRIVACY_POLICY_UPDATED.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}</p>
+<LegalLayout text="Privacy" accent="Policy" description="How pa-tech.dev handles your data: no cookies, no analytics, no tracking. Who hosts the site, what the host processes, and your rights.">
+	<p>Last updated: <time datetime={isoDate(PRIVACY_POLICY_UPDATED)}>{displayDate(PRIVACY_POLICY_UPDATED, 'long')}</time></p>
 
-			<h2>Who is responsible</h2>
-			<p>{SITE.name} is responsible for this website and the data processing described here. This is a personal site; I offer no goods or services through it. You can reach me at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+	<h2>Who is responsible</h2>
+	<p>{SITE.name} is responsible for this website and the data processing described here. This is a personal site; I offer no goods or services through it. You can reach me at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
 
-			<h2>Visiting the site</h2>
-			<p>To deliver the pages, the host processes your IP address. It does not store it after the request. I see no IP addresses and no visit logs.</p>
-			<p>This site sets no cookies. It has no analytics, tracking, forms or third-party content. Your light or dark theme choice is stored in your browser's localStorage and never leaves your device.</p>
+	<h2>Visiting the site</h2>
+	<p>To deliver the pages, the host processes your IP address. It does not store it after the request. I see no IP addresses and no visit logs.</p>
+	<p>This site sets no cookies. It has no analytics, tracking, forms or third-party content. Your light or dark theme choice is stored in your browser's localStorage and never leaves your device.</p>
 
-			<h2>Writing to me</h2>
-			<p>If you email me, I process your address and your message to reply. I delete them when the conversation is over, unless the law requires me to keep them.</p>
+	<h2>Writing to me</h2>
+	<p>If you email me, I process your address and your message to reply. I delete them when the conversation is over, unless the law requires me to keep them.</p>
 
-			<h2>Recipients</h2>
-			<ul>
-				<li>statichost.eu, Sweden, hosts the site under a data processing agreement. It uses Hetzner Online GmbH, Germany, and BunnyWay d.o.o., Slovenia.</li>
-				<li>Proton AG, Switzerland, handles my email.</li>
-			</ul>
-			<p>Your data stays in Switzerland and the EEA. I share it with no one else.</p>
+	<h2>Recipients</h2>
+	<ul>
+		<li>statichost.eu, Sweden, hosts the site under a data processing agreement. It uses Hetzner Online GmbH, Germany, and BunnyWay d.o.o., Slovenia.</li>
+		<li>Proton AG, Switzerland, handles my email.</li>
+	</ul>
+	<p>Your data stays in Switzerland and the EEA. I share it with no one else.</p>
 
-			<h2>Legal basis</h2>
-			<p>I process this data out of a legitimate interest in delivering a working, secure website and in answering your messages (Swiss revDSG Art. 31(1); where the GDPR applies, Art. 6(1)(f)).</p>
+	<h2>Legal basis</h2>
+	<p>I process this data out of a legitimate interest in delivering a working, secure website and in answering your messages (Swiss revDSG Art. 31(1); where the GDPR applies, Art. 6(1)(f)).</p>
 
-			<h2>Your rights</h2>
-			<p>You can ask me what data I hold about you and ask me to correct or delete it, or object to its processing. Write to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. You can also complain to the Swiss <a href="https://www.edoeb.admin.ch/en">Federal Data Protection and Information Commissioner (FDPIC)</a> or, in the EU or EEA, to the data protection authority where you live.</p>
+	<h2>Your rights</h2>
+	<p>You can ask me what data I hold about you and ask me to correct or delete it, or object to its processing. Write to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. You can also complain to the Swiss <a href="https://www.edoeb.admin.ch/en">Federal Data Protection and Information Commissioner (FDPIC)</a> or, in the EU or EEA, to the data protection authority where you live.</p>
 
-			<h2>Links to other sites</h2>
-			<p>This site links to other websites. Their own privacy policies apply there.</p>
+	<h2>Links to other sites</h2>
+	<p>This site links to other websites. Their own privacy policies apply there.</p>
 
-			<h2>Changes</h2>
-			<p>When the site changes how it handles data, I update this page and its date.</p>
-		</section>
-	</main>
-</BaseLayout>
-
-<style>
-	/* main pads the page; the text keeps a readable line length inside the page width, as the blog head does. */
-	.page-container { width: 100%; max-width: var(--page-max-width); margin: 0 auto; }
-	.privacy-policy > :not(.title) { max-width: var(--size-prose); }
-	.title { margin: 0 0 var(--space-6); }
-	.privacy-policy h2 {
-		color: var(--font-color-bold);
-		margin: var(--space-10) 0 var(--space-2);
-		letter-spacing: var(--letter-spacing-tight);
-		font-weight: var(--font-weight-bold);
-		font-size: var(--font-size-xl);
-		line-height: var(--line-height-lg);
-	}
-	.privacy-policy p + p { margin-block-start: var(--space-4); }
-	.privacy-policy ul { margin-block: 0 var(--space-4); padding-inline-start: var(--space-6); }
-</style>
+	<h2>Changes</h2>
+	<p>When the site changes how it handles data, I update this page and its date.</p>
+</LegalLayout>

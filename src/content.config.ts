@@ -19,10 +19,10 @@ export const blogSchema = z.strictObject({
 	subtitle: z.string(),
 	description: z.string(),
 	publishDate: z.coerce.date(),
-	/** The last substantial change, for dateModified and the sitemap lastmod (#306, #307). */
+	/** The last substantial change, for dateModified and the sitemap lastmod. */
 	updatedDate: z.coerce.date().optional(),
 	category: z.enum(CATEGORIES),
-	/** A test article for design and features, shown with a Draft label until the owner's posts replace it (#347). */
+	/** A test article for design and features, shown with a Draft label until the owner's posts replace it. */
 	draft: z.boolean().default(false),
 });
 
@@ -67,12 +67,12 @@ const nowCollection = defineCollection({
 	schema: nowSchema,
 });
 
-/** The principles list on home (#244): an owner-written Markdown list, no frontmatter. */
+/** The principles list on home: an owner-written Markdown list, no frontmatter. */
 const principlesCollection = defineCollection({
 	loader: glob({ pattern: 'principles.md', base: './src/content/principles' }),
 });
 
-/** The "What I do best" cards on home (#256), shown by `order` since collection order is not guaranteed. */
+/** The "What I do best" cards on home, shown by `order` since collection order is not guaranteed. */
 export const servicesSchema = z.strictObject({
 	id: z.string().regex(SLUG_PATTERN),
 	order: z.int().positive(),
@@ -87,7 +87,7 @@ const servicesCollection = defineCollection({
 	schema: servicesSchema,
 });
 
-/** The FAQ on home (#259), shown by `order` since collection order is not guaranteed. Answers are plain text. */
+/** The FAQ on home, shown by `order` since collection order is not guaranteed. Answers are plain text. */
 export const faqSchema = z.strictObject({
 	id: z.string().regex(SLUG_PATTERN),
 	order: z.int().positive(),
