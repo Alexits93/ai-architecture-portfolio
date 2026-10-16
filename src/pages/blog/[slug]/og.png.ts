@@ -7,7 +7,7 @@ interface Props {
   post: BlogPost;
 }
 
-// One image per post at /blog/<slug>/og.png, next to the post page (#305).
+// One image per post at /blog/<slug>/og.png, next to the post page.
 export const getStaticPaths = (async () =>
   (await getCollection('blog')).map((post) => ({ params: { slug: post.id }, props: { post } }))) satisfies GetStaticPaths;
 

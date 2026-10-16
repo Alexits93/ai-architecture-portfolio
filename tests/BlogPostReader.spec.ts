@@ -56,7 +56,9 @@ describe('BlogPostReader Widget (Astro)', () => {
     assert.exists(subtitle);
     expect(subtitle.textContent).toBe('Test Subtitle');
 
-    expect(doc.body.innerHTML).toContain('14 SEP 2026');
+    const date = doc.querySelector('#post-hero time');
+    assert.exists(date);
+    expect([date.getAttribute('datetime'), date.textContent]).toEqual(['2026-09-14', '14 Sept 2026']);
   });
 
   it('renders no image in the post header', async () => {

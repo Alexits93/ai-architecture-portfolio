@@ -13,7 +13,7 @@ export interface JsonLdObject {
 export const serializeJsonLd = (data: JsonLdObject): string =>
   JSON.stringify(data).replace(/</g, '\\u003c');
 
-/** The site owner, identified by `@id` so the home graph and /cv/ name the same Person (#306). */
+/** The site owner, identified by `@id` so the home graph and /cv/ name the same Person. */
 export const personJsonLd = (homeUrl: string): JsonLdObject => ({
   '@type': 'Person',
   '@id': `${homeUrl}#person`,

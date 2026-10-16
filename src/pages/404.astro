@@ -1,5 +1,5 @@
 ---
-import { ROUTES } from '@/consts';
+import { ROUTES, SITE } from '@/consts';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import DisplayHeading from '@/components/DisplayHeading.astro';
 import Eyebrow from '@/components/Eyebrow.astro';
@@ -9,7 +9,7 @@ import Pill from '@/components/Pill.astro';
 // https://www.statichost.eu/docs/error-pages/). @astrojs/sitemap leaves 404 pages out on its own.
 ---
 
-<BaseLayout title="Page not found | Patrik Alexits" description="The page you asked for does not exist or has moved. Go to the home page, the blog or the CV of Patrik Alexits." noindex>
+<BaseLayout title={`Page not found | ${SITE.name}`} description="The page you asked for does not exist or has moved. Go to the home page, the blog or the CV of Patrik Alexits." noindex>
 	<main>
 		<div class="page-container">
 			<Eyebrow>404</Eyebrow>

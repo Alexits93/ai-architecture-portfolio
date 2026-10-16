@@ -1,4 +1,4 @@
-# The "What I do best" cards on home, shown by `order` (src/content.config.ts). Owner copy (#347).
+# The "What I do best" cards on home, shown by `order` (src/content.config.ts).
 - id: frontend-architecture
   order: 1
   kicker: Day job

@@ -1,12 +1,13 @@
 ---
-// Page-only component for the home page (ADR 002): a full-width row of tilted photos under the hero (#255, direction C
-// on #252, from the Mitrakos reference), with the owner's photos (#261).
+// Page-only component for the home page (ADR 002): a full-width row of tilted photos under the hero,
+// with the owner's photos.
 import { Image } from 'astro:assets';
 import balloon from '@/assets/photos/row-1-balloon.jpg';
 import stadium from '@/assets/photos/row-2-stadium.jpg';
 import seoul from '@/assets/photos/row-3-seoul.jpg';
 import porsche from '@/assets/photos/row-4-porsche.jpg';
 import alpinePass from '@/assets/photos/row-5-alpine-pass.jpg';
+import BarsButton from '@/components/BarsButton.astro';
 
 const photos = [
 	{ src: balloon, alt: 'My wife and me at The ICE festival in St. Moritz, Switzerland' },
@@ -17,14 +18,14 @@ const photos = [
 ];
 ---
 
-<!-- The row scrolls where it overflows. tabindex lets keyboard users scroll it: WebKit does not focus a scroller on its
-     own (axe scrollable-region-focusable). The focusable row needs a role and a name; a group, not a region landmark,
-     because Orca 51's next-landmark command loops on a landmark whose first content is an image (#304, #261). -->
+{/* The row scrolls where it overflows. tabindex lets keyboard users scroll it: WebKit does not focus a scroller on its
+    own (axe scrollable-region-focusable). The focusable row needs a role and a name; a group, not a region landmark,
+    because Orca 51's next-landmark command loops on a landmark whose first content is an image. */}
 <div id="photos" class="photos" role="group" aria-label="Photos" tabindex="0">
 	<ul>
 		{/* Below the fold, so Astro's default loading="lazy" applies. The widths cover --size-photo up to 3x. draggable="false"
 		    stops the browser's native image drag, which would cancel the row's mouse drag.
-		    #350: each photo opens its own dialog through an invoker command, no script needed
+		    Each photo opens its own dialog through an invoker command, no script needed
 		    (https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#commandfor). closedby="any" closes it
 		    on Esc and on a click outside. The caption repeats the alt text and names the dialog, so the large image has an
 		    empty alt and is not read twice. A closed dialog is not rendered, so its lazy image loads only when opened. */}
@@ -36,7 +37,7 @@ const photos = [
 						<Image class="photo" src={src} alt={alt} widths={[200, 400, 600, 816]} sizes="clamp(12rem, 22vw, 17rem)" quality={70} draggable="false" />
 					</button>
 					<dialog id={id} class="viewer" closedby="any" aria-labelledby={`${id}-caption`}>
-						<button type="button" class="close" commandfor={id} command="close" aria-label="Close photo"><span></span><span></span></button>
+						<BarsButton commandfor={id} command="close" aria-label="Close photo" />
 						<figure>
 							<Image class="large" src={src} alt="" widths={[600, 900]} sizes="min(90vw, 72vh)" quality={80} />
 							<figcaption id={`${id}-caption`}>{alt}</figcaption>
@@ -49,7 +50,7 @@ const photos = [
 </div>
 
 <script>
-	// Touch, the wheel and the keyboard scroll the row natively; a mouse drag does not, so this script adds it (#279).
+	// Touch, the wheel and the keyboard scroll the row natively; a mouse drag does not, so this script adds it.
 	// Pointer capture keeps the drag going when the mouse leaves the row
 	// (https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture).
 	const row = document.getElementById('photos');
@@ -72,7 +73,7 @@ const photos = [
 			startScroll = row.scrollLeft;
 		});
 		// The capture starts only once the mouse moves: a captured press ends on the row, so a click would no longer
-		// reach the photo and open it (#350).
+		// reach the photo and open it.
 		row.addEventListener('pointermove', (event) => {
 			if (event.pointerId !== pressed || event.buttons !== 1) return;
 			if (!row.hasPointerCapture(event.pointerId)) {
@@ -85,7 +86,7 @@ const photos = [
 		row.addEventListener('pointerup', () => { pressed = null; });
 		row.addEventListener('lostpointercapture', () => row.toggleAttribute('data-dragging', false));
 
-		// #350: where same-document View Transitions exist and motion is allowed, the photo morphs between the row and its
+		// Where same-document View Transitions exist and motion is allowed, the photo morphs between the row and its
 		// dialog. The invoker command is held, and the transition opens or closes the dialog while one view-transition-name
 		// moves from one image to the other (https://developer.mozilla.org/en-US/docs/Web/API/Document/startViewTransition).
 		// Elsewhere the command runs natively.
@@ -102,7 +103,7 @@ const photos = [
 			to.style.viewTransitionName = '';
 		};
 		for (const dialog of row.querySelectorAll('dialog')) {
-			const thumb = dialog.parentElement === null ? null : dialog.parentElement.querySelector('img');
+			const thumb = dialog.parentElement?.querySelector('img') ?? null;
 			const large = dialog.querySelector('img');
 			if (thumb === null || large === null) continue;
 			const close = () => morph(large, thumb, () => dialog.close());
@@ -130,7 +131,7 @@ const photos = [
 </script>
 
 <style>
-	/* Full bleed, tilted like prints on a table, with snap points. No scrollbar (#279): the last photo peeking past the
+	/* Full bleed, tilted like prints on a table, with snap points. No scrollbar: the last photo peeking past the
 	   edge and the grab cursor show that it scrolls. The scroller clips what overflows it, so the end padding is as
 	   deep as the tile's shadow. */
 	.photos {
@@ -162,7 +163,7 @@ const photos = [
 		li .photo:hover { rotate: 0deg; scale: 1.04; }
 	}
 
-	/* #350: the photo is a button that opens its dialog. The focus ring follows the photo's corners. */
+	/* The photo is a button that opens its dialog. The focus ring follows the photo's corners. */
 	.open {
 		display: block; padding: 0; border: none; border-radius: var(--radius-2xl); background: none; cursor: zoom-in;
 	}
@@ -183,25 +184,6 @@ const photos = [
 	}
 	/* A zero inline size with a 100% minimum keeps a long caption from widening the figure past the photo. */
 	figcaption { inline-size: 0; min-inline-size: 100%; text-align: center; }
-
-	/* The menu's close button in its open state: two bars crossed in a round hit area (#350, look only). */
-	.close {
-		display: grid; place-items: center; inline-size: var(--space-12); block-size: var(--space-12); padding: 0;
-		border: none; border-radius: var(--radius-full); background: none; cursor: pointer;
-	}
-	.close span {
-		grid-area: 1 / 1; inline-size: var(--space-8); block-size: .2rem; border-radius: var(--radius-xs);
-		background-color: var(--font-color-bold); rotate: 45deg;
-	}
-	.close span:last-child { rotate: -45deg; }
-	@media (hover: hover) {
-		.close:hover { background-color: var(--state-hover); }
-	}
-	.close:active { scale: .92; }
-	/* Forced colours drop author background colours; a system colour keeps the bars visible, as in the menu (#282). */
-	@media (forced-colors: active) {
-		.close span { forced-color-adjust: none; background-color: ButtonText; }
-	}
 
 	/* Without the morph the dialog fades in (https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style). */
 	@media (prefers-reduced-motion: no-preference) {

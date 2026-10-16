@@ -1,38 +1,13 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
+import LegalLayout from '@/layouts/LegalLayout.astro';
 import { ROUTES } from '@/consts';
 ---
 
-<BaseLayout title="Cookie Disclaimer | Patrik Alexits" description="pa-tech.dev sets no cookies. It stores only your light or dark theme choice, in your browser's localStorage, and never sends it to a server.">
-	<main>
-		<section class="page-container cookie-disclaimer">
-			<Eyebrow>Legal</Eyebrow>
-			<DisplayHeading as="h1" size="section" class="title" text="Cookie" accent="Disclaimer" />
-			<p>This site sets no cookies and embeds no third-party content.</p>
+<LegalLayout text="Cookie" accent="Disclaimer" description="pa-tech.dev sets no cookies. It stores only your light or dark theme choice, in your browser's localStorage, and never sends it to a server.">
+	<p>This site sets no cookies and embeds no third-party content.</p>
 
-			<h2>Theme setting</h2>
-			<p>When you switch between the light and dark theme, your browser stores that choice under the key "theme" in localStorage. It stays on your device and is never sent to a server. Clearing the site data in your browser removes it.</p>
+	<h2>Theme setting</h2>
+	<p>When you switch between the light and dark theme, your browser stores that choice under the key "theme" in localStorage. It stays on your device and is never sent to a server. Clearing the site data in your browser removes it.</p>
 
-			<p>For how I handle data, read the <a href={ROUTES.privacyPolicy}>Privacy Policy.</a></p>
-		</section>
-	</main>
-</BaseLayout>
-
-<style>
-	/* main pads the page; the text keeps a readable line length inside the page width, as the blog head does. */
-	.page-container { width: 100%; max-width: var(--page-max-width); margin: 0 auto; }
-	.cookie-disclaimer > :not(.title) { max-width: var(--size-prose); }
-	.title { margin: 0 0 var(--space-6); }
-	.cookie-disclaimer h2 {
-		color: var(--font-color-bold);
-		margin: var(--space-10) 0 var(--space-2);
-		letter-spacing: var(--letter-spacing-tight);
-		font-weight: var(--font-weight-bold);
-		font-size: var(--font-size-xl);
-		line-height: var(--line-height-lg);
-	}
-	.cookie-disclaimer p + p { margin-block-start: var(--space-4); }
-	.cookie-disclaimer ul { margin-block: 0 var(--space-4); padding-inline-start: var(--space-6); }
-</style>
+	<p>For how I handle data, read the <a href={ROUTES.privacyPolicy}>Privacy Policy.</a></p>
+</LegalLayout>

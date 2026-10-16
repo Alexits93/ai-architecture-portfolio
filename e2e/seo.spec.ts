@@ -24,6 +24,13 @@ const TITLES: Record<string, string> = {
 
 test('finds the built pages', () => expect(ROUTES.length).toBeGreaterThan(5));
 
+// Regression: HTML comments in templates shipped to every visitor with internal notes. Templates use {/* */}.
+for (const route of ROUTES) {
+  test(`${route} ships no source comment`, async ({ request }) => {
+    expect(await (await request.get(route)).text()).not.toContain('<!--');
+  });
+}
+
 for (const route of ROUTES) {
   test(`one SEO head on ${route}`, async ({ page }) => {
     await page.goto(route);

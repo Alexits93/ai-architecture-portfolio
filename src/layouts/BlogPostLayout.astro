@@ -13,11 +13,11 @@ interface Props {
 const { post } = Astro.props;
 const { title, subtitle, description, publishDate } = post.data;
 const pageUrl = new URL(getPostPath(post), Astro.site).href;
-// Each post shares its own image, drawn by src/pages/blog/[slug]/og.png.ts from the title and subtitle (#305).
+// Each post shares its own image, drawn by src/pages/blog/[slug]/og.png.ts from the title and subtitle.
 const ogImage = { path: `${getPostPath(post)}og.png`, alt: `${title}. ${subtitle}` };
 
 // https://developers.google.com/search/docs/appearance/structured-data/article. Google does not read mainEntityOfPage;
-// Schema.org does, and it ties the post to its canonical URL (#306).
+// Schema.org does, and it ties the post to its canonical URL.
 const jsonLd: JsonLdObject = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
@@ -31,10 +31,10 @@ const jsonLd: JsonLdObject = {
 };
 
 // The card-to-post morph names #post-hero on pagereveal, so the head asks the first render to wait until it is
-// parsed (rel="expect", #210, https://developer.chrome.com/docs/web-platform/view-transitions/cross-document).
+// parsed (rel="expect", https://developer.chrome.com/docs/web-platform/view-transitions/cross-document).
 ---
 
-<!-- A draft is a test article: noindex keeps it out of search results (#354). -->
+{/* A draft is a test article: noindex keeps it out of search results. */}
 <BaseLayout title={`${title} | ${SITE.name}`} description={description} type="article" ogImage={ogImage} publishedTime={publishDate} jsonLd={jsonLd} noindex={post.data.draft}>
 	<link slot="head" rel="expect" href="#post-hero" blocking="render" />
 	<slot />

@@ -6,7 +6,7 @@ export interface PostDates {
   id: string;
   category: string;
   modified: Date;
-  /** A test article (#347): noindex, so the sitemap leaves it out (#354). */
+  /** A test article: noindex, so the sitemap leaves it out. */
   draft: boolean;
 }
 
@@ -48,7 +48,7 @@ const newest = (posts: readonly PostDates[]): Date | undefined =>
 
 /**
  * The sitemap lastmod of a page path: a post's last change, the newest post of a blog list (a new post shifts every
- * page of its list), or a date from `pages`. A page without an honest content date gets none (#307).
+ * page of its list), or a date from `pages`. A page without an honest content date gets none.
  */
 export const lastmodFor = (
   pathname: string,

@@ -1,10 +1,11 @@
 ---
-// Page-only component for the home page (ADR 002): the now card from src/content/now/now.md (#218), restyled as a card
-// near the top in direction A's look (#258, decided on #252).
+// Page-only component for the home page (ADR 002): the now card from src/content/now/now.md, as a card
+// near the top.
 import { getEntry, render } from 'astro:content';
 import Card from '@/components/Card.astro';
 import DisplayHeading from '@/components/DisplayHeading.astro';
 import Eyebrow from '@/components/Eyebrow.astro';
+import { displayDate, isoDate } from '@/lib/dates';
 
 const now = await getEntry('now', 'now');
 if (now === undefined) throw new Error('src/content/now/now.md is missing');
@@ -17,7 +18,7 @@ const { updated } = now.data;
 		<Eyebrow>Currently</Eyebrow>
 		<DisplayHeading as="h2" size="card" id="now-title" class="title" accent="Now" />
 		<p class="updated">
-			Updated <time datetime={updated.toISOString().slice(0, 10)}>{updated.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}</time>
+			Updated <time datetime={isoDate(updated)}>{displayDate(updated, 'long')}</time>
 		</p>
 	</div>
 	<div class="text"><Content /></div>

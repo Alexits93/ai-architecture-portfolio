@@ -45,7 +45,7 @@ describe('Header Widget (Astro)', () => {
   // Invoker command: the button opens the menu dialog without a script.
   it('should render the menu button as a show-modal command for the site menu', async () => {
     const doc = new JSDOM(await container.renderToString(Header)).window.document;
-    const menuBtn = doc.querySelector('button.navigator-menu-opener');
+    const menuBtn = doc.querySelector('header button[commandfor="site-menu"]');
     assert.exists(menuBtn);
     expect(['aria-label', 'commandfor', 'command', 'id'].map((name) => menuBtn.getAttribute(name))).toEqual(
       ['Open menu', 'site-menu', 'show-modal', null],

@@ -1,4 +1,4 @@
-// Card-to-post morph (#210). A cross-document view transition pairs a card's title with the post's, which needs
+// Card-to-post morph. A cross-document view transition pairs a card's title with the post's, which needs
 // one name on each page: pageswap names it on the old page, pagereveal on the new one, and both
 // remove the name afterwards (https://developer.chrome.com/docs/web-platform/view-transitions/cross-document).
 // pagereveal must be heard before the first render, so astro.config.mjs injects this file as a classic inline <head>
@@ -13,7 +13,7 @@
     [...document.querySelectorAll('[data-post-card]')].find((card) => card.getAttribute('href') === path) ?? null;
   const hero = () => document.getElementById('post-hero');
   // The entry this page was reached from. An engine can have view transitions without the Navigation API; then only
-  // the post header is named (#338).
+  // the post header is named.
   const previousEntry = () =>
     typeof navigation !== 'undefined' && navigation.activation ? navigation.activation.from : null;
 

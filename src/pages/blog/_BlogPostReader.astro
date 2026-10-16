@@ -5,6 +5,8 @@ import ArticleNavigator from './_ArticleNavigator.astro';
 import DisplayHeading from '@/components/DisplayHeading.astro';
 import DraftLabel from '@/components/DraftLabel.astro';
 import Eyebrow from '@/components/Eyebrow.astro';
+import { SITE } from '@/consts';
+import { displayDate, isoDate } from '@/lib/dates';
 import { getCategoryPath } from '@/lib/permalink';
 import Logo from '@/assets/logo.svg';
 
@@ -15,18 +17,12 @@ interface Props {
 const { post } = Astro.props;
 const { Content, headings } = await render(post);
 
-const monthNames = [
-  "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-  "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
-];
-const d = new Date(post.data.publishDate);
-const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 ---
 
 <div class="blog-post-layout">
   <div class="blog-post-reader">
     <header class="wrapper-top" id="post-hero">
-      <!-- The subtitle belongs to the title, so it is a paragraph in the hgroup, not a second heading (#307). -->
+      {/* The subtitle belongs to the title, so it is a paragraph in the hgroup, not a second heading. */}
       <hgroup>
         <Eyebrow><a href={getCategoryPath(post.data.category)}>{post.data.category}</a>{post.data.draft && <> <DraftLabel /></>}</Eyebrow>
         <DisplayHeading as="h1" size="section" data-morph="title" text={post.data.title} />
@@ -35,9 +31,9 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
       <div class="wrapper-top-post-data">
         <div class="author-info">
           <Logo width="63.54" height="40" aria-hidden="true" />
-          <p>Patrik Alexits</p>
+          <p>{SITE.name}</p>
         </div>
-        <p class="publish-date">{formattedDate}</p>
+        <p><time datetime={isoDate(post.data.publishDate)}>{displayDate(post.data.publishDate, 'short')}</time></p>
       </div>
     </header>
 
@@ -46,7 +42,7 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
     </article>
   </div>
 
-  <!-- A layout column, not a landmark: the nav inside carries the name (#282). -->
+  {/* A layout column, not a landmark: the nav inside carries the name. */}
   <div class="navigator-sidebar">
     <ArticleNavigator headings={headings} />
   </div>

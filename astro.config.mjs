@@ -30,7 +30,7 @@ export default defineConfig({
     },
   ],
   integrations: [
-    // The pre-paint theme script as an inline <head> script on every page, with no request (#86).
+    // The pre-paint theme script as an inline <head> script on every page, with no request.
     // Astro hashes head-inline scripts into script-src; e2e/csp.spec.ts fails if it stops doing so
     // (https://docs.astro.build/en/reference/integrations-reference/#injectscript-option).
     {
@@ -41,7 +41,7 @@ export default defineConfig({
       },
     },
     // The card-to-post morph listens for pagereveal, which must be registered before the first render, so it is a
-    // classic inline <head> script as well (#210, https://developer.chrome.com/docs/web-platform/view-transitions/cross-document).
+    // classic inline <head> script as well (https://developer.chrome.com/docs/web-platform/view-transitions/cross-document).
     {
       name: 'post-morph-script',
       hooks: {
@@ -51,8 +51,8 @@ export default defineConfig({
     },
     // Sitemap from every built route; the site uses none of the optional namespaces
     // (https://docs.astro.build/en/guides/integrations-guide/sitemap/). serialize adds lastmod from content dates
-    // (https://docs.astro.build/en/guides/integrations-guide/sitemap/#serialize, owner decision on #307). filter leaves out
-    // the noindex draft posts (https://docs.astro.build/en/guides/integrations-guide/sitemap/#filter, #354).
+    // (https://docs.astro.build/en/guides/integrations-guide/sitemap/#serialize). filter leaves out
+    // the noindex draft posts (https://docs.astro.build/en/guides/integrations-guide/sitemap/#filter).
     sitemap({
       namespaces: { news: false, xhtml: false, image: false, video: false },
       filter: (page) => !posts.some((post) => post.draft && new URL(page).pathname === `/blog/${post.id}/`),
@@ -82,7 +82,7 @@ export default defineConfig({
         "form-action 'none'",
         "require-trusted-types-for 'script'",
         // No upgrade-insecure-requests: WebKit applies it to http://localhost and breaks local e2e. Production
-        // does not need it: HSTS in public/_headers, and e2e/csp.spec.ts bans http:// subresources (#91).
+        // does not need it: HSTS in public/_headers, and e2e/csp.spec.ts bans http:// subresources.
       ],
     },
   },

@@ -16,7 +16,7 @@ interface Props {
 const { excludeId } = Astro.props;
 const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { excludeId });
 ---
-<!-- The head of the home Writing section: eyebrow, display title, and the All posts pill (#300). -->
+{/* The head of the recommended articles block: eyebrow, display title, and the All posts pill. */}
 <section id="blog-section" aria-labelledby="recommended-title">
   <div class="head">
     <div>
@@ -51,7 +51,7 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
   }
 
   /* Cards rise into place as they scroll into view. Only where scroll timelines exist and motion is allowed;
-     elsewhere they are static (#210, MDN animation-timeline view()). Longhands only, and not all of them: the CSS
+     elsewhere they are static (MDN animation-timeline view()). Longhands only, and not all of them: the CSS
      minifier folds a complete set into the animation shorthand, and Chromium rejects view() inside that shorthand. */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
