@@ -1,20 +1,29 @@
 import assert from "node:assert/strict";
 import { globSync } from "node:fs";
 import { test, expect, type Page } from "@playwright/test";
+import { readPostDates } from "../src/lib/sitemap-lastmod";
 
 // Every built post page, e.g. /blog/<slug>/.
 const POST_ROUTES = globSync("blog/*/index.html", { cwd: "dist" }).map(
   (file) => `/${file.replace(/index\.html$/, "")}`,
 );
 
+// A category gets a page and a pill only once it has a post, so no link leads to an empty list.
+const CATEGORIES_WITH_POSTS = [
+  ...new Set(readPostDates("src/content/blog").map((post) => post.category)),
+].toSorted();
+const CATEGORY_PAGES = globSync("blog/category/*/index.html", { cwd: "dist" })
+  .map((file) => file.split("/")[2])
+  .toSorted();
+const NAV_LINKS = ["All", ...CATEGORIES_WITH_POSTS];
+
 const BLOG_ROUTES = [
   { route: "/blog/", current: "All", tag: null },
-  { route: "/blog/category/ai/", current: "AI", tag: "AI" },
-  {
-    route: "/blog/category/architecture/",
-    current: "Architecture",
-    tag: "Architecture",
-  },
+  ...CATEGORIES_WITH_POSTS.map((category) => ({
+    route: `/blog/category/${category.toLowerCase()}/`,
+    current: category,
+    tag: category,
+  })),
 ];
 
 const cardHrefs = (page: Page, scope: string) =>
@@ -30,6 +39,11 @@ const cardCategories = (page: Page) =>
   page.locator(".blog-grid .blog-post-thumbnail .eyebrow").allTextContents();
 
 test.describe("Blog category pages", () => {
+  test("builds a page for exactly the categories with posts", () =>
+    expect(CATEGORY_PAGES).toEqual(
+      CATEGORIES_WITH_POSTS.map((category) => category.toLowerCase()),
+    ));
+
   for (const { route, current, tag } of BLOG_ROUTES) {
     test(`${route} lists its posts and marks only "${current}" as the current page`, async ({
       page,
@@ -45,7 +59,7 @@ test.describe("Blog category pages", () => {
         expect(html).not.toContain(removed);
 
       const links = categoryNav(page).getByRole("link");
-      await expect(links).toHaveText(["All", "AI", "Architecture"]);
+      await expect(links).toHaveText(NAV_LINKS);
       await expect(categoryNav(page).locator("[aria-current]")).toHaveCount(1);
       await expect(
         categoryNav(page).getByRole("link", { name: current, exact: true }),
@@ -74,11 +88,7 @@ test.describe("Blog category listing", () => {
 
     test("shows the same links and posts", async ({ page }) => {
       await page.goto("/blog/");
-      await expect(categoryNav(page).getByRole("link")).toHaveText([
-        "All",
-        "AI",
-        "Architecture",
-      ]);
+      await expect(categoryNav(page).getByRole("link")).toHaveText(NAV_LINKS);
       await expect(page.locator(".blog-grid .blog-post-thumbnail")).toHaveCount(
         POST_ROUTES.length,
       );
@@ -202,13 +212,16 @@ test.describe("Recommended articles on a post page", () => {
     expect(POST_ROUTES.length).toBeGreaterThan(0));
 
   for (const route of POST_ROUTES) {
-    // Every other post, newest first, up to 3; the blog index lists the posts newest first.
+    // Every other post, newest first, up to 3; the blog index lists the posts newest first. Without another post the
+    // block is left out, so no heading stands over an empty grid.
     test(`${route} recommends the newest other posts`, async ({ page }) => {
       await page.goto("/blog/");
       const newest = await cardHrefs(page, ".blog-grid");
       await page.goto(route);
-      expect(await cardHrefs(page, "#blog-section")).toEqual(
-        newest.filter((href) => href !== route).slice(0, 3),
+      const expected = newest.filter((href) => href !== route).slice(0, 3);
+      expect(await cardHrefs(page, "#blog-section")).toEqual(expected);
+      await expect(page.locator("#blog-section")).toHaveCount(
+        expected.length === 0 ? 0 : 1,
       );
     });
   }
@@ -222,6 +235,10 @@ for (const route of ["/blog/", POST_ROUTES[0]]) {
   }) => {
     await page.goto(route);
     const cards = await page.locator(".blog-post-thumbnail").all();
+    test.skip(
+      route !== "/blog/" && cards.length === 0,
+      "a post shows cards once another post exists",
+    );
     expect(cards.length).toBeGreaterThan(0);
     for (const card of cards)
       await expect(card).toHaveAccessibleName(

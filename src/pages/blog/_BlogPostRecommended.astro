@@ -19,27 +19,30 @@ const recommendedPosts = selectRecommendedPosts(await getCollection("blog"), {
 });
 ---
 
-{/* The head of the recommended articles block: eyebrow, display title, and the All posts pill. */}
-<section id="blog-section" aria-labelledby="recommended-title">
-  <div class="head">
-    <div>
-      <Eyebrow>Blog</Eyebrow>
-      <DisplayHeading
-        as="h2"
-        size="section"
-        id="recommended-title"
-        text="Recommended"
-        accent="articles"
-      />
+{/* The head of the recommended articles block: eyebrow, display title, and the All posts pill. Without another post
+   the block is left out, so no heading stands over an empty grid. */}
+{recommendedPosts.length > 0 && (
+  <section id="blog-section" aria-labelledby="recommended-title">
+    <div class="head">
+      <div>
+        <Eyebrow>Blog</Eyebrow>
+        <DisplayHeading
+          as="h2"
+          size="section"
+          id="recommended-title"
+          text="Recommended"
+          accent="articles"
+        />
+      </div>
+      <Pill href={ROUTES.blog}>All posts</Pill>
     </div>
-    <Pill href={ROUTES.blog}>All posts</Pill>
-  </div>
-  <div class="wrapper">
-    {recommendedPosts.map((post) => (
-      <BlogPostThumbnail post={post} heading="h3" />
-    ))}
-  </div>
-</section>
+    <div class="wrapper">
+      {recommendedPosts.map((post) => (
+        <BlogPostThumbnail post={post} heading="h3" />
+      ))}
+    </div>
+  </section>
+)}
 
 <style>
   #blog-section {

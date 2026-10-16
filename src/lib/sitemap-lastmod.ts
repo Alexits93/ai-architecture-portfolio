@@ -6,8 +6,6 @@ export interface PostDates {
   id: string;
   category: string;
   modified: Date;
-  /** A test article: noindex, so the sitemap leaves it out. */
-  draft: boolean;
 }
 
 const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---/;
@@ -44,7 +42,6 @@ export const readPostDates = (dir: string): PostDates[] =>
           publishDate: new Date(required("publishDate")),
           ...(updated === undefined ? {} : { updatedDate: new Date(updated) }),
         }),
-        draft: field(frontmatter, "draft") === "true",
       };
     });
 

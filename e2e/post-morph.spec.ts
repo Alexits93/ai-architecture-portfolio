@@ -78,6 +78,10 @@ test("a recommended card on a post morphs into the next post", async ({
   await expect.poll(() => groups(page)).toBe(MORPH);
   await page.evaluate(() => sessionStorage.removeItem("groups"));
 
+  test.skip(
+    (await page.locator("#blog-section").count()) === 0,
+    "a post shows recommended cards once another post exists",
+  );
   await page.locator("#blog-section .blog-post-thumbnail").first().click();
   await expect.poll(() => groups(page)).toBe(MORPH);
 });

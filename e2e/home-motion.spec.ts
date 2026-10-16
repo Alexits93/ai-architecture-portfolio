@@ -1,3 +1,4 @@
+import { globSync } from "node:fs";
 import { test, expect, type Page } from "@playwright/test";
 import { animationsSettled } from "./animations";
 
@@ -31,8 +32,13 @@ const rootRevealRuns = (page: Page) =>
     }),
   );
 
-// A post page, which renders the recommended cards.
-const POST = "/blog/ai-agent-harness/";
+// A post page, which renders the recommended cards once another post exists.
+const POST = `/${globSync("blog/*/index.html", { cwd: "dist" })[0].replace(/index\.html$/, "")}`;
+const skipWithoutRecommended = async (page: Page) =>
+  test.skip(
+    (await page.locator("#blog-section").count()) === 0,
+    "a post shows recommended cards once another post exists",
+  );
 
 // The visible hero parts in reading order: the name halves with their kickers around the portrait, then the
 // pitch. The h1 is visually hidden and does not move.
@@ -78,6 +84,7 @@ test.describe("motion allowed", () => {
     page,
   }) => {
     await page.goto(POST);
+    await skipWithoutRecommended(page);
     test.skip(
       !(await page.evaluate(() => CSS.supports("animation-timeline: view()"))),
       "no scroll-driven animations",
@@ -146,6 +153,7 @@ test.describe("reduced motion", () => {
     page,
   }) => {
     await page.goto(POST);
+    await skipWithoutRecommended(page);
     expect(
       await cssAnimations(page, "#blog-section .blog-post-thumbnail"),
     ).toEqual([]);

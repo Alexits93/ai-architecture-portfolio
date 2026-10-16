@@ -2,21 +2,14 @@ import assert from "node:assert/strict";
 import { globSync } from "node:fs";
 import { test, expect } from "@playwright/test";
 import { PRIVACY_POLICY_UPDATED, SITE } from "../src/consts";
-import { readPostDates } from "../src/lib/sitemap-lastmod";
 
 // Every built page renders through BaseLayout with one complete SEO head.
 // 404.html builds from src/pages/404.astro, whose URL is /404/.
 const ROUTES = globSync("**/*.html", { cwd: "dist" }).map(
   (file) => `/${file.replace(/index\.html$/, "").replace(/\.html$/, "/")}`,
 );
-// Draft posts are noindex and stay out of the sitemap.
-const DRAFT_ROUTES = new Set(
-  readPostDates("src/content/blog")
-    .filter((post) => post.draft)
-    .map((post) => `/blog/${post.id}/`),
-);
-const NOINDEX_ROUTES = new Set(["/404/", ...DRAFT_ROUTES]);
-// @astrojs/sitemap leaves status code pages out of the sitemap; astro.config.mjs filters the drafts.
+const NOINDEX_ROUTES = new Set(["/404/"]);
+// @astrojs/sitemap leaves status code pages out of the sitemap.
 const SITEMAP_ROUTES = ROUTES.filter((route) => !NOINDEX_ROUTES.has(route));
 
 const TITLES: Record<string, string> = {
@@ -56,7 +49,7 @@ for (const route of ROUTES) {
     assert(description !== null);
     expect(description.length).toBeGreaterThanOrEqual(50);
     expect(description.length).toBeLessThanOrEqual(160);
-    // A noindex page names no canonical: /404/ does not exist, and a draft post is not meant to be found.
+    // A noindex page names no canonical: /404/ does not exist.
     if (NOINDEX_ROUTES.has(route)) {
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
         "content",
@@ -226,7 +219,6 @@ test("sitemap lastmod matches the content dates", async ({ request, page }) => {
       ),
     ].map((match) => [match[1], match[2]]),
   );
-  // The lists show the draft posts too, so a draft still dates them; only the draft's own URL is missing.
   const postDates: string[] = [];
   for (const route of ROUTES.filter(
     (path) => /^\/blog\/[^/]+\/$/.test(path) && !/^\/blog\/\d+\/$/.test(path),
@@ -237,9 +229,7 @@ test("sitemap lastmod matches the content dates", async ({ request, page }) => {
       .textContent();
     assert(json !== null);
     const data: { dateModified: string } = JSON.parse(json);
-    expect(lastmods.get(route)).toBe(
-      DRAFT_ROUTES.has(route) ? undefined : data.dateModified,
-    );
+    expect(lastmods.get(route)).toBe(data.dateModified);
     postDates.push(data.dateModified);
   }
   expect(lastmods.get("/blog/")).toBe(postDates.toSorted().at(-1));

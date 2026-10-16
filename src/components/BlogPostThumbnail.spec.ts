@@ -88,36 +88,3 @@ describe("BlogPostThumbnail link name", () => {
     expect(byIds("aria-describedby")).toEqual(["Description test-post"]);
   });
 });
-
-// A test article shows a Draft label next to its category, and the link description starts with it.
-describe("BlogPostThumbnail draft label", () => {
-  const render = async (draft: boolean) => {
-    const container = await AstroContainer.create();
-    const post = createTestPost({ id: "test-post", draft });
-    const html = await container.renderToString(BlogPostThumbnail, {
-      props: { post, heading: "h2" },
-    });
-    return new JSDOM(html).window.document;
-  };
-
-  it("labels a draft post and describes the link with the label", async () => {
-    const doc = await render(true);
-    const label = doc.querySelector(".card .draft-label");
-    assert.exists(label);
-    expect(label.textContent).toBe("Draft");
-    const link = doc.querySelector("a");
-    assert.exists(link);
-    const described = String(link.getAttribute("aria-describedby"))
-      .split(" ")
-      .map((id) => doc.getElementById(id));
-    expect(described.map((el) => el && el.textContent)).toEqual([
-      "Draft",
-      "Description test-post",
-    ]);
-  });
-
-  it("shows no label on a post that is not a draft", async () => {
-    const doc = await render(false);
-    expect(doc.querySelector(".draft-label")).toBeNull();
-  });
-});

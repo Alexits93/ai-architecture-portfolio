@@ -82,7 +82,7 @@ test.describe("work rows", () => {
 });
 
 test.describe("writing list", () => {
-  test("finds the built posts", () => expect(POSTS.length).toBeGreaterThan(1));
+  test("finds the built posts", () => expect(POSTS.length).toBeGreaterThan(0));
 
   test("links to built posts, each once, newest first, then to /blog/", async ({
     page,

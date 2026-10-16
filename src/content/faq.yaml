@@ -18,7 +18,7 @@
 - id: ai-writing
   order: 5
   question: Do you use AI to write the blog?
-  answer: No. I write every article myself, by hand, without AI-generated text. The posts marked Draft are test articles for the design and features of this site.
+  answer: No. I write every article myself, by hand, without AI-generated text.
 - id: game
   order: 6
   question: What game are you making?

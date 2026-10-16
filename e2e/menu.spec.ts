@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { globSync } from "node:fs";
 import { animationsSettled } from "./animations";
 import { test, expect, type Page } from "@playwright/test";
 
@@ -112,7 +113,8 @@ for (const viewport of [
 
 // The sticky header keeps z-index 1, enough to stay above positioned page content (the home hero, the post reader)
 // once the old 10000 is gone; the open menu needs none, it sits in the top layer.
-for (const route of ["/", "/blog/ai-agent-harness/"]) {
+const POST_ROUTE = `/${globSync("blog/*/index.html", { cwd: "dist" })[0].replace(/index\.html$/, "")}`;
+for (const route of ["/", POST_ROUTE]) {
   test(`the scrolled header on ${route} stays above the page content`, async ({
     page,
   }) => {
