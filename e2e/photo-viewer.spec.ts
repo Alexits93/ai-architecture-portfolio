@@ -51,6 +51,23 @@ test.describe('reduced motion', () => {
   });
 });
 
+// #357: at 400% zoom (a 1280x1024 window is 320x256 CSS px, WCAG 1.4.10) the open photo shrank to about 64 px, smaller
+// than its thumbnail, and the caption wrapped one word per line. The photo keeps a floor and the dialog scrolls.
+test.describe('at 400% zoom', () => {
+  test.use({ viewport: { width: 320, height: 256 }, reducedMotion: 'reduce' });
+
+  test('the open photo is at least as wide as its thumbnail', async ({ page }) => {
+    await page.goto('/');
+    const thumb = await photo(page).locator('img').boundingBox();
+    assert(thumb !== null);
+    await photo(page).click();
+    await expect(dialog(page)).toBeVisible();
+    const large = await dialog(page).locator('img').boundingBox();
+    assert(large !== null);
+    expect(large.width).toBeGreaterThanOrEqual(thumb.width - 1);
+  });
+});
+
 // A mouse drag scrolls the row and must not open the photo it ends on.
 test.describe('mouse drag at 390 px', () => {
   test.use({ viewport: { width: 390, height: 900 }, reducedMotion: 'reduce' });
