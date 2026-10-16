@@ -6,6 +6,7 @@ interface PostOverrides {
   publishDate?: string;
   updatedDate?: string;
   category?: Category;
+  draft?: boolean;
 }
 
 /** Typed test fixture. Matches CollectionEntry<'blog'> exactly, no casts. */
@@ -15,6 +16,7 @@ export const createTestPost = ({
   publishDate = '2026-01-01',
   updatedDate,
   category = 'AI',
+  draft = false,
 }: PostOverrides): BlogPost => ({
   id,
   body: '',
@@ -27,5 +29,6 @@ export const createTestPost = ({
     publishDate: new Date(publishDate),
     ...(updatedDate === undefined ? {} : { updatedDate: new Date(updatedDate) }),
     category,
+    draft,
   },
 });

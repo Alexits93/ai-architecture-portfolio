@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import Pill from '@/components/Pill.astro';
 import { ROUTES, SITE } from '@/consts';
 import { homeJsonLd } from '@/lib/json-ld';
 import Contact from './_Contact.astro';
@@ -19,6 +20,7 @@ const jsonLd = homeJsonLd(new URL(ROUTES.home, Astro.site).href);
 	<main>
 		<Hero />
 		<Photos />
+		<div id="get-to-know" class="get-to-know"><Pill href={ROUTES.about}>Get to know me</Pill></div>
 		<Now />
 		<Services />
 		<Work />
@@ -28,4 +30,9 @@ const jsonLd = homeJsonLd(new URL(ROUTES.home, Astro.site).href);
 		<Contact />
 	</main>
 </BaseLayout>
+
+<style>
+	/* The link to /about/ between the photo row and the now card (#348). */
+	.get-to-know { display: flex; justify-content: center; margin: var(--space-8) 0 0; }
+</style>
 

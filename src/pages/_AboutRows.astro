@@ -1,0 +1,52 @@
+---
+// Page-only component for /about/ (ADR 002): a section of headed rows, the heading on the left on wide screens, as the
+// home principles are (#348). Shared by the causes and the goals; the slot holds a closing line.
+import DisplayHeading from '@/components/DisplayHeading.astro';
+import Eyebrow from '@/components/Eyebrow.astro';
+
+interface Props {
+	id: string;
+	eyebrow: string;
+	title: string;
+	items: { title: string; text: string }[];
+}
+
+const { id, eyebrow, title, items } = Astro.props;
+---
+
+<section id={id} class="rows" aria-labelledby={`${id}-title`}>
+	<div class="intro">
+		<Eyebrow>{eyebrow}</Eyebrow>
+		<DisplayHeading as="h2" size="section" id={`${id}-title`} accent={title} />
+	</div>
+	<div>
+		<ul>
+			{items.map((item) => (
+				<li>
+					<h3>{item.title}</h3>
+					<p>{item.text}</p>
+				</li>
+			))}
+		</ul>
+		<slot />
+	</div>
+</section>
+
+<style>
+	.rows { display: grid; gap: var(--space-8); padding-block: var(--space-12); color: var(--font-color); }
+	ul { list-style: none; margin: 0; padding: 0; }
+	li { padding-block: var(--space-6); border-block-start: var(--border-width-hairline) solid var(--hairline-color); }
+	li:first-child { padding-block-start: 0; border-block-start: 0; }
+	h3 {
+		margin: 0 0 var(--space-2); color: var(--font-color-bold); font-size: var(--font-size-xl);
+		letter-spacing: var(--letter-spacing-tight);
+	}
+	p { margin: 0; }
+	.rows :global(.closing) { margin-block-start: var(--space-6); color: var(--font-color-bold); font-size: var(--font-size-lg); }
+
+	/* On wide screens the heading sticks on the left while the rows pass on the right. */
+	@media (min-width: 64rem) {
+		.rows { grid-template-columns: 2fr 3fr; align-items: start; }
+		.intro { position: sticky; top: var(--offset-sticky); }
+	}
+</style>

@@ -13,7 +13,7 @@ const services = (await getCollection('services')).toSorted((a, b) => a.data.ord
 	<div class="intro">
 		<Eyebrow>Skills</Eyebrow>
 		<DisplayHeading as="h2" size="section" id="services-title" class="title" text="What I do" accent="best" />
-		<p>Three things I do every week, at work and on this site.</p>
+		<p>Some things I do every week, at work and in my free time.</p>
 	</div>
 	<ol class="stack">
 		{services.map(({ data }) => (
@@ -39,6 +39,7 @@ const services = (await getCollection('services')).toSorted((a, b) => a.data.ord
 	.service:nth-child(1) { --i: 0; }
 	.service:nth-child(2) { --i: 1; }
 	.service:nth-child(3) { --i: 2; }
+	.service:nth-child(4) { --i: 3; }
 	.name { margin: 0 0 var(--space-4); }
 	.service > p { margin: 0 0 var(--space-6); }
 	.service ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }

@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import ArticleNavigator from './_ArticleNavigator.astro';
 import DisplayHeading from '@/components/DisplayHeading.astro';
+import DraftLabel from '@/components/DraftLabel.astro';
 import Eyebrow from '@/components/Eyebrow.astro';
 import { getCategoryPath } from '@/lib/permalink';
 import Logo from '@/assets/logo.svg';
@@ -27,7 +28,7 @@ const formattedDate = `${d.getUTCDate()} ${monthNames[d.getUTCMonth()]} ${d.getU
     <header class="wrapper-top" id="post-hero">
       <!-- The subtitle belongs to the title, so it is a paragraph in the hgroup, not a second heading (#307). -->
       <hgroup>
-        <Eyebrow><a href={getCategoryPath(post.data.category)}>{post.data.category}</a></Eyebrow>
+        <Eyebrow><a href={getCategoryPath(post.data.category)}>{post.data.category}</a>{post.data.draft && <> <DraftLabel /></>}</Eyebrow>
         <DisplayHeading as="h1" size="section" data-morph="title" text={post.data.title} />
         <p class="subtitle">{post.data.subtitle}</p>
       </hgroup>

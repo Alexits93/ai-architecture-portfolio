@@ -29,7 +29,11 @@ test('lists the questions in order and opens one at a time', async ({ page }) =>
     'What is an agent harness?',
     'Which stack do you use?',
     'How do you work with LLMs?',
+    'Do you use AI to write the blog?',
+    'What game are you making?',
   ]);
+  // #347: the owner's answers replaced the sketch's "Draft:" copy.
+  expect(await section.locator('details p').allTextContents()).not.toContainEqual(expect.stringContaining('Draft:'));
 
   await questions.nth(0).locator('summary').click();
   await expect(questions.nth(0)).toHaveAttribute('open');

@@ -1,18 +1,25 @@
-# The FAQ on home, shown by `order` (src/content.config.ts). Draft copy from the #252 sketch; the owner rewrites it
-# in #264.
+# The FAQ on home, shown by `order` (src/content.config.ts). Owner copy (#347).
 - id: frontend-architect
   order: 1
   question: What does a frontend architect do?
-  answer: "Draft: decides how a large frontend is split, which rules it follows, and which of those rules CI checks."
+  answer: Decides how a large frontend is split, which rules it follows, and which of those rules CI checks. At work that means moving a Windows desktop app to Nx and Angular.
 - id: agent-harness
   order: 2
   question: What is an agent harness?
-  answer: "Draft: the instructions, permissions, hooks and tests around a coding agent, so its output is checked before a person reviews it."
+  answer: The instructions, permissions, hooks and tests around a coding agent, so its work is checked before a person reviews it. This site runs on one.
 - id: stack
   order: 3
   question: Which stack do you use?
-  answer: "Draft: Nx, Angular and TypeScript at work. Astro and plain CSS for this site."
+  answer: Nx, Angular and TypeScript at work. Astro and plain CSS for this site. Godot and GDScript for my game.
 - id: llms
   order: 4
   question: How do you work with LLMs?
-  answer: "Draft: the model proposes, I decide. I ask it to argue against the design first."
+  answer: The model proposes, I decide. I ask it to argue against the design first, and nothing counts as done until I ran it.
+- id: ai-writing
+  order: 5
+  question: Do you use AI to write the blog?
+  answer: No. I write every article myself, by hand, without AI-generated text. The posts marked Draft are test articles for the design and features of this site.
+- id: game
+  order: 6
+  question: What game are you making?
+  answer: An indie game in Godot with GDScript, built in my free time. I will write about it once there is something to show.

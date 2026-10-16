@@ -9,14 +9,14 @@ test('shows what Patrik works on now with its updated date', async ({ page }) =>
   const now = page.getByRole('region', { name: 'Now' });
   await expect(now.getByRole('heading', { level: 2, name: 'Now' })).toBeVisible();
   await expect(now.getByRole('listitem')).toHaveText([
-    'Rebuilding this site’s home page around who I am and what I build.',
-    'Tightening the gates that keep LLM coding agents honest in this repo.',
-    'Writing about working with LLMs as an architect.',
+    'Working on my indie game in Godot with GDScript.',
+    'Writing blog articles for this site by hand, in Markdown, without AI-generated text.',
+    'Visiting car meets and Swiss mountain passes with my RS3.',
   ]);
   const updated = now.locator('time');
-  await expect(updated).toHaveAttribute('datetime', '2026-10-13');
-  await expect(updated).toHaveText('13 October 2026');
-  await expect(now).toContainText('Updated 13 October 2026');
+  await expect(updated).toHaveAttribute('datetime', '2026-10-16');
+  await expect(updated).toHaveText('16 October 2026');
+  await expect(now).toContainText('Updated 16 October 2026');
 });
 
 // #258: the now card sits near the top, the principles between Work and the writing. Astro renders a component's
@@ -24,5 +24,5 @@ test('shows what Patrik works on now with its updated date', async ({ page }) =>
 test('sits after the hero, with the principles after the work rows', async ({ page }) => {
   await page.goto('/');
   const ids = await page.locator('main > :not(script)').evaluateAll((blocks) => blocks.map((block) => block.id));
-  expect(ids).toEqual(['hero', 'photos', 'now', 'services', 'work', 'principles', 'writing', 'faq', 'contact']);
+  expect(ids).toEqual(['hero', 'photos', 'get-to-know', 'now', 'services', 'work', 'principles', 'writing', 'faq', 'contact']);
 });

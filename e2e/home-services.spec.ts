@@ -18,6 +18,7 @@ test.describe('reduced motion', () => {
       '01. Frontend architecture',
       '02. Harnesses for LLM coding agents',
       '03. Coaching engineers',
+      '04. Learning and experimenting',
     ]);
   });
 
@@ -37,7 +38,7 @@ test.describe('reduced motion', () => {
         return { top: box.top, bottom: box.bottom };
       }),
     );
-    expect(boxes).toHaveLength(3);
+    expect(boxes).toHaveLength(4);
     for (const [index, box] of boxes.entries()) {
       const previous = boxes[index - 1];
       if (previous === undefined) continue;

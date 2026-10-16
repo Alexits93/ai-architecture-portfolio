@@ -72,7 +72,7 @@ it('renders the hero, the photos, now, the services, the work rows, the principl
   const main = doc.querySelector('main');
   assert.exists(main);
   const blocks = [...main.querySelectorAll(':scope > :not(script)')].map((block) => block.id);
-  expect(blocks).toEqual(['hero', 'photos', 'now', 'services', 'work', 'principles', 'writing', 'faq', 'contact']);
+  expect(blocks).toEqual(['hero', 'photos', 'get-to-know', 'now', 'services', 'work', 'principles', 'writing', 'faq', 'contact']);
 });
 
 // One site-wide title and the positioning pitch from SITE (#214). The h1 holds the full name for screen readers;
