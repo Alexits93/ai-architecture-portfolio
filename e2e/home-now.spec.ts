@@ -24,5 +24,5 @@ test('shows what Patrik works on now with its updated date', async ({ page }) =>
 test('sits after the hero, with the principles after the work rows', async ({ page }) => {
   await page.goto('/');
   const ids = await page.locator('main > :not(script)').evaluateAll((blocks) => blocks.map((block) => block.id));
-  expect(ids).toEqual(['hero', 'photos', 'now', 'services', 'work', 'principles', 'writing', 'faq', 'contact']);
+  expect(ids).toEqual(['hero', 'photos', 'get-to-know', 'now', 'services', 'work', 'principles', 'writing', 'faq', 'contact']);
 });

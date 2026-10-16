@@ -1,0 +1,77 @@
+---
+// Page-only component for /about/ (ADR 002): the owner's hobbies as cards (#348), with a photo from the home photo row
+// where one fits.
+import { Image } from 'astro:assets';
+import seoul from '@/assets/photos/row-3-seoul.jpg';
+import stadium from '@/assets/photos/row-2-stadium.jpg';
+import porsche from '@/assets/photos/row-4-porsche.jpg';
+import Card from '@/components/Card.astro';
+import DisplayHeading from '@/components/DisplayHeading.astro';
+import Eyebrow from '@/components/Eyebrow.astro';
+
+const hobbies = [
+	{
+		title: 'Video games',
+		text: 'My main hobby is video games. I have been a huge gamer for close to 20 years now, and my favourites are single-player story games. My all-time favourite franchise is Mass Effect.',
+	},
+	{
+		title: 'Cars',
+		text: 'I am a huge car enthusiast. I love German cars from the 80s until the mid 2010s, especially Porsches and AMGs. My dream car is the Mercedes-Benz SLS AMG Black Series, and I have a soft spot for Paganis.',
+		photo: { src: porsche, alt: 'Sitting in my dream Porsche, a 911 930 Turbo Slant Nose' },
+	},
+	{
+		title: 'Travel',
+		text: 'I always wanted to travel and see the whole world. I have visited 26 countries so far, and my goal is to visit at least 50 and every single continent. Europe, Asia and Africa are already done.',
+		photo: { src: seoul, alt: 'My wife in a hanbok, seen from behind, in front of a Korean pagoda' },
+	},
+	{
+		title: 'Real Madrid',
+		text: 'I have supported Real Madrid since 2002. My favourite players are Raúl González, Iker Casillas and the GOAT, Cristiano Ronaldo. Having played football myself, I grew up loving the sport, which unfortunately is going through a rather turbulent time.',
+		photo: { src: stadium, alt: 'In the Santiago Bernabéu stadium in Madrid, Spain. Hala Madrid!' },
+	},
+	{
+		title: 'Movies',
+		text: 'I love watching movies, especially horror, sci-fi and fantasy. My favourite franchises are The Lord of the Rings, Star Wars, The Matrix and Blade.',
+	},
+	{
+		title: 'Freestyle football',
+		text: 'My niche hobby used to be freestyle football, but a serious injury stopped me from practising it ever again. My videos are still on YouTube and Instagram.',
+	},
+];
+---
+
+<section id="hobbies" class="hobbies" aria-labelledby="hobbies-title">
+	<Eyebrow>In my free time</Eyebrow>
+	<DisplayHeading as="h2" size="section" id="hobbies-title" accent="Hobbies" />
+	<ul class="grid">
+		{hobbies.map(({ title, text, photo }) => (
+			<Card as="li" class="hobby">
+				{photo && <Image class="photo" src={photo.src} alt={photo.alt} widths={[400, 600, 816]} sizes="(min-width: 64rem) 30vw, (min-width: 48rem) 45vw, 90vw" quality={70} />}
+				<DisplayHeading as="h3" size="card" class="name" text={title} />
+				<p>{text}</p>
+			</Card>
+		))}
+	</ul>
+</section>
+
+<style>
+	.hobbies { padding-block: var(--space-12); }
+	/* minmax(0, 1fr) lets a track shrink below its content on a small viewport, as the blog grid does. */
+	.grid {
+		list-style: none; margin: var(--space-8) 0 0; padding: 0;
+		display: grid; gap: var(--space-8); grid-template-columns: minmax(0, 1fr);
+	}
+	.photo {
+		display: block; inline-size: 100%; block-size: auto; aspect-ratio: 4 / 3; object-fit: cover;
+		margin-block-end: var(--space-6); border-radius: var(--radius-xl);
+	}
+	.name { margin: 0 0 var(--space-4); }
+	.hobby p { margin: 0; }
+
+	@media (min-width: 48rem) {
+		.grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	}
+	@media (min-width: 64rem) {
+		.grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+	}
+</style>
