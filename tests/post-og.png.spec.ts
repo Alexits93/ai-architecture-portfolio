@@ -7,7 +7,7 @@ const post = createTestPost({ id: "hello" });
 
 vi.mock("astro:content", () => ({ getCollection: async () => [post] }));
 
-// Each post shares its own image, drawn with its title and subtitle.
+// Each post shares its own image, drawn with its title, its subtitle and the site title as byline.
 describe("post og.png endpoint", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -19,7 +19,7 @@ describe("post og.png endpoint", () => {
     ]);
   });
 
-  it("draws the post title and subtitle into a PNG response", async () => {
+  it("draws the post title, subtitle and byline into a PNG response", async () => {
     const png = Buffer.from("89504e470d0a1a0a", "hex");
     const spy = vi.spyOn(ogModule, "generateOgImage").mockResolvedValue(png);
 
@@ -28,6 +28,7 @@ describe("post og.png endpoint", () => {
     expect(spy).toHaveBeenCalledExactlyOnceWith(
       "Title hello",
       "Subtitle hello",
+      "Patrik Alexits | Frontend Architect",
     );
     expect(response.status).toBe(200);
     expect(Buffer.from(await response.arrayBuffer())).toEqual(png);

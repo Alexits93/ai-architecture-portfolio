@@ -13,10 +13,11 @@ interface Props {
 const { post } = Astro.props;
 const { title, subtitle, description, publishDate } = post.data;
 const pageUrl = new URL(getPostPath(post), Astro.site).href;
-// Each post shares its own image, drawn by src/pages/blog/[slug]/og.png.ts from the title and subtitle.
+// Each post shares its own image, drawn by src/pages/blog/[slug]/og.png.ts from the title, the subtitle and the
+// site title as byline, so the alt text reads all three.
 const ogImage = {
   path: `${getPostPath(post)}og.png`,
-  alt: `${title}. ${subtitle}`,
+  alt: `${title}. ${subtitle}. ${SITE.title}`,
 };
 
 // https://developers.google.com/search/docs/appearance/structured-data/article. Google does not read mainEntityOfPage;
