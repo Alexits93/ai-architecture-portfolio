@@ -1,35 +1,51 @@
 ---
 // The owner's hobbies, causes and goals, linked from the home photo row and the menu.
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
-import Causes from './_Causes.astro';
-import Goals from './_Goals.astro';
-import Hobbies from './_Hobbies.astro';
-import { SITE } from '@/consts';
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import DisplayHeading from "@/components/DisplayHeading.astro";
+import Eyebrow from "@/components/Eyebrow.astro";
+import Causes from "./_Causes.astro";
+import Goals from "./_Goals.astro";
+import Hobbies from "./_Hobbies.astro";
+import { SITE } from "@/consts";
 ---
 
 <BaseLayout
-	title={`About | ${SITE.name}`}
-	description="Get to know Patrik Alexits: hobbies, causes and goals, from video games, cars and Real Madrid to veganism, accessibility and education."
+  title={`About | ${SITE.name}`}
+  description="Get to know Patrik Alexits: hobbies, causes and goals, from video games, cars and Real Madrid to veganism, accessibility and education."
 >
-	<main>
-		<div class="head">
-			<Eyebrow>About</Eyebrow>
-			<DisplayHeading as="h1" size="section" class="title" text="Get to know" accent="me" />
-			<p class="lead">
-				I'm an exceptionally extroverted person who loves stories, fast cars and seeing the world, and who wants to help
-				others find their voice. This is me outside the code.
-			</p>
-		</div>
-		<Hobbies />
-		<Causes />
-		<Goals />
-	</main>
+  <main>
+    <div class="head">
+      <Eyebrow>About</Eyebrow>
+      <DisplayHeading
+        as="h1"
+        size="section"
+        class="title"
+        text="Get to know"
+        accent="me"
+      />
+      <p class="lead">
+        I'm an exceptionally extroverted person who loves stories, fast cars and
+        seeing the world, and who wants to help others find their voice. This is
+        me outside the code.
+      </p>
+    </div>
+    <Hobbies />
+    <Causes />
+    <Goals />
+  </main>
 </BaseLayout>
 
 <style>
-	.head { padding-block: var(--space-12) 0; }
-	.title { margin: 0 0 var(--space-4); }
-	.lead { margin: 0; max-inline-size: var(--size-pitch); color: var(--font-color); font-size: var(--font-size-lg); }
+  .head {
+    padding-block: var(--space-12) 0;
+  }
+  .title {
+    margin: 0 0 var(--space-4);
+  }
+  .lead {
+    margin: 0;
+    max-inline-size: var(--size-pitch);
+    color: var(--font-color);
+    font-size: var(--font-size-lg);
+  }
 </style>

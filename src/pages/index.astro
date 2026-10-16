@@ -1,38 +1,43 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import Pill from '@/components/Pill.astro';
-import { ROUTES, SITE } from '@/consts';
-import { homeJsonLd } from '@/lib/json-ld';
-import Contact from './_Contact.astro';
-import Faq from './_Faq.astro';
-import Hero from './_Hero.astro';
-import Now from './_Now.astro';
-import Photos from './_Photos.astro';
-import Principles from './_Principles.astro';
-import Services from './_Services.astro';
-import Work from './_Work.astro';
-import Writing from './_Writing.astro';
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Pill from "@/components/Pill.astro";
+import { ROUTES, SITE } from "@/consts";
+import { homeJsonLd } from "@/lib/json-ld";
+import Contact from "./_Contact.astro";
+import Faq from "./_Faq.astro";
+import Hero from "./_Hero.astro";
+import Now from "./_Now.astro";
+import Photos from "./_Photos.astro";
+import Principles from "./_Principles.astro";
+import Services from "./_Services.astro";
+import Work from "./_Work.astro";
+import Writing from "./_Writing.astro";
 
 const jsonLd = homeJsonLd(new URL(ROUTES.home, Astro.site).href);
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description} jsonLd={jsonLd}>
-	<main>
-		<Hero />
-		<Photos />
-		<div id="get-to-know" class="get-to-know"><Pill href={ROUTES.about}>Get to know me</Pill></div>
-		<Now />
-		<Services />
-		<Work />
-		<Principles />
-		<Writing />
-		<Faq />
-		<Contact />
-	</main>
+  <main>
+    <Hero />
+    <Photos />
+    <div id="get-to-know" class="get-to-know">
+      <Pill href={ROUTES.about}>Get to know me</Pill>
+    </div>
+    <Now />
+    <Services />
+    <Work />
+    <Principles />
+    <Writing />
+    <Faq />
+    <Contact />
+  </main>
 </BaseLayout>
 
 <style>
-	/* The link to /about/ between the photo row and the now card. */
-	.get-to-know { display: flex; justify-content: center; margin: var(--space-8) 0 0; }
+  /* The link to /about/ between the photo row and the now card. */
+  .get-to-know {
+    display: flex;
+    justify-content: center;
+    margin: var(--space-8) 0 0;
+  }
 </style>
-

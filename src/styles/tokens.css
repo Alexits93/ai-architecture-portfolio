@@ -8,169 +8,197 @@
    (https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@custom-media). */
 
 :root {
-    color-scheme: light dark;
+  color-scheme: light dark;
 
-    --body-background: light-dark(hsl(200, 25%, 90%), hsl(200, 10%, 15%));
-    --theme-primary: light-dark(hsl(200, 100%, 50%), hsl(200, 50%, 35%));
-    --theme-secondary: light-dark(hsl(200, 20%, 95%), hsl(200, 10%, 20%));
-    --font-color: light-dark(hsl(200, 100%, 15%), hsl(200, 10%, 75%));
-    --font-color-bold: light-dark(hsl(200, 30%, 30%), hsl(200, 5%, 75%));
-    /* The hover surface of the blog cards, the pills and the FAQ questions: darker than the page in light, lighter in
+  --body-background: light-dark(hsl(200, 25%, 90%), hsl(200, 10%, 15%));
+  --theme-primary: light-dark(hsl(200, 100%, 50%), hsl(200, 50%, 35%));
+  --theme-secondary: light-dark(hsl(200, 20%, 95%), hsl(200, 10%, 20%));
+  --font-color: light-dark(hsl(200, 100%, 15%), hsl(200, 10%, 75%));
+  --font-color-bold: light-dark(hsl(200, 30%, 30%), hsl(200, 5%, 75%));
+  /* The hover surface of the blog cards, the pills and the FAQ questions: darker than the page in light, lighter in
        dark, where Material raises containers above the surface tone (material-color-utilities color_spec_2021.ts). */
-    --thumbnail-bg-color-hover: light-dark(hsl(200, 25%, 81%), hsl(200, 10%, 24%));
-    /* The name's gradient accent moves between these two, both at least 3:1 against the page (large text, WCAG 1.4.3). */
-    --accent-a: light-dark(hsl(200, 100%, 25%), hsl(200, 80%, 72%));
-    --accent-b: light-dark(hsl(265, 60%, 42%), hsl(265, 80%, 82%));
-    /* Translucent tint behind an icon button on hover, in the icon's own hue. */
-    --state-hover: light-dark(hsl(200 30% 30% / .12), hsl(200 5% 75% / .12));
-    --focus-color: light-dark(hsl(0, 0%, 0%), hsl(0, 0%, 99%));
-    --code-comment: light-dark(hsl(200, 10%, 38%), hsl(200, 8%, 62%));
-    --code-keyword: light-dark(hsl(300, 60%, 32%), hsl(300, 50%, 75%));
-    --code-string: light-dark(hsl(120, 60%, 24%), hsl(100, 45%, 65%));
-    --code-number: light-dark(hsl(25, 90%, 30%), hsl(30, 80%, 68%));
-    --code-function: light-dark(hsl(210, 80%, 35%), hsl(200, 80%, 72%));
+  --thumbnail-bg-color-hover: light-dark(
+    hsl(200, 25%, 81%),
+    hsl(200, 10%, 24%)
+  );
+  /* The name's gradient accent moves between these two, both at least 3:1 against the page (large text, WCAG 1.4.3). */
+  --accent-a: light-dark(hsl(200, 100%, 25%), hsl(200, 80%, 72%));
+  --accent-b: light-dark(hsl(265, 60%, 42%), hsl(265, 80%, 82%));
+  /* Translucent tint behind an icon button on hover, in the icon's own hue. */
+  --state-hover: light-dark(hsl(200 30% 30% / 0.12), hsl(200 5% 75% / 0.12));
+  --focus-color: light-dark(hsl(0, 0%, 0%), hsl(0, 0%, 99%));
+  --code-comment: light-dark(hsl(200, 10%, 38%), hsl(200, 8%, 62%));
+  --code-keyword: light-dark(hsl(300, 60%, 32%), hsl(300, 50%, 75%));
+  --code-string: light-dark(hsl(120, 60%, 24%), hsl(100, 45%, 65%));
+  --code-number: light-dark(hsl(25, 90%, 30%), hsl(30, 80%, 68%));
+  --code-function: light-dark(hsl(210, 80%, 35%), hsl(200, 80%, 72%));
 
-    /* Space: the step number counts quarter rems. */
-    --space-1: .25rem;
-    --space-2: .5rem;
-    --space-4: 1rem;
-    --space-6: 1.5rem;
-    --space-8: 2rem;
-    --space-10: 2.5rem;
-    --space-12: 3rem;
-    --space-16: 4rem;
-    --space-24: 6rem;
+  /* Space: the step number counts quarter rems. */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
 
-    --font-family: var(--font-inter);
-    --font-family-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    --font-size-sm: .875rem;
-    --font-size-base: 1rem;
-    --font-size-md: 1.125rem;
-    --font-size-lg: 1.2rem;
-    --font-size-xl: 1.5rem;
-    --font-size-2xl: 2.25rem;
-    /* Display type: section titles, the hero name and the contact word that
+  --font-family: var(--font-inter);
+  --font-family-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1.125rem;
+  --font-size-lg: 1.2rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2.25rem;
+  /* Display type: section titles, the hero name and the contact word that
        fills its column. Each size grows with the viewport or its column and keeps its own tight leading and tracking. */
-    --font-size-display-section: clamp(2rem, 5vw, 3.5rem);
-    /* Small enough that each half of the name fits beside the portrait from 64rem. */
-    --font-size-display-hero: clamp(3rem, 6vw, 5.5rem);
-    /* A share of the container's inline size (cqi), so the contact word fills its column at any width. In Inter
+  --font-size-display-section: clamp(2rem, 5vw, 3.5rem);
+  /* Small enough that each half of the name fits beside the portrait from 64rem. */
+  --font-size-display-hero: clamp(3rem, 6vw, 5.5rem);
+  /* A share of the container's inline size (cqi), so the contact word fills its column at any width. In Inter
        bold at the giant tracking, SAY HELLO is about 4.96em wide; 19.5cqi leaves a few percent to spare. */
-    --font-size-display-giant: 19.5cqi;
-    /* The title on a service card, between the body sizes and the section titles. */
-    --font-size-display-card: clamp(1.5rem, 3vw, 2.25rem);
-    --line-height-display-section: 1.05;
-    --line-height-display-card: 1.1;
-    --line-height-display-hero: .9;
-    --line-height-display-giant: .8;
-    --letter-spacing-display-section: -.04em;
-    --letter-spacing-display-card: -.03em;
-    --letter-spacing-display-hero: -.05em;
-    --letter-spacing-display-giant: -.06em;
-    --line-height-sm: 1.25rem;
-    --line-height-md: 1.75rem;
-    --line-height-lg: 2rem;
-    --line-height-xl: 2.5rem;
-    --line-height-body: 1.625;
-    --font-weight-regular: 400;
-    --font-weight-medium: 500;
-    --font-weight-bold: 700;
-    --letter-spacing-tight: -.025em;
-    --letter-spacing-body: -.01em;
-    --letter-spacing-wide: .1em;
+  --font-size-display-giant: 19.5cqi;
+  /* The title on a service card, between the body sizes and the section titles. */
+  --font-size-display-card: clamp(1.5rem, 3vw, 2.25rem);
+  --line-height-display-section: 1.05;
+  --line-height-display-card: 1.1;
+  --line-height-display-hero: 0.9;
+  --line-height-display-giant: 0.8;
+  --letter-spacing-display-section: -0.04em;
+  --letter-spacing-display-card: -0.03em;
+  --letter-spacing-display-hero: -0.05em;
+  --letter-spacing-display-giant: -0.06em;
+  --line-height-sm: 1.25rem;
+  --line-height-md: 1.75rem;
+  --line-height-lg: 2rem;
+  --line-height-xl: 2.5rem;
+  --line-height-body: 1.625;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-body: -0.01em;
+  --letter-spacing-wide: 0.1em;
 
-    --radius-xs: 2px;
-    --radius-sm: .25rem;
-    --radius-md: .5rem;
-    --radius-xl: 1.25rem;
-    --radius-2xl: 1.75rem;
-    --radius-full: 50%;
-    /* Larger than any pill's half height, so both ends stay round at any width; 50% would draw an ellipse. */
-    --radius-pill: 999px;
+  --radius-xs: 2px;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
+  --radius-full: 50%;
+  /* Larger than any pill's half height, so both ends stay round at any width; 50% would draw an ellipse. */
+  --radius-pill: 999px;
 
-    --border-width-hairline: 1px;
-    /* Dividers and pill outlines: the text colour thinned, so they follow the theme with it
+  --border-width-hairline: 1px;
+  /* Dividers and pill outlines: the text colour thinned, so they follow the theme with it
        (https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix). */
-    --hairline-color: color-mix(in srgb, var(--font-color) 20%, transparent);
-    /* The page behind an open photo: the page colour, mostly opaque, so the photo stands out in both themes. */
-    --backdrop-color: color-mix(in srgb, var(--body-background) 85%, transparent);
-    --outline-width-focus: 2px;
-    /* A gap between the focus ring and what it outlines keeps the text readable. */
-    --outline-offset-focus: 8px;
-    /* GOV.UK Frontend's link underline: the line scales with the text when the user enlarges it
+  --hairline-color: color-mix(in srgb, var(--font-color) 20%, transparent);
+  /* The page behind an open photo: the page colour, mostly opaque, so the photo stands out in both themes. */
+  --backdrop-color: color-mix(in srgb, var(--body-background) 85%, transparent);
+  --outline-width-focus: 2px;
+  /* A gap between the focus ring and what it outlines keeps the text readable. */
+  --outline-offset-focus: 8px;
+  /* GOV.UK Frontend's link underline: the line scales with the text when the user enlarges it
        (govuk-frontend src/govuk/settings/_links.scss). */
-    --link-underline-thickness: max(1px, .0625rem);
-    --link-underline-thickness-hover: max(3px, .1875rem, .12em);
-    --link-underline-offset: .1578em;
+  --link-underline-thickness: max(1px, 0.0625rem);
+  --link-underline-thickness-hover: max(3px, 0.1875rem, 0.12em);
+  --link-underline-offset: 0.1578em;
 
-    /* Fixed sizes, kept in px so the layout matches the pre-token build. */
-    --size-icon-sm: 25px;
-    --size-icon-md: 40px;
-    --size-icon-lg: 50px;
-    --size-toc: 205px;
-    --size-sidebar: 230px;
-    --size-card-max: 400px;
-    --size-prose: 800px;
-    /* A negative inline margin that takes a block from its centred column to the window edges (the photo row).
+  /* Fixed sizes, kept in px so the layout matches the pre-token build. */
+  --size-icon-sm: 25px;
+  --size-icon-md: 40px;
+  --size-icon-lg: 50px;
+  --size-toc: 205px;
+  --size-sidebar: 230px;
+  --size-card-max: 400px;
+  --size-prose: 800px;
+  /* A negative inline margin that takes a block from its centred column to the window edges (the photo row).
        The percentage resolves against the column where the token is used. */
-    --size-bleed: calc(50% - 50vw);
-    /* The home hero: the portrait card shrinks with a phone screen, and the pitch wraps at a short measure. */
-    --size-portrait: min(70vw, 16rem);
-    --size-pitch: 36ch;
-    /* A photo in the home row: narrow enough on a phone that the next one peeks in as a hint to scroll. */
-    --size-photo: clamp(12rem, 22vw, 17rem);
-    /* An open photo: the height left after the close button and the caption, no wider than the window allows at
+  --size-bleed: calc(50% - 50vw);
+  /* The home hero: the portrait card shrinks with a phone screen, and the pitch wraps at a short measure. */
+  --size-portrait: min(70vw, 16rem);
+  --size-pitch: 36ch;
+  /* A photo in the home row: narrow enough on a phone that the next one peeks in as a hint to scroll. */
+  --size-photo: clamp(12rem, 22vw, 17rem);
+  /* An open photo: the height left after the close button and the caption, no wider than the window allows at
        the files' 9:10 ratio, and at most the files' 1000px. On a short window, such as 400% zoom, the height keeps a
        14rem floor, as wide as a thumbnail, and the dialog scrolls. */
-    --size-photo-large: min(max(calc(100dvh - 12rem), 14rem), calc((100vw - 4rem) * 10 / 9), 1000px);
-    /* The sticky header: the theme toggle and its padding. */
-    --size-header: calc(var(--size-icon-lg) + 2 * var(--space-4));
-    /* Sticky parts on home stop this far below the viewport top, clear of the sticky header. */
-    --offset-sticky: 7rem;
-    /* The service cards sit this far apart before they stack; the space after the last one keeps the pile on screen
+  --size-photo-large: min(
+    max(calc(100dvh - 12rem), 14rem),
+    calc((100vw - 4rem) * 10 / 9),
+    1000px
+  );
+  /* The sticky header: the theme toggle and its padding. */
+  --size-header: calc(var(--size-icon-lg) + 2 * var(--space-4));
+  /* Sticky parts on home stop this far below the viewport top, clear of the sticky header. */
+  --offset-sticky: 7rem;
+  /* The service cards sit this far apart before they stack; the space after the last one keeps the pile on screen
        a while longer. */
-    --space-stack: 16vh;
-    --space-stack-end: 24vh;
-    --page-max-width: 1200px;
-    /* main's widest box, its padding included; the blog grid inside it caps at --page-max-width. */
-    --size-main: 1280px;
-    --font-size-menu: 48px;
+  --space-stack: 16vh;
+  --space-stack-end: 24vh;
+  --page-max-width: 1200px;
+  /* main's widest box, its padding included; the blog grid inside it caps at --page-max-width. */
+  --size-main: 1280px;
+  --font-size-menu: 48px;
 
-    /* Motion. The spring overshoots slightly and settles, sampled into linear() stops
+  /* Motion. The spring overshoots slightly and settles, sampled into linear() stops
        (https://developer.mozilla.org/en-US/docs/Web/CSS/easing-function/linear). */
-    --ease-spring: linear(0, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017 19.4%, 1.067 21.8%, 1.099 24.3%, 1.106 26.2%, 1.098 28.6%, 1.054 34.4%, 1.023 39.4%, 1.002 45.4%, 0.993 54.2%, 1);
-    --ease-in-out-strong: cubic-bezier(0.76, 0, 0.24, 1);
-    /* Transition durations in 100ms steps: a press, a hover, a control that flips, a panel that opens, the menu circle.
+  --ease-spring: linear(
+    0,
+    0.035 2.1%,
+    0.141 4.4%,
+    0.723 12.9%,
+    0.938 16.7%,
+    1.017 19.4%,
+    1.067 21.8%,
+    1.099 24.3%,
+    1.106 26.2%,
+    1.098 28.6%,
+    1.054 34.4%,
+    1.023 39.4%,
+    1.002 45.4%,
+    0.993 54.2%,
+    1
+  );
+  --ease-in-out-strong: cubic-bezier(0.76, 0, 0.24, 1);
+  /* Transition durations in 100ms steps: a press, a hover, a control that flips, a panel that opens, the menu circle.
        The theme reveal in Header.astro reads --duration-6 and --ease-in-out-strong, so it moves like the menu. */
-    --duration-1: .1s;
-    --duration-2: .2s;
-    --duration-3: .3s;
-    --duration-4: .4s;
-    --duration-6: .6s;
-    --duration-enter: .7s;
-    /* One pass of the name gradient's drift between the accents. */
-    --duration-drift: 6s;
-    --stagger: 90ms;
-    /* Scroll reveal: from the first pixel entering the viewport until 30% of the cover range (MDN animation-range). */
-    --range-reveal: entry 0% cover 30%;
+  --duration-1: 0.1s;
+  --duration-2: 0.2s;
+  --duration-3: 0.3s;
+  --duration-4: 0.4s;
+  --duration-6: 0.6s;
+  --duration-enter: 0.7s;
+  /* One pass of the name gradient's drift between the accents. */
+  --duration-drift: 6s;
+  --stagger: 90ms;
+  /* Scroll reveal: from the first pixel entering the viewport until 30% of the cover range (MDN animation-range). */
+  --range-reveal: entry 0% cover 30%;
 
-    --shadow-card-edge: inset 0 1px 0 0 rgba(148, 163, 184, .1);
-    /* A raised card: one long soft shadow below it. The dark page needs a deeper shadow to show at all. */
-    --shadow-raised: 0 24px 48px -24px light-dark(hsl(200 50% 15% / .35), hsl(0 0% 0% / .6));
-    /* The portrait tilt: the depth of the 3D view, and the light that follows the pointer, fading out by
+  --shadow-card-edge: inset 0 1px 0 0 rgba(148, 163, 184, 0.1);
+  /* A raised card: one long soft shadow below it. The dark page needs a deeper shadow to show at all. */
+  --shadow-raised: 0 24px 48px -24px
+    light-dark(hsl(200 50% 15% / 0.35), hsl(0 0% 0% / 0.6));
+  /* The portrait tilt: the depth of the 3D view, and the light that follows the pointer, fading out by
        --glare-reach from it. */
-    --perspective-card: 60rem;
-    --glare-light: hsl(0 0% 100% / .45);
-    --glare-reach: 60%;
+  --perspective-card: 60rem;
+  --glare-light: hsl(0 0% 100% / 0.45);
+  --glare-reach: 60%;
 }
 
-[data-theme="light"] { color-scheme: light; }
-[data-theme="dark"] { color-scheme: dark; }
+[data-theme="light"] {
+  color-scheme: light;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+}
 
 /* Registered, so the name's gradient accent interpolates between --accent-a and --accent-b instead of jumping
    (https://developer.mozilla.org/en-US/docs/Web/CSS/@property). */
 @property --name-accent {
-    syntax: "<color>";
-    inherits: false;
-    initial-value: hsl(200, 100%, 25%);
+  syntax: "<color>";
+  inherits: false;
+  initial-value: hsl(200, 100%, 25%);
 }

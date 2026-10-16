@@ -1,30 +1,41 @@
 ---
-import type { GetStaticPaths } from 'astro';
-import { getCollection } from 'astro:content';
-import { CATEGORIES } from '@/content.config';
-import { sortByNewest } from '@/lib/posts';
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import BlogFeed from '../../_BlogFeed.astro';
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import { CATEGORIES } from "@/content.config";
+import { sortByNewest } from "@/lib/posts";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import BlogFeed from "../../_BlogFeed.astro";
 
 // Each category paginated at 10 posts: /blog/category/<name>/, then /<name>/2/
 // (https://docs.astro.build/en/reference/routing-reference/#paginate, Astro 7).
 export const getStaticPaths = (async ({ paginate }) => {
-	const posts = sortByNewest(await getCollection('blog'));
-	return CATEGORIES.flatMap((category) =>
-		paginate(posts.filter((post) => post.data.category === category), {
-			params: { category: category.toLowerCase() },
-			props: { category },
-			pageSize: 10,
-		}),
-	);
+  const posts = sortByNewest(await getCollection("blog"));
+  return CATEGORIES.flatMap((category) =>
+    paginate(
+      posts.filter((post) => post.data.category === category),
+      {
+        params: { category: category.toLowerCase() },
+        props: { category },
+        pageSize: 10,
+      },
+    ),
+  );
 }) satisfies GetStaticPaths;
 
 const { category, page } = Astro.props;
-import { SITE } from '@/consts';
+import { SITE } from "@/consts";
 ---
 
-<BaseLayout title={`${category} | Blog | ${SITE.name}`} description={`Every post by Patrik Alexits in the ${category} category, newest first, from a blog on frontend architecture and LLM coding agents.`}>
-	<main>
-		<BlogFeed text="Posts on" accent={category} page={page} current={category} />
-	</main>
+<BaseLayout
+  title={`${category} | Blog | ${SITE.name}`}
+  description={`Every post by Patrik Alexits in the ${category} category, newest first, from a blog on frontend architecture and LLM coding agents.`}
+>
+  <main>
+    <BlogFeed
+      text="Posts on"
+      accent={category}
+      page={page}
+      current={category}
+    />
+  </main>
 </BaseLayout>

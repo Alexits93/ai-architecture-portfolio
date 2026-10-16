@@ -1,43 +1,72 @@
 ---
 // Page-only component for the home page (ADR 002): the now card from src/content/now/now.md, as a card
 // near the top.
-import { getEntry, render } from 'astro:content';
-import Card from '@/components/Card.astro';
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
-import { displayDate, isoDate } from '@/lib/dates';
+import { getEntry, render } from "astro:content";
+import Card from "@/components/Card.astro";
+import DisplayHeading from "@/components/DisplayHeading.astro";
+import Eyebrow from "@/components/Eyebrow.astro";
+import { displayDate, isoDate } from "@/lib/dates";
 
-const now = await getEntry('now', 'now');
-if (now === undefined) throw new Error('src/content/now/now.md is missing');
+const now = await getEntry("now", "now");
+if (now === undefined) throw new Error("src/content/now/now.md is missing");
 const { Content } = await render(now);
 const { updated } = now.data;
 ---
 
 <Card as="section" id="now" class="now" aria-labelledby="now-title">
-	<div class="head">
-		<Eyebrow>Currently</Eyebrow>
-		<DisplayHeading as="h2" size="card" id="now-title" class="title" accent="Now" />
-		<p class="updated">
-			Updated <time datetime={isoDate(updated)}>{displayDate(updated, 'long')}</time>
-		</p>
-	</div>
-	<div class="text"><Content /></div>
+  <div class="head">
+    <Eyebrow>Currently</Eyebrow>
+    <DisplayHeading
+      as="h2"
+      size="card"
+      id="now-title"
+      class="title"
+      accent="Now"
+    />
+    <p class="updated">
+      Updated{" "}
+      <time datetime={isoDate(updated)}>{displayDate(updated, "long")}</time>
+    </p>
+  </div>
+  <div class="text">
+    <Content />
+  </div>
 </Card>
 
 <style>
-	.now { display: grid; gap: var(--space-6); margin-block: var(--space-12) 0; }
-	.title { margin: 0 0 var(--space-2); }
-	.updated { margin: 0; font-size: var(--font-size-sm); }
-	/* Content renders Markdown outside this component's scope, so :global() reaches its list. */
-	.text :global(ul) { list-style: none; margin: 0; padding: 0; }
-	.text :global(li) {
-		padding-block: var(--space-4); border-block-start: var(--border-width-hairline) solid var(--hairline-color);
-		font-size: var(--font-size-lg);
-	}
-	.text :global(li:first-child) { padding-block-start: 0; border-block-start: 0; }
+  .now {
+    display: grid;
+    gap: var(--space-6);
+    margin-block: var(--space-12) 0;
+  }
+  .title {
+    margin: 0 0 var(--space-2);
+  }
+  .updated {
+    margin: 0;
+    font-size: var(--font-size-sm);
+  }
+  /* Content renders Markdown outside this component's scope, so :global() reaches its list. */
+  .text :global(ul) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .text :global(li) {
+    padding-block: var(--space-4);
+    border-block-start: var(--border-width-hairline) solid var(--hairline-color);
+    font-size: var(--font-size-lg);
+  }
+  .text :global(li:first-child) {
+    padding-block-start: 0;
+    border-block-start: 0;
+  }
 
-	/* On wide screens the heading sits on the left, the list on the right. */
-	@media (min-width: 48rem) {
-		.now { grid-template-columns: 1fr 2fr; gap: var(--space-8); }
-	}
+  /* On wide screens the heading sits on the left, the list on the right. */
+  @media (min-width: 48rem) {
+    .now {
+      grid-template-columns: 1fr 2fr;
+      gap: var(--space-8);
+    }
+  }
 </style>

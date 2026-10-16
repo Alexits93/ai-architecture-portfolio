@@ -1,127 +1,145 @@
 ---
-import type { Page } from 'astro';
-import BlogPostThumbnail from '@/components/BlogPostThumbnail.astro';
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import DraftNotice from '@/components/DraftNotice.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
-import Pill from '@/components/Pill.astro';
-import { type BlogPost, type Category } from '@/lib/posts';
-import { getCategoryPath } from '@/lib/permalink';
-import { CATEGORIES } from '@/content.config';
-import { ROUTES } from '@/consts';
+import type { Page } from "astro";
+import BlogPostThumbnail from "@/components/BlogPostThumbnail.astro";
+import DisplayHeading from "@/components/DisplayHeading.astro";
+import DraftNotice from "@/components/DraftNotice.astro";
+import Eyebrow from "@/components/Eyebrow.astro";
+import Pill from "@/components/Pill.astro";
+import { type BlogPost, type Category } from "@/lib/posts";
+import { getCategoryPath } from "@/lib/permalink";
+import { CATEGORIES } from "@/content.config";
+import { ROUTES } from "@/consts";
 
 interface Props {
-	/** The h1 words before the accent words, which get the gradient. */
-	text: string;
-	accent: string;
-	/** One page of newest-first posts from paginate() (https://docs.astro.build/en/reference/routing-reference/#page-prop). */
-	page: Page<BlogPost>;
-	/** The category page being rendered; undefined on /blog/. */
-	current?: Category;
+  /** The h1 words before the accent words, which get the gradient. */
+  text: string;
+  accent: string;
+  /** One page of newest-first posts from paginate() (https://docs.astro.build/en/reference/routing-reference/#page-prop). */
+  page: Page<BlogPost>;
+  /** The category page being rendered; undefined on /blog/. */
+  current?: Category;
 }
 
 const { text, accent, page, current } = Astro.props;
 const links = [
-	{ name: 'All', href: ROUTES.blog, isCurrent: current === undefined },
-	...CATEGORIES.map((category) => ({ name: category, href: getCategoryPath(category), isCurrent: category === current })),
+  { name: "All", href: ROUTES.blog, isCurrent: current === undefined },
+  ...CATEGORIES.map((category) => ({
+    name: category,
+    href: getCategoryPath(category),
+    isCurrent: category === current,
+  })),
 ];
 ---
 
 <div class="blog-feed-container">
-	<Eyebrow>Blog</Eyebrow>
-	<DisplayHeading as="h1" size="section" text={text} accent={accent} />
-	{page.data.some((post) => post.data.draft) && <DraftNotice />}
-	<nav aria-label="Blog categories" class="categories">
-		<ul>
-			{links.map(({ name, href, isCurrent }) => (
-				<li><Pill href={href} aria-current={isCurrent ? 'page' : undefined}>{name}</Pill></li>
-			))}
-		</ul>
-	</nav>
-	<div class="blog-grid">
-		{page.data.map((post) => (
-			<div class="blog-post-wrapper">
-				<BlogPostThumbnail post={post} heading="h2" />
-			</div>
-		))}
-	</div>
-	{page.lastPage > 1 && (
-		<nav aria-label="Pagination" class="pagination">
-			{page.url.prev && <a href={page.url.prev} rel="prev">Previous</a>}
-			<a href={page.url.current} aria-current="page">Page {page.currentPage} of {page.lastPage}</a>
-			{page.url.next && <a href={page.url.next} rel="next">Next</a>}
-		</nav>
-	)}
+  <Eyebrow>Blog</Eyebrow>
+  <DisplayHeading as="h1" size="section" text={text} accent={accent} />
+  {page.data.some((post) => post.data.draft) && <DraftNotice />}
+  <nav aria-label="Blog categories" class="categories">
+    <ul>
+      {links.map(({ name, href, isCurrent }) => (
+        <li>
+          <Pill href={href} aria-current={isCurrent ? "page" : undefined}>
+            {name}
+          </Pill>
+        </li>
+      ))}
+    </ul>
+  </nav>
+  <div class="blog-grid">
+    {page.data.map((post) => (
+      <div class="blog-post-wrapper">
+        <BlogPostThumbnail post={post} heading="h2" />
+      </div>
+    ))}
+  </div>
+  {page.lastPage > 1 && (
+    <nav aria-label="Pagination" class="pagination">
+      {page.url.prev && (
+        <a href={page.url.prev} rel="prev">
+          Previous
+        </a>
+      )}
+      <a href={page.url.current} aria-current="page">
+        Page {page.currentPage} of {page.lastPage}
+      </a>
+      {page.url.next && (
+        <a href={page.url.next} rel="next">
+          Next
+        </a>
+      )}
+    </nav>
+  )}
 </div>
 
 <style>
-	/* main pads the page; the feed adds no padding of its own, as the home sections do. */
-	.blog-feed-container {
-		width: 100%;
-		max-width: var(--page-max-width);
-		margin: 0 auto;
-	}
+  /* main pads the page; the feed adds no padding of its own, as the home sections do. */
+  .blog-feed-container {
+    width: 100%;
+    max-width: var(--page-max-width);
+    margin: 0 auto;
+  }
 
-	/* The pills wrap with room for their focus ring between the rows. */
-	.categories ul {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--space-4) var(--space-2);
-		margin: var(--space-8) 0 0;
-		padding: 0;
-		list-style: none;
-	}
+  /* The pills wrap with room for their focus ring between the rows. */
+  .categories ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-2);
+    margin: var(--space-8) 0 0;
+    padding: 0;
+    list-style: none;
+  }
 
-	.pagination a {
-		color: var(--font-color);
-		text-decoration: underline transparent;
-		text-decoration-thickness: var(--outline-width-focus);
-		text-underline-offset: var(--space-1);
-		transition: text-decoration-color var(--duration-2) ease-out;
-	}
+  .pagination a {
+    color: var(--font-color);
+    text-decoration: underline transparent;
+    text-decoration-thickness: var(--outline-width-focus);
+    text-underline-offset: var(--space-1);
+    transition: text-decoration-color var(--duration-2) ease-out;
+  }
 
-	@media (hover: hover) {
-		.pagination a:hover {
-			text-decoration-color: currentColor;
-		}
-	}
+  @media (hover: hover) {
+    .pagination a:hover {
+      text-decoration-color: currentColor;
+    }
+  }
 
-	.pagination {
-		display: flex;
-		justify-content: center;
-		gap: var(--space-6);
-		margin-top: var(--space-8);
-	}
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+  }
 
-	.pagination a[aria-current='page'] {
-		color: var(--font-color-bold);
-		font-weight: var(--font-weight-bold);
-		text-decoration-color: currentColor;
-	}
+  .pagination a[aria-current="page"] {
+    color: var(--font-color-bold);
+    font-weight: var(--font-weight-bold);
+    text-decoration-color: currentColor;
+  }
 
-	/* A bare 1fr has an automatic minimum (minmax(auto, 1fr), CSS Grid 2 fr unit), so a wide child
-	   can widen the track past a small viewport in any engine. minmax(0, 1fr) lets it shrink. */
-	.blog-grid {
-		display: grid;
-		gap: var(--space-8);
-		grid-template-columns: minmax(0, 1fr);
-		margin-top: var(--space-8);
-	}
+  /* A bare 1fr has an automatic minimum (minmax(auto, 1fr), CSS Grid 2 fr unit), so a wide child
+     can widen the track past a small viewport in any engine. minmax(0, 1fr) lets it shrink. */
+  .blog-grid {
+    display: grid;
+    gap: var(--space-8);
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: var(--space-8);
+  }
 
-	@media (min-width: 48rem) {
-		.blog-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-	}
+  @media (min-width: 48rem) {
+    .blog-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
 
-	@media (min-width: 64rem) {
-		.blog-grid {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-		}
-	}
+  @media (min-width: 64rem) {
+    .blog-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
 
-	.blog-post-wrapper {
-		display: flex;
-		height: 100%;
-	}
+  .blog-post-wrapper {
+    display: flex;
+    height: 100%;
+  }
 </style>

@@ -1,5 +1,5 @@
-name: 'Setup PNPM Environment'
-description: 'Sets up Node.js and pnpm and installs the dependencies'
+name: "Setup PNPM Environment"
+description: "Sets up Node.js and pnpm and installs the dependencies"
 runs:
   using: "composite"
   steps:

@@ -1,11 +1,11 @@
 packages:
-  - '.'
+  - "."
 minimumReleaseAge: 1440
 ignoreWorkspaceRootCheck: true
 overrides:
-  fflate: '>=0.7.5'
+  fflate: ">=0.7.5"
 allowBuilds:
-  '@resvg/resvg-js': true
+  "@resvg/resvg-js": true
   esbuild: true
 trustPolicy: no-downgrade
 trustPolicyExclude:

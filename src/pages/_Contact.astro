@@ -2,39 +2,64 @@
 // Page-only component for the home page (ADR 002): the email and the socials in one row, then one oversized word that
 // fills the column. The links carry the meaning; the
 // word is decoration. aria-label names the region: Orca reads a hidden heading that labels its section as "blank".
-import { SITE, SOCIAL_LINKS } from '@/consts';
+import { SITE, SOCIAL_LINKS } from "@/consts";
 
 const links = [
-	{ name: SITE.email, url: `mailto:${SITE.email}` },
-	{ name: 'GitHub', url: SOCIAL_LINKS.github },
-	{ name: 'LinkedIn', url: SOCIAL_LINKS.linkedin },
-	{ name: 'Stack Overflow', url: SOCIAL_LINKS.stackoverflow },
-	{ name: 'Instagram', url: SOCIAL_LINKS.instagram },
+  { name: SITE.email, url: `mailto:${SITE.email}` },
+  { name: "GitHub", url: SOCIAL_LINKS.github },
+  { name: "LinkedIn", url: SOCIAL_LINKS.linkedin },
+  { name: "Stack Overflow", url: SOCIAL_LINKS.stackoverflow },
+  { name: "Instagram", url: SOCIAL_LINKS.instagram },
 ];
 ---
 
 <section id="contact" class="contact" aria-label="Contact">
-	<h2 class="sr-only">Contact</h2>
-	<ul>
-		{links.map(({ name, url }) => <li><a href={url}>{name}</a></li>)}
-	</ul>
-	<p class="giant" aria-hidden="true">Say hello</p>
+  <h2 class="sr-only">Contact</h2>
+  <ul>
+    {links.map(({ name, url }) => (
+      <li>
+        <a href={url}>{name}</a>
+      </li>
+    ))}
+  </ul>
+  <p class="giant" aria-hidden="true">
+    Say hello
+  </p>
 </section>
 
 <style>
-	/* The section is the container the giant word sizes against (cqi). */
-	.contact { padding-block: var(--space-12) 0; container-type: inline-size; }
-	ul {
-		display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-4) var(--space-8);
-		margin: 0 0 var(--space-12); padding: 0; list-style: none; font-size: var(--font-size-xl);
-	}
-	a { color: var(--font-color-bold); font-weight: var(--font-weight-medium); }
-	/* clip, unlike hidden, makes no scroll container (https://developer.mozilla.org/en-US/docs/Web/CSS/overflow#clip).
-	   The word fits at normal spacing; under a user's wider text spacing (WCAG 1.4.12) it clips instead of widening
-	   the page. */
-	.giant {
-		margin: 0; overflow-x: clip; white-space: nowrap; text-align: center; text-transform: uppercase; color: var(--font-color-bold);
-		font-weight: var(--font-weight-bold); font-size: var(--font-size-display-giant);
-		line-height: var(--line-height-display-giant); letter-spacing: var(--letter-spacing-display-giant);
-	}
+  /* The section is the container the giant word sizes against (cqi). */
+  .contact {
+    padding-block: var(--space-12) 0;
+    container-type: inline-size;
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-4) var(--space-8);
+    margin: 0 0 var(--space-12);
+    padding: 0;
+    list-style: none;
+    font-size: var(--font-size-xl);
+  }
+  a {
+    color: var(--font-color-bold);
+    font-weight: var(--font-weight-medium);
+  }
+  /* clip, unlike hidden, makes no scroll container (https://developer.mozilla.org/en-US/docs/Web/CSS/overflow#clip).
+     The word fits at normal spacing; under a user's wider text spacing (WCAG 1.4.12) it clips instead of widening
+     the page. */
+  .giant {
+    margin: 0;
+    overflow-x: clip;
+    white-space: nowrap;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--font-color-bold);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-display-giant);
+    line-height: var(--line-height-display-giant);
+    letter-spacing: var(--letter-spacing-display-giant);
+  }
 </style>

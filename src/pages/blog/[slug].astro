@@ -1,12 +1,12 @@
 ---
-import { getCollection } from 'astro:content';
-import BlogPostLayout from '@/layouts/BlogPostLayout.astro';
-import BlogPostRecommended from './_BlogPostRecommended.astro';
-import BlogPostReader from './_BlogPostReader.astro';
+import { getCollection } from "astro:content";
+import BlogPostLayout from "@/layouts/BlogPostLayout.astro";
+import BlogPostRecommended from "./_BlogPostRecommended.astro";
+import BlogPostReader from "./_BlogPostReader.astro";
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts.map(post => ({
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
     params: { slug: post.id },
     props: { post },
   }));
@@ -16,8 +16,8 @@ const { post } = Astro.props;
 ---
 
 <BlogPostLayout post={post}>
-	<main>
-		<BlogPostReader post={post} />
-		<BlogPostRecommended excludeId={post.id} />
-	</main>
+  <main>
+    <BlogPostReader post={post} />
+    <BlogPostRecommended excludeId={post.id} />
+  </main>
 </BlogPostLayout>

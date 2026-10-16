@@ -3,6 +3,7 @@
 Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statichost.eu: vanilla CSS, Markdown and YAML content collections, Satori OG image, Vitest, Playwright. Structure follows Astro's conventions (`docs/adrs/002-astro-conventions.md`); path-scoped rules in `.claude/rules/` load when you touch matching files.
 
 ## Commands
+
 - `pnpm check`: lint, `astro check`, unit tests. Run it before every commit.
 - `pnpm exec vitest run <path>` for one test file while iterating.
 - `pnpm build`, then `pnpm test:e2e`. WebKit runs in Podman: `pnpm test:e2e:webkit`.
@@ -10,6 +11,7 @@ Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statich
 - pnpm only; `npm`, `npx` and `yarn` are denied.
 
 ## Working rules
+
 - Read the code, the git history (`git log -S`) and the official docs of the installed version before you change or recommend something, and cite the doc URL in the commit. Auto memory is off; knowledge lives in git, issues and PRs.
 - Accessibility questions are not owner decisions: research WCAG and the ARIA Authoring Practices Guide, check the running page, decide, and report the result.
 - Use the stack's native features as their docs describe. If none fits, ask before building something custom. A new dependency needs the owner's approval.
@@ -19,7 +21,9 @@ Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statich
 - Add a lint rule, hook or test as a gate only for a mistake that recurred and is costly. Its comment names the real failure it answers (a CI run, PR or commit); no real failure, no gate. Retire an obsolete gate in the same change. Content truth (CV text, posts) is checked by the owner, not by gates.
 
 ## Removing
+
 Code, config, tests, docs, rules and dependencies are a cost to keep, not an asset. Remove anything that is demonstrably obsolete:
+
 - Nothing uses it: no import, caller, link or reference (`git grep`), and the build and tests pass without it.
 - It duplicates something that already does the job; keep the native or official one.
 - Its reason is gone: the bug, decision, feature or dependency it served no longer exists.
@@ -29,6 +33,7 @@ Code, config, tests, docs, rules and dependencies are a cost to keep, not an ass
 Before removing, find why it was added (`git log -S`, the PR or issue) and who uses it. If you can't tell why it exists, ask instead of guessing. When you change an area, remove what the change makes obsolete in the same PR. Ask the owner before removing visible content, a security control, or anything an ADR records.
 
 ## Workflow
+
 0. Start of a session: `pnpm build && pnpm exec playwright test --project=chromium`. Fix anything the last session left broken before new work.
 1. One GitHub Task issue per change (`.github/ISSUE_TEMPLATE/task.yml`), and one PR per Task. Read it with `gh issue view <N>`. The owner reviews every PR, so size it for one sitting: one concern, under about 400 changed lines without the lockfile and deleted files (https://google.github.io/eng-practices/review/developer/small-cls.html). A larger change becomes several Tasks merged in order. Mechanical changes (formatting, renames, comment cleanup) get their own PR, apart from behavior changes.
 2. Branch with `gh issue develop <N> --base master --name <type>/<N>-<slug> --checkout`.
@@ -37,6 +42,7 @@ Before removing, find why it was added (`git log -S`, the PR or issue) and who u
 5. End of a session: leave a clean state. Everything committed; unfinished work pushed to a draft PR, never a half-done tree.
 
 ## Gotchas
+
 - Commit by path: `git commit -- <paths>`. `git stash` is denied.
 - `CLAUDE.md`, `.claude/`, `.github/`, `.husky/` and the root configs are read-only to sandboxed shell commands; edit them with the Edit or Write tool.
 - `gh issue`, `gh pr`, `gh run` and `git push` have auth only as a standalone call outside the sandbox.
@@ -47,4 +53,5 @@ Before removing, find why it was added (`git log -S`, the PR or issue) and who u
 - `pnpm test:e2e:webkit` is excluded from the sandbox for Podman; run it as a standalone call, not chained after `pnpm build`.
 
 ## Writing
+
 Docs, commits, PR bodies and chat: active voice, short sentences, no emojis, no em-dashes, no flattery. Avoid: delve, robust, seamless, synergy, tapestry, cutting-edge, leverage, furthermore, moreover, ultimately, in conclusion, unlocking. Name every issue or PR with a short description, for example "#357 (open photo too small at 400% zoom)", never a bare number. Be a critical sparring partner. Ask owner decisions with `AskUserQuestion`: your recommendation first, at least one alternative, and a no-op option with its cost. End a hand-back with an "Open items" list, owner actions first.

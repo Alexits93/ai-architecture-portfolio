@@ -1,79 +1,116 @@
 ---
 // Page-only component for /about/ (ADR 002): the owner's hobbies as cards, with a photo from the home photo row
 // where one fits.
-import { Image } from 'astro:assets';
-import seoul from '@/assets/photos/row-3-seoul.jpg';
-import stadium from '@/assets/photos/row-2-stadium.jpg';
-import porsche from '@/assets/photos/row-4-porsche.jpg';
-import Card from '@/components/Card.astro';
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
+import { Image } from "astro:assets";
+import seoul from "@/assets/photos/row-3-seoul.jpg";
+import stadium from "@/assets/photos/row-2-stadium.jpg";
+import porsche from "@/assets/photos/row-4-porsche.jpg";
+import Card from "@/components/Card.astro";
+import DisplayHeading from "@/components/DisplayHeading.astro";
+import Eyebrow from "@/components/Eyebrow.astro";
 
 const hobbies = [
-	{
-		title: 'Video games',
-		text: 'My main hobby is video games. I have been a huge gamer for close to 20 years now, and my favourites are single-player story games. My all-time favourite franchise is Mass Effect, and my favourite game ever is World of Warcraft. FOR THE ALLIANCE!',
-	},
-	{
-		title: 'Music',
-		text: 'I am huge on music, and I love metal. My favourite band is Linkin Park, and I love Metallica and Slipknot too. My wife and I go to every concert we can, and I have been to over 100 concerts and 10 music festivals in my life. My favourite sub-genre is metalcore, with All That Remains, Killswitch Engage and Bullet for My Valentine as my favourite bands. I actively played the guitar for close to 10 years, and I still have three guitars at home for some occasional fun. My favourite guitarists are Mark Knopfler and Stevie Ray Vaughan.',
-	},
-	{
-		title: 'Cars',
-		text: 'I am a huge car enthusiast. I love German cars from the 80s until the mid 2010s, especially Porsches and AMGs. My dream car is the Mercedes-Benz SLS AMG Black Series, and I have a soft spot for Paganis.',
-		photo: { src: porsche, alt: 'Sitting in my dream Porsche, a 911 930 Turbo Slant Nose' },
-	},
-	{
-		title: 'Travel',
-		text: 'I always wanted to travel and see the whole world. I have visited 26 countries so far, and my goal is to visit at least 50 and every single continent. Other than Europe, I have already visited Asia and Africa, but I can\'t wait to go back and to visit the rest of the continents. My favourite holiday so far was two weeks in South Korea, and the most beautiful place I have visited is Iceland.',
-		photo: { src: seoul, alt: 'My wife in a hanbok, seen from behind, in front of a Korean pagoda' },
-	},
-	{
-		title: 'Real Madrid',
-		text: 'I have supported Real Madrid since 2002. My favourite players are Raúl González, Iker Casillas and the GOAT, Cristiano Ronaldo. Having played football myself, I grew up loving the sport, which unfortunately is going through a rather turbulent time. My niche hobby used to be freestyle football, but a serious injury stopped me from practising it ever again. My videos are still on YouTube and Instagram.',
-		photo: { src: stadium, alt: 'In the Santiago Bernabéu stadium in Madrid, Spain. Hala Madrid!' },
-	},
-	{
-		title: 'Movies',
-		text: 'I love watching movies, especially horror, sci-fi and fantasy. My favourite franchises are The Lord of the Rings, Star Wars, The Matrix and Blade. Related to movies, my absolute favourite anime is Dragon Ball Z, and the best series ever produced is South Park, and it\'s not even close.',
-	},
+  {
+    title: "Video games",
+    text: "My main hobby is video games. I have been a huge gamer for close to 20 years now, and my favourites are single-player story games. My all-time favourite franchise is Mass Effect, and my favourite game ever is World of Warcraft. FOR THE ALLIANCE!",
+  },
+  {
+    title: "Music",
+    text: "I am huge on music, and I love metal. My favourite band is Linkin Park, and I love Metallica and Slipknot too. My wife and I go to every concert we can, and I have been to over 100 concerts and 10 music festivals in my life. My favourite sub-genre is metalcore, with All That Remains, Killswitch Engage and Bullet for My Valentine as my favourite bands. I actively played the guitar for close to 10 years, and I still have three guitars at home for some occasional fun. My favourite guitarists are Mark Knopfler and Stevie Ray Vaughan.",
+  },
+  {
+    title: "Cars",
+    text: "I am a huge car enthusiast. I love German cars from the 80s until the mid 2010s, especially Porsches and AMGs. My dream car is the Mercedes-Benz SLS AMG Black Series, and I have a soft spot for Paganis.",
+    photo: {
+      src: porsche,
+      alt: "Sitting in my dream Porsche, a 911 930 Turbo Slant Nose",
+    },
+  },
+  {
+    title: "Travel",
+    text: "I always wanted to travel and see the whole world. I have visited 26 countries so far, and my goal is to visit at least 50 and every single continent. Other than Europe, I have already visited Asia and Africa, but I can't wait to go back and to visit the rest of the continents. My favourite holiday so far was two weeks in South Korea, and the most beautiful place I have visited is Iceland.",
+    photo: {
+      src: seoul,
+      alt: "My wife in a hanbok, seen from behind, in front of a Korean pagoda",
+    },
+  },
+  {
+    title: "Real Madrid",
+    text: "I have supported Real Madrid since 2002. My favourite players are Raúl González, Iker Casillas and the GOAT, Cristiano Ronaldo. Having played football myself, I grew up loving the sport, which unfortunately is going through a rather turbulent time. My niche hobby used to be freestyle football, but a serious injury stopped me from practising it ever again. My videos are still on YouTube and Instagram.",
+    photo: {
+      src: stadium,
+      alt: "In the Santiago Bernabéu stadium in Madrid, Spain. Hala Madrid!",
+    },
+  },
+  {
+    title: "Movies",
+    text: "I love watching movies, especially horror, sci-fi and fantasy. My favourite franchises are The Lord of the Rings, Star Wars, The Matrix and Blade. Related to movies, my absolute favourite anime is Dragon Ball Z, and the best series ever produced is South Park, and it's not even close.",
+  },
 ];
 ---
 
 <section id="hobbies" class="hobbies" aria-labelledby="hobbies-title">
-	<Eyebrow>In my free time</Eyebrow>
-	<DisplayHeading as="h2" size="section" id="hobbies-title" accent="Hobbies" />
-	<ul class="grid">
-		{hobbies.map(({ title, text, photo }) => (
-			<Card as="li" class="hobby">
-				{/* sizes follows the grid: main and card padding take 7rem on a phone, two columns from 48rem, and at most
+  <Eyebrow>In my free time</Eyebrow>
+  <DisplayHeading as="h2" size="section" id="hobbies-title" accent="Hobbies" />
+  <ul class="grid">
+    {hobbies.map(({ title, text, photo }) => (
+      <Card as="li" class="hobby">
+        {/* sizes follows the grid: main and card padding take 7rem on a phone, two columns from 48rem, and at most
 				    about 17.3rem per column from 64rem, where main stops growing. */}
-				{photo && <Image class="photo" src={photo.src} alt={photo.alt} widths={[300, 400, 600, 816]} sizes="(min-width: 64rem) 18rem, (min-width: 48rem) calc(50vw - 7rem), calc(100vw - 7rem)" quality={70} />}
-				<DisplayHeading as="h3" size="card" class="name" text={title} />
-				<p>{text}</p>
-			</Card>
-		))}
-	</ul>
+        {photo && (
+          <Image
+            class="photo"
+            src={photo.src}
+            alt={photo.alt}
+            widths={[300, 400, 600, 816]}
+            sizes="(min-width: 64rem) 18rem, (min-width: 48rem) calc(50vw - 7rem), calc(100vw - 7rem)"
+            quality={70}
+          />
+        )}
+        <DisplayHeading as="h3" size="card" class="name" text={title} />
+        <p>{text}</p>
+      </Card>
+    ))}
+  </ul>
 </section>
 
 <style>
-	.hobbies { padding-block: var(--space-12); }
-	/* minmax(0, 1fr) lets a track shrink below its content on a small viewport, as the blog grid does. */
-	.grid {
-		list-style: none; margin: var(--space-8) 0 0; padding: 0;
-		display: grid; gap: var(--space-8); grid-template-columns: minmax(0, 1fr);
-	}
-	.photo {
-		display: block; inline-size: 100%; block-size: auto; aspect-ratio: 4 / 3; object-fit: cover;
-		margin-block-end: var(--space-6); border-radius: var(--radius-xl);
-	}
-	.name { margin: 0 0 var(--space-4); }
-	.hobby p { margin: 0; }
+  .hobbies {
+    padding-block: var(--space-12);
+  }
+  /* minmax(0, 1fr) lets a track shrink below its content on a small viewport, as the blog grid does. */
+  .grid {
+    list-style: none;
+    margin: var(--space-8) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-8);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .photo {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    margin-block-end: var(--space-6);
+    border-radius: var(--radius-xl);
+  }
+  .name {
+    margin: 0 0 var(--space-4);
+  }
+  .hobby p {
+    margin: 0;
+  }
 
-	@media (min-width: 48rem) {
-		.grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-	}
-	@media (min-width: 64rem) {
-		.grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-	}
+  @media (min-width: 48rem) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 64rem) {
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
 </style>

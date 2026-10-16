@@ -1,11 +1,11 @@
 ---
-import { Font } from 'astro:assets';
-import type { ComponentProps } from 'astro/types';
-import Footer from '@/components/Footer.astro';
-import Header from '@/components/Header.astro';
-import NavigatorMenu from '@/components/NavigatorMenu.astro';
-import SeoHead from '@/components/SeoHead.astro';
-import '@/styles/global.css';
+import { Font } from "astro:assets";
+import type { ComponentProps } from "astro/types";
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import NavigatorMenu from "@/components/NavigatorMenu.astro";
+import SeoHead from "@/components/SeoHead.astro";
+import "@/styles/global.css";
 
 type Props = ComponentProps<typeof SeoHead>;
 
@@ -13,23 +13,23 @@ const props = Astro.props;
 ---
 
 <html lang="en-GB">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-		<link rel="manifest" href="/site.webmanifest">
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<Font cssVariable="--font-inter" preload />
-		<SeoHead {...props} />
-		<slot name="head" />
-	</head>
-	<body>
-		<Header />
-		<NavigatorMenu />
-		<slot />
-		<Footer />
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <Font cssVariable="--font-inter" preload />
+    <SeoHead {...props} />
+    <slot name="head" />
+  </head>
+  <body>
+    <Header />
+    <NavigatorMenu />
+    <slot />
+    <Footer />
+  </body>
 </html>

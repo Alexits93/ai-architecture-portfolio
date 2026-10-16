@@ -2,118 +2,210 @@
 // Page-only component for the home page (ADR 002): the name split around a tilted portrait.
 // The h1 carries the full name for screen readers; the two big halves are presentation. aria-label names the region:
 // Orca reads a hidden heading that labels its section as "blank".
-import { Image } from 'astro:assets';
-import portrait from '@/assets/photos/portrait.jpg';
-import { SITE } from '@/consts';
+import { Image } from "astro:assets";
+import portrait from "@/assets/photos/portrait.jpg";
+import { SITE } from "@/consts";
 ---
 
 <section id="hero" class="hero" aria-label={SITE.name}>
-	<h1 class="sr-only">{SITE.name}</h1>
-	<div class="hero-side">
-		<p class="kicker">{SITE.role}</p>
-		<p class="word" aria-hidden="true">Patrik</p>
-	</div>
-	{/* The owner's photo is the mobile LCP element: priority loads it eagerly at high priority, and the widths
+  <h1 class="sr-only">{SITE.name}</h1>
+  <div class="hero-side">
+    <p class="kicker">{SITE.role}</p>
+    <p class="word" aria-hidden="true">
+      Patrik
+    </p>
+  </div>
+  {/* The owner's photo is the mobile LCP element: priority loads it eagerly at high priority, and the widths
 	    cover --size-portrait up to 3x (https://docs.astro.build/en/reference/modules/astro-assets/#priority). */}
-	<div class="portrait">
-		<div class="portrait-face">
-			<Image src={portrait} alt={`${SITE.name} travelling in Austria in winter`} widths={[256, 512, 768]} sizes="min(70vw, 16rem)" priority />
-		</div>
-	</div>
-	<div class="hero-side end">
-		<p class="kicker">Architecture, agents, coaching</p>
-		<p class="word" aria-hidden="true">Alexits</p>
-	</div>
-	<p class="pitch">{SITE.pitch}</p>
+  <div class="portrait">
+    <div class="portrait-face">
+      <Image
+        src={portrait}
+        alt={`${SITE.name} travelling in Austria in winter`}
+        widths={[256, 512, 768]}
+        sizes="min(70vw, 16rem)"
+        priority
+      />
+    </div>
+  </div>
+  <div class="hero-side end">
+    <p class="kicker">Architecture, agents, coaching</p>
+    <p class="word" aria-hidden="true">
+      Alexits
+    </p>
+  </div>
+  <p class="pitch">{SITE.pitch}</p>
 </section>
 
 <style>
-	/* One column on small screens; from 64rem the halves sit left and right of the portrait. */
-	.hero { display: grid; gap: var(--space-6); justify-items: center; text-align: center; padding-block: var(--space-12); }
-	.kicker { margin: 0 0 var(--space-2); color: var(--font-color); }
-	.word {
-		margin: 0; font-weight: var(--font-weight-bold); text-transform: uppercase;
-		font-size: var(--font-size-display-hero); line-height: var(--line-height-display-hero);
-		letter-spacing: var(--letter-spacing-display-hero);
-		--name-accent: var(--accent-b);
-		background-image: linear-gradient(100deg, var(--accent-a), var(--name-accent), var(--accent-b));
-		background-clip: text; color: transparent;
-	}
-	/* A fixed size and aspect ratio reserve the box before anything loads, so the hero does not shift. The card keeps
-	   still and takes the pointer; the face inside it tilts, so the hit area does not move under the pointer. */
-	.portrait {
-		inline-size: var(--size-portrait); aspect-ratio: 3 / 4; display: grid; rotate: -3deg; perspective: var(--perspective-card);
-		--tilt-x: 0deg; --tilt-y: 0deg; --glare: 0;
-	}
-	.portrait-face { position: relative; border-radius: var(--radius-2xl); box-shadow: var(--shadow-raised); }
-	/* The gradient shows until the photo has loaded. It sits on the image itself. Regression: on the face behind it,
-	   it showed through the image's anti-aliased rounded edge as a thin line. */
-	.portrait-face img {
-		display: block; inline-size: 100%; block-size: 100%; object-fit: cover; border-radius: inherit;
-		background-image: linear-gradient(160deg, var(--accent-a), var(--accent-b));
-	}
-	/* The glare: a soft light where the pointer is, shown only while it is over the card. --glare-x and --glare-y
-	   exist only then. */
-	.portrait-face::after {
-		content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-		background-image: radial-gradient(circle at var(--glare-x) var(--glare-y), var(--glare-light), transparent var(--glare-reach));
-		mix-blend-mode: overlay; opacity: var(--glare); transition: opacity var(--duration-3) ease-out;
-	}
-	/* Steam-style tilt: the face turns towards the pointer and lifts a little. Mouse and pen only, and none
-	   under reduced motion, so the face keeps no transform there. */
-	@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-		.portrait-face {
-			transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(calc(1 + var(--glare) * 0.04));
-			transition: transform var(--duration-2) ease-out;
-		}
-	}
-	.pitch {
-		max-inline-size: var(--size-pitch); margin: 0; text-wrap: balance;
-		font-size: var(--font-size-xl); line-height: var(--line-height-lg); color: var(--font-color-bold);
-	}
-	@media (min-width: 64rem) {
-		.hero { grid-template-columns: 1fr auto 1fr; align-items: center; column-gap: var(--space-8); }
-		.hero-side { justify-self: end; text-align: end; }
-		/* One line each, so both halves of the name sit at the same height. */
-		.kicker { white-space: nowrap; }
-		.hero-side.end { justify-self: start; text-align: start; }
-		.pitch { grid-column: 1 / -1; }
-	}
+  /* One column on small screens; from 64rem the halves sit left and right of the portrait. */
+  .hero {
+    display: grid;
+    gap: var(--space-6);
+    justify-items: center;
+    text-align: center;
+    padding-block: var(--space-12);
+  }
+  .kicker {
+    margin: 0 0 var(--space-2);
+    color: var(--font-color);
+  }
+  .word {
+    margin: 0;
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    font-size: var(--font-size-display-hero);
+    line-height: var(--line-height-display-hero);
+    letter-spacing: var(--letter-spacing-display-hero);
+    --name-accent: var(--accent-b);
+    background-image: linear-gradient(
+      100deg,
+      var(--accent-a),
+      var(--name-accent),
+      var(--accent-b)
+    );
+    background-clip: text;
+    color: transparent;
+  }
+  /* A fixed size and aspect ratio reserve the box before anything loads, so the hero does not shift. The card keeps
+     still and takes the pointer; the face inside it tilts, so the hit area does not move under the pointer. */
+  .portrait {
+    inline-size: var(--size-portrait);
+    aspect-ratio: 3 / 4;
+    display: grid;
+    rotate: -3deg;
+    perspective: var(--perspective-card);
+    --tilt-x: 0deg;
+    --tilt-y: 0deg;
+    --glare: 0;
+  }
+  .portrait-face {
+    position: relative;
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-raised);
+  }
+  /* The gradient shows until the photo has loaded. It sits on the image itself. Regression: on the face behind it,
+     it showed through the image's anti-aliased rounded edge as a thin line. */
+  .portrait-face img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+    background-image: linear-gradient(160deg, var(--accent-a), var(--accent-b));
+  }
+  /* The glare: a soft light where the pointer is, shown only while it is over the card. --glare-x and --glare-y
+     exist only then. */
+  .portrait-face::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background-image: radial-gradient(
+      circle at var(--glare-x) var(--glare-y),
+      var(--glare-light),
+      transparent var(--glare-reach)
+    );
+    mix-blend-mode: overlay;
+    opacity: var(--glare);
+    transition: opacity var(--duration-3) ease-out;
+  }
+  /* Steam-style tilt: the face turns towards the pointer and lifts a little. Mouse and pen only, and none
+     under reduced motion, so the face keeps no transform there. */
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .portrait-face {
+      transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y))
+        scale(calc(1 + var(--glare) * 0.04));
+      transition: transform var(--duration-2) ease-out;
+    }
+  }
+  .pitch {
+    max-inline-size: var(--size-pitch);
+    margin: 0;
+    text-wrap: balance;
+    font-size: var(--font-size-xl);
+    line-height: var(--line-height-lg);
+    color: var(--font-color-bold);
+  }
+  @media (min-width: 64rem) {
+    .hero {
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      column-gap: var(--space-8);
+    }
+    .hero-side {
+      justify-self: end;
+      text-align: end;
+    }
+    /* One line each, so both halves of the name sit at the same height. */
+    .kicker {
+      white-space: nowrap;
+    }
+    .hero-side.end {
+      justify-self: start;
+      text-align: start;
+    }
+    .pitch {
+      grid-column: 1 / -1;
+    }
+  }
 
-	/* The site's entrance: a spring rise in steps, then the name gradient drifts. Without motion every part
-	   shows in its final state. */
-	@media (prefers-reduced-motion: no-preference) {
-		.hero > :not(h1) { animation: hero-enter var(--duration-enter) var(--ease-spring) both; }
-		.hero > :nth-child(3) { animation-delay: calc(1 * var(--stagger)); }
-		.hero > :nth-child(4) { animation-delay: calc(2 * var(--stagger)); }
-		.hero > :nth-child(5) { animation-delay: calc(3 * var(--stagger)); }
-		.word { animation: name-gradient var(--duration-drift) ease-in-out infinite alternate; animation-delay: var(--duration-enter); }
-	}
+  /* The site's entrance: a spring rise in steps, then the name gradient drifts. Without motion every part
+     shows in its final state. */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero > :not(h1) {
+      animation: hero-enter var(--duration-enter) var(--ease-spring) both;
+    }
+    .hero > :nth-child(3) {
+      animation-delay: calc(1 * var(--stagger));
+    }
+    .hero > :nth-child(4) {
+      animation-delay: calc(2 * var(--stagger));
+    }
+    .hero > :nth-child(5) {
+      animation-delay: calc(3 * var(--stagger));
+    }
+    .word {
+      animation: name-gradient var(--duration-drift) ease-in-out infinite
+        alternate;
+      animation-delay: var(--duration-enter);
+    }
+  }
 </style>
 
 <script>
-	// No CSS follows the pointer yet: Pointer-driven Animations is an editor's draft with no implementation
-	// (https://drafts.csswg.org/pointer-animations-1/). So the pointer position goes into custom properties and CSS
-	// renders the tilt and the glare. Custom properties set through the CSSOM pass the hashed CSP, which blocks
-	// only style attributes. Browsers fire pointermove at most once per frame (https://w3c.github.io/pointerevents/).
-	const card = document.querySelector('#hero .portrait');
-	const canTilt = matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
-	const MAX_TILT = 12;
-	if (card instanceof HTMLElement) {
-		card.addEventListener('pointermove', (event) => {
-			if (!canTilt.matches) return;
-			const box = card.getBoundingClientRect();
-			const x = (event.clientX - box.left) / box.width;
-			const y = (event.clientY - box.top) / box.height;
-			// The side under the pointer moves back: rotateX(+) takes the top edge back, rotateY(-) the left edge.
-			card.style.setProperty('--tilt-x', `${(0.5 - y) * 2 * MAX_TILT}deg`);
-			card.style.setProperty('--tilt-y', `${(x - 0.5) * 2 * MAX_TILT}deg`);
-			card.style.setProperty('--glare-x', `${x * 100}%`);
-			card.style.setProperty('--glare-y', `${y * 100}%`);
-			card.style.setProperty('--glare', '1');
-		});
-		card.addEventListener('pointerleave', () => {
-			for (const name of ['--tilt-x', '--tilt-y', '--glare-x', '--glare-y', '--glare']) card.style.removeProperty(name);
-		});
-	}
+  // No CSS follows the pointer yet: Pointer-driven Animations is an editor's draft with no implementation
+  // (https://drafts.csswg.org/pointer-animations-1/). So the pointer position goes into custom properties and CSS
+  // renders the tilt and the glare. Custom properties set through the CSSOM pass the hashed CSP, which blocks
+  // only style attributes. Browsers fire pointermove at most once per frame (https://w3c.github.io/pointerevents/).
+  const card = document.querySelector("#hero .portrait");
+  const canTilt = matchMedia(
+    "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)",
+  );
+  const MAX_TILT = 12;
+  if (card instanceof HTMLElement) {
+    card.addEventListener("pointermove", (event) => {
+      if (!canTilt.matches) return;
+      const box = card.getBoundingClientRect();
+      const x = (event.clientX - box.left) / box.width;
+      const y = (event.clientY - box.top) / box.height;
+      // The side under the pointer moves back: rotateX(+) takes the top edge back, rotateY(-) the left edge.
+      card.style.setProperty("--tilt-x", `${(0.5 - y) * 2 * MAX_TILT}deg`);
+      card.style.setProperty("--tilt-y", `${(x - 0.5) * 2 * MAX_TILT}deg`);
+      card.style.setProperty("--glare-x", `${x * 100}%`);
+      card.style.setProperty("--glare-y", `${y * 100}%`);
+      card.style.setProperty("--glare", "1");
+    });
+    card.addEventListener("pointerleave", () => {
+      for (const name of [
+        "--tilt-x",
+        "--tilt-y",
+        "--glare-x",
+        "--glare-y",
+        "--glare",
+      ])
+        card.style.removeProperty(name);
+    });
+  }
 </script>

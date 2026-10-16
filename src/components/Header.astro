@@ -1,13 +1,17 @@
 ---
-import Logo from '@/assets/logo.svg';
-import BarsButton from './BarsButton.astro';
-import MoonIcon from '@/assets/moon.svg';
-import SunIcon from '@/assets/sun.svg';
+import Logo from "@/assets/logo.svg";
+import BarsButton from "./BarsButton.astro";
+import MoonIcon from "@/assets/moon.svg";
+import SunIcon from "@/assets/sun.svg";
 ---
 
 <div class="header-wrapper">
   <header>
-    <BarsButton commandfor="site-menu" command="show-modal" aria-label="Open menu" />
+    <BarsButton
+      commandfor="site-menu"
+      command="show-modal"
+      aria-label="Open menu"
+    />
 
     <a href="/">
       <span class="sr-only">Back to Home page</span>
@@ -22,17 +26,25 @@ import SunIcon from '@/assets/sun.svg';
 </div>
 
 <script>
-  import { getStoredTheme, onThemeChange, toggleTheme, type Theme } from '@/lib/theme-store';
+  import {
+    getStoredTheme,
+    onThemeChange,
+    toggleTheme,
+    type Theme,
+  } from "@/lib/theme-store";
 
-  const themeBtn = document.querySelector('.theme-toggle');
-  const darkScheme = matchMedia('(prefers-color-scheme: dark)');
-  const systemTheme = (): Theme => (darkScheme.matches ? 'dark' : 'light');
+  const themeBtn = document.querySelector(".theme-toggle");
+  const darkScheme = matchMedia("(prefers-color-scheme: dark)");
+  const systemTheme = (): Theme => (darkScheme.matches ? "dark" : "light");
   // The reveal moves like the menu circle. The CSS minifier picks s or ms for a time, so the unit is read, not assumed.
   const revealTiming = () => {
     const tokens = getComputedStyle(document.documentElement);
-    const time = tokens.getPropertyValue('--duration-6').trim();
-    const duration = parseFloat(time) * (time.endsWith('ms') ? 1 : 1000);
-    return { duration, easing: tokens.getPropertyValue('--ease-in-out-strong').trim() };
+    const time = tokens.getPropertyValue("--duration-6").trim();
+    const duration = parseFloat(time) * (time.endsWith("ms") ? 1 : 1000);
+    return {
+      duration,
+      easing: tokens.getPropertyValue("--ease-in-out-strong").trim(),
+    };
   };
 
   if (themeBtn) {
@@ -40,36 +52,44 @@ import SunIcon from '@/assets/sun.svg';
     const render = () => {
       const stored = getStoredTheme();
       const theme = stored ?? systemTheme();
-      themeBtn.setAttribute('aria-pressed', String(theme === 'dark'));
+      themeBtn.setAttribute("aria-pressed", String(theme === "dark"));
       if (stored) {
-        document.documentElement.setAttribute('data-theme', stored);
+        document.documentElement.setAttribute("data-theme", stored);
       } else {
-        document.documentElement.removeAttribute('data-theme');
+        document.documentElement.removeAttribute("data-theme");
       }
     };
 
     // The new theme spreads as a circle from the toggle: a same-document view transition whose new root snapshot
     // is clipped to a growing circle (developer.chrome.com, same-document view transitions). Without the API, or
     // under reduced motion, the theme switches at once.
-    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
     const root = document.documentElement;
-    themeBtn.addEventListener('click', () => {
+    themeBtn.addEventListener("click", () => {
       const toggle = () => toggleTheme(systemTheme());
-      if (!('startViewTransition' in document) || reduceMotion.matches) {
+      if (!("startViewTransition" in document) || reduceMotion.matches) {
         toggle();
         return;
       }
       const box = themeBtn.getBoundingClientRect();
       const x = box.left + box.width / 2;
       const y = box.top + box.height / 2;
-      const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-      root.dataset.themeReveal = '';
+      const radius = Math.hypot(
+        Math.max(x, innerWidth - x),
+        Math.max(y, innerHeight - y),
+      );
+      root.dataset.themeReveal = "";
       const transition = document.startViewTransition(toggle);
       transition.ready
         .then(() => {
           root.animate(
-            { clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
-            { ...revealTiming(), pseudoElement: '::view-transition-new(root)' },
+            {
+              clipPath: [
+                `circle(0 at ${x}px ${y}px)`,
+                `circle(${radius}px at ${x}px ${y}px)`,
+              ],
+            },
+            { ...revealTiming(), pseudoElement: "::view-transition-new(root)" },
           );
         })
         .catch(() => undefined);
@@ -78,7 +98,7 @@ import SunIcon from '@/assets/sun.svg';
     });
     onThemeChange(render);
     render();
-    darkScheme.addEventListener('change', render);
+    darkScheme.addEventListener("change", render);
   }
 </script>
 
@@ -87,76 +107,86 @@ import SunIcon from '@/assets/sun.svg';
      the default root cross-fade would show both themes blended. Page navigations keep the cross-fade. */
   :global(html[data-theme-reveal]::view-transition-old(root)),
   :global(html[data-theme-reveal]::view-transition-new(root)) {
-      animation: none;
-      mix-blend-mode: normal;
+    animation: none;
+    mix-blend-mode: normal;
   }
 
   .header-wrapper {
-      position: sticky;
-      top: 0;
-      /* Above positioned page content while sticky; the open menu sits in the top layer. */
-      z-index: 1;
+    position: sticky;
+    top: 0;
+    /* Above positioned page content while sticky; the open menu sits in the top layer. */
+    z-index: 1;
   }
   /* At 400% zoom (320x180 CSS px) a sticky header covers almost half the screen, so short viewports let it scroll away. */
   @media (max-height: 20rem) {
-      .header-wrapper { position: static; }
+    .header-wrapper {
+      position: static;
+    }
   }
   .header-wrapper header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: var(--space-4);
-      background-color: var(--body-background);
-      color: var(--font-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4);
+    background-color: var(--body-background);
+    color: var(--font-color);
   }
   .header-wrapper header a {
-      text-decoration: none;
-      color: var(--font-color);
+    text-decoration: none;
+    color: var(--font-color);
   }
   /* Block icons keep the header --space-4 + --size-icon-lg + --space-4 tall in every engine; the menu close button relies on it. */
   .header-wrapper header svg {
-      display: block;
+    display: block;
   }
   .header-wrapper header a svg {
-      height: var(--size-icon-lg);
+    height: var(--size-icon-lg);
   }
   .header-wrapper header button {
-      background: none;
-      border: none;
-      border-radius: var(--radius-full);
-      cursor: pointer;
-      transition: background-color var(--duration-2) ease-out, scale var(--duration-1) ease-out;
+    background: none;
+    border: none;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-2) ease-out,
+      scale var(--duration-1) ease-out;
   }
   /* Only where the primary input can hover, so a tap on a touch screen leaves no stuck tint (MDN @media hover). */
   @media (hover: hover) {
-      .header-wrapper header button:hover {
-          background-color: var(--state-hover);
-      }
+    .header-wrapper header button:hover {
+      background-color: var(--state-hover);
+    }
   }
   .header-wrapper header button:active {
-      scale: .92;
+    scale: 0.92;
   }
   /* The icon takes the theme colour and shows the other theme. It follows data-theme (set by the head script) and the
      OS scheme, both known at first paint; aria-pressed comes from the deferred module script.
      Regression: the icon flipped on every navigation when it followed aria-pressed. */
   .theme-toggle {
-      padding: 0;
-      color: var(--font-color-bold);
+    padding: 0;
+    color: var(--font-color-bold);
   }
   /* Anchored on .header-wrapper so these outrank the display: block on every header svg above. */
   .header-wrapper .theme-toggle .sun,
   :global([data-theme="dark"]) .header-wrapper .theme-toggle .moon {
-      display: none;
+    display: none;
   }
   :global([data-theme="dark"]) .header-wrapper .theme-toggle .sun {
-      display: block;
+    display: block;
   }
   @media (prefers-color-scheme: dark) {
-      :global(:root:not([data-theme="light"])) .header-wrapper .theme-toggle .sun {
-          display: block;
-      }
-      :global(:root:not([data-theme="light"])) .header-wrapper .theme-toggle .moon {
-          display: none;
-      }
+    :global(:root:not([data-theme="light"]))
+      .header-wrapper
+      .theme-toggle
+      .sun {
+      display: block;
+    }
+    :global(:root:not([data-theme="light"]))
+      .header-wrapper
+      .theme-toggle
+      .moon {
+      display: none;
+    }
   }
 </style>

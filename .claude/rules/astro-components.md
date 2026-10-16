@@ -2,6 +2,7 @@
 paths:
   - "src/**/*.astro"
 ---
+
 # Astro components
 
 The site ships zero JavaScript by default because JS is the main INP and CSP risk on a static site.

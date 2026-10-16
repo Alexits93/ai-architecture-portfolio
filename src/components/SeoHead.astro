@@ -1,13 +1,13 @@
 ---
-import { OG_IMAGE_SIZE, SITE } from '@/consts';
-import { serializeJsonLd, type JsonLdObject } from '@/lib/json-ld';
+import { OG_IMAGE_SIZE, SITE } from "@/consts";
+import { serializeJsonLd, type JsonLdObject } from "@/lib/json-ld";
 
 interface Props {
   title: string;
   description: string;
   /** A 1200x630 image at a site-relative path, with alt text that describes what it shows. */
   ogImage?: { path: string; alt: string };
-  type?: 'website' | 'article';
+  type?: "website" | "article";
   publishedTime?: Date;
   jsonLd?: JsonLdObject;
   /** Keeps the page out of search results (the 404 page). */
@@ -18,7 +18,7 @@ const {
   title,
   description,
   ogImage = SITE.defaultOgImage,
-  type = 'website',
+  type = "website",
   publishedTime,
   jsonLd,
   noindex = false,
@@ -33,7 +33,11 @@ const ogImageUrl = new URL(ogImage.path, Astro.site).href;
 <meta name="description" content={description} />
 <meta name="author" content={SITE.author} />
 {/* A noindex page has no indexed URL to name. */}
-{noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonicalUrl} />}
+{noindex ? (
+  <meta name="robots" content="noindex" />
+) : (
+  <link rel="canonical" href={canonicalUrl} />
+)}
 
 <meta property="og:type" content={type} />
 <meta property="og:site_name" content={SITE.name} />
@@ -45,7 +49,12 @@ const ogImageUrl = new URL(ogImage.path, Astro.site).href;
 <meta property="og:image:width" content={String(OG_IMAGE_SIZE.width)} />
 <meta property="og:image:height" content={String(OG_IMAGE_SIZE.height)} />
 <meta property="og:image:alt" content={ogImage.alt} />
-{publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+{publishedTime && (
+  <meta
+    property="article:published_time"
+    content={publishedTime.toISOString()}
+  />
+)}
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
@@ -53,4 +62,10 @@ const ogImageUrl = new URL(ogImage.path, Astro.site).href;
 <meta name="twitter:image" content={ogImageUrl} />
 <meta name="twitter:image:alt" content={ogImage.alt} />
 
-{jsonLd && <script type="application/ld+json" is:inline set:html={serializeJsonLd(jsonLd)} />}
+{jsonLd && (
+  <script
+    type="application/ld+json"
+    is:inline
+    set:html={serializeJsonLd(jsonLd)}
+  />
+)}

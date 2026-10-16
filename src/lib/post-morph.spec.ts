@@ -1,14 +1,14 @@
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { Script } from 'node:vm';
-import { JSDOM } from 'jsdom';
-import { describe, expect, it } from 'vitest';
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { Script } from "node:vm";
+import { JSDOM } from "jsdom";
+import { describe, expect, it } from "vitest";
 
 // Runs the file as a classic script in a fresh window, as the inline <head> copy runs
 // (https://github.com/jsdom/jsdom#running-vm-scripts). jsdom has no matchMedia, Navigation API or page swap
 // events, so the window gets stubs and the events are plain Events carrying the fields the script reads.
-const path = fileURLToPath(new URL('./post-morph.js', import.meta.url));
-const script = new Script(readFileSync(path, 'utf-8'), { filename: path });
+const path = fileURLToPath(new URL("./post-morph.js", import.meta.url));
+const script = new Script(readFileSync(path, "utf-8"), { filename: path });
 
 const LIST = `
   <a data-post-card href="/blog/a/"><h2 data-morph="title">A</h2></a>
@@ -24,13 +24,26 @@ interface Options {
   navigationApi?: boolean;
 }
 
-const run = ({ body, url = 'https://www.pa-tech.dev/blog/', reduce = false, from = null, activation = true, navigationApi = true }: Options) => {
-  const dom = new JSDOM(body, { url, runScripts: 'outside-only' });
+const run = ({
+  body,
+  url = "https://www.pa-tech.dev/blog/",
+  reduce = false,
+  from = null,
+  activation = true,
+  navigationApi = true,
+}: Options) => {
+  const dom = new JSDOM(body, { url, runScripts: "outside-only" });
   const { window } = dom;
-  Object.defineProperty(window, 'matchMedia', { value: () => ({ matches: reduce }) });
+  Object.defineProperty(window, "matchMedia", {
+    value: () => ({ matches: reduce }),
+  });
   if (navigationApi) {
-    Object.defineProperty(window, 'navigation', {
-      value: { activation: activation ? { from: from === null ? null : { url: from } } : null },
+    Object.defineProperty(window, "navigation", {
+      value: {
+        activation: activation
+          ? { from: from === null ? null : { url: from } }
+          : null,
+      },
     });
   }
   script.runInContext(dom.getInternalVMContext());
@@ -40,123 +53,159 @@ const run = ({ body, url = 'https://www.pa-tech.dev/blog/', reduce = false, from
 // A view transition whose promise the test settles.
 const transition = () => {
   let settle = (): void => {};
-  const done = new Promise<undefined>((resolve) => (settle = () => resolve(undefined)));
+  const done = new Promise<undefined>(
+    (resolve) => (settle = () => resolve(undefined)),
+  );
   return { transition: { finished: done, ready: done }, settle };
 };
 
-const fire = (window: JSDOM['window'], type: string, fields: Record<string, object | null>) => {
+const fire = (
+  window: JSDOM["window"],
+  type: string,
+  fields: Record<string, object | null>,
+) => {
   const event = new window.Event(type);
-  for (const [key, value] of Object.entries(fields)) Object.defineProperty(event, key, { value });
+  for (const [key, value] of Object.entries(fields))
+    Object.defineProperty(event, key, { value });
   window.dispatchEvent(event);
 };
 
-const names = (window: JSDOM['window']) =>
-  [...window.document.querySelectorAll<HTMLElement>('[data-morph]')].map((el) => el.style.viewTransitionName);
+const names = (window: JSDOM["window"]) =>
+  [...window.document.querySelectorAll<HTMLElement>("[data-morph]")].map(
+    (el) => el.style.viewTransitionName,
+  );
 
 const swapTo = (target: string | null) => ({ entry: { url: target } });
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
-describe('post morph script on pageswap', () => {
-  it('names the card of the post being opened and clears it after the transition', async () => {
+describe("post morph script on pageswap", () => {
+  it("names the card of the post being opened and clears it after the transition", async () => {
     const window = run({ body: LIST });
     const { transition: viewTransition, settle } = transition();
-    fire(window, 'pageswap', { viewTransition, activation: swapTo('https://www.pa-tech.dev/blog/a/') });
-    expect(names(window)).toEqual(['post-title', '']);
+    fire(window, "pageswap", {
+      viewTransition,
+      activation: swapTo("https://www.pa-tech.dev/blog/a/"),
+    });
+    expect(names(window)).toEqual(["post-title", ""]);
     settle();
     await flush();
-    expect(names(window)).toEqual(['', '']);
+    expect(names(window)).toEqual(["", ""]);
   });
 
   it("names the post's own header when no card matches the target", () => {
-    const window = run({ body: POST, url: 'https://www.pa-tech.dev/blog/b/' });
-    fire(window, 'pageswap', { viewTransition: transition().transition, activation: swapTo('https://www.pa-tech.dev/blog/') });
-    expect(names(window)).toEqual(['post-title', '', '']);
+    const window = run({ body: POST, url: "https://www.pa-tech.dev/blog/b/" });
+    fire(window, "pageswap", {
+      viewTransition: transition().transition,
+      activation: swapTo("https://www.pa-tech.dev/blog/"),
+    });
+    expect(names(window)).toEqual(["post-title", "", ""]);
   });
 
-  it('names nothing on pageswap without a view transition, an activation or a target URL', () => {
+  it("names nothing on pageswap without a view transition, an activation or a target URL", () => {
     const window = run({ body: POST });
-    fire(window, 'pageswap', { viewTransition: null, activation: swapTo('https://www.pa-tech.dev/blog/a/') });
-    fire(window, 'pageswap', { viewTransition: transition().transition, activation: null });
-    expect(names(window)).toEqual(['', '', '']);
+    fire(window, "pageswap", {
+      viewTransition: null,
+      activation: swapTo("https://www.pa-tech.dev/blog/a/"),
+    });
+    fire(window, "pageswap", {
+      viewTransition: transition().transition,
+      activation: null,
+    });
+    expect(names(window)).toEqual(["", "", ""]);
     const list = run({ body: LIST });
-    fire(list, 'pageswap', { viewTransition: transition().transition, activation: swapTo(null) });
-    expect(names(list)).toEqual(['', '']);
+    fire(list, "pageswap", {
+      viewTransition: transition().transition,
+      activation: swapTo(null),
+    });
+    expect(names(list)).toEqual(["", ""]);
   });
-
 });
 
-describe('post morph script on pagereveal', () => {
+describe("post morph script on pagereveal", () => {
   it("names the post's header on reveal and clears it once the snapshots are taken", async () => {
-    const window = run({ body: POST, url: 'https://www.pa-tech.dev/blog/b/', from: 'https://www.pa-tech.dev/blog/' });
+    const window = run({
+      body: POST,
+      url: "https://www.pa-tech.dev/blog/b/",
+      from: "https://www.pa-tech.dev/blog/",
+    });
     const { transition: viewTransition, settle } = transition();
-    fire(window, 'pagereveal', { viewTransition });
-    expect(names(window)).toEqual(['post-title', '', '']);
+    fire(window, "pagereveal", { viewTransition });
+    expect(names(window)).toEqual(["post-title", "", ""]);
     settle();
     await flush();
-    expect(names(window)).toEqual(['', '', '']);
+    expect(names(window)).toEqual(["", "", ""]);
   });
 
-  it('names the card of the post we came back from on a list page', () => {
-    const window = run({ body: LIST, from: 'https://www.pa-tech.dev/blog/a/' });
-    fire(window, 'pagereveal', { viewTransition: transition().transition });
-    expect(names(window)).toEqual(['post-title', '']);
+  it("names the card of the post we came back from on a list page", () => {
+    const window = run({ body: LIST, from: "https://www.pa-tech.dev/blog/a/" });
+    fire(window, "pagereveal", { viewTransition: transition().transition });
+    expect(names(window)).toEqual(["post-title", ""]);
   });
 
-  it('names nothing on reveal without a view transition, a matching card or an activation', () => {
-    const window = run({ body: LIST, from: 'https://www.pa-tech.dev/blog/a/' });
-    fire(window, 'pagereveal', { viewTransition: null });
-    expect(names(window)).toEqual(['', '']);
-    const unknown = run({ body: LIST, from: 'https://www.pa-tech.dev/cv/' });
-    fire(unknown, 'pagereveal', { viewTransition: transition().transition });
-    expect(names(unknown)).toEqual(['', '']);
+  it("names nothing on reveal without a view transition, a matching card or an activation", () => {
+    const window = run({ body: LIST, from: "https://www.pa-tech.dev/blog/a/" });
+    fire(window, "pagereveal", { viewTransition: null });
+    expect(names(window)).toEqual(["", ""]);
+    const unknown = run({ body: LIST, from: "https://www.pa-tech.dev/cv/" });
+    fire(unknown, "pagereveal", { viewTransition: transition().transition });
+    expect(names(unknown)).toEqual(["", ""]);
     const direct = run({ body: LIST, activation: false });
-    fire(direct, 'pagereveal', { viewTransition: transition().transition });
-    expect(names(direct)).toEqual(['', '']);
+    fire(direct, "pagereveal", { viewTransition: transition().transition });
+    expect(names(direct)).toEqual(["", ""]);
     const fresh = run({ body: LIST });
-    fire(fresh, 'pagereveal', { viewTransition: transition().transition });
-    expect(names(fresh)).toEqual(['', '']);
+    fire(fresh, "pagereveal", { viewTransition: transition().transition });
+    expect(names(fresh)).toEqual(["", ""]);
   });
-
 });
 
-describe('post morph script', () => {
-  it('names nothing under reduced motion', () => {
+describe("post morph script", () => {
+  it("names nothing under reduced motion", () => {
     const window = run({ body: LIST, reduce: true });
-    fire(window, 'pageswap', { viewTransition: transition().transition, activation: swapTo('https://www.pa-tech.dev/blog/a/') });
-    expect(names(window)).toEqual(['', '']);
+    fire(window, "pageswap", {
+      viewTransition: transition().transition,
+      activation: swapTo("https://www.pa-tech.dev/blog/a/"),
+    });
+    expect(names(window)).toEqual(["", ""]);
   });
 
-  it('clears the names when the transition is skipped', async () => {
+  it("clears the names when the transition is skipped", async () => {
     const window = run({ body: LIST });
-    const skipped = Promise.reject(new Error('skipped'));
-    fire(window, 'pageswap', {
+    const skipped = Promise.reject(new Error("skipped"));
+    fire(window, "pageswap", {
       viewTransition: { finished: skipped, ready: skipped },
-      activation: swapTo('https://www.pa-tech.dev/blog/a/'),
+      activation: swapTo("https://www.pa-tech.dev/blog/a/"),
     });
     await flush();
-    expect(names(window)).toEqual(['', '']);
+    expect(names(window)).toEqual(["", ""]);
   });
 
   // an engine with view transitions but no Navigation API, or a card without a title, skips the morph instead
   // of throwing.
-  it('skips the morph without the Navigation API or a title in the card', () => {
+  it("skips the morph without the Navigation API or a title in the card", () => {
     // jsdom reports a listener's exception as an error event on the window instead of throwing it.
-    const errorsIn = (window: JSDOM['window']) => {
+    const errorsIn = (window: JSDOM["window"]) => {
       const errors: string[] = [];
-      window.addEventListener('error', (event) => errors.push(event.message));
+      window.addEventListener("error", (event) => errors.push(event.message));
       return errors;
     };
     const noApi = run({ body: LIST, navigationApi: false });
     const noApiErrors = errorsIn(noApi);
-    fire(noApi, 'pagereveal', { viewTransition: transition().transition });
+    fire(noApi, "pagereveal", { viewTransition: transition().transition });
     const untitled = run({ body: '<a data-post-card href="/blog/a/">A</a>' });
     const untitledErrors = errorsIn(untitled);
-    fire(untitled, 'pageswap', { viewTransition: transition().transition, activation: swapTo('https://www.pa-tech.dev/blog/a/') });
+    fire(untitled, "pageswap", {
+      viewTransition: transition().transition,
+      activation: swapTo("https://www.pa-tech.dev/blog/a/"),
+    });
     expect([...noApiErrors, ...untitledErrors]).toEqual([]);
   });
 
-  it('declares no globals', () => {
+  it("declares no globals", () => {
     const window = run({ body: LIST });
-    expect(['reduceMotion', 'pathOf', 'cardFor', 'hero', 'nameTitle'].filter((name) => name in window)).toEqual([]);
+    expect(
+      ["reduceMotion", "pathOf", "cardFor", "hero", "nameTitle"].filter(
+        (name) => name in window,
+      ),
+    ).toEqual([]);
   });
 });

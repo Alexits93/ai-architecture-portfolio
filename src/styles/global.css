@@ -2,107 +2,209 @@
    Astro's scoped component styles still win
    (https://developer.mozilla.org/en-US/docs/Web/CSS/@layer). */
 @layer reset, tokens, base;
-@import './tokens.css' layer(tokens);
+@import "./tokens.css" layer(tokens);
 
 @layer reset {
-    *, *::before, *::after { box-sizing: border-box; }
-    ul[class], ol[class] { padding: 0; list-style: none; }
-    body, h1, h2, h3, h4, p, ul[class], ol[class], li, figure, figcaption, blockquote, dl, dd, hr { margin: 0; }
-    body { min-height: 100vh; }
-    img { max-width: 100%; display: block; }
-    input, button, textarea, select { font: inherit; }
-    a { color: inherit; background-color: transparent; cursor: pointer; }
-    @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  ul[class],
+  ol[class] {
+    padding: 0;
+    list-style: none;
+  }
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  ul[class],
+  ol[class],
+  li,
+  figure,
+  figcaption,
+  blockquote,
+  dl,
+  dd,
+  hr {
+    margin: 0;
+  }
+  body {
+    min-height: 100vh;
+  }
+  img {
+    max-width: 100%;
+    display: block;
+  }
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+  a {
+    color: inherit;
+    background-color: transparent;
+    cursor: pointer;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
+  }
 }
 
-@view-transition { navigation: auto; }
+@view-transition {
+  navigation: auto;
+}
 
 @layer base {
-    /* html has no background, so body's paints the whole canvas
+  /* html has no background, so body's paints the whole canvas
        (https://www.w3.org/TR/css-backgrounds-3/#body-background). */
-    html {
-        scrollbar-gutter: stable;
-        scroll-behavior: smooth;
-        -webkit-text-size-adjust: 100%;
-        tab-size: 4;
-        font-family: var(--font-family);
-        font-feature-settings: "ss03", "cv02", "cv11";
-        font-variation-settings: normal;
-    }
+  html {
+    scrollbar-gutter: stable;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    font-family: var(--font-family);
+    font-feature-settings: "ss03", "cv02", "cv11";
+    font-variation-settings: normal;
+  }
 
-    body {
-        display: flex;
-        flex-direction: column;
-        background-color: var(--body-background);
-        overflow-x: hidden;
-        color: var(--font-color);
-        font-size: var(--font-size-base);
-        line-height: var(--line-height-body);
-        letter-spacing: var(--letter-spacing-body);
-        font-optical-sizing: auto;
-        font-weight: var(--font-weight-regular);
-        font-style: normal;
-        -webkit-font-smoothing: antialiased;
-    }
+  body {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--body-background);
+    overflow-x: hidden;
+    color: var(--font-color);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-body);
+    letter-spacing: var(--letter-spacing-body);
+    font-optical-sizing: auto;
+    font-weight: var(--font-weight-regular);
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+  }
 
-    /* The lock sits on body, not html: html keeps overflow visible, so body's value reaches the viewport and body never
+  /* The lock sits on body, not html: html keeps overflow visible, so body's value reaches the viewport and body never
        becomes a scroll container that would unstick the header (CSS Overflow 3, overflow viewport propagation). */
-    body:has(dialog[open]) {
-        overflow: hidden;
-    }
+  body:has(dialog[open]) {
+    overflow: hidden;
+  }
 
-    @media (min-width: 64rem) {
-        body { font-size: var(--font-size-lg); }
+  @media (min-width: 64rem) {
+    body {
+      font-size: var(--font-size-lg);
     }
+  }
 
-    /* main takes the height the header and footer leave, so the footer of a short page sits at the window bottom. */
+  /* main takes the height the header and footer leave, so the footer of a short page sits at the window bottom. */
+  main {
+    flex: 1 0 auto;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    padding: var(--space-12) var(--space-6);
+  }
+
+  @media (min-width: 48rem) {
     main {
-        flex: 1 0 auto;
-        display: flex;
-        justify-content: flex-start;
-        flex-direction: column;
-        padding: var(--space-12) var(--space-6);
+      inline-size: 100%;
+      max-width: min(100%, var(--size-main));
+      padding: var(--space-12) var(--space-8);
+      margin: 0 auto;
     }
+  }
 
-    @media (min-width: 48rem) {
-        main { inline-size: 100%; max-width: min(100%, var(--size-main)); padding: var(--space-12) var(--space-8); margin: 0 auto; }
+  @media (min-width: 64rem) {
+    main {
+      padding: var(--space-24);
+      margin: 0 auto;
     }
+  }
 
-    @media (min-width: 64rem) {
-        main { padding: var(--space-24); margin: 0 auto; }
-    }
-
-    h1 { margin: 0; letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-bold); font-size: var(--font-size-2xl); line-height: var(--line-height-xl); }
-    h2 { margin: 0; letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-medium); font-size: var(--font-size-md); line-height: var(--line-height-md); }
-    /* A heading a link jumps to stops below the sticky header, with a gap. */
-    h1, h2, h3, h4, h5, h6 { scroll-margin-top: calc(var(--size-header) + var(--space-4)); }
-    /* Links are underlined, so a link in a sentence does not rely on colour alone (WCAG 2.2 F73). Navigation and card
+  h1 {
+    margin: 0;
+    letter-spacing: var(--letter-spacing-tight);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-2xl);
+    line-height: var(--line-height-xl);
+  }
+  h2 {
+    margin: 0;
+    letter-spacing: var(--letter-spacing-tight);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-md);
+  }
+  /* A heading a link jumps to stops below the sticky header, with a gap. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    scroll-margin-top: calc(var(--size-header) + var(--space-4));
+  }
+  /* Links are underlined, so a link in a sentence does not rely on colour alone (WCAG 2.2 F73). Navigation and card
        links drop the line in their component, where the context marks them as links. Hover thickens the line
        (https://design-system.service.gov.uk/styles/links/). */
-    a {
-        text-decoration-line: underline;
-        text-decoration-thickness: var(--link-underline-thickness);
-        text-underline-offset: var(--link-underline-offset);
+  a {
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--link-underline-thickness);
+    text-underline-offset: var(--link-underline-offset);
+  }
+  @media (hover: hover) {
+    a:hover {
+      text-decoration-thickness: var(--link-underline-thickness-hover);
     }
-    @media (hover: hover) {
-        a:hover { text-decoration-thickness: var(--link-underline-thickness-hover); }
-    }
-    /* :focus-visible only: the browser shows the ring for keyboard focus, not for a mouse click (MDN :focus-visible).
+  }
+  /* :focus-visible only: the browser shows the ring for keyboard focus, not for a mouse click (MDN :focus-visible).
        It covers every focusable element. */
-    :focus-visible { outline: var(--outline-width-focus) solid var(--focus-color); outline-offset: var(--outline-offset-focus); }
-    ::selection { background-color: var(--theme-primary); }
+  :focus-visible {
+    outline: var(--outline-width-focus) solid var(--focus-color);
+    outline-offset: var(--outline-offset-focus);
+  }
+  ::selection {
+    background-color: var(--theme-primary);
+  }
 
-    /* Visually hidden, still read by screen readers. */
-    .sr-only {
-        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-        overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
-    }
+  /* Visually hidden, still read by screen readers. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
 
-    /* The hero entrance on home and /cv/: a spring rise, then the name gradient drifts. Not quite 0: Chrome does
+  /* The hero entrance on home and /cv/: a spring rise, then the name gradient drifts. Not quite 0: Chrome does
        not count content at opacity 0 as contentful, so a fade from 0 leaves home with no Largest Contentful Paint
        (https://web.dev/articles/lcp#what-elements-are-considered). */
-    @keyframes hero-enter { from { opacity: .01; translate: 0 var(--space-6); } }
-    @keyframes name-gradient { from { --name-accent: var(--accent-a); } to { --name-accent: var(--accent-b); } }
+  @keyframes hero-enter {
+    from {
+      opacity: 0.01;
+      translate: 0 var(--space-6);
+    }
+  }
+  @keyframes name-gradient {
+    from {
+      --name-accent: var(--accent-a);
+    }
+    to {
+      --name-accent: var(--accent-b);
+    }
+  }
 }

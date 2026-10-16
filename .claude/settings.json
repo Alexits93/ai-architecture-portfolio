@@ -5,7 +5,13 @@
   "sandbox": {
     "enabled": true,
     "autoAllowBashIfSandboxed": true,
-    "excludedCommands": ["gh issue *", "gh pr *", "gh run *", "git push *", "pnpm test:e2e:webkit"],
+    "excludedCommands": [
+      "gh issue *",
+      "gh pr *",
+      "gh run *",
+      "git push *",
+      "pnpm test:e2e:webkit"
+    ],
     "filesystem": {
       "allowWrite": ["~/.local/share/pnpm", "~/.cache/pnpm"],
       "denyWrite": [
@@ -126,7 +132,11 @@
       {
         "matcher": "Write|Edit",
         "hooks": [
-          { "type": "command", "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/lint-feedback.mjs", "timeout": 60 }
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/lint-feedback.mjs",
+            "timeout": 60
+          }
         ]
       }
     ]
