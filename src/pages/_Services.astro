@@ -1,12 +1,13 @@
 ---
 // Page-only component for the home page (ADR 002): "What I do best", cards from src/content/services.yaml that stack
-// while the page scrolls (#256, direction A on #252).
+// while the page scrolls.
 import { getCollection } from 'astro:content';
 import Card from '@/components/Card.astro';
 import DisplayHeading from '@/components/DisplayHeading.astro';
 import Eyebrow from '@/components/Eyebrow.astro';
 
 const services = (await getCollection('services')).toSorted((a, b) => a.data.order - b.data.order);
+import TagList from '@/components/TagList.astro';
 ---
 
 <section id="services" class="services" aria-labelledby="services-title">
@@ -21,7 +22,7 @@ const services = (await getCollection('services')).toSorted((a, b) => a.data.ord
 				<Eyebrow slash={false}>{data.kicker}</Eyebrow>
 				<DisplayHeading as="h3" size="card" class="name" text={`${String(data.order).padStart(2, '0')}. ${data.title}`} />
 				<p>{data.text}</p>
-				<ul>{data.tools.map((tool) => <li>{tool}</li>)}</ul>
+				<TagList items={data.tools} />
 			</Card>
 		))}
 	</ol>
@@ -42,13 +43,8 @@ const services = (await getCollection('services')).toSorted((a, b) => a.data.ord
 	.service:nth-child(4) { --i: 3; }
 	.name { margin: 0 0 var(--space-4); }
 	.service > p { margin: 0 0 var(--space-6); }
-	.service ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
-	.service ul li {
-		padding: var(--space-1) var(--space-4); border-radius: var(--radius-pill); font-size: var(--font-size-sm);
-		border: var(--border-width-hairline) solid var(--hairline-color);
-	}
 
-	/* At 400% zoom (320x180 CSS px) a stuck card was covered by the next before its text could be read (#312). */
+	/* At 400% zoom (320x180 CSS px) the next card covers a stuck card before its text can be read. */
 	@media (max-height: 20rem) {
 		.service { position: static; }
 	}

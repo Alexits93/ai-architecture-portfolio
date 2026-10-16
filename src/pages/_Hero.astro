@@ -1,7 +1,7 @@
 ---
-// Page-only component for the home page (ADR 002): the name split around a tilted portrait (#254, direction A on #252).
+// Page-only component for the home page (ADR 002): the name split around a tilted portrait.
 // The h1 carries the full name for screen readers; the two big halves are presentation. aria-label names the region:
-// Orca reads a hidden heading that labels its section as "blank" (#337).
+// Orca reads a hidden heading that labels its section as "blank".
 import { Image } from 'astro:assets';
 import portrait from '@/assets/photos/portrait.jpg';
 import { SITE } from '@/consts';
@@ -13,8 +13,8 @@ import { SITE } from '@/consts';
 		<p class="kicker">{SITE.role}</p>
 		<p class="word" aria-hidden="true">Patrik</p>
 	</div>
-	<!-- The owner's photo (#261) is the mobile LCP element: priority loads it eagerly at high priority, and the widths
-	     cover --size-portrait up to 3x (https://docs.astro.build/en/reference/modules/astro-assets/#priority). -->
+	{/* The owner's photo is the mobile LCP element: priority loads it eagerly at high priority, and the widths
+	    cover --size-portrait up to 3x (https://docs.astro.build/en/reference/modules/astro-assets/#priority). */}
 	<div class="portrait">
 		<div class="portrait-face">
 			<Image src={portrait} alt={`${SITE.name} travelling in Austria in winter`} widths={[256, 512, 768]} sizes="min(70vw, 16rem)" priority />
@@ -40,14 +40,14 @@ import { SITE } from '@/consts';
 		background-clip: text; color: transparent;
 	}
 	/* A fixed size and aspect ratio reserve the box before anything loads, so the hero does not shift. The card keeps
-	   still and takes the pointer; the face inside it tilts (#341), so the hit area does not move under the pointer. */
+	   still and takes the pointer; the face inside it tilts, so the hit area does not move under the pointer. */
 	.portrait {
 		inline-size: var(--size-portrait); aspect-ratio: 3 / 4; display: grid; rotate: -3deg; perspective: var(--perspective-card);
 		--tilt-x: 0deg; --tilt-y: 0deg; --glare: 0;
 	}
 	.portrait-face { position: relative; border-radius: var(--radius-2xl); box-shadow: var(--shadow-raised); }
-	/* The gradient shows until the photo has loaded. It sits on the image itself: on the face behind it, it showed
-	   through the image's anti-aliased rounded edge as a thin line. */
+	/* The gradient shows until the photo has loaded. It sits on the image itself. Regression: on the face behind it,
+	   it showed through the image's anti-aliased rounded edge as a thin line. */
 	.portrait-face img {
 		display: block; inline-size: 100%; block-size: 100%; object-fit: cover; border-radius: inherit;
 		background-image: linear-gradient(160deg, var(--accent-a), var(--accent-b));
@@ -59,7 +59,7 @@ import { SITE } from '@/consts';
 		background-image: radial-gradient(circle at var(--glare-x) var(--glare-y), var(--glare-light), transparent var(--glare-reach));
 		mix-blend-mode: overlay; opacity: var(--glare); transition: opacity var(--duration-3) ease-out;
 	}
-	/* Steam-style tilt (#341): the face turns towards the pointer and lifts a little. Mouse and pen only, and none
+	/* Steam-style tilt: the face turns towards the pointer and lifts a little. Mouse and pen only, and none
 	   under reduced motion, so the face keeps no transform there. */
 	@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
 		.portrait-face {
@@ -80,7 +80,7 @@ import { SITE } from '@/consts';
 		.pitch { grid-column: 1 / -1; }
 	}
 
-	/* The site's entrance: a spring rise in steps, then the name gradient drifts (#210). Without motion every part
+	/* The site's entrance: a spring rise in steps, then the name gradient drifts. Without motion every part
 	   shows in its final state. */
 	@media (prefers-reduced-motion: no-preference) {
 		.hero > :not(h1) { animation: hero-enter var(--duration-enter) var(--ease-spring) both; }
@@ -94,7 +94,7 @@ import { SITE } from '@/consts';
 <script>
 	// No CSS follows the pointer yet: Pointer-driven Animations is an editor's draft with no implementation
 	// (https://drafts.csswg.org/pointer-animations-1/). So the pointer position goes into custom properties and CSS
-	// renders the tilt and the glare (#341). Custom properties set through the CSSOM pass the hashed CSP, which blocks
+	// renders the tilt and the glare. Custom properties set through the CSSOM pass the hashed CSP, which blocks
 	// only style attributes. Browsers fire pointermove at most once per frame (https://w3c.github.io/pointerevents/).
 	const card = document.querySelector('#hero .portrait');
 	const canTilt = matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');

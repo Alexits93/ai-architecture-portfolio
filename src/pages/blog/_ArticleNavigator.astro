@@ -9,7 +9,7 @@ export interface Props {
 	headings: Heading[];
 }
 
-const { headings = [] } = Astro.props;
+const { headings } = Astro.props;
 ---
 
 <nav class="article-navigator" aria-label="On this page">
@@ -22,7 +22,6 @@ const { headings = [] } = Astro.props;
 
 <style>
 	.article-navigator {
-		display: none;
 		padding: 0 var(--space-8);
 		max-width: var(--size-toc);
 		height: fit-content;
@@ -45,7 +44,7 @@ const { headings = [] } = Astro.props;
 		color: var(--font-color-bold);
 		text-decoration: none;
 		display: block;
-		margin-bottom: 5px;
+		margin-bottom: var(--space-1);
 	}
 
 	a:hover {
@@ -54,7 +53,7 @@ const { headings = [] } = Astro.props;
 
 	a:hover::before {
 		position: absolute;
-		left: -1.22rem;
+		left: calc(-1 * (var(--space-4) + var(--space-1)));
 		top: calc(50% - var(--space-1));
 		width: var(--space-2);
 		height: var(--space-2);
@@ -67,10 +66,4 @@ const { headings = [] } = Astro.props;
 	.h4-link { padding-left: var(--space-8); }
 	.h5-link { padding-left: var(--space-12); }
 	.h6-link { padding-left: var(--space-16); }
-
-	@media (min-width: 64rem) {
-		.article-navigator {
-			display: block;
-		}
-	}
 </style>

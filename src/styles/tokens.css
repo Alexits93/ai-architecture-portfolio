@@ -3,7 +3,7 @@
    set is written once (https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark).
    theme.js and the header toggle set data-theme; without it the OS preference applies.
 
-   Breakpoints: 48rem, 64rem and 80rem wide; 20rem high for short viewports such as 400% zoom (#298). They are not custom properties, because var() does not work in media
+   Breakpoints: 48rem, 64rem and 80rem wide; 20rem high for short viewports such as 400% zoom. They are not custom properties, because var() does not work in media
    conditions and @custom-media ships in no browser
    (https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@custom-media). */
 
@@ -34,7 +34,6 @@
     --space-1: .25rem;
     --space-2: .5rem;
     --space-4: 1rem;
-    --space-5: 1.25rem;
     --space-6: 1.5rem;
     --space-8: 2rem;
     --space-10: 2.5rem;
@@ -50,15 +49,15 @@
     --font-size-lg: 1.2rem;
     --font-size-xl: 1.5rem;
     --font-size-2xl: 2.25rem;
-    /* Display type for the home redesign (#253): section titles, the hero name and the contact word that
+    /* Display type: section titles, the hero name and the contact word that
        fills its column. Each size grows with the viewport or its column and keeps its own tight leading and tracking. */
     --font-size-display-section: clamp(2rem, 5vw, 3.5rem);
-    /* Small enough that each half of the name fits beside the portrait from 64rem (#254). */
+    /* Small enough that each half of the name fits beside the portrait from 64rem. */
     --font-size-display-hero: clamp(3rem, 6vw, 5.5rem);
-    /* A share of the container's inline size (cqi), so the contact word fills its column at any width (#278). In Inter
+    /* A share of the container's inline size (cqi), so the contact word fills its column at any width. In Inter
        bold at the giant tracking, SAY HELLO is about 4.96em wide; 19.5cqi leaves a few percent to spare. */
     --font-size-display-giant: 19.5cqi;
-    /* The title on a service card (#256), between the body sizes and the section titles. */
+    /* The title on a service card, between the body sizes and the section titles. */
     --font-size-display-card: clamp(1.5rem, 3vw, 2.25rem);
     --line-height-display-section: 1.05;
     --line-height-display-card: 1.1;
@@ -83,7 +82,6 @@
     --radius-xs: 2px;
     --radius-sm: .25rem;
     --radius-md: .5rem;
-    --radius-lg: 10px;
     --radius-xl: 1.25rem;
     --radius-2xl: 1.75rem;
     --radius-full: 50%;
@@ -94,7 +92,7 @@
     /* Dividers and pill outlines: the text colour thinned, so they follow the theme with it
        (https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix). */
     --hairline-color: color-mix(in srgb, var(--font-color) 20%, transparent);
-    /* The page behind an open photo (#350): the page colour, mostly opaque, so the photo stands out in both themes. */
+    /* The page behind an open photo: the page colour, mostly opaque, so the photo stands out in both themes. */
     --backdrop-color: color-mix(in srgb, var(--body-background) 85%, transparent);
     --outline-width-focus: 2px;
     /* A gap between the focus ring and what it outlines keeps the text readable. */
@@ -113,19 +111,21 @@
     --size-sidebar: 230px;
     --size-card-max: 400px;
     --size-prose: 800px;
-    /* A negative inline margin that takes a block from its centred column to the window edges (the photo row, #255).
+    /* A negative inline margin that takes a block from its centred column to the window edges (the photo row).
        The percentage resolves against the column where the token is used. */
     --size-bleed: calc(50% - 50vw);
-    /* The home hero (#254): the portrait card shrinks with a phone screen, and the pitch wraps at a short measure. */
+    /* The home hero: the portrait card shrinks with a phone screen, and the pitch wraps at a short measure. */
     --size-portrait: min(70vw, 16rem);
     --size-pitch: 36ch;
-    /* A photo in the home row (#255): narrow enough on a phone that the next one peeks in as a hint to scroll. */
+    /* A photo in the home row: narrow enough on a phone that the next one peeks in as a hint to scroll. */
     --size-photo: clamp(12rem, 22vw, 17rem);
-    /* An open photo (#350): the height left after the close button and the caption, no wider than the window allows at
+    /* An open photo: the height left after the close button and the caption, no wider than the window allows at
        the files' 9:10 ratio, and at most the files' 1000px. On a short window, such as 400% zoom, the height keeps a
-       14rem floor, as wide as a thumbnail, and the dialog scrolls (#357). */
+       14rem floor, as wide as a thumbnail, and the dialog scrolls. */
     --size-photo-large: min(max(calc(100dvh - 12rem), 14rem), calc((100vw - 4rem) * 10 / 9), 1000px);
-    /* Sticky parts on home (#256) stop this far below the viewport top, clear of the sticky header. */
+    /* The sticky header: the theme toggle and its padding. */
+    --size-header: calc(var(--size-icon-lg) + 2 * var(--space-4));
+    /* Sticky parts on home stop this far below the viewport top, clear of the sticky header. */
     --offset-sticky: 7rem;
     /* The service cards sit this far apart before they stack; the space after the last one keeps the pile on screen
        a while longer. */
@@ -154,11 +154,10 @@
     /* Scroll reveal: from the first pixel entering the viewport until 30% of the cover range (MDN animation-range). */
     --range-reveal: entry 0% cover 30%;
 
-    --shadow-card: drop-shadow(0 10px 8px rgba(0, 0, 0, .04)) drop-shadow(0 4px 3px rgba(0, 0, 0, .1));
     --shadow-card-edge: inset 0 1px 0 0 rgba(148, 163, 184, .1);
     /* A raised card: one long soft shadow below it. The dark page needs a deeper shadow to show at all. */
     --shadow-raised: 0 24px 48px -24px light-dark(hsl(200 50% 15% / .35), hsl(0 0% 0% / .6));
-    /* The portrait tilt (#341): the depth of the 3D view, and the light that follows the pointer, fading out by
+    /* The portrait tilt: the depth of the 3D view, and the light that follows the pointer, fading out by
        --glare-reach from it. */
     --perspective-card: 60rem;
     --glare-light: hsl(0 0% 100% / .45);

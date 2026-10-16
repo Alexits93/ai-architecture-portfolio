@@ -1,6 +1,6 @@
 ---
-// A rounded link to a full page, such as Full CV or All posts (#257, #219, direction A on #252), or one of the blog
-// categories, where aria-current marks the page the visitor is on (#299).
+// A rounded link to a full page, such as Full CV or All posts, or one of the blog
+// categories, where aria-current marks the page the visitor is on.
 interface Props {
   href: string;
   'aria-current'?: 'page';
@@ -17,12 +17,12 @@ const { href, 'aria-current': current } = Astro.props;
     color: var(--font-color-bold); font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); text-decoration: none;
     transition: background-color var(--duration-2) ease-out, scale var(--duration-1) ease-out;
   }
-  /* The surface changes on hover and the pill gives a little when pressed (#206, #272). */
+  /* The surface changes on hover and the pill gives a little when pressed. */
   @media (hover: hover) {
     .pill:hover { background-color: var(--thumbnail-bg-color-hover); }
   }
   .pill:active { scale: .96; }
-  /* The current page fills with the text colour and keeps the underline the category links had (#206), which also
+  /* The current page fills with the text colour and keeps an underline, which also
      marks it in forced colours, where the fill is dropped. */
   .pill[aria-current="page"] { background-color: var(--font-color-bold); color: var(--body-background); text-decoration-line: underline; }
 </style>

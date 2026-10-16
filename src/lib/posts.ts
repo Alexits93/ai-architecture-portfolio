@@ -13,16 +13,16 @@ interface RecommendedOptions {
   excludeId?: string;
 }
 
-/** The newest posts except `excludeId`, sorted by date so static builds are reproducible (#269). */
+/** The newest posts except `excludeId`, sorted by date so static builds are reproducible. */
 export const selectRecommendedPosts = (
   posts: readonly BlogPost[],
   { limit = 3, excludeId }: RecommendedOptions = {},
 ): BlogPost[] => sortByNewest(posts).filter((post) => post.id !== excludeId).slice(0, limit);
 
-/** The home writing list: the newest posts, at most `limit` (#219). */
+/** The home writing list: the newest posts, at most `limit`. */
 export const selectLatestPosts = (posts: readonly BlogPost[], limit = 5): BlogPost[] =>
   sortByNewest(posts).slice(0, limit);
 
-/** The last change to a post: its `updatedDate`, else its `publishDate` (#306). */
+/** The last change to a post: its `updatedDate`, else its `publishDate`. */
 export const modifiedDate = ({ publishDate, updatedDate }: { publishDate: Date; updatedDate?: Date }): Date =>
   updatedDate ?? publishDate;

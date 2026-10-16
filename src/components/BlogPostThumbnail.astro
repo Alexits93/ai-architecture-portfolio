@@ -1,5 +1,5 @@
 ---
-// A post as one link around a raised card: the category as kicker, the title, the description (#299, #300).
+// A post as one link around a raised card: the category as kicker, the title, the description.
 import Card from '@/components/Card.astro';
 import DisplayHeading from '@/components/DisplayHeading.astro';
 import DraftLabel from '@/components/DraftLabel.astro';
@@ -9,16 +9,16 @@ import type { BlogPost } from '@/lib/posts';
 
 interface Props {
   post: BlogPost;
-  /** h2 under the blog index h1, h3 under the "Recommended articles" h2 (#307). */
+  /** h2 under the blog index h1, h3 under the "Recommended articles" h2. */
   heading: 'h2' | 'h3';
 }
 
 const { post, heading } = Astro.props;
-// Firefox computes no name from content for a link that only wraps an <article> (#338), so the title names the link
+// Firefox computes no name from content for a link that only wraps an <article>, so the title names the link
 // and the description describes it. A post appears once per page, so its id keeps them unique.
 const titleId = `card-title-${post.id}`;
 const descriptionId = `card-description-${post.id}`;
-// A draft's label starts the link description, so a screen reader hears it with the title (#347).
+// A draft's label starts the link description, so a screen reader hears it with the title.
 const draftId = `card-draft-${post.id}`;
 const describedBy = post.data.draft ? `${draftId} ${descriptionId}` : descriptionId;
 ---

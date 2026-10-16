@@ -1,0 +1,41 @@
+---
+// The menu and close button: two bars in a round hit area. Inside an open dialog the bars cross into an X.
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'button'>;
+
+const { class: className, ...attrs } = Astro.props;
+---
+
+<button type="button" class:list={['bars-button', className]} {...attrs}><span></span><span></span></button>
+
+<style>
+  .bars-button {
+    display: flex; flex-direction: column; justify-content: center; align-items: center; gap: var(--space-2);
+    inline-size: var(--space-12); block-size: var(--space-12); padding: 0;
+    border: none; border-radius: var(--radius-full); background: none; cursor: pointer;
+    transition: gap var(--duration-3) ease-in-out;
+  }
+  .bars-button span {
+    display: block; inline-size: var(--space-8); block-size: .2rem;
+    border-radius: var(--radius-xs); background-color: var(--font-color-bold);
+    transition: transform var(--duration-3) ease-in-out;
+  }
+  @media (hover: hover) {
+    .bars-button:hover { background-color: var(--state-hover); }
+  }
+  .bars-button:active { scale: .92; }
+  /* Forced colours drop author background colours; a system colour keeps the bars visible
+     (https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors). */
+  @media (forced-colors: active) {
+    .bars-button span { forced-color-adjust: none; background-color: ButtonText; }
+  }
+
+  :global(dialog[open]:not([data-closing])) > .bars-button { gap: 0; }
+  :global(dialog[open]:not([data-closing])) > .bars-button span:first-child { transform: translateY(.1rem) rotate(45deg); }
+  :global(dialog[open]:not([data-closing])) > .bars-button span:last-child { transform: translateY(-.1rem) rotate(-45deg); }
+  @starting-style {
+    :global(dialog[open]:not([data-closing])) > .bars-button { gap: var(--space-2); }
+    :global(dialog[open]:not([data-closing])) > .bars-button span { transform: none; }
+  }
+</style>

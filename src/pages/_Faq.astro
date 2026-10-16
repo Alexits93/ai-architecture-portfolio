@@ -1,6 +1,6 @@
 ---
 // Page-only component for the home page (ADR 002): the FAQ from src/content/faq.yaml as a native exclusive accordion,
-// no JavaScript (#259, direction A on #252).
+// no JavaScript.
 import { getCollection } from 'astro:content';
 import DisplayHeading from '@/components/DisplayHeading.astro';
 import Eyebrow from '@/components/Eyebrow.astro';
@@ -31,7 +31,7 @@ const questions = (await getCollection('faq')).toSorted((a, b) => a.data.order -
 		padding: var(--space-6); border-radius: var(--radius-xl); background-color: var(--theme-secondary); color: var(--font-color);
 		transition: background-color var(--duration-2) ease-out;
 	}
-	/* The card's surface changes while the pointer is on its question, as the pills do (#272). */
+	/* The card's surface changes while the pointer is on its question, as the pills do. */
 	@media (hover: hover) {
 		details:has(> summary:hover) { background-color: var(--thumbnail-bg-color-hover); }
 	}

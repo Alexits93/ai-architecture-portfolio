@@ -13,6 +13,7 @@ Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statich
 - Read the code, the git history (`git log -S`) and the official docs of the installed version before you change or recommend something, and cite the doc URL in the commit. Auto memory is off; knowledge lives in git, issues and PRs.
 - Accessibility questions are not owner decisions: research WCAG and the ARIA Authoring Practices Guide, check the running page, decide, and report the result.
 - Use the stack's native features as their docs describe. If none fits, ask before building something custom. A new dependency needs the owner's approval.
+- Comments say why the code is as it is. Issue numbers, dates and history go in the commit, except a gate's failure (below).
 - Keep changes minimal: no refactors or defensive code beyond the task, except removing what the change makes obsolete (see Removing).
 - Done means seen: `pnpm build`, run the site (`pnpm preview` or Playwright), look at the screenshots, and report what you saw.
 - Add a lint rule, hook or test as a gate only for a mistake that recurred and is costly. Its comment names the real failure it answers (a CI run, PR or commit); no real failure, no gate. Retire an obsolete gate in the same change. Content truth (CV text, posts) is checked by the owner, not by gates.

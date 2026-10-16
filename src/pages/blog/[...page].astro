@@ -13,9 +13,10 @@ export const getStaticPaths = (async ({ paginate }) => {
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
+import { SITE } from '@/consts';
 ---
 
-<BaseLayout title="Blog | Patrik Alexits" description="Articles on frontend architecture, LLM coding agents and software engineering.">
+<BaseLayout title={`Blog | ${SITE.name}`} description="Articles on frontend architecture, LLM coding agents and software engineering.">
 	<main>
 		<BlogFeed text="All" accent="posts" page={page} />
 	</main>

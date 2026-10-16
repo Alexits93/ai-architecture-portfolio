@@ -4,9 +4,9 @@ import Card from '@/components/Card.astro';
 import DisplayHeading from '@/components/DisplayHeading.astro';
 import Eyebrow from '@/components/Eyebrow.astro';
 import { formatPeriod, sortByStartDesc, splitEmphasis } from '@/lib/experience';
-import SkillTag from './_SkillTag.astro';
 
 const entries = sortByStartDesc(await getCollection('experience'));
+import TagList from '@/components/TagList.astro';
 ---
 
 <div class="experience-list-container">
@@ -22,9 +22,7 @@ const entries = sortByStartDesc(await getCollection('experience'));
                 {data.highlights.map((highlight) => (
                     <p>{splitEmphasis(highlight, data.emphasis).map((part) => (part.strong ? <strong>{part.text}</strong> : part.text))}</p>
                 ))}
-                <ul class="tags">
-                    {data.skills.map((skill) => <li><SkillTag skill={skill} /></li>)}
-                </ul>
+                <TagList class="tags" items={data.skills} />
             </div>
         </Card>
     ))}
@@ -35,7 +33,5 @@ const entries = sortByStartDesc(await getCollection('experience'));
     .experience-list-container .experience-item .position p strong { color: var(--font-color-bold); }
     .experience-list-container .position .title { margin: 0 0 var(--space-4); }
     .experience-list-container .position p { margin: 0 0 var(--space-2); }
-    .experience-list-container .position .tags {
-        display: flex; gap: var(--space-1) var(--space-2); flex-wrap: wrap; margin: var(--space-6) 0 0; padding: 0; list-style: none;
-    }
+    .experience-list-container .position .tags { margin: var(--space-6) 0 0; }
 </style>
