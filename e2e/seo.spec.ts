@@ -11,6 +11,7 @@ const SITEMAP_ROUTES = ROUTES.filter((route) => route !== '/404/');
 
 const TITLES: Record<string, string> = {
   '/': SITE.title,
+  '/about/': 'About | Patrik Alexits',
   '/cv/': 'CV | Patrik Alexits',
   '/blog/': 'Blog | Patrik Alexits',
   '/privacy-policy/': 'Privacy Policy | Patrik Alexits',

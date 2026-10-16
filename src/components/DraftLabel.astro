@@ -1,0 +1,19 @@
+---
+// Marks a test article on home, the blog lists and the post page (#347). The id lets a post card's link point its
+// description at the label.
+interface Props {
+  id?: string;
+}
+
+const { id } = Astro.props;
+---
+
+<span class="draft-label" id={id}>Draft</span>
+
+<style>
+  .draft-label {
+    display: inline-block; padding: 0 var(--space-2); border: var(--border-width-hairline) solid currentColor;
+    border-radius: var(--radius-pill); color: var(--font-color-bold); font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase;
+  }
+</style>

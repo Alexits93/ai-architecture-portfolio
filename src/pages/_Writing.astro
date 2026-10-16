@@ -3,6 +3,8 @@
 // to /blog/ (#219; heading from direction A, rows from direction C, decided on #252).
 import { getCollection } from 'astro:content';
 import DisplayHeading from '@/components/DisplayHeading.astro';
+import DraftLabel from '@/components/DraftLabel.astro';
+import DraftNotice from '@/components/DraftNotice.astro';
 import Eyebrow from '@/components/Eyebrow.astro';
 import Pill from '@/components/Pill.astro';
 import { ROUTES } from '@/consts';
@@ -20,10 +22,14 @@ const posts = selectLatestPosts(await getCollection('blog'));
 		</div>
 		<Pill href={ROUTES.blog}>All posts</Pill>
 	</div>
+	{posts.some((post) => post.data.draft) && <DraftNotice />}
 	<ul>
 		{posts.map((post) => (
 			<li>
-				<a href={getPostPath(post)} data-post-card><span data-morph="title">{post.data.title}</span></a>
+				<span class="title">
+					<a href={getPostPath(post)} data-post-card><span data-morph="title">{post.data.title}</span></a>
+					{post.data.draft && <DraftLabel />}
+				</span>
 				<span class="meta">
 					{post.data.category} &middot; <time datetime={post.data.publishDate.toISOString().slice(0, 10)}>{post.data.publishDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })}</time>
 				</span>
@@ -41,8 +47,10 @@ const posts = selectLatestPosts(await getCollection('blog'));
 		display: grid; gap: var(--space-1); padding-block: var(--space-6);
 		border-block-start: var(--border-width-hairline) solid var(--hairline-color); color: var(--font-color);
 	}
+	/* A draft's label sits after its title. */
+	.title { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-4); }
 	li a {
-		justify-self: start; color: var(--font-color-bold); font-weight: var(--font-weight-bold); font-size: var(--font-size-xl);
+		color: var(--font-color-bold); font-weight: var(--font-weight-bold); font-size: var(--font-size-xl);
 		letter-spacing: var(--letter-spacing-tight); text-decoration: underline transparent; text-underline-offset: var(--space-1);
 		transition: text-decoration-color var(--duration-2) ease-out;
 	}

@@ -66,6 +66,21 @@ describe('BlogFeed head', () => {
   });
 });
 
+// #347: while test articles are listed, a notice says the blog will only hold articles the owner writes.
+describe('BlogFeed draft notice', () => {
+  it('shows the notice when the page lists a draft post', async () => {
+    const doc = await render(pageOf([createTestPost({ id: 'real' }), createTestPost({ id: 'test', draft: true })], 1));
+    const notice = doc.querySelector('.draft-notice');
+    assert.exists(notice);
+    expect(notice.textContent).toContain('test articles');
+  });
+
+  it('shows no notice when no post is a draft', async () => {
+    const doc = await render(pageOf(postsOf(2), 1));
+    expect(doc.querySelector('.draft-notice')).toBeNull();
+  });
+});
+
 describe('BlogFeed pagination (#160)', () => {
   it('renders no cards and no pagination nav for an empty list', async () => {
     const doc = await render(pageOf([], 1));

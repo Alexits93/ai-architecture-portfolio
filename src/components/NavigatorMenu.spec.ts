@@ -21,18 +21,16 @@ describe('NavigatorMenu Widget (Astro)', () => {
     expect(navMenu.hasAttribute('open')).toBe(false);
   });
 
-  it('should render the default navigation links', async () => {
-    const html = await container.renderToString(NavigatorMenu);
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-    
-    const links = doc.querySelectorAll('dialog#site-menu .navigator-menu-body ul li a');
-    expect(links.length).toBeGreaterThan(0);
-    
-    // Check if the home link exists
-    const homeLink = Array.from(links).find((link: Element) => link.getAttribute('href') === '/');
-    assert.exists(homeLink);
-    expect(homeLink.textContent.trim()).toBe('Home');
+  // #348: the about page sits between home and the blog.
+  it('lists Home, About, Blog and CV in that order', async () => {
+    const doc = new JSDOM(await container.renderToString(NavigatorMenu)).window.document;
+    const links = [...doc.querySelectorAll('dialog#site-menu .navigator-menu-body a')];
+    expect(links.map((link) => [link.textContent.trim(), link.getAttribute('href')])).toEqual([
+      ['Home', '/'],
+      ['About', '/about/'],
+      ['Blog', '/blog/'],
+      ['CV', '/cv/'],
+    ]);
   });
 
   // The links are navigation, not headings: an h2 in each made the open menu announce three headings and put them

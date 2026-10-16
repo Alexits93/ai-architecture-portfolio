@@ -1,10 +1,9 @@
-# The "What I do best" cards on home, shown by `order` (src/content.config.ts). Draft copy from the #252 sketch;
-# the owner rewrites it in #264.
+# The "What I do best" cards on home, shown by `order` (src/content.config.ts). Owner copy (#347).
 - id: frontend-architecture
   order: 1
   kicker: Day job
   title: Frontend architecture
-  text: I turn features of a Windows desktop app into Nx and Angular web applications that are accessible, responsive and easier to use.
+  text: I turn features of a Windows desktop app into Nx and Angular web applications built for performance, maintainability and security, and that are accessible and easy to use.
   tools: [Nx, Angular, TypeScript, Accessibility, Micro frontends]
 - id: agent-harnesses
   order: 2
@@ -18,3 +17,9 @@
   title: Coaching engineers
   text: I mentor juniors and lead teams with shared terminology, written principles and high standards.
   tools: [Mentoring, Code review, Principles, Scrum]
+- id: learning
+  order: 4
+  kicker: Free time
+  title: Learning and experimenting
+  text: I keep up to date with the latest trends and technologies, and experiment with web and game development.
+  tools: [Astro, CSS, Godot, GDScript]

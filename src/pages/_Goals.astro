@@ -1,0 +1,21 @@
+---
+// Page-only component for /about/ (ADR 002): the owner's goals (#348).
+import AboutRows from './_AboutRows.astro';
+
+const goals = [
+	{
+		title: 'A life to be proud of',
+		text: 'My main goal is to help the less fortunate, and to live a life with my wife that we can both be proud of, growing together.',
+	},
+	{
+		title: 'Helping people grow',
+		text: 'My professional goal is to use my exceptionally extroverted personality to help less confident people speak up for themselves, have more confidence and belief in themselves, and manifest, learn and grow.',
+	},
+	{
+		title: 'Along the way',
+		text: 'Visiting every continent, with Japan and New Zealand as the main destinations. Owning a 2010s V8 AMG, either an SLS AMG or a C63 AMG. And making a game or software that has a positive impact on the causes and people important to me.',
+	},
+];
+---
+
+<AboutRows id="goals" eyebrow="Where I am heading" title="Goals" items={goals} />

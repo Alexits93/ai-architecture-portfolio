@@ -2,6 +2,7 @@
 import type { Page } from 'astro';
 import BlogPostThumbnail from '@/components/BlogPostThumbnail.astro';
 import DisplayHeading from '@/components/DisplayHeading.astro';
+import DraftNotice from '@/components/DraftNotice.astro';
 import Eyebrow from '@/components/Eyebrow.astro';
 import Pill from '@/components/Pill.astro';
 import { type BlogPost, type Category } from '@/lib/posts';
@@ -29,6 +30,7 @@ const links = [
 <div class="blog-feed-container">
 	<Eyebrow>Blog</Eyebrow>
 	<DisplayHeading as="h1" size="section" text={text} accent={accent} />
+	{page.data.some((post) => post.data.draft) && <DraftNotice />}
 	<nav aria-label="Blog categories" class="categories">
 		<ul>
 			{links.map(({ name, href, isCurrent }) => (
