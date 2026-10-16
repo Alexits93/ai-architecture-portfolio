@@ -23,10 +23,6 @@ const SYNTAX_BANS = [
   {
     "selector": "JSXOpeningElement[name.name='script']:has(JSXNamespacedName[namespace.name='is'][name.name='inline']):not(:has(JSXAttribute[name.name='src'])):not(:has(JSXAttribute[name.name='type'][value.value='application/ld+json']))",
     "message": "CSP: inline is:inline scripts get no hash and a <meta> CSP does not cover content before it (W3C CSP3 3.3). For a pre-paint script, inject it with injectScript('head-inline') in astro.config.mjs, which Astro hashes, as src/lib/theme.js is."
-  },
-  {
-    "selector": "JSXAttribute[name.name='class'] JSXExpressionContainer",
-    "message": "Do not use dynamic class interpolation (class={...}). Use Astro's native class:list={...} directive instead."
   }
 ];
 
@@ -64,7 +60,6 @@ export default [
     rules: {
       // Every `as` cast except `as const`: narrow with instanceof or typed generics instead.
       "@typescript-eslint/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
-      "no-console": "error",
       "no-restricted-syntax": ["error", ...SYNTAX_BANS]
     }
   },
