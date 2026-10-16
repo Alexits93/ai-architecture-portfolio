@@ -116,7 +116,6 @@
       "Bash(git push --mirror *)",
       "Bash(git push * master)",
       "Bash(git push * HEAD:master)",
-      "Bash(git branch -D *)",
       "Bash(gh pr merge *)",
       "Bash(git clean *)",
       "Bash(git stash *)"
