@@ -2,12 +2,16 @@ import assert from 'node:assert/strict';
 import { globSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { PRIVACY_POLICY_UPDATED, SITE } from '../src/consts';
+import { readPostDates } from '../src/lib/sitemap-lastmod';
 
 // Every built page renders through BaseLayout with one complete SEO head (#113).
 // 404.html builds from src/pages/404.astro, whose URL is /404/ (#154).
 const ROUTES = globSync('**/*.html', { cwd: 'dist' }).map((file) => `/${file.replace(/index\.html$/, '').replace(/\.html$/, '/')}`);
-// @astrojs/sitemap leaves status code pages out of the sitemap.
-const SITEMAP_ROUTES = ROUTES.filter((route) => route !== '/404/');
+// Draft posts are noindex and stay out of the sitemap (#354).
+const DRAFT_ROUTES = new Set(readPostDates('src/content/blog').filter((post) => post.draft).map((post) => `/blog/${post.id}/`));
+const NOINDEX_ROUTES = new Set(['/404/', ...DRAFT_ROUTES]);
+// @astrojs/sitemap leaves status code pages out of the sitemap; astro.config.mjs filters the drafts.
+const SITEMAP_ROUTES = ROUTES.filter((route) => !NOINDEX_ROUTES.has(route));
 
 const TITLES: Record<string, string> = {
   '/': SITE.title,
@@ -33,8 +37,9 @@ for (const route of ROUTES) {
     assert(description !== null);
     expect(description.length).toBeGreaterThanOrEqual(50);
     expect(description.length).toBeLessThanOrEqual(160);
-    // The noindex 404 page names no canonical, since /404/ does not exist (#307).
-    if (route === '/404/') {
+    // A noindex page names no canonical: /404/ does not exist (#307), and a draft post is not meant to be found (#354).
+    if (NOINDEX_ROUTES.has(route)) {
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
       await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
     } else {
       await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
@@ -162,13 +167,14 @@ test('sitemap lastmod matches the content dates', async ({ request, page }) => {
       match[2],
     ]),
   );
+  // The lists show the draft posts too, so a draft still dates them; only the draft's own URL is missing (#354).
   const postDates: string[] = [];
-  for (const route of SITEMAP_ROUTES.filter((path) => /^\/blog\/[^/]+\/$/.test(path) && !/^\/blog\/\d+\/$/.test(path))) {
+  for (const route of ROUTES.filter((path) => /^\/blog\/[^/]+\/$/.test(path) && !/^\/blog\/\d+\/$/.test(path))) {
     await page.goto(route);
     const json = await page.locator('script[type="application/ld+json"]').textContent();
     assert(json !== null);
     const data: { dateModified: string } = JSON.parse(json);
-    expect(lastmods.get(route)).toBe(data.dateModified);
+    expect(lastmods.get(route)).toBe(DRAFT_ROUTES.has(route) ? undefined : data.dateModified);
     postDates.push(data.dateModified);
   }
   expect(lastmods.get('/blog/')).toBe(postDates.toSorted().at(-1));
