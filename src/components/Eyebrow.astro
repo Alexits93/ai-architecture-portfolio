@@ -8,11 +8,17 @@ interface Props {
 const { slash = true } = Astro.props;
 ---
 
-<p class="eyebrow">{slash && <span aria-hidden="true">/ </span>}<slot /></p>
+<p class="eyebrow">
+  {slash && <span aria-hidden="true">/ </span>}
+  <slot />
+</p>
 
 <style>
   .eyebrow {
-    margin: 0 0 var(--space-2); color: var(--font-color-bold); font-size: var(--font-size-sm);
-    letter-spacing: var(--letter-spacing-wide); text-transform: uppercase;
+    margin: 0 0 var(--space-2);
+    color: var(--font-color-bold);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
   }
 </style>

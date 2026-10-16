@@ -1,12 +1,12 @@
 ---
 // Page-only component for the post pages (ADR 002): the recommended posts under an article.
-import { getCollection } from 'astro:content';
-import BlogPostThumbnail from '@/components/BlogPostThumbnail.astro';
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
-import Pill from '@/components/Pill.astro';
-import { selectRecommendedPosts } from '@/lib/posts';
-import { ROUTES } from '@/consts';
+import { getCollection } from "astro:content";
+import BlogPostThumbnail from "@/components/BlogPostThumbnail.astro";
+import DisplayHeading from "@/components/DisplayHeading.astro";
+import Eyebrow from "@/components/Eyebrow.astro";
+import Pill from "@/components/Pill.astro";
+import { selectRecommendedPosts } from "@/lib/posts";
+import { ROUTES } from "@/consts";
 
 interface Props {
   /** Post to omit, e.g. the article currently being read. */
@@ -14,19 +14,28 @@ interface Props {
 }
 
 const { excludeId } = Astro.props;
-const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { excludeId });
+const recommendedPosts = selectRecommendedPosts(await getCollection("blog"), {
+  excludeId,
+});
 ---
+
 {/* The head of the recommended articles block: eyebrow, display title, and the All posts pill. */}
 <section id="blog-section" aria-labelledby="recommended-title">
   <div class="head">
     <div>
       <Eyebrow>Blog</Eyebrow>
-      <DisplayHeading as="h2" size="section" id="recommended-title" text="Recommended" accent="articles" />
+      <DisplayHeading
+        as="h2"
+        size="section"
+        id="recommended-title"
+        text="Recommended"
+        accent="articles"
+      />
     </div>
     <Pill href={ROUTES.blog}>All posts</Pill>
   </div>
   <div class="wrapper">
-    {recommendedPosts.map(post => (
+    {recommendedPosts.map((post) => (
       <BlogPostThumbnail post={post} heading="h3" />
     ))}
   </div>
@@ -41,7 +50,13 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
     padding-block: var(--space-12);
   }
 
-  #blog-section .head { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: var(--space-4); }
+  #blog-section .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
 
   #blog-section .wrapper {
     display: grid;
@@ -69,7 +84,7 @@ const recommendedPosts = selectRecommendedPosts(await getCollection('blog'), { e
     from {
       opacity: 0;
       translate: 0 var(--space-12);
-      scale: .94;
+      scale: 0.94;
     }
   }
 

@@ -1,16 +1,16 @@
 ---
 // A post as one link around a raised card: the category as kicker, the title, the description.
-import Card from '@/components/Card.astro';
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import DraftLabel from '@/components/DraftLabel.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
-import { getPostPath } from '@/lib/permalink';
-import type { BlogPost } from '@/lib/posts';
+import Card from "@/components/Card.astro";
+import DisplayHeading from "@/components/DisplayHeading.astro";
+import DraftLabel from "@/components/DraftLabel.astro";
+import Eyebrow from "@/components/Eyebrow.astro";
+import { getPostPath } from "@/lib/permalink";
+import type { BlogPost } from "@/lib/posts";
 
 interface Props {
   post: BlogPost;
   /** h2 under the blog index h1, h3 under the "Recommended articles" h2. */
-  heading: 'h2' | 'h3';
+  heading: "h2" | "h3";
 }
 
 const { post, heading } = Astro.props;
@@ -20,16 +20,31 @@ const titleId = `card-title-${post.id}`;
 const descriptionId = `card-description-${post.id}`;
 // A draft's label starts the link description, so a screen reader hears it with the title.
 const draftId = `card-draft-${post.id}`;
-const describedBy = post.data.draft ? `${draftId} ${descriptionId}` : descriptionId;
+const describedBy = post.data.draft
+  ? `${draftId} ${descriptionId}`
+  : descriptionId;
 ---
 
-<a href={getPostPath(post)} class="blog-post-thumbnail" data-post-card aria-labelledby={titleId} aria-describedby={describedBy}>
+<a
+  href={getPostPath(post)}
+  class="blog-post-thumbnail"
+  data-post-card
+  aria-labelledby={titleId}
+  aria-describedby={describedBy}
+>
   <Card as="article">
     <div class="kicker">
       <Eyebrow slash={false}>{post.data.category}</Eyebrow>
       {post.data.draft && <DraftLabel id={draftId} />}
     </div>
-    <DisplayHeading as={heading} size="card" class="title" data-morph="title" id={titleId} text={post.data.title} />
+    <DisplayHeading
+      as={heading}
+      size="card"
+      class="title"
+      data-morph="title"
+      id={titleId}
+      text={post.data.title}
+    />
     <p id={descriptionId}>{post.data.description}</p>
   </Card>
 </a>
@@ -46,7 +61,9 @@ const describedBy = post.data.draft ? `${draftId} ${descriptionId}` : descriptio
   /* Cards in one grid row share its height. */
   .blog-post-thumbnail article {
     block-size: 100%;
-    transition: translate var(--duration-2) ease-out, background-color var(--duration-2) ease-out;
+    transition:
+      translate var(--duration-2) ease-out,
+      background-color var(--duration-2) ease-out;
   }
 
   .kicker {

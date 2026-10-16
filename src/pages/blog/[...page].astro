@@ -1,23 +1,26 @@
 ---
-import type { GetStaticPaths } from 'astro';
-import { getCollection } from 'astro:content';
-import { sortByNewest } from '@/lib/posts';
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import BlogFeed from './_BlogFeed.astro';
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import { sortByNewest } from "@/lib/posts";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import BlogFeed from "./_BlogFeed.astro";
 
 // 10 posts per page. The rest parameter puts page 1 at /blog/ and page 2 at /blog/2/
 // (https://docs.astro.build/en/reference/routing-reference/#paginate, Astro 7).
 export const getStaticPaths = (async ({ paginate }) => {
-	const posts = await getCollection('blog');
-	return paginate(sortByNewest(posts), { pageSize: 10 });
+  const posts = await getCollection("blog");
+  return paginate(sortByNewest(posts), { pageSize: 10 });
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
-import { SITE } from '@/consts';
+import { SITE } from "@/consts";
 ---
 
-<BaseLayout title={`Blog | ${SITE.name}`} description="Articles on frontend architecture, LLM coding agents and software engineering.">
-	<main>
-		<BlogFeed text="All" accent="posts" page={page} />
-	</main>
+<BaseLayout
+  title={`Blog | ${SITE.name}`}
+  description="Articles on frontend architecture, LLM coding agents and software engineering."
+>
+  <main>
+    <BlogFeed text="All" accent="posts" page={page} />
+  </main>
 </BaseLayout>

@@ -1,4 +1,4 @@
-import type { BlogPost, Category } from '@/lib/posts';
+import type { BlogPost, Category } from "@/lib/posts";
 
 interface PostOverrides {
   id: string;
@@ -13,21 +13,23 @@ interface PostOverrides {
 export const createTestPost = ({
   id,
   title = `Title ${id}`,
-  publishDate = '2026-01-01',
+  publishDate = "2026-01-01",
   updatedDate,
-  category = 'AI',
+  category = "AI",
   draft = false,
 }: PostOverrides): BlogPost => ({
   id,
-  body: '',
-  collection: 'blog',
+  body: "",
+  collection: "blog",
   data: {
     slug: id,
     title,
     subtitle: `Subtitle ${id}`,
     description: `Description ${id}`,
     publishDate: new Date(publishDate),
-    ...(updatedDate === undefined ? {} : { updatedDate: new Date(updatedDate) }),
+    ...(updatedDate === undefined
+      ? {}
+      : { updatedDate: new Date(updatedDate) }),
     category,
     draft,
   },

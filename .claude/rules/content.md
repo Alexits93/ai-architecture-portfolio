@@ -3,6 +3,7 @@ paths:
   - "src/content/**"
   - "src/content.config.ts"
 ---
+
 # Content collections (Astro 7)
 
 - Collections are defined in `src/content.config.ts`: `glob()` for one Markdown file per entry, `file()` for one YAML file with an `id` per entry (`src/content/experience.yaml`).

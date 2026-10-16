@@ -1,32 +1,61 @@
 ---
-import { ROUTES, SITE } from '@/consts';
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
-import Pill from '@/components/Pill.astro';
+import { ROUTES, SITE } from "@/consts";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import DisplayHeading from "@/components/DisplayHeading.astro";
+import Eyebrow from "@/components/Eyebrow.astro";
+import Pill from "@/components/Pill.astro";
 
 // Builds to dist/404.html, which statichost.eu serves for unknown paths (https://docs.astro.build/en/basics/astro-pages/,
 // https://www.statichost.eu/docs/error-pages/). @astrojs/sitemap leaves 404 pages out on its own.
 ---
 
-<BaseLayout title={`Page not found | ${SITE.name}`} description="The page you asked for does not exist or has moved. Go to the home page, the blog or the CV of Patrik Alexits." noindex>
-	<main>
-		<div class="page-container">
-			<Eyebrow>404</Eyebrow>
-			<DisplayHeading as="h1" size="section" class="title" text="Page" accent="not found" />
-			<p>This page does not exist or has moved.</p>
-			<ul>
-				<li><Pill href={ROUTES.home}>Home</Pill></li>
-				<li><Pill href={ROUTES.blog}>Blog</Pill></li>
-				<li><Pill href={ROUTES.cv}>CV</Pill></li>
-			</ul>
-		</div>
-	</main>
+<BaseLayout
+  title={`Page not found | ${SITE.name}`}
+  description="The page you asked for does not exist or has moved. Go to the home page, the blog or the CV of Patrik Alexits."
+  noindex
+>
+  <main>
+    <div class="page-container">
+      <Eyebrow>404</Eyebrow>
+      <DisplayHeading
+        as="h1"
+        size="section"
+        class="title"
+        text="Page"
+        accent="not found"
+      />
+      <p>This page does not exist or has moved.</p>
+      <ul>
+        <li>
+          <Pill href={ROUTES.home}>Home</Pill>
+        </li>
+        <li>
+          <Pill href={ROUTES.blog}>Blog</Pill>
+        </li>
+        <li>
+          <Pill href={ROUTES.cv}>CV</Pill>
+        </li>
+      </ul>
+    </div>
+  </main>
 </BaseLayout>
 
 <style>
-	.page-container { width: 100%; max-width: var(--page-max-width); margin: 0 auto; }
-	.title { margin: 0 0 var(--space-4); }
-	/* The pills wrap with room for their focus ring between the rows, as the blog categories do. */
-	ul { display: flex; flex-wrap: wrap; gap: var(--space-4) var(--space-2); margin: var(--space-8) 0 0; padding: 0; list-style: none; }
+  .page-container {
+    width: 100%;
+    max-width: var(--page-max-width);
+    margin: 0 auto;
+  }
+  .title {
+    margin: 0 0 var(--space-4);
+  }
+  /* The pills wrap with room for their focus ring between the rows, as the blog categories do. */
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-2);
+    margin: var(--space-8) 0 0;
+    padding: 0;
+    list-style: none;
+  }
 </style>

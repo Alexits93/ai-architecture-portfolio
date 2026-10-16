@@ -1,62 +1,108 @@
 ---
 // Page-only component for the home page (ADR 002): the FAQ from src/content/faq.yaml as a native exclusive accordion,
 // no JavaScript.
-import { getCollection } from 'astro:content';
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
+import { getCollection } from "astro:content";
+import DisplayHeading from "@/components/DisplayHeading.astro";
+import Eyebrow from "@/components/Eyebrow.astro";
 
-const questions = (await getCollection('faq')).toSorted((a, b) => a.data.order - b.data.order);
+const questions = (await getCollection("faq")).toSorted(
+  (a, b) => a.data.order - b.data.order,
+);
 ---
 
 <section id="faq" class="faq" aria-labelledby="faq-title">
-	<Eyebrow>Questions</Eyebrow>
-	<DisplayHeading as="h2" size="section" id="faq-title" text="Frequently" accent="asked" />
-	<div class="list">
-		{questions.map(({ data }) => (
-			<details name="faq">
-				<summary>{data.question}</summary>
-				<p>{data.answer}</p>
-			</details>
-		))}
-	</div>
+  <Eyebrow>Questions</Eyebrow>
+  <DisplayHeading
+    as="h2"
+    size="section"
+    id="faq-title"
+    text="Frequently"
+    accent="asked"
+  />
+  <div class="list">
+    {questions.map(({ data }) => (
+      <details name="faq">
+        <summary>{data.question}</summary>
+        <p>{data.answer}</p>
+      </details>
+    ))}
+  </div>
 </section>
 
 <style>
-	.faq { padding-block: var(--space-12); }
+  .faq {
+    padding-block: var(--space-12);
+  }
 
-	/* Details with the same name form an exclusive accordion: opening one closes the others
-	   (https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details#name). */
-	.list { display: grid; gap: var(--space-4); margin-block-start: var(--space-8); }
-	details {
-		padding: var(--space-6); border-radius: var(--radius-xl); background-color: var(--theme-secondary); color: var(--font-color);
-		transition: background-color var(--duration-2) ease-out;
-	}
-	/* The card's surface changes while the pointer is on its question, as the pills do. */
-	@media (hover: hover) {
-		details:has(> summary:hover) { background-color: var(--thumbnail-bg-color-hover); }
-	}
-	summary {
-		display: flex; justify-content: space-between; gap: var(--space-4); list-style: none; cursor: pointer;
-		color: var(--font-color-bold); font-size: var(--font-size-xl); font-weight: var(--font-weight-bold);
-	}
-	summary::-webkit-details-marker { display: none; }
-	/* The empty alternative text keeps the plus out of the question's accessible name
-	   (https://developer.mozilla.org/en-US/docs/Web/CSS/content#alternative_text). */
-	/* align-self keeps the box one line high, so the plus turns in place on a question that wraps. */
-	summary::after { content: '+' / ''; align-self: start; }
-	details[open] summary::after { rotate: 45deg; }
-	details p { margin: var(--space-4) 0 0; }
+  /* Details with the same name form an exclusive accordion: opening one closes the others
+     (https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/details#name). */
+  .list {
+    display: grid;
+    gap: var(--space-4);
+    margin-block-start: var(--space-8);
+  }
+  details {
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    background-color: var(--theme-secondary);
+    color: var(--font-color);
+    transition: background-color var(--duration-2) ease-out;
+  }
+  /* The card's surface changes while the pointer is on its question, as the pills do. */
+  @media (hover: hover) {
+    details:has(> summary:hover) {
+      background-color: var(--thumbnail-bg-color-hover);
+    }
+  }
+  summary {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    list-style: none;
+    cursor: pointer;
+    color: var(--font-color-bold);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  /* The empty alternative text keeps the plus out of the question's accessible name
+     (https://developer.mozilla.org/en-US/docs/Web/CSS/content#alternative_text). */
+  /* align-self keeps the box one line high, so the plus turns in place on a question that wraps. */
+  summary::after {
+    content: "+" / "";
+    align-self: start;
+  }
+  details[open] summary::after {
+    rotate: 45deg;
+  }
+  details p {
+    margin: var(--space-4) 0 0;
+  }
 
-	/* The answer fades in through ::details-content (Chromium 131, Firefox 143, Safari 18.4); the height animates only
-	   where interpolate-size exists (Chromium). Under reduced motion the answer opens at once
-	   (https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content). */
-	@media (prefers-reduced-motion: no-preference) {
-		details { interpolate-size: allow-keywords; }
-		summary::after { transition: rotate var(--duration-3) var(--ease-spring); }
-		details::details-content {
-			block-size: 0; overflow: clip; opacity: 0;
-			transition: block-size var(--duration-4) var(--ease-in-out-strong), opacity var(--duration-4), content-visibility var(--duration-4) allow-discrete;
-		}
-		details[open]::details-content { block-size: auto; opacity: 1; }
-	}
+  /* The answer fades in through ::details-content (Chromium 131, Firefox 143, Safari 18.4); the height animates only
+     where interpolate-size exists (Chromium). Under reduced motion the answer opens at once
+     (https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content). */
+  @media (prefers-reduced-motion: no-preference) {
+    details {
+      interpolate-size: allow-keywords;
+    }
+    summary::after {
+      transition: rotate var(--duration-3) var(--ease-spring);
+    }
+    details::details-content {
+      block-size: 0;
+      overflow: clip;
+      opacity: 0;
+      transition:
+        block-size var(--duration-4) var(--ease-in-out-strong),
+        opacity var(--duration-4),
+        content-visibility var(--duration-4) allow-discrete;
+    }
+    details[open]::details-content {
+      block-size: auto;
+      opacity: 1;
+    }
+  }
 </style>

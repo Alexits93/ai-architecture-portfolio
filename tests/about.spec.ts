@@ -1,9 +1,9 @@
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { JSDOM } from 'jsdom';
-import { it, expect, assert } from 'vitest';
-import Causes from '@/pages/_Causes.astro';
-import Goals from '@/pages/_Goals.astro';
-import Hobbies from '@/pages/_Hobbies.astro';
+import { experimental_AstroContainer as AstroContainer } from "astro/container";
+import { JSDOM } from "jsdom";
+import { it, expect, assert } from "vitest";
+import Causes from "@/pages/_Causes.astro";
+import Goals from "@/pages/_Goals.astro";
+import Hobbies from "@/pages/_Hobbies.astro";
 
 // the sections of /about/ with the owner's hobbies, causes and goals. e2e/about.spec.ts checks the built page.
 const render = async (component: typeof Hobbies) => {
@@ -15,30 +15,62 @@ const render = async (component: typeof Hobbies) => {
 const namedSection = (doc: Document, id: string) => {
   const section = doc.querySelector(`section#${id}`);
   assert.exists(section);
-  const heading = doc.getElementById(String(section.getAttribute('aria-labelledby')));
+  const heading = doc.getElementById(
+    String(section.getAttribute("aria-labelledby")),
+  );
   assert.exists(heading);
-  expect(heading.tagName).toBe('H2');
+  expect(heading.tagName).toBe("H2");
   return section;
 };
 
-const h3s = (section: Element) => [...section.querySelectorAll('h3')].map((h3) => h3.textContent);
+const h3s = (section: Element) =>
+  [...section.querySelectorAll("h3")].map((h3) => h3.textContent);
 
 // Music follows Video games, and freestyle football joined the Real Madrid card.
-it('renders six hobby cards, with a photo and alt text on the cars, travel and Real Madrid cards', async () => {
-  const section = namedSection(await render(Hobbies), 'hobbies');
-  expect(h3s(section)).toEqual(['Video games', 'Music', 'Cars', 'Travel', 'Real Madrid', 'Movies']);
-  const photos = [...section.querySelectorAll('li.card')].map((card) => card.querySelector('img'));
-  expect(photos.map((img) => img !== null)).toEqual([false, false, true, true, true, false]);
-  for (const img of photos) if (img !== null) expect(img.getAttribute('alt')).toMatch(/\S/);
+it("renders six hobby cards, with a photo and alt text on the cars, travel and Real Madrid cards", async () => {
+  const section = namedSection(await render(Hobbies), "hobbies");
+  expect(h3s(section)).toEqual([
+    "Video games",
+    "Music",
+    "Cars",
+    "Travel",
+    "Real Madrid",
+    "Movies",
+  ]);
+  const photos = [...section.querySelectorAll("li.card")].map((card) =>
+    card.querySelector("img"),
+  );
+  expect(photos.map((img) => img !== null)).toEqual([
+    false,
+    false,
+    true,
+    true,
+    true,
+    false,
+  ]);
+  for (const img of photos)
+    if (img !== null) expect(img.getAttribute("alt")).toMatch(/\S/);
 });
 
-it('renders the causes as headed items with a closing line', async () => {
-  const section = namedSection(await render(Causes), 'causes');
-  expect(h3s(section)).toEqual(['Animals', 'Accessibility', 'Education', 'Open source', 'Nature']);
-  expect(section.textContent).toContain('The games I design, the articles I write and the speeches I give');
+it("renders the causes as headed items with a closing line", async () => {
+  const section = namedSection(await render(Causes), "causes");
+  expect(h3s(section)).toEqual([
+    "Animals",
+    "Accessibility",
+    "Education",
+    "Open source",
+    "Nature",
+  ]);
+  expect(section.textContent).toContain(
+    "The games I design, the articles I write and the speeches I give",
+  );
 });
 
-it('renders the goals as headed items', async () => {
-  const section = namedSection(await render(Goals), 'goals');
-  expect(h3s(section)).toEqual(['A life to be proud of', 'Helping people grow', 'Along the way']);
+it("renders the goals as headed items", async () => {
+  const section = namedSection(await render(Goals), "goals");
+  expect(h3s(section)).toEqual([
+    "A life to be proud of",
+    "Helping people grow",
+    "Along the way",
+  ]);
 });

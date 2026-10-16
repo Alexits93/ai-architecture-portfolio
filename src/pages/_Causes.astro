@@ -1,34 +1,35 @@
 ---
 // Page-only component for /about/ (ADR 002): the causes the owner stands for.
-import AboutRows from './_AboutRows.astro';
+import AboutRows from "./_AboutRows.astro";
 
 const causes = [
-	{
-		title: 'Animals',
-		text: 'I am vegan, and the most important cause for me is to end animal exploitation and suffering. I want to educate people about healthy and viable plant-based alternatives, and plant the seed of compassion and love for animals in their heads.',
-	},
-	{
-		title: 'Accessibility',
-		text: 'I am an advocate for accessibility, both on the web and in real life. I believe everyone deserves accommodation, and those of us who can make it a reality have the responsibility to do so.',
-	},
-	{
-		title: 'Education',
-		text: 'I believe in free and accessible education. In my eyes it is probably the most important thing for society. Most of our problems stem from a lack of education and from an outdated, bad system.',
-	},
-	{
-		title: 'Open source',
-		text: 'I believe in open source and actively donate to knowledge preservation and open source innovation. These are the foundations of our whole infrastructure and should be seen and appreciated as such.',
-	},
-	{
-		title: 'Nature',
-		text: 'Although I love cars, especially AMGs with big V8 and V12 engines, I donate to and advocate for wildlife and nature preservation. I see the contradiction and constantly battle myself on it. But I believe we can do more overall if we also live our lives the way we want and feel good, instead of being constantly stressed and burned out.',
-	},
+  {
+    title: "Animals",
+    text: "I am vegan, and the most important cause for me is to end animal exploitation and suffering. I want to educate people about healthy and viable plant-based alternatives, and plant the seed of compassion and love for animals in their heads.",
+  },
+  {
+    title: "Accessibility",
+    text: "I am an advocate for accessibility, both on the web and in real life. I believe everyone deserves accommodation, and those of us who can make it a reality have the responsibility to do so.",
+  },
+  {
+    title: "Education",
+    text: "I believe in free and accessible education. In my eyes it is probably the most important thing for society. Most of our problems stem from a lack of education and from an outdated, bad system.",
+  },
+  {
+    title: "Open source",
+    text: "I believe in open source and actively donate to knowledge preservation and open source innovation. These are the foundations of our whole infrastructure and should be seen and appreciated as such.",
+  },
+  {
+    title: "Nature",
+    text: "Although I love cars, especially AMGs with big V8 and V12 engines, I donate to and advocate for wildlife and nature preservation. I see the contradiction and constantly battle myself on it. But I believe we can do more overall if we also live our lives the way we want and feel good, instead of being constantly stressed and burned out.",
+  },
 ];
 ---
 
 <AboutRows id="causes" eyebrow="What I stand for" title="Causes" items={causes}>
-	<p class="closing">
-		My artistic and professional self-expression aims at these causes. The games I design, the articles I write and the
-		speeches I give already touch these topics, and they will keep doing so.
-	</p>
+  <p class="closing">
+    My artistic and professional self-expression aims at these causes. The games
+    I design, the articles I write and the speeches I give already touch these
+    topics, and they will keep doing so.
+  </p>
 </AboutRows>

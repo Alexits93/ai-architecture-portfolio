@@ -1,69 +1,77 @@
 ---
 export interface Heading {
-	depth: number;
-	slug: string;
-	text: string;
+  depth: number;
+  slug: string;
+  text: string;
 }
 
 export interface Props {
-	headings: Heading[];
+  headings: Heading[];
 }
 
 const { headings } = Astro.props;
 ---
 
 <nav class="article-navigator" aria-label="On this page">
-	{headings.map((heading) => (
-		<a href={`#${heading.slug}`} class:list={[`h${heading.depth}-link`]}>
-			{heading.text}
-		</a>
-	))}
+  {headings.map((heading) => (
+    <a href={`#${heading.slug}`} class:list={[`h${heading.depth}-link`]}>
+      {heading.text}
+    </a>
+  ))}
 </nav>
 
 <style>
-	.article-navigator {
-		padding: 0 var(--space-8);
-		max-width: var(--size-toc);
-		height: fit-content;
-		font-size: var(--font-size-base);
-		position: relative;
-	}
+  .article-navigator {
+    padding: 0 var(--space-8);
+    max-width: var(--size-toc);
+    height: fit-content;
+    font-size: var(--font-size-base);
+    position: relative;
+  }
 
-	.article-navigator::before {
-		position: absolute;
-		left: var(--space-4);
-		top: 0;
-		height: 100%;
-		width: var(--border-width-hairline);
-		background: var(--font-color-bold);
-		content: "";
-	}
+  .article-navigator::before {
+    position: absolute;
+    left: var(--space-4);
+    top: 0;
+    height: 100%;
+    width: var(--border-width-hairline);
+    background: var(--font-color-bold);
+    content: "";
+  }
 
-	a {
-		position: relative;
-		color: var(--font-color-bold);
-		text-decoration: none;
-		display: block;
-		margin-bottom: var(--space-1);
-	}
+  a {
+    position: relative;
+    color: var(--font-color-bold);
+    text-decoration: none;
+    display: block;
+    margin-bottom: var(--space-1);
+  }
 
-	a:hover {
-		color: var(--theme-primary);
-	}
+  a:hover {
+    color: var(--theme-primary);
+  }
 
-	a:hover::before {
-		position: absolute;
-		left: calc(-1 * (var(--space-4) + var(--space-1)));
-		top: calc(50% - var(--space-1));
-		width: var(--space-2);
-		height: var(--space-2);
-		border-radius: var(--radius-full);
-		background-color: var(--theme-primary);
-		content: "";
-	}
+  a:hover::before {
+    position: absolute;
+    left: calc(-1 * (var(--space-4) + var(--space-1)));
+    top: calc(50% - var(--space-1));
+    width: var(--space-2);
+    height: var(--space-2);
+    border-radius: var(--radius-full);
+    background-color: var(--theme-primary);
+    content: "";
+  }
 
-	.h3-link { padding-left: var(--space-4); }
-	.h4-link { padding-left: var(--space-8); }
-	.h5-link { padding-left: var(--space-12); }
-	.h6-link { padding-left: var(--space-16); }
+  .h3-link {
+    padding-left: var(--space-4);
+  }
+  .h4-link {
+    padding-left: var(--space-8);
+  }
+  .h5-link {
+    padding-left: var(--space-12);
+  }
+  .h6-link {
+    padding-left: var(--space-16);
+  }
 </style>

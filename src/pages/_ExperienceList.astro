@@ -1,37 +1,58 @@
 ---
-import { getCollection } from 'astro:content';
-import Card from '@/components/Card.astro';
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
-import { formatPeriod, sortByStartDesc, splitEmphasis } from '@/lib/experience';
+import { getCollection } from "astro:content";
+import Card from "@/components/Card.astro";
+import DisplayHeading from "@/components/DisplayHeading.astro";
+import Eyebrow from "@/components/Eyebrow.astro";
+import { formatPeriod, sortByStartDesc, splitEmphasis } from "@/lib/experience";
 
-const entries = sortByStartDesc(await getCollection('experience'));
-import TagList from '@/components/TagList.astro';
+const entries = sortByStartDesc(await getCollection("experience"));
+import TagList from "@/components/TagList.astro";
 ---
 
 <div class="experience-list-container">
-    <div>
-        <Eyebrow>Career</Eyebrow>
-        <DisplayHeading as="h2" size="section" text="Work" accent="experience" />
-    </div>
-    {entries.map(({ data }) => (
-        <Card as="article" class="experience-item">
-            <Eyebrow slash={false}>{formatPeriod(data)}</Eyebrow>
-            <div class="position">
-                <DisplayHeading as="h3" size="card" class="title" text={`${data.role} - ${data.company}`} />
-                {data.highlights.map((highlight) => (
-                    <p>{splitEmphasis(highlight, data.emphasis).map((part) => (part.strong ? <strong>{part.text}</strong> : part.text))}</p>
-                ))}
-                <TagList class="tags" items={data.skills} />
-            </div>
-        </Card>
-    ))}
+  <div>
+    <Eyebrow>Career</Eyebrow>
+    <DisplayHeading as="h2" size="section" text="Work" accent="experience" />
+  </div>
+  {entries.map(({ data }) => (
+    <Card as="article" class="experience-item">
+      <Eyebrow slash={false}>{formatPeriod(data)}</Eyebrow>
+      <div class="position">
+        <DisplayHeading
+          as="h3"
+          size="card"
+          class="title"
+          text={`${data.role} - ${data.company}`}
+        />
+        {data.highlights.map((highlight) => (
+          <p>
+            {splitEmphasis(highlight, data.emphasis).map((part) =>
+              part.strong ? <strong>{part.text}</strong> : part.text,
+            )}
+          </p>
+        ))}
+        <TagList class="tags" items={data.skills} />
+      </div>
+    </Card>
+  ))}
 </div>
 
 <style>
-    .experience-list-container { display: flex; flex-direction: column; gap: var(--space-8); }
-    .experience-list-container .experience-item .position p strong { color: var(--font-color-bold); }
-    .experience-list-container .position .title { margin: 0 0 var(--space-4); }
-    .experience-list-container .position p { margin: 0 0 var(--space-2); }
-    .experience-list-container .position .tags { margin: var(--space-6) 0 0; }
+  .experience-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+  .experience-list-container .experience-item .position p strong {
+    color: var(--font-color-bold);
+  }
+  .experience-list-container .position .title {
+    margin: 0 0 var(--space-4);
+  }
+  .experience-list-container .position p {
+    margin: 0 0 var(--space-2);
+  }
+  .experience-list-container .position .tags {
+    margin: var(--space-6) 0 0;
+  }
 </style>

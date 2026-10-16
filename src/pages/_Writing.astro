@@ -1,63 +1,103 @@
 ---
 // Page-only component for the home page (ADR 002): the newest posts as rows of title, category and date, then a pill
 // to /blog/.
-import { getCollection } from 'astro:content';
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import DraftLabel from '@/components/DraftLabel.astro';
-import DraftNotice from '@/components/DraftNotice.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
-import Pill from '@/components/Pill.astro';
-import { ROUTES } from '@/consts';
-import { displayDate, isoDate } from '@/lib/dates';
-import { getPostPath } from '@/lib/permalink';
-import { selectLatestPosts } from '@/lib/posts';
+import { getCollection } from "astro:content";
+import DisplayHeading from "@/components/DisplayHeading.astro";
+import DraftLabel from "@/components/DraftLabel.astro";
+import DraftNotice from "@/components/DraftNotice.astro";
+import Eyebrow from "@/components/Eyebrow.astro";
+import Pill from "@/components/Pill.astro";
+import { ROUTES } from "@/consts";
+import { displayDate, isoDate } from "@/lib/dates";
+import { getPostPath } from "@/lib/permalink";
+import { selectLatestPosts } from "@/lib/posts";
 
-const posts = selectLatestPosts(await getCollection('blog'));
+const posts = selectLatestPosts(await getCollection("blog"));
 ---
 
 <section id="writing" class="writing" aria-labelledby="writing-title">
-	<div class="head">
-		<div>
-			<Eyebrow>Blog</Eyebrow>
-			<DisplayHeading as="h2" size="section" id="writing-title" text="Latest" accent="writing" />
-		</div>
-		<Pill href={ROUTES.blog}>All posts</Pill>
-	</div>
-	{posts.some((post) => post.data.draft) && <DraftNotice />}
-	<ul>
-		{posts.map((post) => (
-			<li>
-				<span class="title">
-					<a href={getPostPath(post)} data-post-card><span data-morph="title">{post.data.title}</span></a>
-					{post.data.draft && <DraftLabel />}
-				</span>
-				<span class="meta">
-					{post.data.category} &middot; <time datetime={isoDate(post.data.publishDate)}>{displayDate(post.data.publishDate, 'short')}</time>
-				</span>
-			</li>
-		))}
-	</ul>
+  <div class="head">
+    <div>
+      <Eyebrow>Blog</Eyebrow>
+      <DisplayHeading
+        as="h2"
+        size="section"
+        id="writing-title"
+        text="Latest"
+        accent="writing"
+      />
+    </div>
+    <Pill href={ROUTES.blog}>All posts</Pill>
+  </div>
+  {posts.some((post) => post.data.draft) && <DraftNotice />}
+  <ul>
+    {posts.map((post) => (
+      <li>
+        <span class="title">
+          <a href={getPostPath(post)} data-post-card>
+            <span data-morph="title">{post.data.title}</span>
+          </a>
+          {post.data.draft && <DraftLabel />}
+        </span>
+        <span class="meta">
+          {post.data.category} &middot;{" "}
+          <time datetime={isoDate(post.data.publishDate)}>
+            {displayDate(post.data.publishDate, "short")}
+          </time>
+        </span>
+      </li>
+    ))}
+  </ul>
 </section>
 
 <style>
-	.writing { padding-block: var(--space-12); }
-	.head { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: var(--space-4); }
-	/* The title link, its category and date in small text under it, a hairline between the rows. */
-	ul { list-style: none; margin: var(--space-8) 0 0; padding: 0; }
-	li {
-		display: grid; gap: var(--space-1); padding-block: var(--space-6);
-		border-block-start: var(--border-width-hairline) solid var(--hairline-color); color: var(--font-color);
-	}
-	/* A draft's label sits after its title. */
-	.title { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-4); }
-	li a {
-		color: var(--font-color-bold); font-weight: var(--font-weight-bold); font-size: var(--font-size-xl);
-		letter-spacing: var(--letter-spacing-tight); text-decoration: underline transparent; text-underline-offset: var(--space-1);
-		transition: text-decoration-color var(--duration-2) ease-out;
-	}
-	/* The title underlines on hover, as the blog cards do; only where the primary input can hover. */
-	@media (hover: hover) {
-		li a:hover { text-decoration-color: currentColor; }
-	}
-	.meta { font-size: var(--font-size-sm); font-variant-numeric: tabular-nums; }
+  .writing {
+    padding-block: var(--space-12);
+  }
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+  /* The title link, its category and date in small text under it, a hairline between the rows. */
+  ul {
+    list-style: none;
+    margin: var(--space-8) 0 0;
+    padding: 0;
+  }
+  li {
+    display: grid;
+    gap: var(--space-1);
+    padding-block: var(--space-6);
+    border-block-start: var(--border-width-hairline) solid var(--hairline-color);
+    color: var(--font-color);
+  }
+  /* A draft's label sits after its title. */
+  .title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-4);
+  }
+  li a {
+    color: var(--font-color-bold);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xl);
+    letter-spacing: var(--letter-spacing-tight);
+    text-decoration: underline transparent;
+    text-underline-offset: var(--space-1);
+    transition: text-decoration-color var(--duration-2) ease-out;
+  }
+  /* The title underlines on hover, as the blog cards do; only where the primary input can hover. */
+  @media (hover: hover) {
+    li a:hover {
+      text-decoration-color: currentColor;
+    }
+  }
+  .meta {
+    font-size: var(--font-size-sm);
+    font-variant-numeric: tabular-nums;
+  }
 </style>

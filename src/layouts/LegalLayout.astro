@@ -1,9 +1,9 @@
 ---
 // The legal pages: a Legal eyebrow, a display title, and text at a readable line length.
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
-import { SITE } from '@/consts';
-import BaseLayout from './BaseLayout.astro';
+import DisplayHeading from "@/components/DisplayHeading.astro";
+import Eyebrow from "@/components/Eyebrow.astro";
+import { SITE } from "@/consts";
+import BaseLayout from "./BaseLayout.astro";
 
 interface Props {
   /** The title's plain words, then its accent words. */
@@ -15,11 +15,20 @@ interface Props {
 const { text, accent, description } = Astro.props;
 ---
 
-<BaseLayout title={`${text} ${accent} | ${SITE.name}`} description={description}>
+<BaseLayout
+  title={`${text} ${accent} | ${SITE.name}`}
+  description={description}
+>
   <main>
     <section class="legal">
       <Eyebrow>Legal</Eyebrow>
-      <DisplayHeading as="h1" size="section" class="title" text={text} accent={accent} />
+      <DisplayHeading
+        as="h1"
+        size="section"
+        class="title"
+        text={text}
+        accent={accent}
+      />
       <slot />
     </section>
   </main>
@@ -27,9 +36,17 @@ const { text, accent, description } = Astro.props;
 
 <style>
   /* main pads the page; the text keeps a readable line length inside the page width, as the blog head does. */
-  .legal { width: 100%; max-width: var(--page-max-width); margin: 0 auto; }
-  .legal > :global(:not(.title)) { max-width: var(--size-prose); }
-  .title { margin: 0 0 var(--space-6); }
+  .legal {
+    width: 100%;
+    max-width: var(--page-max-width);
+    margin: 0 auto;
+  }
+  .legal > :global(:not(.title)) {
+    max-width: var(--size-prose);
+  }
+  .title {
+    margin: 0 0 var(--space-6);
+  }
   .legal :global(h2) {
     color: var(--font-color-bold);
     margin: var(--space-10) 0 var(--space-2);
@@ -38,6 +55,11 @@ const { text, accent, description } = Astro.props;
     font-size: var(--font-size-xl);
     line-height: var(--line-height-lg);
   }
-  .legal :global(p + p) { margin-block-start: var(--space-4); }
-  .legal :global(ul) { margin-block: 0 var(--space-4); padding-inline-start: var(--space-6); }
+  .legal :global(p + p) {
+    margin-block-start: var(--space-4);
+  }
+  .legal :global(ul) {
+    margin-block: 0 var(--space-4);
+    padding-inline-start: var(--space-6);
+  }
 </style>

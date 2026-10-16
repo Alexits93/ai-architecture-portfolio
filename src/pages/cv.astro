@@ -1,28 +1,41 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import { ROUTES, SITE } from '@/consts';
-import { profilePageJsonLd } from '@/lib/json-ld';
-import AboutMe from './_AboutMe.astro';
-import ExperienceList from './_ExperienceList.astro';
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { ROUTES, SITE } from "@/consts";
+import { profilePageJsonLd } from "@/lib/json-ld";
+import AboutMe from "./_AboutMe.astro";
+import ExperienceList from "./_ExperienceList.astro";
 
 const jsonLd = profilePageJsonLd(new URL(ROUTES.home, Astro.site).href);
 ---
 
-<BaseLayout title={`CV | ${SITE.name}`} description="Experience and skills of Patrik Alexits, frontend architect and software engineer." jsonLd={jsonLd}>
-	<main>
-		<section id="page-wrapper">
-                <AboutMe />
-                <ExperienceList />
-            </section>
-	</main>
+<BaseLayout
+  title={`CV | ${SITE.name}`}
+  description="Experience and skills of Patrik Alexits, frontend architect and software engineer."
+  jsonLd={jsonLd}
+>
+  <main>
+    <section id="page-wrapper">
+      <AboutMe />
+      <ExperienceList />
+    </section>
+  </main>
 </BaseLayout>
 
 <style>
-	/* AboutMe and ExperienceList render their own roots, so :global() reaches them from this page. On wide screens the
-	   about block sticks on the left while the positions pass on the right, as the home services do. */
-	section#page-wrapper { display: grid; gap: var(--space-16); }
-	@media (min-width: 64rem) {
-		section#page-wrapper { grid-template-columns: 2fr 3fr; align-items: start; }
-		section#page-wrapper :global(section#about-me) { position: sticky; top: var(--offset-sticky); }
-	}
+  /* AboutMe and ExperienceList render their own roots, so :global() reaches them from this page. On wide screens the
+     about block sticks on the left while the positions pass on the right, as the home services do. */
+  section#page-wrapper {
+    display: grid;
+    gap: var(--space-16);
+  }
+  @media (min-width: 64rem) {
+    section#page-wrapper {
+      grid-template-columns: 2fr 3fr;
+      align-items: start;
+    }
+    section#page-wrapper :global(section#about-me) {
+      position: sticky;
+      top: var(--offset-sticky);
+    }
+  }
 </style>

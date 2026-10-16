@@ -2,6 +2,7 @@
 paths:
   - "src/**"
 ---
+
 # Project structure (ADR 002)
 
 Astro's documented conventions (https://docs.astro.build/en/basics/project-structure/), decided in `docs/adrs/002-astro-conventions.md`. Imports flow `pages/ > layouts/ > components/ > lib/`; ESLint `no-restricted-imports` blocks the reverse direction.

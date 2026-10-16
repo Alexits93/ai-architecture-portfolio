@@ -1,21 +1,30 @@
-import { globSync } from 'node:fs';
-import { test, expect } from '@playwright/test';
+import { globSync } from "node:fs";
+import { test, expect } from "@playwright/test";
 
 // Every built page, read from dist/ so a new route is covered without a list edit.
-const ROUTES = globSync('**/*.html', { cwd: 'dist' }).map((file) => `/${file.replace(/index\.html$/, '')}`);
+const ROUTES = globSync("**/*.html", { cwd: "dist" }).map(
+  (file) => `/${file.replace(/index\.html$/, "")}`,
+);
 
 // A focus outline keeps a gap to what it outlines, so the outline does not touch the text.
 // Regression: at 4px, glyphs overflowing their box (negative letter-spacing, logo ink at the SVG edge) touched it, and
 // the theme toggle fell back to the browser's 1px ring; so 8px and the site's 2px solid outline everywhere.
 for (const route of ROUTES) {
-  test(`every keyboard focus outline on ${route} has an offset`, async ({ page }) => {
+  test(`every keyboard focus outline on ${route} has an offset`, async ({
+    page,
+  }) => {
     await page.goto(route);
     const touching: string[] = [];
     for (let i = 0; i < 40; i++) {
-      await page.keyboard.press('Tab');
+      await page.keyboard.press("Tab");
       const focused = await page.evaluate(() => {
         const el = document.activeElement;
-        if (el === null || el === document.body || !el.matches(':focus-visible')) return null;
+        if (
+          el === null ||
+          el === document.body ||
+          !el.matches(":focus-visible")
+        )
+          return null;
         const style = getComputedStyle(el);
         return {
           name: `${el.tagName.toLowerCase()} ${el.textContent.trim().slice(0, 30)}`,
@@ -23,7 +32,11 @@ for (const route of ROUTES) {
           offset: parseFloat(style.outlineOffset),
         };
       });
-      if (focused !== null && (focused.outline !== 'solid 2px' || focused.offset < 8)) touching.push(focused.name);
+      if (
+        focused !== null &&
+        (focused.outline !== "solid 2px" || focused.offset < 8)
+      )
+        touching.push(focused.name);
     }
     expect(touching).toEqual([]);
   });

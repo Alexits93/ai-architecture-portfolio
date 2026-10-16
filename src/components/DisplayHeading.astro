@@ -2,11 +2,11 @@
 // A display heading: a page or section title, or a card title, with its last words in the accent gradient.
 // The page passes its own class for margins; the rest props carry the page's data-astro-cid-*, so the page's scoped
 // styles reach the heading (https://docs.astro.build/en/guides/styling/).
-import type { HTMLAttributes } from 'astro/types';
+import type { HTMLAttributes } from "astro/types";
 
-interface Props extends HTMLAttributes<'h2'> {
-  as: 'h1' | 'h2' | 'h3';
-  size: 'section' | 'card';
+interface Props extends HTMLAttributes<"h2"> {
+  as: "h1" | "h2" | "h3";
+  size: "section" | "card";
   text?: string;
   accent?: string;
 }
@@ -14,17 +14,30 @@ interface Props extends HTMLAttributes<'h2'> {
 const { as: Tag, size, text, accent, class: className, ...rest } = Astro.props;
 ---
 
-<Tag class:list={['display', className]} data-size={size} {...rest}>{text}{text !== undefined && accent !== undefined && ' '}{accent !== undefined && <span class="accent">{accent}</span>}</Tag>
+<Tag class:list={["display", className]} data-size={size} {...rest}>
+  {text}
+  {text !== undefined && accent !== undefined && " "}
+  {accent !== undefined && <span class="accent">{accent}</span>}
+</Tag>
 
 <style>
-  .display { color: var(--font-color-bold); font-weight: var(--font-weight-bold); }
+  .display {
+    color: var(--font-color-bold);
+    font-weight: var(--font-weight-bold);
+  }
   .display[data-size="section"] {
-    font-size: var(--font-size-display-section); line-height: var(--line-height-display-section);
+    font-size: var(--font-size-display-section);
+    line-height: var(--line-height-display-section);
     letter-spacing: var(--letter-spacing-display-section);
   }
   .display[data-size="card"] {
-    font-size: var(--font-size-display-card); line-height: var(--line-height-display-card);
+    font-size: var(--font-size-display-card);
+    line-height: var(--line-height-display-card);
     letter-spacing: var(--letter-spacing-display-card);
   }
-  .accent { background-image: linear-gradient(100deg, var(--accent-a), var(--accent-b)); background-clip: text; color: transparent; }
+  .accent {
+    background-image: linear-gradient(100deg, var(--accent-a), var(--accent-b));
+    background-clip: text;
+    color: transparent;
+  }
 </style>

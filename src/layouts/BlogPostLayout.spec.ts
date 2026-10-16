@@ -1,13 +1,17 @@
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { JSDOM } from 'jsdom';
-import { describe, it, expect, assert } from 'vitest';
-import { createTestPost } from '../../tests/fixtures/post';
-import BlogPostLayout from './BlogPostLayout.astro';
+import { experimental_AstroContainer as AstroContainer } from "astro/container";
+import { JSDOM } from "jsdom";
+import { describe, it, expect, assert } from "vitest";
+import { createTestPost } from "../../tests/fixtures/post";
+import BlogPostLayout from "./BlogPostLayout.astro";
 
-const SITE_URL = 'https://www.pa-tech.dev';
+const SITE_URL = "https://www.pa-tech.dev";
 
-const render = async (post = createTestPost({ id: 'hello', publishDate: '2026-03-04' })) => {
-  const container = await AstroContainer.create({ astroConfig: { site: SITE_URL } });
+const render = async (
+  post = createTestPost({ id: "hello", publishDate: "2026-03-04" }),
+) => {
+  const container = await AstroContainer.create({
+    astroConfig: { site: SITE_URL },
+  });
   const html = await container.renderToString(BlogPostLayout, {
     props: { post },
     slots: { default: '<main id="page-main">Post body</main>' },
@@ -19,7 +23,7 @@ const render = async (post = createTestPost({ id: 'hello', publishDate: '2026-03
 const meta = (doc: Document, key: string) => {
   const tag = doc.querySelector(`meta[property="${key}"], meta[name="${key}"]`);
   assert.exists(tag, `meta ${key}`);
-  return tag.getAttribute('content');
+  return tag.getAttribute("content");
 };
 
 const jsonLd = (doc: Document) => {
@@ -30,57 +34,72 @@ const jsonLd = (doc: Document) => {
   return JSON.parse(script.textContent);
 };
 
-describe('BlogPostLayout (Astro)', () => {
-  it('renders the post head as an article inside BaseLayout', async () => {
+describe("BlogPostLayout (Astro)", () => {
+  it("renders the post head as an article inside BaseLayout", async () => {
     const doc = await render();
-    expect(doc.title).toBe('Title hello | Patrik Alexits');
-    expect(meta(doc, 'description')).toBe('Description hello');
-    expect(meta(doc, 'og:type')).toBe('article');
-    expect(meta(doc, 'article:published_time')).toBe('2026-03-04T00:00:00.000Z');
-    expect(meta(doc, 'og:image')).toBe(`${SITE_URL}/blog/hello/og.png`);
-    expect(meta(doc, 'og:image:alt')).toBe('Title hello. Subtitle hello');
-    const main = doc.getElementById('page-main');
+    expect(doc.title).toBe("Title hello | Patrik Alexits");
+    expect(meta(doc, "description")).toBe("Description hello");
+    expect(meta(doc, "og:type")).toBe("article");
+    expect(meta(doc, "article:published_time")).toBe(
+      "2026-03-04T00:00:00.000Z",
+    );
+    expect(meta(doc, "og:image")).toBe(`${SITE_URL}/blog/hello/og.png`);
+    expect(meta(doc, "og:image:alt")).toBe("Title hello. Subtitle hello");
+    const main = doc.getElementById("page-main");
     assert.exists(main);
-    expect(main.textContent).toBe('Post body');
+    expect(main.textContent).toBe("Post body");
   });
 
   // https://developers.google.com/search/docs/appearance/structured-data/article
-  it('describes the post as BlogPosting with its image, page and the CV page as author URL', async () => {
+  it("describes the post as BlogPosting with its image, page and the CV page as author URL", async () => {
     expect(jsonLd(await render())).toEqual({
-      '@context': 'https://schema.org',
-      '@type': 'BlogPosting',
-      headline: 'Title hello',
-      description: 'Description hello',
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: "Title hello",
+      description: "Description hello",
       image: `${SITE_URL}/blog/hello/og.png`,
-      datePublished: '2026-03-04T00:00:00.000Z',
-      dateModified: '2026-03-04T00:00:00.000Z',
+      datePublished: "2026-03-04T00:00:00.000Z",
+      dateModified: "2026-03-04T00:00:00.000Z",
       mainEntityOfPage: `${SITE_URL}/blog/hello/`,
-      author: { '@type': 'Person', name: 'Patrik Alexits', url: `${SITE_URL}/cv/` },
+      author: {
+        "@type": "Person",
+        name: "Patrik Alexits",
+        url: `${SITE_URL}/cv/`,
+      },
     });
   });
 
-  it('takes dateModified from updatedDate when the post has one', async () => {
-    const doc = await render(createTestPost({ id: 'hello', publishDate: '2026-03-04', updatedDate: '2026-05-06' }));
-    expect(jsonLd(doc).dateModified).toBe('2026-05-06T00:00:00.000Z');
+  it("takes dateModified from updatedDate when the post has one", async () => {
+    const doc = await render(
+      createTestPost({
+        id: "hello",
+        publishDate: "2026-03-04",
+        updatedDate: "2026-05-06",
+      }),
+    );
+    expect(jsonLd(doc).dateModified).toBe("2026-05-06T00:00:00.000Z");
   });
 
-  it('keeps a title with a closing script tag inside one JSON-LD block', async () => {
-    const title = '</script><script>alert(1)</script>';
-    const doc = await render(createTestPost({ id: 'xss', title }));
+  it("keeps a title with a closing script tag inside one JSON-LD block", async () => {
+    const title = "</script><script>alert(1)</script>";
+    const doc = await render(createTestPost({ id: "xss", title }));
     expect(jsonLd(doc).headline).toBe(title);
   });
 });
 
 // a test article stays out of search results; a real post names its canonical URL
 // (https://developers.google.com/search/docs/crawling-indexing/block-indexing).
-describe('BlogPostLayout indexing', () => {
-  it('marks a draft post noindex without a canonical link, and a real post with one', async () => {
-    const draft = await render(createTestPost({ id: 'hello', draft: true }));
-    expect(meta(draft, 'robots')).toBe('noindex');
+describe("BlogPostLayout indexing", () => {
+  it("marks a draft post noindex without a canonical link, and a real post with one", async () => {
+    const draft = await render(createTestPost({ id: "hello", draft: true }));
+    expect(meta(draft, "robots")).toBe("noindex");
     expect(draft.querySelector('link[rel="canonical"]')).toBeNull();
 
     const real = await render();
     expect(real.querySelector('meta[name="robots"]')).toBeNull();
-    expect(real.querySelector('link[rel="canonical"]')).toHaveProperty('href', `${SITE_URL}/blog/hello/`);
+    expect(real.querySelector('link[rel="canonical"]')).toHaveProperty(
+      "href",
+      `${SITE_URL}/blog/hello/`,
+    );
   });
 });

@@ -3,26 +3,43 @@
 // categories, where aria-current marks the page the visitor is on.
 interface Props {
   href: string;
-  'aria-current'?: 'page';
+  "aria-current"?: "page";
 }
 
-const { href, 'aria-current': current } = Astro.props;
+const { href, "aria-current": current } = Astro.props;
 ---
 
-<a class="pill" href={href} aria-current={current}><slot /></a>
+<a class="pill" href={href} aria-current={current}>
+  <slot />
+</a>
 
 <style>
   .pill {
-    padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill); background-color: var(--theme-secondary);
-    color: var(--font-color-bold); font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); text-decoration: none;
-    transition: background-color var(--duration-2) ease-out, scale var(--duration-1) ease-out;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-pill);
+    background-color: var(--theme-secondary);
+    color: var(--font-color-bold);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+    transition:
+      background-color var(--duration-2) ease-out,
+      scale var(--duration-1) ease-out;
   }
   /* The surface changes on hover and the pill gives a little when pressed. */
   @media (hover: hover) {
-    .pill:hover { background-color: var(--thumbnail-bg-color-hover); }
+    .pill:hover {
+      background-color: var(--thumbnail-bg-color-hover);
+    }
   }
-  .pill:active { scale: .96; }
+  .pill:active {
+    scale: 0.96;
+  }
   /* The current page fills with the text colour and keeps an underline, which also
      marks it in forced colours, where the fill is dropped. */
-  .pill[aria-current="page"] { background-color: var(--font-color-bold); color: var(--body-background); text-decoration-line: underline; }
+  .pill[aria-current="page"] {
+    background-color: var(--font-color-bold);
+    color: var(--body-background);
+    text-decoration-line: underline;
+  }
 </style>

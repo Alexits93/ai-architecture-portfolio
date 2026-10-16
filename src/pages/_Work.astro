@@ -1,48 +1,76 @@
 ---
 // Page-only component for the home page (ADR 002): work rows from src/content/experience.yaml and a pill to the full
 // CV.
-import { getCollection } from 'astro:content';
-import DisplayHeading from '@/components/DisplayHeading.astro';
-import Eyebrow from '@/components/Eyebrow.astro';
-import Pill from '@/components/Pill.astro';
-import { ROUTES } from '@/consts';
-import { formatPeriod, sortByStartDesc } from '@/lib/experience';
+import { getCollection } from "astro:content";
+import DisplayHeading from "@/components/DisplayHeading.astro";
+import Eyebrow from "@/components/Eyebrow.astro";
+import Pill from "@/components/Pill.astro";
+import { ROUTES } from "@/consts";
+import { formatPeriod, sortByStartDesc } from "@/lib/experience";
 
-const positions = sortByStartDesc(await getCollection('experience'));
+const positions = sortByStartDesc(await getCollection("experience"));
 ---
 
 <section id="work" class="work" aria-labelledby="work-title">
-	<div class="head">
-		<div>
-			<Eyebrow>Career</Eyebrow>
-			<DisplayHeading as="h2" size="section" id="work-title" text="Work" accent="experience" />
-		</div>
-		<Pill href={ROUTES.cv}>Full CV</Pill>
-	</div>
-	<ul>
-		{positions.map(({ data }) => (
-			<li>
-				<span class="role">{data.role}</span>
-				<span class="years">{formatPeriod(data)}</span>
-				<span class="company">{data.company}</span>
-			</li>
-		))}
-	</ul>
+  <div class="head">
+    <div>
+      <Eyebrow>Career</Eyebrow>
+      <DisplayHeading
+        as="h2"
+        size="section"
+        id="work-title"
+        text="Work"
+        accent="experience"
+      />
+    </div>
+    <Pill href={ROUTES.cv}>Full CV</Pill>
+  </div>
+  <ul>
+    {positions.map(({ data }) => (
+      <li>
+        <span class="role">{data.role}</span>
+        <span class="years">{formatPeriod(data)}</span>
+        <span class="company">{data.company}</span>
+      </li>
+    ))}
+  </ul>
 </section>
 
 <style>
-	.work { padding-block: var(--space-12); }
-	.head { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: var(--space-4); }
-	/* Role and years on one line, the company under them, a hairline between the rows. */
-	ul { list-style: none; margin: var(--space-8) 0 0; padding: 0; }
-	li {
-		display: grid; grid-template-columns: 1fr auto; gap: var(--space-2) var(--space-4); padding-block: var(--space-6);
-		border-block-start: var(--border-width-hairline) solid var(--hairline-color); color: var(--font-color);
-	}
-	.role {
-		color: var(--font-color-bold); font-weight: var(--font-weight-bold); font-size: var(--font-size-xl);
-		letter-spacing: var(--letter-spacing-tight);
-	}
-	.years { font-variant-numeric: tabular-nums; }
-	.company { grid-column: 1 / -1; }
+  .work {
+    padding-block: var(--space-12);
+  }
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+  /* Role and years on one line, the company under them, a hairline between the rows. */
+  ul {
+    list-style: none;
+    margin: var(--space-8) 0 0;
+    padding: 0;
+  }
+  li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-2) var(--space-4);
+    padding-block: var(--space-6);
+    border-block-start: var(--border-width-hairline) solid var(--hairline-color);
+    color: var(--font-color);
+  }
+  .role {
+    color: var(--font-color-bold);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xl);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+  .years {
+    font-variant-numeric: tabular-nums;
+  }
+  .company {
+    grid-column: 1 / -1;
+  }
 </style>
