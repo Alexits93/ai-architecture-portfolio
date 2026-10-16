@@ -5,7 +5,7 @@ import Causes from '@/pages/_Causes.astro';
 import Goals from '@/pages/_Goals.astro';
 import Hobbies from '@/pages/_Hobbies.astro';
 
-// #348: the sections of /about/ with the owner's hobbies, causes and goals. e2e/about.spec.ts checks the built page.
+// the sections of /about/ with the owner's hobbies, causes and goals. e2e/about.spec.ts checks the built page.
 const render = async (component: typeof Hobbies) => {
   const container = await AstroContainer.create();
   return new JSDOM(await container.renderToString(component)).window.document;
@@ -23,7 +23,7 @@ const namedSection = (doc: Document, id: string) => {
 
 const h3s = (section: Element) => [...section.querySelectorAll('h3')].map((h3) => h3.textContent);
 
-// #363: Music follows Video games, and freestyle football joined the Real Madrid card.
+// Music follows Video games, and freestyle football joined the Real Madrid card.
 it('renders six hobby cards, with a photo and alt text on the cars, travel and Real Madrid cards', async () => {
   const section = namedSection(await render(Hobbies), 'hobbies');
   expect(h3s(section)).toEqual(['Video games', 'Music', 'Cars', 'Travel', 'Real Madrid', 'Movies']);

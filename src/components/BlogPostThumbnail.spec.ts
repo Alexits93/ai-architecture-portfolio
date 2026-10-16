@@ -29,8 +29,8 @@ describe('BlogPostThumbnail Entity (Astro)', () => {
     expect(link.getAttribute('href')).toBe('/blog/test-post/');
   });
 
-  // The home design system (#299): a raised card with the category as its kicker and a display title. The morph
-  // script names the title (#210).
+  // The home design system: a raised card with the category as its kicker and a display title. The morph
+  // script names the title.
   it('renders a raised card with the category kicker and a display title', async () => {
     const doc = await render();
     const card = doc.querySelector('a > article.card');
@@ -42,14 +42,14 @@ describe('BlogPostThumbnail Entity (Astro)', () => {
     assert.exists(title);
   });
 
-  // Under the "Recommended articles" h2, the card titles are h3 (#307, WCAG 1.3.1).
+  // Under the "Recommended articles" h2, the card titles are h3 (WCAG 1.3.1).
   it('renders the title at the heading level it is given', async () => {
     const doc = await render('h3');
     expect(doc.querySelector('h2')).toBeNull();
     expect(doc.querySelector('h3')).toHaveProperty('textContent', 'Title test-post');
   });
 
-  // The card is one link, so the category is text, not a nested link (#90).
+  // The card is one link, so the category is text, not a nested link.
   it('renders the category as text, and no arrow icon or image', async () => {
     const doc = await render();
     expect(doc.querySelectorAll('a')).toHaveLength(1);
@@ -58,7 +58,7 @@ describe('BlogPostThumbnail Entity (Astro)', () => {
 });
 
 describe('BlogPostThumbnail link name', () => {
-  // #338: Firefox computes no name from content for a link that only wraps an <article>, so Orca read "link". The
+  // Regression: Firefox computes no name from content for a link that only wraps an <article>, so Orca read "link". The
   // title names the link and the description describes it.
   it('names the link by the title and describes it by the description', async () => {
     const container = await AstroContainer.create();
@@ -73,7 +73,7 @@ describe('BlogPostThumbnail link name', () => {
   });
 });
 
-// #347: a test article shows a Draft label next to its category, and the link description starts with it.
+// A test article shows a Draft label next to its category, and the link description starts with it.
 describe('BlogPostThumbnail draft label', () => {
   const render = async (draft: boolean) => {
     const container = await AstroContainer.create();

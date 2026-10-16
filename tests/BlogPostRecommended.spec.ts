@@ -37,7 +37,7 @@ describe('BlogPostRecommended Widget (Astro)', () => {
     expect(hrefs(doc)).toEqual(['/blog/second/', '/blog/oldest/']);
   });
 
-  // The home Writing head (#300): eyebrow, display h2, and the All posts pill. Card titles nest under it as h3 (#307).
+  // The home Writing head: eyebrow, display h2, and the All posts pill. Card titles nest under it as h3.
   it('renders the head as on home, with h3 card titles', async () => {
     const doc = await render();
     const heading = doc.querySelector('#blog-section h2.display[data-size="section"]');

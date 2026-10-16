@@ -17,7 +17,7 @@ describe('Eyebrow', () => {
     return eyebrow;
   };
 
-  // #286: screen readers speak the slash as "slash", so it shows but stays out of the accessible text.
+  // screen readers speak the slash as "slash", so it shows but stays out of the accessible text.
   it('starts a section eyebrow with a slash hidden from assistive technology', async () => {
     const eyebrow = await render({});
     expect(eyebrow.textContent).toBe('/ Career');

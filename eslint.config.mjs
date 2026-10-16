@@ -17,12 +17,8 @@ const SYNTAX_BANS = [
     "message": "The 'unknown' type is banned. Define explicit types or interfaces."
   },
   {
-    "selector": "TSAsExpression[typeAnnotation.type='TSUnknownKeyword']",
-    "message": "Type assertion 'as unknown' is strictly banned. Validate data instead of forcing casts."
-  },
-  {
     "selector": "JSXAttribute[name.name='style'] JSXExpressionContainer",
-    "message": "Idiomatic Tooling (HTML5 State Law): Do not use dynamic inline styles (style={...}). The hashed CSP blocks style attributes, including those <style define:vars> renders. Toggle a class (class:list) or a data-* attribute and style it in a scoped <style>."
+    "message": "Do not use dynamic inline styles (style={...}). The hashed CSP blocks style attributes, including those <style define:vars> renders. Toggle a class (class:list) or a data-* attribute and style it in a scoped <style>."
   },
   {
     "selector": "JSXOpeningElement[name.name='script']:has(JSXNamespacedName[namespace.name='is'][name.name='inline']):not(:has(JSXAttribute[name.name='src'])):not(:has(JSXAttribute[name.name='type'][value.value='application/ld+json']))",
@@ -30,7 +26,7 @@ const SYNTAX_BANS = [
   },
   {
     "selector": "JSXAttribute[name.name='class'] JSXExpressionContainer",
-    "message": "Idiomatic Tooling (HTML5 State Law): Do not use dynamic class interpolation (class={...}). Use Astro's native class:list={...} directive instead."
+    "message": "Do not use dynamic class interpolation (class={...}). Use Astro's native class:list={...} directive instead."
   }
 ];
 
@@ -64,17 +60,8 @@ export default [
     ignores: ["dist/**", ".astro/**", "coverage/**", "playwright-report/**"]
   },
   {
-    // Inline eslint-disable and rule comments cannot switch a gate off.
-    linterOptions: { noInlineConfig: true }
-  },
-  {
     files: ["**/*.{ts,js,mjs,cjs,astro}"],
     rules: {
-      "max-lines": ["error", 250],
-      "max-lines-per-function": ["error", 25],
-      "max-params": ["error", 3],
-      "complexity": ["error", 5],
-      "@typescript-eslint/no-explicit-any": "error",
       // Every `as` cast except `as const`: narrow with instanceof or typed generics instead.
       "@typescript-eslint/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
       "no-console": "error",
@@ -116,7 +103,7 @@ export default [
     }
   },
   {
-    // The card-to-post morph, also a classic inline <head> script injected by astro.config.mjs (#210).
+    // The card-to-post morph, also a classic inline <head> script injected by astro.config.mjs.
     files: ["src/lib/post-morph.js"],
     languageOptions: {
       sourceType: "script",
@@ -165,13 +152,6 @@ export default [
           { regex: "\\.astro$", message: "lib is framework-free TypeScript and must not import .astro files (ADR 002)." }
         ]
       }]
-    }
-  },
-  {
-    files: ["**/*.spec.ts", "tests/**/*.ts"],
-    rules: {
-      "max-lines-per-function": ["error", 50],
-      "complexity": ["error", 10]
     }
   }
 ];

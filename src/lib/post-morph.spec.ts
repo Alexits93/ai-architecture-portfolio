@@ -137,7 +137,7 @@ describe('post morph script', () => {
     expect(names(window)).toEqual(['', '']);
   });
 
-  // #338: an engine with view transitions but no Navigation API, or a card without a title, skips the morph instead
+  // an engine with view transitions but no Navigation API, or a card without a title, skips the morph instead
   // of throwing.
   it('skips the morph without the Navigation API or a title in the card', () => {
     // jsdom reports a listener's exception as an error event on the window instead of throwing it.

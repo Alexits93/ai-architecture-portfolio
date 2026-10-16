@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test, expect, type Page } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
 
-// #350: a photo in the home row opens a larger view in a native dialog. Invoker commands open and close it; the only
+// a photo in the home row opens a larger view in a native dialog. Invoker commands open and close it; the only
 // script is the morph through a same-document View Transition.
 const photo = (page: Page) => page.locator('#photos ul > li > button').nth(2);
 const dialog = (page: Page) => page.locator('#photos dialog').nth(2);
@@ -51,7 +51,7 @@ test.describe('reduced motion', () => {
   });
 });
 
-// #357: at 400% zoom (a 1280x1024 window is 320x256 CSS px, WCAG 1.4.10) the open photo shrank to about 64 px, smaller
+// at 400% zoom (a 1280x1024 window is 320x256 CSS px, WCAG 1.4.10) the open photo shrank to about 64 px, smaller
 // than its thumbnail, and the caption wrapped one word per line. The photo keeps a floor and the dialog scrolls.
 test.describe('at 400% zoom', () => {
   test.use({ viewport: { width: 320, height: 256 }, reducedMotion: 'reduce' });

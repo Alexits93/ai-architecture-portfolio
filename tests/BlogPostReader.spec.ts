@@ -46,7 +46,7 @@ describe('BlogPostReader Widget (Astro)', () => {
     const dom = new JSDOM(html);
     const doc = dom.window.document;
 
-    // A display h1 with its subtitle as a paragraph in one hgroup, not a second heading (#300, #307, WCAG 1.3.1).
+    // A display h1 with its subtitle as a paragraph in one hgroup, not a second heading.
     const title = doc.querySelector('#post-hero hgroup h1.display[data-size="section"][data-morph="title"]');
     assert.exists(title);
     expect(title.textContent).toBe('Test Post Title');
@@ -66,7 +66,7 @@ describe('BlogPostReader Widget (Astro)', () => {
     expect(header.querySelector('img, figure')).toBeNull();
   });
 
-  // The category is the eyebrow over the title and links to its category page (#300).
+  // The category is the eyebrow over the title and links to its category page.
   it('should link the category to its category page', async () => {
     const html = await container.renderToString(BlogPostReader, {
       props: { post: mockPost },
@@ -82,7 +82,7 @@ describe('BlogPostReader Widget (Astro)', () => {
   });
 });
 
-// #347: a test article shows a Draft label next to its category; a real post shows none.
+// a test article shows a Draft label next to its category; a real post shows none.
 describe('BlogPostReader draft label', () => {
   it('labels a draft post next to its category', async () => {
     const container = await AstroContainer.create();
@@ -115,7 +115,7 @@ describe('BlogPostReader Widget (Astro) - Secondary Elements', () => {
     expect(navigator).not.toBeNull();
   });
 
-  // The table of contents is one named nav; its wrapper is no unnamed complementary landmark (#282).
+  // The table of contents is one named nav; its wrapper is no unnamed complementary landmark.
   it('names the table of contents and adds no unnamed aside', async () => {
     const doc = new JSDOM(await container.renderToString(BlogPostReader, { props: { post: mockPost } })).window.document;
     const navigator = doc.querySelector('nav.article-navigator');
@@ -124,7 +124,7 @@ describe('BlogPostReader Widget (Astro) - Secondary Elements', () => {
     expect(doc.querySelectorAll('aside')).toHaveLength(0);
   });
 
-  // Same logo asset as the header, 40px high at the viewBox aspect ratio (#119).
+  // Same logo asset as the header, 40px high at the viewBox aspect ratio.
   it('should render the logo next to the author name', async () => {
     const html = await container.renderToString(BlogPostReader, {
       props: { post: mockPost },
@@ -136,7 +136,7 @@ describe('BlogPostReader Widget (Astro) - Secondary Elements', () => {
     expect(['viewBox', 'fill', 'width', 'height'].map((name) => svg.getAttribute(name))).toEqual(
       ['0 0 467.68 294.45', 'currentColor', '63.54', '40'],
     );
-    // Decoration next to the author's name, as in the header (#282).
+    // Decoration next to the author's name, as in the header.
     expect(svg.getAttribute('aria-hidden')).toBe('true');
   });
 });

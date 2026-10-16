@@ -122,7 +122,7 @@ test.describe('Theme after a change in another tab', () => {
 });
 
 // MDN says light-dark() resolves against the used color-scheme but does not document a data-attribute
-// toggle (https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark), so this proves it (#197).
+// toggle (https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark), so this proves it.
 test.describe('light-dark() tokens follow the manual toggle', () => {
   test.use({ colorScheme: 'light' });
 
@@ -138,7 +138,7 @@ test.describe('light-dark() tokens follow the manual toggle', () => {
     const light = await background(page);
     expect(light).not.toBe(dark);
 
-    // Polled: with motion allowed the switch runs inside a view transition's update callback (#210).
+    // Polled: with motion allowed the switch runs inside a view transition's update callback.
     await toggle(page, false).click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     await expect.poll(() => colorScheme(page)).toBe('dark');
@@ -206,3 +206,62 @@ test.describe('Theme toggle on a dark OS', () => {
     await expect(toggle(page, false)).toBeVisible();
   });
 });
+
+test.describe('Theme across pages', () => {
+  test.use({ colorScheme: 'light' });
+
+  test('keeps the chosen theme on the next page', async ({ page }) => {
+    await page.goto('/');
+    const html = page.locator('html');
+    await expect(html).not.toHaveAttribute('data-theme');
+    await page.locator('.theme-toggle').click();
+    await expect(html).toHaveAttribute('data-theme', 'dark');
+    await page.goto('/cookie-disclaimer/');
+    await expect(html).toHaveAttribute('data-theme', 'dark');
+  });
+});
+
+// Regression: the icon flipped on every navigation, because it followed aria-pressed, which the deferred header script
+// sets after first paint. The icon follows data-theme and the OS scheme, known at first paint, so it is right even with
+// the module scripts blocked.
+for (const { os, storedTheme, icon } of [
+  { os: 'light', storedTheme: 'dark', icon: 'sun' },
+  { os: 'dark', storedTheme: null, icon: 'sun' },
+  { os: 'dark', storedTheme: 'light', icon: 'moon' },
+  { os: 'light', storedTheme: null, icon: 'moon' },
+] as const) {
+  test.describe(`Theme icon on a ${os} OS, stored ${storedTheme === null ? 'none' : storedTheme}`, () => {
+    test.use({ colorScheme: os });
+
+    test(`shows the ${icon} before any module script runs`, async ({ page }) => {
+      // Astro inlines the header script as a module; drop it from the HTML so only the classic head script runs.
+      await page.route('**/', async (route) => {
+        const response = await route.fetch();
+        const body = (await response.text()).replace(/<script type="module">[\s\S]*?<\/script>/g, '');
+        await route.fulfill({ response, body });
+      });
+      if (storedTheme !== null) await page.addInitScript((value) => localStorage.setItem('theme', value), storedTheme);
+      await page.goto('/');
+      const shown = page.locator('.theme-toggle svg').filter({ visible: true });
+      await expect(shown).toHaveCount(1);
+      await expect(shown).toHaveClass(new RegExp(`\\b${icon}\\b`));
+    });
+  });
+}
+
+// Regression: on a dark OS a click to light showed both icons stacked.
+for (const os of ['light', 'dark'] as const) {
+  test.describe(`Theme icon on a ${os} OS`, () => {
+    test.use({ colorScheme: os });
+
+    test('every toggle click leaves exactly one icon visible', async ({ page }) => {
+      await page.goto('/');
+      const shown = page.locator('.theme-toggle svg').filter({ visible: true });
+      for (const icon of os === 'dark' ? ['sun', 'moon', 'sun'] : ['moon', 'sun', 'moon']) {
+        await expect(shown).toHaveCount(1);
+        await expect(shown).toHaveClass(new RegExp(`\\b${icon}\\b`));
+        await page.locator('.theme-toggle').click();
+      }
+    });
+  });
+}

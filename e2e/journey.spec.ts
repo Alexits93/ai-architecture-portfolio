@@ -1,6 +1,6 @@
 import { test, expect, type Locator, type Page } from '@playwright/test';
 
-// A reader's whole path through the blog (#90): home, menu, Blog, a category, a post, the post's category
+// A reader's whole path through the blog: home, menu, Blog, a category, a post, the post's category
 // link, then Back twice. Each step checks the URL, the heading and the current category link.
 type Input = 'mouse' | 'keyboard';
 

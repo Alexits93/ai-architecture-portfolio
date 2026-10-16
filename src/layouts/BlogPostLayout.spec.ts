@@ -44,7 +44,7 @@ describe('BlogPostLayout (Astro)', () => {
     expect(main.textContent).toBe('Post body');
   });
 
-  // https://developers.google.com/search/docs/appearance/structured-data/article (#306)
+  // https://developers.google.com/search/docs/appearance/structured-data/article
   it('describes the post as BlogPosting with its image, page and the CV page as author URL', async () => {
     expect(jsonLd(await render())).toEqual({
       '@context': 'https://schema.org',
@@ -71,7 +71,7 @@ describe('BlogPostLayout (Astro)', () => {
   });
 });
 
-// #354: a test article stays out of search results; a real post names its canonical URL
+// a test article stays out of search results; a real post names its canonical URL
 // (https://developers.google.com/search/docs/crawling-indexing/block-indexing).
 describe('BlogPostLayout indexing', () => {
   it('marks a draft post noindex without a canonical link, and a real post with one', async () => {

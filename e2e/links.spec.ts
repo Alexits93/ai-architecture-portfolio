@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 // Every built page, read from dist/ so a new route is covered without a list edit.
 const ROUTES = globSync('**/*.html', { cwd: 'dist' }).map((file) => `/${file.replace(/index\.html$/, '')}`);
 
-// Owner 2026-10-13 (#242): a link inside a sentence is underlined, so it does not rely on colour alone
+// a link inside a sentence is underlined, so it does not rely on colour alone
 // (WCAG 2.2 F73, https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html), and hover thickens the line
 // (https://design-system.service.gov.uk/styles/links/). Links open in the same tab (WCAG technique G200).
 for (const route of ROUTES) {

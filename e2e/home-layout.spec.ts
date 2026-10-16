@@ -4,7 +4,7 @@ import { SITE } from '../src/consts';
 // Reduced motion keeps the hero in its final position, so the boxes do not move while the tests measure them.
 test.use({ reducedMotion: 'reduce' });
 
-// No block widens the page; the giant contact word is clipped, not scrolled to (#243, #260).
+// No block widens the page; the giant contact word is clipped, not scrolled to.
 for (const width of [320, 390, 1440, 1920]) {
   test.describe(`at ${width} px`, () => {
     test.use({ viewport: { width, height: 900 } });
@@ -22,7 +22,7 @@ for (const width of [320, 390, 1440, 1920]) {
   });
 }
 
-// WCAG 1.4.12: with the text spacing a user may set, nothing widens the page (#282). The spacing goes in as a style
+// WCAG 1.4.12: with the text spacing a user may set, nothing widens the page. The spacing goes in as a style
 // tag, which the hashed CSP would block, so this test bypasses it.
 test.describe('with the WCAG 1.4.12 text spacing at 390 px', () => {
   test.use({ viewport: { width: 390, height: 900 }, bypassCSP: true });
@@ -41,7 +41,7 @@ test.describe('with the WCAG 1.4.12 text spacing at 390 px', () => {
   });
 });
 
-// Home shows the role as the hero's first kicker (#254); /cv/ shows it under the name in the hgroup (#307).
+// Home shows the role as the hero's first kicker; /cv/ shows it under the name in the hgroup.
 test('home and /cv/ show the same site-wide title', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#hero .kicker').first()).toHaveText(SITE.role);
@@ -51,7 +51,7 @@ test('home and /cv/ show the same site-wide title', async ({ page }) => {
   await expect(page.locator('#about-me hgroup .role')).toBeVisible();
 });
 
-// The placeholder portrait has a fixed size, so nothing moves while the page loads (#254). Chromium is the only
+// The placeholder portrait has a fixed size, so nothing moves while the page loads. Chromium is the only
 // engine that reports layout-shift entries (https://developer.mozilla.org/en-US/docs/Web/API/LayoutShift).
 for (const width of [320, 1280]) {
   test.describe(`at ${width} px`, () => {
@@ -77,7 +77,7 @@ for (const width of [320, 1280]) {
   });
 }
 
-// #261 and the #295 audit: on a phone the owner's portrait is the Largest Contentful Paint, which is why it loads
+// On a phone the owner's portrait is the Largest Contentful Paint, which is why it loads
 // eagerly at high priority. With motion allowed, as most visitors have it; under reduced motion the hero text paints at
 // once and its block is a few percent larger, which costs no time.
 test.describe('at 390 px with motion allowed', () => {
@@ -103,7 +103,7 @@ test.describe('at 390 px with motion allowed', () => {
 });
 
 // From 64rem the name halves sit beside the portrait; each half and its one-line kicker must fit its column, not run
-// into the page padding (#254).
+// into the page padding.
 for (const width of [1024, 1280, 1440]) {
   test.describe(`hero at ${width} px`, () => {
     test.use({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });

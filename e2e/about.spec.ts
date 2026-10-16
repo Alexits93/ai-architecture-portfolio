@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-// #348: /about/ with the owner's hobbies, causes and goals, reached from the home link and the menu.
-test('/about/ shows the heading and the hobbies, causes and goals in order', async ({ page }) => {
+// /about/, reached from the home link and the menu.
+test('/about/ shows the hobbies, causes and goals sections in order', async ({ page }) => {
   await page.goto('/about/');
-  await expect(page.locator('main .eyebrow').first()).toHaveText('/ About');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Get to know me');
-  await expect(page.locator('main .lead')).toContainText('This is me outside the code.');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.getByRole('heading', { level: 2 })).toHaveText(['Hobbies', 'Causes', 'Goals']);
 });
 

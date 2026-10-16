@@ -21,7 +21,7 @@ Follow Astro's documented project structure (https://docs.astro.build/en/basics/
 | `src/content/`, `src/content.config.ts` | Collections: schema and data for repeated structured content (https://docs.astro.build/en/guides/content-collections/). |
 | `src/lib/` | Framework-free TypeScript. |
 
-Imports flow `pages > layouts > components > lib`. ESLint core `no-restricted-imports`, scoped per folder, enforces it; `tests/config/eslint.spec.ts` proves each boundary.
+Imports flow `pages > layouts > components > lib`. ESLint core `no-restricted-imports`, scoped per folder, enforces it.
 
 ## Consequences
 - Positive: one structure that the Astro docs, examples and agents share. No renamed layers, no third-party architecture plugin.

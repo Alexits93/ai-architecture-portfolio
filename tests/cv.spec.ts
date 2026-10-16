@@ -5,7 +5,7 @@ import { it, expect, assert, vi } from 'vitest';
 import Cv from '@/pages/cv.astro';
 import { SITE, SOCIAL_LINKS } from '@/consts';
 
-// Vitest has no collection data, so the experience entry is a fixture (#226).
+// Vitest has no collection data, so the experience entry is a fixture.
 // e2e/cv-experience.spec.ts checks the real entries on the built page.
 const entry: CollectionEntry<'experience'> = {
   id: 'acme',
@@ -15,7 +15,7 @@ const entry: CollectionEntry<'experience'> = {
 
 vi.mock('astro:content', () => ({ getCollection: async () => [entry] }));
 
-// /cv/ shows the same site-wide title as the home hero (#214).
+// /cv/ shows the same site-wide title as the home hero.
 it('renders SITE.role in the CV hero', async () => {
   // The page renders SeoHead through BaseLayout, which needs `site` for absolute URLs.
   const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
@@ -26,7 +26,7 @@ it('renders SITE.role in the CV hero', async () => {
   expect(role.textContent).toBe(SITE.role);
 });
 
-// The home design system (#301): the CV eyebrow over the name as a display h1.
+// The home design system: the CV eyebrow over the name as a display h1.
 it('renders the CV eyebrow and the name as a display h1', async () => {
   const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Cv)).window.document;
@@ -42,7 +42,7 @@ it('renders the experience list from the collection', async () => {
   expect([...doc.querySelectorAll('.experience-item h3')].map((h3) => h3.textContent)).toEqual(['Role - Acme']);
 });
 
-// /cv/ is the owner's profile page (#306, https://developers.google.com/search/docs/appearance/structured-data/profile-page).
+// /cv/ is the owner's profile page (https://developers.google.com/search/docs/appearance/structured-data/profile-page).
 it('describes the page as a ProfilePage and links every social profile', async () => {
   const container = await AstroContainer.create({ astroConfig: { site: 'https://www.pa-tech.dev' } });
   const doc = new JSDOM(await container.renderToString(Cv)).window.document;

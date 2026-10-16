@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test, expect } from '@playwright/test';
 
 // At 400% zoom (320x180 CSS px) the sticky header took 82 of 180 px; on short viewports it scrolls away instead
-// (#312, https://www.w3.org/WAI/WCAG22/Understanding/reflow.html).
+// (https://www.w3.org/WAI/WCAG22/Understanding/reflow.html).
 const cases = [
   { width: 320, height: 180, sticky: false },
   { width: 320, height: 256, sticky: false },

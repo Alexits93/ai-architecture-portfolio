@@ -26,7 +26,7 @@ describe('readPostDates', () => {
         'notes.txt': 'not a post',
       }),
     );
-    // #354: the sitemap leaves out a draft, so the reader reports it; a post without the flag is not a draft.
+    // the sitemap leaves out a draft, so the reader reports it; a post without the flag is not a draft.
     expect(posts.toSorted((x, y) => x.id.localeCompare(y.id))).toEqual([
       { id: 'a-post', category: 'AI', modified: new Date('2026-10-06'), draft: false },
       { id: 'b-post', category: 'Architecture', modified: new Date('2026-10-09'), draft: true },

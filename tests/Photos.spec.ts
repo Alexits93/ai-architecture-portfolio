@@ -8,9 +8,9 @@ const render = async () => {
   return new JSDOM(await container.renderToString(Photos)).window.document;
 };
 
-// The photo row is one named scroller that keyboard users can focus (#255), with the owner's five photos (#261), lazy
+// The photo row is one named scroller that keyboard users can focus, with the owner's five photos, lazy
 // below the fold. A named group, not a region landmark: Orca 51's next-landmark command loops on a landmark whose
-// first content is an image (#304, #261).
+// first content is an image.
 it('renders the photo row as a focusable named group with five lazy photos that have alt text', async () => {
   const doc = await render();
 
@@ -26,7 +26,7 @@ it('renders the photo row as a focusable named group with five lazy photos that 
   expect(photos.querySelector('[role="img"]')).toBeNull();
 });
 
-// #350: each photo is a button that opens its own dialog through an invoker command, no script needed. The dialog
+// Each photo is a button that opens its own dialog through an invoker command, no script needed. The dialog
 // shows the photo larger with its alt text as the caption, which names the dialog, and a close button.
 it('opens each photo in a dialog named by its caption, with a close button', async () => {
   const doc = await render();

@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 // Local WebKit (pnpm test:e2e:webkit): the host lacks WebKit's system libraries, so the browser runs in
 // the Playwright image of the installed version under Podman and connects back to the preview server
-// on the host loopback (https://playwright.dev/docs/docker, tests/config/playwright-webkit-podman.spec.ts).
+// on the host loopback (https://playwright.dev/docs/docker).
 const webkitInPodman = process.env.PW_WEBKIT_PODMAN === '1';
 const PLAYWRIGHT_VERSION = '1.64.0';
 const BFCACHE_SPEC = 'e2e/menu-bfcache.spec.ts';
@@ -17,7 +17,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   // https://playwright.dev/docs/ci: "Always set a global timeout in CI." The slowest engine takes about 3.5 minutes
-  // there; the e2e-engine job in ci.yml stops after 10 (#313).
+  // there; the e2e-engine job in ci.yml stops after 10.
   globalTimeout: process.env.CI ? 7 * 60 * 1000 : undefined,
   // https://playwright.dev/docs/test-reporters#github-actions-annotations
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'html',

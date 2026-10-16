@@ -9,7 +9,7 @@ Astro's documented conventions (https://docs.astro.build/en/basics/project-struc
 - `pages/`: routes. Markup and scoped `<style>` used by one page stay in that page. A page-only component sits next to the page with a `_` prefix (`src/pages/blog/_BlogFeed.astro`, shared by the `/blog/` routes); the router ignores it.
 - `layouts/`: the document shell (`<html>`, `<head>`, global CSS import, header, menu, footer, `<slot />`) and nested layouts. Every page renders through a layout.
 - `components/`: components rendered on two or more routes, directly or through a layout, one `.astro` file each, imported by path (no barrel `index.ts`).
-- `assets/`: local images and SVGs, imported by components as SVG components (https://docs.astro.build/en/guides/images/#svg-components). `tests/architecture/project-structure.spec.ts` fails on any `<svg` in a `src/**/*.astro` file.
+- `assets/`: local images and SVGs, imported by components as SVG components (https://docs.astro.build/en/guides/images/#svg-components), never inline `<svg>`.
 - `styles/`: tokens and global CSS (reset, tokens, base element styles). Component styles are scoped in the component.
 - `content/` and `src/content.config.ts`: repeated structured content as collections. A one-off page keeps its content in the page.
 - `lib/`: framework-free TypeScript. No `.astro` imports. Site constants and routes live in `src/consts.ts`; fonts in `src/assets/fonts/`, loaded through the Fonts API (`fonts` in `astro.config.mjs`, `<Font />` in `BaseLayout`) and read by the OG image.

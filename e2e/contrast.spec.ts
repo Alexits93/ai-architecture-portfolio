@@ -44,7 +44,7 @@ for (const [theme, icon] of [['light', 'moon'], ['dark', 'sun']]) {
       expect(contrast(bar, await css(page.locator('.navigator-menu-overlay'), 'backgroundColor'))).toBeGreaterThanOrEqual(3);
     });
 
-    // #242: the focus ring is at least 2px and 3:1 against the page it sits on
+    // the focus ring is at least 2px and 3:1 against the page it sits on
     // (WCAG 2.2 SC 2.4.13, https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance.html).
     test('keyboard focus on a button, a link and the theme toggle draws a 2px ring with 3:1 against the page', async ({ page }) => {
       const background = await css(page.locator('body'), 'backgroundColor');
@@ -64,7 +64,7 @@ for (const [theme, icon] of [['light', 'moon'], ['dark', 'sun']]) {
   });
 }
 
-// Owner 2026-10-12 (#206): a card sits on its own surface. Since #299 the blog cards are the home Card (#252), so they
+// a card sits on its own surface. The blog cards are the home Card, so they
 // share its surface: lighter than the page in both themes.
 for (const theme of ['dark', 'light']) {
   test(`blog cards in the ${theme} theme sit on the home card surface, lighter than the page`, async ({ page }) => {
@@ -78,7 +78,7 @@ for (const theme of ['dark', 'light']) {
   });
 }
 
-// #275: axe cannot compute contrast for text painted by a gradient (background-clip: text) and reports it as
+// axe cannot compute contrast for text painted by a gradient (background-clip: text) and reports it as
 // incomplete. WCAG 2.2 SC 1.4.3 takes the gradient's lowest-contrast point
 // (https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html), so each gradient is sampled between its stops and
 // the worst sample is held against the background behind the text. Legacy rgb()/hsl() stops interpolate in sRGB

@@ -47,7 +47,7 @@ for (const route of ROUTES) {
         window.cspViolations.push(`${e.effectiveDirective} blocked ${e.blockedURI}`);
       });
     });
-    // A stylesheet, icon or image that fails to load leaves every style and layout check untested (#91).
+    // A stylesheet, icon or image that fails to load leaves every style and layout check untested.
     const failed: string[] = [];
     page.on('requestfailed', (request) => failed.push(request.url()));
 
@@ -77,7 +77,7 @@ for (const route of ROUTES) {
     test(`the hashed theme script applies stored "${stored}" before module scripts on ${route}`, async ({ page }) => {
       // Astro inlines bundled scripts as modules, which run only after parsing, so the first data-theme
       // write while readyState is still "loading" can only come from the classic inline theme script.
-      // It runs only if its hash is in script-src, and it costs no extra request on a first visit (#86).
+      // It runs only if its hash is in script-src, and it costs no extra request on a first visit.
       const requests: string[] = [];
       page.on('request', (request) => requests.push(new URL(request.url()).pathname));
       await page.addInitScript((value) => {

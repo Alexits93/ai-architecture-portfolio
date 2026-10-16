@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import assert from 'node:assert/strict';
 import { animationsSettled } from './animations';
 
-// #255: the tilted photo row under the hero. It spans the window, scrolls sideways from the keyboard where it
+// the tilted photo row under the hero. It spans the window, scrolls sideways from the keyboard where it
 // overflows, and a photo straightens on hover only where motion is allowed.
 
 test.describe('at 320 px', () => {
@@ -64,7 +64,7 @@ const offCentre = (page: Page, index: number) =>
     return Math.abs(tile.left + tile.width / 2 - (row.getBoundingClientRect().left + row.clientWidth / 2));
   }, index);
 
-// #279: the row starts at its middle, so both outer photos sit partly off screen.
+// the row starts at its middle, so both outer photos sit partly off screen.
 for (const width of [390, 1440]) {
   test.describe(`at ${width} px with motion reduced`, () => {
     test.use({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
@@ -76,7 +76,7 @@ for (const width of [390, 1440]) {
   });
 }
 
-// #279: a mouse drags the row sideways; the scrollbar is hidden and the cursor shows that it can be grabbed.
+// a mouse drags the row sideways; the scrollbar is hidden and the cursor shows that it can be grabbed.
 test.describe('mouse drag at 390 px', () => {
   test.use({ viewport: { width: 390, height: 900 }, reducedMotion: 'reduce' });
 

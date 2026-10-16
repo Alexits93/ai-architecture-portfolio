@@ -34,7 +34,7 @@ describe('BaseLayout (Astro)', () => {
     assert.exists(el);
     expect(el.getAttribute('href')).toBe(`${SITE_URL}/cv/`);
     expect(meta(doc, 'og:title')).toBe('Page Title');
-    // The theme script is injected inline by astro.config.mjs, which the container does not read (#86).
+    // The theme script is injected inline by astro.config.mjs, which the container does not read.
     expect(doc.querySelector('script[src="/theme.js"]')).toBeNull();
     const manifest = doc.head.querySelector('link[rel="manifest"]');
     assert.exists(manifest);
@@ -67,7 +67,7 @@ describe('BaseLayout (Astro)', () => {
   });
 });
 
-// Header and menu share only the dialog ID through commandfor (#157).
+// Header and menu share only the dialog ID through commandfor.
 it('renders the commandfor target once and points every commandfor at it', async () => {
   const doc = await render();
   expect(doc.querySelectorAll('#site-menu')).toHaveLength(1);

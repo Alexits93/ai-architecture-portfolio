@@ -13,7 +13,7 @@ Personal portfolio and blog. Static Astro 7 site (`output: 'static'`) on statich
 - Read the code, the git history (`git log -S`) and the official docs of the installed version before you change or recommend something, and cite the doc URL in the commit. Auto memory is off; knowledge lives in git, issues and PRs.
 - Accessibility questions are not owner decisions: research WCAG and the ARIA Authoring Practices Guide, check the running page, decide, and report the result.
 - Use the stack's native features as their docs describe. If none fits, ask before building something custom. A new dependency needs the owner's approval.
-- No `any`, no `unknown`, no `as` casts (ESLint enforces it). Keep changes minimal: no refactors or defensive code beyond the task, except removing what the change makes obsolete (see Removing).
+- Keep changes minimal: no refactors or defensive code beyond the task, except removing what the change makes obsolete (see Removing).
 - Done means seen: `pnpm build`, run the site (`pnpm preview` or Playwright), look at the screenshots, and report what you saw.
 - Add a lint rule, hook or test as a gate only for a mistake that recurred and is costly. Its comment names the real failure it answers (a CI run, PR or commit); no real failure, no gate. Retire an obsolete gate in the same change. Content truth (CV text, posts) is checked by the owner, not by gates.
 
@@ -31,7 +31,7 @@ Before removing, find why it was added (`git log -S`, the PR or issue) and who u
 0. Start of a session: `pnpm build && pnpm exec playwright test --project=chromium`. Fix anything the last session left broken before new work.
 1. One GitHub Task issue per change (`.github/ISSUE_TEMPLATE/task.yml`). One PR, and one session, may close several Tasks that touch the same files. Read each with `gh issue view <N>`.
 2. Branch with `gh issue develop <N> --base master --name <type>/<N>-<slug> --checkout`.
-3. Failing test first, then the code, until `pnpm check` passes. Conventional Commits.
+3. A test for the behavior at risk (a regression test first for a bug, see `.claude/rules/testing.md`), then the code, until `pnpm check` passes. Conventional Commits.
 4. Open the PR once `pnpm check`, the e2e run and the live check pass, with `.github/PULL_REQUEST_TEMPLATE.md`, `Closes #N` for each Task and a Conventional Commits title (it becomes the squash commit). The owner reviews and merges; then run the `after-merge` skill.
 5. End of a session: leave a clean state. Everything committed; unfinished work pushed to a draft PR, never a half-done tree.
 
