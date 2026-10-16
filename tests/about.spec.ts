@@ -23,12 +23,12 @@ const namedSection = (doc: Document, id: string) => {
 
 const h3s = (section: Element) => [...section.querySelectorAll('h3')].map((h3) => h3.textContent);
 
-// #363: Music follows Video games.
-it('renders seven hobby cards, with a photo and alt text on the cars, travel and Real Madrid cards', async () => {
+// #363: Music follows Video games, and freestyle football joined the Real Madrid card.
+it('renders six hobby cards, with a photo and alt text on the cars, travel and Real Madrid cards', async () => {
   const section = namedSection(await render(Hobbies), 'hobbies');
-  expect(h3s(section)).toEqual(['Video games', 'Music', 'Cars', 'Travel', 'Real Madrid', 'Movies', 'Freestyle football']);
+  expect(h3s(section)).toEqual(['Video games', 'Music', 'Cars', 'Travel', 'Real Madrid', 'Movies']);
   const photos = [...section.querySelectorAll('li.card')].map((card) => card.querySelector('img'));
-  expect(photos.map((img) => img !== null)).toEqual([false, false, true, true, true, false, false]);
+  expect(photos.map((img) => img !== null)).toEqual([false, false, true, true, true, false]);
   for (const img of photos) if (img !== null) expect(img.getAttribute('alt')).toMatch(/\S/);
 });
 
