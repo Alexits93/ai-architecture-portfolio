@@ -16,6 +16,29 @@ test('Tab walks the email and the social links in order', async ({ page }) => {
   await expect(section.getByRole('link')).toHaveCount(names.length);
 });
 
+// #220: the email links hand off to the mail app. The CSP allows no form or frame and default-src 'self', so a click on
+// either mailto: link must raise no violation and leave the page where it is.
+test('the contact and footer email links open mailto: without a CSP violation', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.addEventListener('securitypolicyviolation', (event) => {
+      document.documentElement.dataset.cspViolation = `${event.effectiveDirective} blocked ${event.blockedURI}`;
+    });
+  });
+  await page.goto('/');
+  const links = [
+    page.getByRole('region', { name: 'Contact' }).getByRole('link', { name: SITE.email }),
+    page.getByRole('contentinfo').getByRole('link', { name: SITE.email }),
+  ];
+  for (const link of links) {
+    await expect(link).toHaveAttribute('href', `mailto:${SITE.email}`);
+    await link.click();
+    // Two frames give a violation from the click time to be reported.
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await expect(page).toHaveURL('/');
+    await expect(page.locator('html')).not.toHaveAttribute('data-csp-violation');
+  }
+});
+
 for (const width of [320, 390, 1440, 1920]) {
   test.describe(`at ${width} px`, () => {
     test.use({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
