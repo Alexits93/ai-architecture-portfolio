@@ -9,7 +9,7 @@
   order: 2
   kicker: Side work
   title: Harnesses for LLM coding agents
-  text: Rules, hooks and tests that keep a coding agent honest. This site is built that way, in the open.
+  text: Rules, permissions and tests that check a coding agent's work before I review it. This site is built that way, and its repository is public.
   tools: [Claude Code, CI gates, Playwright, Vitest, ADRs]
 - id: coaching
   order: 3
@@ -21,5 +21,5 @@
   order: 4
   kicker: Free time
   title: Learning and experimenting
-  text: I keep up to date with the latest trends and technologies, and experiment with web and game development.
+  text: I try new web platform features on this site and build a game in Godot.
   tools: [Astro, CSS, Godot, GDScript]

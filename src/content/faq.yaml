@@ -14,7 +14,7 @@
 - id: llms
   order: 4
   question: How do you work with LLMs?
-  answer: The model proposes, I decide. I ask it to argue against the design first, and nothing counts as done until I ran it.
+  answer: With Claude Code, inside path-scoped rules, permission limits and tests that run before I review. I read every diff and run the site before a change counts as done.
 - id: ai-writing
   order: 5
   question: Do you use AI to write the blog?

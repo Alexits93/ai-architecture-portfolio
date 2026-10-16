@@ -7,7 +7,7 @@
   highlights:
     - Leading the frontend architecture and engineering of the Evento feature web migration, built with Nx and Angular.
     - Mentoring juniors and leading the team with clear terminology, principles and high engineering standards.
-    - Among the people leading AI adoption at the company, engineering tailored user harnesses for LLM usage.
+    - Helping lead AI adoption at the company and building harnesses for the team's LLM use.
   emphasis: [Evento, Nx, Angular, AI adoption, LLM]
   skills: [Architecture, Engineering, Leadership, Mentoring, Nx, Angular, Frontend, Scrum, Git, Accessibility, TypeScript]
 - id: ibm-ix-dach
@@ -26,7 +26,7 @@
   role: Fullstack Developer
   company: Solvistas GmbH
   highlights:
-    - Developed and maintained 'Easy Arena', a high-traffic ticketing web app, focusing on frontend enhancements with Angular, TypeScript, and RxJS. Improved app scalability and performance in a multi-tenant architecture, utilising Java, Spring Boot and MySQL on the backend.
+    - Developed and maintained 'Easy Arena', a high-traffic ticketing web app. Built frontend features with Angular, TypeScript and RxJS, and improved scalability and performance of its multi-tenant backend in Java, Spring Boot and MySQL.
   emphasis: [Angular, TypeScript, RxJS, multi-tenant, Java, Spring Boot, MySQL]
   skills: [Angular, TypeScript, JavaScript, Java, Spring Boot, MySQL, Agile, Scrum]
 - id: voov
@@ -35,6 +35,6 @@
   role: Fullstack Developer
   company: Voov Ltd.
   highlights:
-    - Engineered multiple client websites as a Fullstack Developer, using PHP and the Laravel framework for comprehensive site and backend solutions.
+    - Built client websites, frontend and backend, with PHP and Laravel.
   emphasis: [PHP, Laravel]
   skills: [Laravel, PHP, JavaScript, jQuery, Photoshop, Sitebuilding]
