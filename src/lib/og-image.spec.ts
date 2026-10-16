@@ -35,6 +35,13 @@ describe("generateOgImage", () => {
     expect(await renderOgSvg("x", "H")).not.toBe(await renderOgSvg("x", "I"));
   });
 
+  // A shared link shows whose site it leads to: the logo on every image, a byline where one is given.
+  it("draws the logo, and the byline when one is given", async () => {
+    const withoutByline = await renderOgSvg("x", "y");
+    expect(withoutByline).toContain("data:image/svg+xml;base64,");
+    expect(await renderOgSvg("x", "y", "H")).not.toBe(withoutByline);
+  });
+
   it("rejects when a font file is unparsable", async () => {
     vi.spyOn(fs, "readFileSync").mockReturnValue(Buffer.from("not a font"));
 

@@ -44,7 +44,9 @@ describe("BlogPostLayout (Astro)", () => {
       "2026-03-04T00:00:00.000Z",
     );
     expect(meta(doc, "og:image")).toBe(`${SITE_URL}/blog/hello/og.png`);
-    expect(meta(doc, "og:image:alt")).toBe("Title hello. Subtitle hello");
+    expect(meta(doc, "og:image:alt")).toBe(
+      "Title hello. Subtitle hello. Patrik Alexits | Frontend Architect",
+    );
     const main = doc.getElementById("page-main");
     assert.exists(main);
     expect(main.textContent).toBe("Post body");

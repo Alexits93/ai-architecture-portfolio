@@ -131,7 +131,7 @@ for (const route of ROUTES) {
     if (isPost) {
       expect(imageUrl).toBe(`https://www.pa-tech.dev${route}og.png`);
       expect(alt).toBe(
-        `${await page.locator("h1").textContent()}. ${await page.locator("#post-hero .subtitle").textContent()}`,
+        `${await page.locator("h1").textContent()}. ${await page.locator("#post-hero .subtitle").textContent()}. ${SITE.title}`,
       );
     } else {
       expect(imageUrl).toBe("https://www.pa-tech.dev/og.png");
