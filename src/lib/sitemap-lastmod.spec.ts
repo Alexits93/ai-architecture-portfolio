@@ -22,13 +22,14 @@ describe('readPostDates', () => {
     const posts = readPostDates(
       writePosts({
         'a.md': post('slug: a-post\ntitle: "A"\npublishDate: 2026-10-06\ncategory: AI'),
-        'b.md': post('slug: "b-post"\npublishDate: 2026-10-07\nupdatedDate: \'2026-10-09\'\ncategory: Architecture'),
+        'b.md': post('slug: "b-post"\npublishDate: 2026-10-07\nupdatedDate: \'2026-10-09\'\ncategory: Architecture\ndraft: true'),
         'notes.txt': 'not a post',
       }),
     );
+    // #354: the sitemap leaves out a draft, so the reader reports it; a post without the flag is not a draft.
     expect(posts.toSorted((x, y) => x.id.localeCompare(y.id))).toEqual([
-      { id: 'a-post', category: 'AI', modified: new Date('2026-10-06') },
-      { id: 'b-post', category: 'Architecture', modified: new Date('2026-10-09') },
+      { id: 'a-post', category: 'AI', modified: new Date('2026-10-06'), draft: false },
+      { id: 'b-post', category: 'Architecture', modified: new Date('2026-10-09'), draft: true },
     ]);
   });
 
@@ -43,8 +44,8 @@ describe('readPostDates', () => {
 
 describe('lastmodFor', () => {
   const posts = [
-    { id: 'old', category: 'AI', modified: new Date('2026-10-06') },
-    { id: 'new', category: 'Architecture', modified: new Date('2026-10-09') },
+    { id: 'old', category: 'AI', modified: new Date('2026-10-06'), draft: false },
+    { id: 'new', category: 'Architecture', modified: new Date('2026-10-09'), draft: false },
   ];
   const pages = { '/privacy-policy/': new Date('2026-10-14') };
 

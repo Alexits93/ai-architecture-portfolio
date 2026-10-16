@@ -34,7 +34,8 @@ const jsonLd: JsonLdObject = {
 // parsed (rel="expect", #210, https://developer.chrome.com/docs/web-platform/view-transitions/cross-document).
 ---
 
-<BaseLayout title={`${title} | ${SITE.name}`} description={description} type="article" ogImage={ogImage} publishedTime={publishDate} jsonLd={jsonLd}>
+<!-- A draft is a test article: noindex keeps it out of search results (#354). -->
+<BaseLayout title={`${title} | ${SITE.name}`} description={description} type="article" ogImage={ogImage} publishedTime={publishDate} jsonLd={jsonLd} noindex={post.data.draft}>
 	<link slot="head" rel="expect" href="#post-hero" blocking="render" />
 	<slot />
 </BaseLayout>

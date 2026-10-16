@@ -70,3 +70,17 @@ describe('BlogPostLayout (Astro)', () => {
     expect(jsonLd(doc).headline).toBe(title);
   });
 });
+
+// #354: a test article stays out of search results; a real post names its canonical URL
+// (https://developers.google.com/search/docs/crawling-indexing/block-indexing).
+describe('BlogPostLayout indexing', () => {
+  it('marks a draft post noindex without a canonical link, and a real post with one', async () => {
+    const draft = await render(createTestPost({ id: 'hello', draft: true }));
+    expect(meta(draft, 'robots')).toBe('noindex');
+    expect(draft.querySelector('link[rel="canonical"]')).toBeNull();
+
+    const real = await render();
+    expect(real.querySelector('meta[name="robots"]')).toBeNull();
+    expect(real.querySelector('link[rel="canonical"]')).toHaveProperty('href', `${SITE_URL}/blog/hello/`);
+  });
+});

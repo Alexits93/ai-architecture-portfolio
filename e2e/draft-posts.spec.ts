@@ -1,15 +1,10 @@
-import { globSync, readFileSync } from 'node:fs';
 import { test, expect, type Locator } from '@playwright/test';
+import { readPostDates } from '../src/lib/sitemap-lastmod';
 
 // #347: test articles carry `draft: true` until the owner's own posts replace them. Vitest has no content store, so
 // the real posts are checked here: each draft shows a Draft label wherever it is listed and on its page, and home and
 // /blog/ show the notice while a draft exists.
-const posts = globSync('src/content/blog/*.md').map((file) => {
-  const text = readFileSync(file, 'utf8');
-  const slug = /^slug: (\S+)$/m.exec(text);
-  if (slug === null) throw new Error(`${file} has no slug`);
-  return { href: `/blog/${slug[1]}/`, draft: /^draft: true$/m.test(text) };
-});
+const posts = readPostDates('src/content/blog').map(({ id, draft }) => ({ href: `/blog/${id}/`, draft }));
 const drafts = new Set(posts.filter((post) => post.draft).map((post) => post.href));
 
 // Each item's post link and whether it shows a Draft label.
