@@ -1,5 +1,6 @@
 ---
 import { ROUTES } from '@/consts';
+import BarsButton from './BarsButton.astro';
 
 const menuItems = [
     { name: 'Home', path: ROUTES.home },
@@ -10,10 +11,7 @@ const menuItems = [
 ---
 <dialog id="site-menu" aria-label="Site navigation">
     <div class="navigator-menu-overlay" aria-hidden="true"></div>
-    <button class="navigator-menu-opener" commandfor="site-menu" command="close" aria-label="Close menu">
-        <span></span>
-        <span></span>
-    </button>
+    <BarsButton class="menu-close" commandfor="site-menu" command="close" aria-label="Close menu" />
     <div class="navigator-menu-body">
         <ul>
             {menuItems.map(item => (
@@ -31,7 +29,7 @@ const menuItems = [
         addEventListener('pagehide', () => menu.close());
 
         // CSS alone cannot animate the close in every engine: Firefox transitions neither display nor overlay, and
-        // keeping the closed dialog rendered breaks WebKit's initial focus (#206). So the close button's command and
+        // keeping the closed dialog rendered breaks WebKit's initial focus. So the close button's command and
         // Esc's cancel are held while data-closing plays the closing transitions, then the dialog closes.
         // getAnimations() applies pending style changes first, so it returns the transitions just started
         // (https://drafts.csswg.org/web-animations-1/#dom-animatable-getanimations).
@@ -87,41 +85,14 @@ const menuItems = [
     }
 
     /* Over the header hamburger: header padding, then the button centred in the header icon row. */
-    .navigator-menu-opener {
+    .menu-close {
         position: absolute; z-index: 3;
         top: calc(var(--space-4) + (var(--size-icon-lg) - var(--space-12)) / 2); left: var(--space-4);
-        display: flex; flex-direction: column; justify-content: center; cursor: pointer;
-        padding: 0 var(--space-2); width: var(--space-12); height: var(--space-12); gap: var(--space-2); background: none; border: none;
-        transition: gap var(--duration-3) ease-in-out;
-    }
-    .navigator-menu-opener span {
-        display: block; transition: transform var(--duration-3) ease-in-out;
-        height: .2rem; width: var(--space-8); background-color: var(--font-color-bold);
-        border-radius: var(--radius-xs); transform: translateY(0) rotate(0deg);
-    }
-    /* Forced colours drop author background colours; a system colour keeps the bars visible (#282). */
-    @media (forced-colors: active) {
-        .navigator-menu-opener span { forced-color-adjust: none; background-color: ButtonText; }
-    }
-    .navigator-menu-opener { border-radius: var(--radius-full); }
-    @media (hover: hover) {
-        .navigator-menu-opener:hover { background-color: var(--state-hover); }
-    }
-    .navigator-menu-opener:active { scale: .92; }
-
-    dialog#site-menu[open]:not([data-closing]) .navigator-menu-opener { gap: 0; }
-    dialog#site-menu[open]:not([data-closing]) .navigator-menu-opener span:first-of-type { transform: translateY(0.1rem) rotate(45deg); }
-    dialog#site-menu[open]:not([data-closing]) .navigator-menu-opener span:last-of-type { transform: translateY(-0.1rem) rotate(-45deg); }
-
-    @starting-style {
-        dialog#site-menu[open]:not([data-closing]) .navigator-menu-opener { gap: var(--space-2); }
-        dialog#site-menu[open]:not([data-closing]) .navigator-menu-opener span:first-of-type { transform: translateY(0) rotate(0deg); }
-        dialog#site-menu[open]:not([data-closing]) .navigator-menu-opener span:last-of-type { transform: translateY(0) rotate(0deg); }
     }
 
     .navigator-menu-body {
         position: relative; z-index: 2; width: 100%; height: 100%;
-        /* safe: a list taller than the dialog starts at the top edge, where it can scroll, instead of overflowing above it (#298). */
+        /* safe: a list taller than the dialog starts at the top edge, where it can scroll, instead of overflowing above it. */
         display: flex; justify-content: center; align-items: safe center;
     }
     .navigator-menu-body ul {
@@ -137,16 +108,17 @@ const menuItems = [
         opacity: 1; translate: 0 0;
         transition: opacity var(--duration-4) ease, translate var(--duration-4) var(--ease-in-out-strong);
         transition-delay: var(--menu-item-exit);
+        /* One step per item, whatever the count (https://developer.mozilla.org/en-US/docs/Web/CSS/sibling-index).
+           A browser without it keeps the line above, and the items enter together. */
+        transition-delay: calc(var(--menu-item-exit) + (sibling-index() - 1) * var(--menu-item-step));
     }
-    
+
     @starting-style {
         dialog#site-menu[open]:not([data-closing]) .navigator-menu-body li { opacity: 0; translate: 0 var(--space-6); }
     }
-    dialog#site-menu[open]:not([data-closing]) .navigator-menu-body li:nth-child(2) { transition-delay: calc(var(--menu-item-exit) + var(--menu-item-step)); }
-    dialog#site-menu[open]:not([data-closing]) .navigator-menu-body li:nth-child(3) { transition-delay: calc(var(--menu-item-exit) + 2 * var(--menu-item-step)); }
 
     .navigator-menu-body ul li a { display: flex; color: var(--font-color); text-decoration: none; }
-    /* Plain text, not headings (#282): the links are navigation. */
+    /* Plain text, not headings: the links are navigation. */
     .navigator-menu-body ul li a span { text-decoration: underline transparent; text-underline-offset: var(--space-2); transition: text-decoration-color var(--duration-2) ease-out; }
     @media (hover: hover) {
         .navigator-menu-body ul li a:hover span { text-decoration-color: currentColor; }
@@ -155,7 +127,7 @@ const menuItems = [
         display: inline-block; font-size: var(--font-size-menu); font-weight: var(--font-weight-medium);
         line-height: 1.2; letter-spacing: var(--letter-spacing-tight); color: var(--font-color-bold);
     }
-    /* At 400% zoom (320x180 CSS px) the list fits without scrolling: Firefox does not scroll a partly visible link into view on focus (#298). */
+    /* At 400% zoom (320x180 CSS px) the list fits without scrolling: Firefox does not scroll a partly visible link into view on focus. */
     @media (max-height: 20rem) {
         .navigator-menu-body ul { gap: var(--space-4); }
         .navigator-menu-body ul li a span { font-size: var(--font-size-2xl); }

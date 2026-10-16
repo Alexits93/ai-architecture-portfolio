@@ -1,15 +1,16 @@
 ---
-// The owner's hobbies, causes and goals (#348), linked from the home photo row and the menu.
+// The owner's hobbies, causes and goals, linked from the home photo row and the menu.
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import DisplayHeading from '@/components/DisplayHeading.astro';
 import Eyebrow from '@/components/Eyebrow.astro';
 import Causes from './_Causes.astro';
 import Goals from './_Goals.astro';
 import Hobbies from './_Hobbies.astro';
+import { SITE } from '@/consts';
 ---
 
 <BaseLayout
-	title="About | Patrik Alexits"
+	title={`About | ${SITE.name}`}
 	description="Get to know Patrik Alexits: hobbies, causes and goals, from video games, cars and Real Madrid to veganism, accessibility and education."
 >
 	<main>

@@ -1,15 +1,13 @@
 ---
 import Logo from '@/assets/logo.svg';
+import BarsButton from './BarsButton.astro';
 import MoonIcon from '@/assets/moon.svg';
 import SunIcon from '@/assets/sun.svg';
 ---
 
 <div class="header-wrapper">
   <header>
-    <button class="navigator-menu-opener" commandfor="site-menu" command="show-modal" aria-label="Open menu">
-      <span></span>
-      <span></span>
-    </button>
+    <BarsButton commandfor="site-menu" command="show-modal" aria-label="Open menu" />
 
     <a href="/">
       <span class="sr-only">Back to Home page</span>
@@ -52,7 +50,7 @@ import SunIcon from '@/assets/sun.svg';
 
     // The new theme spreads as a circle from the toggle: a same-document view transition whose new root snapshot
     // is clipped to a growing circle (developer.chrome.com, same-document view transitions). Without the API, or
-    // under reduced motion, the theme switches at once (#210).
+    // under reduced motion, the theme switches at once.
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
     const root = document.documentElement;
     themeBtn.addEventListener('click', () => {
@@ -99,7 +97,7 @@ import SunIcon from '@/assets/sun.svg';
       /* Above positioned page content while sticky; the open menu sits in the top layer. */
       z-index: 1;
   }
-  /* At 400% zoom (320x180 CSS px) a sticky header covers almost half the screen, so short viewports let it scroll away (#312). */
+  /* At 400% zoom (320x180 CSS px) a sticky header covers almost half the screen, so short viewports let it scroll away. */
   @media (max-height: 20rem) {
       .header-wrapper { position: static; }
   }
@@ -139,8 +137,8 @@ import SunIcon from '@/assets/sun.svg';
       scale: .92;
   }
   /* The icon takes the theme colour and shows the other theme. It follows data-theme (set by the head script) and the
-     OS scheme, both known at first paint; aria-pressed comes from the deferred module script, so the icon flipped on
-     every navigation when it followed that (#206). */
+     OS scheme, both known at first paint; aria-pressed comes from the deferred module script.
+     Regression: the icon flipped on every navigation when it followed aria-pressed. */
   .theme-toggle {
       padding: 0;
       color: var(--font-color-bold);
@@ -160,29 +158,5 @@ import SunIcon from '@/assets/sun.svg';
       :global(:root:not([data-theme="light"])) .header-wrapper .theme-toggle .moon {
           display: none;
       }
-  }
-  .navigator-menu-opener {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      cursor: pointer;
-      padding: 0 var(--space-2);
-      width: var(--space-12);
-      height: var(--space-12);
-      gap: var(--space-2);
-      background: none;
-      border: none;
-  }
-  .navigator-menu-opener span {
-      display: block;
-      height: .2rem;
-      width: var(--space-8);
-      background-color: var(--font-color-bold);
-      border-radius: var(--radius-xs);
-  }
-  /* Forced colours drop author background colours, which hid the bars (#282). A system colour shows them
-     (https://developer.mozilla.org/en-US/docs/Web/CSS/@media/forced-colors). */
-  @media (forced-colors: active) {
-      .navigator-menu-opener span { forced-color-adjust: none; background-color: ButtonText; }
   }
 </style>

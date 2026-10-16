@@ -61,6 +61,6 @@ describe('ExperienceList Widget (Astro)', () => {
     const doc = await render([createEntry('a', 2020, 2023)]);
     const tags = doc.querySelector('.position .tags');
     assert.exists(tags);
-    expect(tags.querySelectorAll('li > .skill-tag')).toHaveLength(2);
+    expect([...tags.querySelectorAll('li')].map((li) => li.textContent)).toEqual(['Angular', 'TypeScript']);
   });
 });

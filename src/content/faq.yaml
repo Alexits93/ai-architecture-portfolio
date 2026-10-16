@@ -1,4 +1,4 @@
-# The FAQ on home, shown by `order` (src/content.config.ts). Owner copy (#347).
+# The FAQ on home, shown by `order` (src/content.config.ts).
 - id: frontend-architect
   order: 1
   question: What does a frontend architect do?

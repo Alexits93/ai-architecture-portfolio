@@ -6,80 +6,41 @@ import InstagramIcon from "@/assets/instagram.svg";
 import StackOverflowIcon from "@/assets/stackoverflow.svg";
 import DisplayHeading from "@/components/DisplayHeading.astro";
 import Eyebrow from "@/components/Eyebrow.astro";
+import { SITE, SOCIAL_LINKS } from "@/consts";
 
-interface Props {
-  name?: string;
-  profession?: string;
-  text?: string;
-  githubUrl?: string;
-  linkedinUrl?: string;
-  instagramUrl?: string;
-  stackoverflowUrl?: string;
-}
-
-const {
-  name = "John Doe",
-  profession = "Jedi Council Member (Not Master though)",
-  text = "I don't like sand. It's coarse and rough and irritating, and it gets everywhere.",
-  githubUrl = "",
-  linkedinUrl = "",
-  instagramUrl = "",
-  stackoverflowUrl = ""
-} = Astro.props;
-
-const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackoverflowUrl);
+// Instagram, the only non-work profile, comes last.
+const socials = [
+  { name: "GitHub", url: SOCIAL_LINKS.github, Icon: GitHubIcon },
+  { name: "LinkedIn", url: SOCIAL_LINKS.linkedin, Icon: LinkedInIcon },
+  { name: "Stack Overflow", url: SOCIAL_LINKS.stackoverflow, Icon: StackOverflowIcon },
+  { name: "Instagram", url: SOCIAL_LINKS.instagram, Icon: InstagramIcon },
+];
 ---
 
 <section id="about-me" class="about-me">
   <article>
     <div class="introduction-wrapper">
       <Eyebrow>CV</Eyebrow>
-      <!-- The role belongs to the name, so it is a paragraph in the hgroup and "About" is the next h2 (#307). -->
+      {/* The role belongs to the name, so it is a paragraph in the hgroup and "About" is the next h2. */}
       <hgroup>
-        <DisplayHeading as="h1" size="section" text={name} />
-        <p class="role">{profession}</p>
+        <DisplayHeading as="h1" size="section" text={SITE.name} />
+        <p class="role">{SITE.role}</p>
       </hgroup>
     </div>
     <div class="about-wrapper">
       <h2>About</h2>
       <div>
-        <p>{text}</p>
-        {hasSocials && (
-          <ul class="social-links">
-            {githubUrl && (
-              <li>
-                <a href={githubUrl}>
-                  <GitHubIcon width="25" height="25" aria-hidden="true" />
-                  <span class="sr-only">GitHub</span>
-                </a>
-              </li>
-            )}
-            {linkedinUrl && (
-              <li>
-                <a href={linkedinUrl}>
-                  <LinkedInIcon width="25" height="25" aria-hidden="true" />
-                  <span class="sr-only">LinkedIn</span>
-                </a>
-              </li>
-            )}
-            {stackoverflowUrl && (
-              <li>
-                <a href={stackoverflowUrl}>
-                  <StackOverflowIcon width="25" height="25" aria-hidden="true" />
-                  <span class="sr-only">Stack Overflow</span>
-                </a>
-              </li>
-            )}
-            {instagramUrl && (
-              <li>
-                <a href={instagramUrl}>
-                  <InstagramIcon width="25" height="25" aria-hidden="true" />
-                  <span class="sr-only">Instagram</span>
-                </a>
-              </li>
-            )}
-          </ul>
-        )}
+        <p>Bringing 7+ years of experience in web development with an emphasis on front-end technologies. Expert in enhancing user interfaces and ensuring accessibility, delivering projects that consistently meet rigorous web standards.</p>
+        <ul class="social-links">
+          {socials.map(({ name, url, Icon }) => (
+            <li>
+              <a href={url}>
+                <Icon width="25" height="25" aria-hidden="true" />
+                <span class="sr-only">{name}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   </article>
@@ -159,7 +120,7 @@ const hasSocials = Boolean(githubUrl || linkedinUrl || instagramUrl || stackover
     color: transparent;
   }
 
-  /* Motion only when the visitor allows it; without it every part shows in its final state (#210). */
+  /* Motion only when the visitor allows it; without it every part shows in its final state. */
   @media (prefers-reduced-motion: no-preference) {
     .about-me .introduction-wrapper > :global(.eyebrow),
     .about-me h1,

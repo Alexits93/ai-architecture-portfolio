@@ -1,6 +1,6 @@
 ---
 // Page-only component for the home page (ADR 002): the newest posts as rows of title, category and date, then a pill
-// to /blog/ (#219; heading from direction A, rows from direction C, decided on #252).
+// to /blog/.
 import { getCollection } from 'astro:content';
 import DisplayHeading from '@/components/DisplayHeading.astro';
 import DraftLabel from '@/components/DraftLabel.astro';
@@ -8,6 +8,7 @@ import DraftNotice from '@/components/DraftNotice.astro';
 import Eyebrow from '@/components/Eyebrow.astro';
 import Pill from '@/components/Pill.astro';
 import { ROUTES } from '@/consts';
+import { displayDate, isoDate } from '@/lib/dates';
 import { getPostPath } from '@/lib/permalink';
 import { selectLatestPosts } from '@/lib/posts';
 
@@ -31,7 +32,7 @@ const posts = selectLatestPosts(await getCollection('blog'));
 					{post.data.draft && <DraftLabel />}
 				</span>
 				<span class="meta">
-					{post.data.category} &middot; <time datetime={post.data.publishDate.toISOString().slice(0, 10)}>{post.data.publishDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })}</time>
+					{post.data.category} &middot; <time datetime={isoDate(post.data.publishDate)}>{displayDate(post.data.publishDate, 'short')}</time>
 				</span>
 			</li>
 		))}
@@ -54,7 +55,7 @@ const posts = selectLatestPosts(await getCollection('blog'));
 		letter-spacing: var(--letter-spacing-tight); text-decoration: underline transparent; text-underline-offset: var(--space-1);
 		transition: text-decoration-color var(--duration-2) ease-out;
 	}
-	/* The title underlines on hover, as the blog cards do; only where the primary input can hover (#206). */
+	/* The title underlines on hover, as the blog cards do; only where the primary input can hover. */
 	@media (hover: hover) {
 		li a:hover { text-decoration-color: currentColor; }
 	}

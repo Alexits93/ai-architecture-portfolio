@@ -3,8 +3,9 @@ import path from 'node:path';
 import { Resvg } from '@resvg/resvg-js';
 import satori from 'satori';
 import { html } from 'satori-html';
+import { OG_IMAGE_SIZE } from '@/consts';
 
-const loadFont = (filename: string): Buffer => 
+const loadFont = (filename: string): Buffer =>
   fs.readFileSync(path.join(process.cwd(), 'src/assets/fonts', filename));
 
 const generateMarkup = (title: string, description: string) => html`
@@ -22,8 +23,7 @@ export async function renderOgSvg(title: string, description: string): Promise<s
   const markup = generateMarkup(title, description);
 
   return satori(markup, {
-    width: 1200,
-    height: 630,
+    ...OG_IMAGE_SIZE,
     fonts: [
       { name: 'Inter', data: fontRegular, weight: 400, style: 'normal' },
       { name: 'Inter', data: fontBold, weight: 700, style: 'normal' },
@@ -33,6 +33,6 @@ export async function renderOgSvg(title: string, description: string): Promise<s
 
 export async function generateOgImage(title: string, description: string): Promise<Buffer> {
   const svg = await renderOgSvg(title, description);
-  const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });
+  const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: OG_IMAGE_SIZE.width } });
   return resvg.render().asPng();
 }

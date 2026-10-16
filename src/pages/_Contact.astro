@@ -1,15 +1,15 @@
 ---
 // Page-only component for the home page (ADR 002): the email and the socials in one row, then one oversized word that
-// fills the column (#260, #278, direction A on #252, from the zainarts reference). The links carry the meaning; the
-// word is decoration. aria-label names the region: Orca reads a hidden heading that labels its section as "blank" (#337).
-import { SITE } from '@/consts';
+// fills the column. The links carry the meaning; the
+// word is decoration. aria-label names the region: Orca reads a hidden heading that labels its section as "blank".
+import { SITE, SOCIAL_LINKS } from '@/consts';
 
 const links = [
 	{ name: SITE.email, url: `mailto:${SITE.email}` },
-	{ name: 'GitHub', url: 'https://github.com/Alexits93' },
-	{ name: 'LinkedIn', url: 'https://www.linkedin.com/in/patrik-alexits/' },
-	{ name: 'Stack Overflow', url: 'https://stackoverflow.com/users/9327050/patrik-alexits' },
-	{ name: 'Instagram', url: 'https://www.instagram.com/akelafreestyle/' },
+	{ name: 'GitHub', url: SOCIAL_LINKS.github },
+	{ name: 'LinkedIn', url: SOCIAL_LINKS.linkedin },
+	{ name: 'Stack Overflow', url: SOCIAL_LINKS.stackoverflow },
+	{ name: 'Instagram', url: SOCIAL_LINKS.instagram },
 ];
 ---
 
@@ -31,7 +31,7 @@ const links = [
 	a { color: var(--font-color-bold); font-weight: var(--font-weight-medium); }
 	/* clip, unlike hidden, makes no scroll container (https://developer.mozilla.org/en-US/docs/Web/CSS/overflow#clip).
 	   The word fits at normal spacing; under a user's wider text spacing (WCAG 1.4.12) it clips instead of widening
-	   the page (#282). */
+	   the page. */
 	.giant {
 		margin: 0; overflow-x: clip; white-space: nowrap; text-align: center; text-transform: uppercase; color: var(--font-color-bold);
 		font-weight: var(--font-weight-bold); font-size: var(--font-size-display-giant);
