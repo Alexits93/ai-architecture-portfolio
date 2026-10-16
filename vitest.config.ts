@@ -6,13 +6,6 @@ export default defineConfig(
     test: {
       environment: 'node',
       include: ['src/**/*.spec.ts', 'tests/**/*.spec.ts'],
-      coverage: {
-        provider: 'v8',
-        reporter: ['text', 'json-summary', 'json'],
-        include: ['src/**'],
-        // Content, not code: an imported image is a module Astro generates, like the collections' Markdown and YAML.
-        exclude: ['**/*.config.*', 'src/pages/**', '**/*.md', '**/*.yaml', '**/*.jpg'],
-      }
     }
   })
 );

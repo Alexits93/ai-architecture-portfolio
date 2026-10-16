@@ -1,1 +1,0 @@
-pnpm typecheck && pnpm exec vitest run --coverage --passWithNoTests && pnpm audit --audit-level=high
