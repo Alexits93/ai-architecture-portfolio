@@ -105,17 +105,43 @@ const { Content, headings } = await render(post);
     height: var(--size-icon-md);
   }
 
+  /* Lines stay under 80 characters (WCAG 1.4.8,
+     https://www.w3.org/WAI/WCAG22/Understanding/visual-presentation.html). */
   .prose {
-    line-height: 1.6;
+    max-inline-size: 70ch;
+    line-height: var(--line-height-body);
     margin-bottom: var(--space-8);
+  }
+
+  /* The global reset zeroes the margins of p, li and h2, so each block and list item gets its gap back here, or
+     the text reads as one wall. A heading sits closer to its own text than to the section above it. */
+  .prose > :global(* + *) {
+    margin-block-start: var(--space-6);
+  }
+
+  .prose :global(li + li) {
+    margin-block-start: var(--space-2);
+  }
+
+  .prose :global(strong) {
+    color: var(--font-color-bold);
   }
 
   /* Post section headings are larger than body text. */
   .prose :global(h2) {
-    margin: var(--space-8) 0 var(--space-2);
+    margin: 0;
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-xl);
     line-height: var(--line-height-lg);
+    color: var(--font-color-bold);
+  }
+
+  .prose > :global(* + h2) {
+    margin-block-start: var(--space-12);
+  }
+
+  .prose > :global(h2 + *) {
+    margin-block-start: var(--space-2);
   }
 
   /* Prism token classes from markdown.syntaxHighlight: 'prism'. Markdown output carries no scope attribute, hence :global(). */
