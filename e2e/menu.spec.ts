@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { animationsSettled } from './animations';
 import { test, expect, type Page } from '@playwright/test';
 
-// The site menu opens and closes through invoker commands (#157). The component script holds the close command and Esc
-// while the closing transitions play, then closes the dialog, and closes it on pagehide (#206). A modal dialog
+// The site menu opens and closes through invoker commands. The component script holds the close command and Esc
+// while the closing transitions play, then closes the dialog, and closes it on pagehide. A modal dialog
 // without closedby behaves as closerequest: Esc closes it, a click outside the items does not
 // (https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog).
 const opener = (page: Page) => page.getByRole('button', { name: 'Open menu' });
@@ -36,7 +36,7 @@ test('the close button closes the menu and focus returns to the hamburger', asyn
   await expect(opener(page)).toBeFocused();
 });
 
-// Firefox transitions neither display nor overlay, so the close animation used to run in Chromium only (#206).
+// Regression: Firefox transitions neither display nor overlay, so the close animation ran in Chromium only.
 test('closing animates the overlay before the menu hides', async ({ page }) => {
   await openWithKeyboard(page);
   await animationsSettled(page);
@@ -49,7 +49,7 @@ test('closing animates the overlay before the menu hides', async ({ page }) => {
   await expect(menu(page)).toBeVisible();
 });
 
-// Owner 2026-10-12 (#206): the scroll lock on html stopped body's overflow from reaching the viewport, so body
+// the scroll lock on html stopped body's overflow from reaching the viewport, so body
 // became a scroll container and the sticky header jumped out of view while the menu opened
 // (https://drafts.csswg.org/css-overflow-3/#overflow-propagation).
 test('opening the menu on a scrolled page keeps the header and the scroll position', async ({ page }) => {
@@ -97,7 +97,7 @@ for (const viewport of [{ width: 320, height: 640 }, { width: 1280, height: 800 
 }
 
 // The sticky header keeps z-index 1, enough to stay above positioned page content (the home hero, the post reader)
-// once the old 10000 is gone; the open menu needs none, it sits in the top layer (#157).
+// once the old 10000 is gone; the open menu needs none, it sits in the top layer.
 for (const route of ['/', '/blog/ai-agent-harness/']) {
   test(`the scrolled header on ${route} stays above the page content`, async ({ page }) => {
     await page.goto(route);
@@ -116,7 +116,7 @@ for (const route of ['/', '/blog/ai-agent-harness/']) {
   });
 }
 
-// #282: forced colours (Windows high contrast) drop author background colours, which hid the bars of both menu
+// forced colours (Windows high contrast) drop author background colours, which hid the bars of both menu
 // buttons. The bars use a system colour there. Chromium is the only engine Playwright can put in forced colours.
 test.describe('in forced colours', () => {
   test.use({ forcedColors: 'active' });
@@ -133,7 +133,7 @@ test.describe('in forced colours', () => {
 });
 
 // At 400% zoom a centred list taller than the dialog overflowed above its top edge, where neither scrolling nor
-// Tab reaches it: Home sat at -44 px at 320x180 (#298, WCAG 1.4.10).
+// Tab reaches it: Home sat at -44 px at 320x180.
 for (const height of [180, 256]) {
   test.describe(`at 320x${height}`, () => {
     test.use({ viewport: { width: 320, height } });

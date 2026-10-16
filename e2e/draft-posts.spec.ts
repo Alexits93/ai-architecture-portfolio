@@ -1,7 +1,7 @@
 import { test, expect, type Locator } from '@playwright/test';
 import { readPostDates } from '../src/lib/sitemap-lastmod';
 
-// #347: test articles carry `draft: true` until the owner's own posts replace them. Vitest has no content store, so
+// test articles carry `draft: true` until the owner's own posts replace them. Vitest has no content store, so
 // the real posts are checked here: each draft shows a Draft label wherever it is listed and on its page, and home and
 // /blog/ show the notice while a draft exists.
 const posts = readPostDates('src/content/blog').map(({ id, draft }) => ({ href: `/blog/${id}/`, draft }));

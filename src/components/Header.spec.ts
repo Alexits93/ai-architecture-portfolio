@@ -24,7 +24,7 @@ describe('Header Widget (Astro)', () => {
     
     const svg = homeLink.querySelector('svg');
     assert.exists(svg);
-    // Explicit size keeps CLS at 0: 50px high at the viewBox aspect ratio (#119).
+    // Explicit size keeps CLS at 0: 50px high at the viewBox aspect ratio.
     expect(['viewBox', 'fill', 'aria-hidden', 'width', 'height'].map((name) => svg.getAttribute(name))).toEqual(
       ['0 0 467.68 294.45', 'currentColor', 'true', '79.42', '50'],
     );
@@ -42,7 +42,7 @@ describe('Header Widget (Astro)', () => {
     expect(themeBtn.getAttribute('aria-pressed')).toBe('false');
   });
 
-  // Invoker command: the button opens the menu dialog without a script (#157).
+  // Invoker command: the button opens the menu dialog without a script.
   it('should render the menu button as a show-modal command for the site menu', async () => {
     const doc = new JSDOM(await container.renderToString(Header)).window.document;
     const menuBtn = doc.querySelector('button.navigator-menu-opener');
@@ -53,7 +53,7 @@ describe('Header Widget (Astro)', () => {
   });
 });
 
-// Inline icons take the theme colour through currentColor; no image request (#88).
+// Inline icons take the theme colour through currentColor; no image request.
 it('should render the theme toggle icons inline with currentColor', async () => {
   const container = await AstroContainer.create();
   const doc = new JSDOM(await container.renderToString(Header)).window.document;

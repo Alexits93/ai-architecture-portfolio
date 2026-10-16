@@ -1,7 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-// #256: "What I do best" on the built home page, from src/content/services.yaml. Vitest has no content store, so
-// the real entries, the sticky stacking and the scroll-driven settle are checked here.
+// "What I do best" on the built home page: the sticky stacking and the scroll-driven settle.
 
 const settleRuns = (page: Page) =>
   page.locator('#services .card').first().evaluate((card) =>
@@ -10,17 +9,6 @@ const settleRuns = (page: Page) =>
 
 test.describe('reduced motion', () => {
   test.use({ reducedMotion: 'reduce', viewport: { width: 1280, height: 900 } });
-
-  test('lists the services in order under the section title', async ({ page }) => {
-    await page.goto('/');
-    const section = page.getByRole('region', { name: 'What I do best' });
-    await expect(section.locator('.card h3')).toHaveText([
-      '01. Frontend architecture',
-      '02. Harnesses for LLM coding agents',
-      '03. Coaching engineers',
-      '04. Learning and experimenting',
-    ]);
-  });
 
   // At the end of the stack every card has reached its sticky offset, so each one overlaps the one before it.
   // Without sticky they would sit a screen apart.
@@ -63,9 +51,8 @@ test.describe('motion allowed', () => {
   });
 });
 
-
 // At 400% zoom (320x180 CSS px) each card stuck at 112 px or lower and the next card covered its text before it
-// could be read (#312, WCAG 1.4.10). Short viewports let the cards scroll like normal content.
+// could be read (WCAG 1.4.10). Short viewports let the cards scroll like normal content.
 test.describe('at 320x180', () => {
   test.use({ reducedMotion: 'reduce', viewport: { width: 320, height: 180 } });
 

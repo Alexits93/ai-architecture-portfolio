@@ -33,7 +33,7 @@ describe('DisplayHeading', () => {
     expect(heading.textContent).toBe('Now');
   });
 
-  // A page title, such as the blog index (#299).
+  // A page title, such as the blog index.
   it('renders a page title as an h1', async () => {
     const heading = await render({ as: 'h1', size: 'section', text: 'All', accent: 'posts' });
     expect(heading.tagName).toBe('H1');

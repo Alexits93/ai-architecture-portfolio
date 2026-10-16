@@ -15,7 +15,7 @@ describe('serializeJsonLd', () => {
   });
 });
 
-// Home and /cv/ describe the site owner (#306, https://developers.google.com/search/docs/appearance/structured-data/profile-page).
+// Home and /cv/ describe the site owner (https://developers.google.com/search/docs/appearance/structured-data/profile-page).
 describe('personJsonLd', () => {
   it('names the owner, the role and the social profiles', () => {
     expect(personJsonLd('https://www.pa-tech.dev/')).toEqual({

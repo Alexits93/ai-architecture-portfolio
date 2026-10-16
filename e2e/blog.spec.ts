@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { globSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 
-// Every built post page, e.g. /blog/<slug>/ (#117).
+// Every built post page, e.g. /blog/<slug>/.
 const POST_ROUTES = globSync('blog/*/index.html', { cwd: 'dist' }).map((file) => `/${file.replace(/index\.html$/, '')}`);
 
 const BLOG_ROUTES = [
@@ -86,7 +86,7 @@ test.describe('Blog category navigation by keyboard', () => {
 });
 
 // test.use sets the viewport before the page opens (https://playwright.dev/docs/emulation#viewport);
-// page.setViewportSize hangs headed Firefox on KDE Wayland (#150).
+// page.setViewportSize hangs headed Firefox on KDE Wayland.
 for (const width of [320, 375]) {
   test.describe(`Blog pages on a ${width} px viewport`, () => {
     test.use({ viewport: { width, height: 800 } });
@@ -129,7 +129,7 @@ test.describe('Recommended articles on a post page', () => {
   test('finds the built post pages', () => expect(POST_ROUTES.length).toBeGreaterThan(0));
 
   for (const route of POST_ROUTES) {
-    // Every other post, newest first, up to 3; the blog index lists the posts newest first (#269).
+    // Every other post, newest first, up to 3; the blog index lists the posts newest first.
     test(`${route} recommends the newest other posts`, async ({ page }) => {
       await page.goto('/blog/');
       const newest = await cardHrefs(page, '.blog-grid');
@@ -139,7 +139,7 @@ test.describe('Recommended articles on a post page', () => {
   }
 });
 
-// #338: Firefox gave a card link that only wraps an <article> no name, so Orca read "link". Each card link is named by
+// Firefox gave a card link that only wraps an <article> no name, so Orca read "link". Each card link is named by
 // its title, on the blog index and under a post.
 for (const route of ['/blog/', POST_ROUTES[0]]) {
   test(`card links on ${route} are named by their post title`, async ({ page }) => {
@@ -149,3 +149,26 @@ for (const route of ['/blog/', POST_ROUTES[0]]) {
     for (const card of cards) await expect(card).toHaveAccessibleName(await card.locator('.title').innerText());
   });
 }
+
+// Focus rings show only on :focus-visible, so a mouse click draws none
+// (https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible).
+test('a mouse click on a category link draws no focus outline', async ({ page }) => {
+  await page.goto('/blog/');
+  const filter = page.getByRole('navigation', { name: 'Blog categories' }).getByRole('link', { name: 'AI' });
+  await filter.evaluate((el) => el.addEventListener('click', (event) => event.preventDefault()));
+  await filter.click();
+  expect(await filter.evaluate((el) => getComputedStyle(el).outlineStyle)).toBe('none');
+});
+
+// WCAG 1.4.1: the current category is marked by an underline, not by colour alone.
+test('the current blog category is underlined', async ({ page }) => {
+  await page.goto('/blog/');
+  const current = page.getByRole('navigation', { name: 'Blog categories' }).getByRole('link', { name: 'All' });
+  await expect(current).toHaveAttribute('aria-current', 'page');
+  const decoration = await current.evaluate((el) => {
+    const style = getComputedStyle(el);
+    return { line: style.textDecorationLine, color: style.textDecorationColor, text: style.color };
+  });
+  expect(decoration.line).toBe('underline');
+  expect(decoration.color).toBe(decoration.text);
+});

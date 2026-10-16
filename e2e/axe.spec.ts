@@ -2,7 +2,7 @@ import { globSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
 
-// #222: an automated WCAG 2.2 AA rule scan. Playwright has no built-in rule scan, so axe runs through
+// An automated WCAG 2.2 AA rule scan. Playwright has no built-in rule scan, so axe runs through
 // @axe-core/playwright (https://playwright.dev/docs/accessibility-testing). axe tags are not cumulative, so every
 // level is listed (https://github.com/dequelabs/axe-core/blob/v4.13.0/doc/API.md#axe-core-tags).
 const WCAG_22_AA = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
@@ -27,7 +27,7 @@ test('finds the built pages', () => expect(ROUTES.length).toBeGreaterThan(5));
 // through a scroll-driven animation and sit at opacity .4 until scrolled into view, so animationsSettled() would
 // leave them mid-fade and color-contrast would flag text a reader only sees at full opacity.
 // axe reports gradient text (the hero name, the .accent heading words) as incomplete, not as a violation: it cannot
-// compute a contrast ratio against a gradient. e2e/contrast.spec.ts samples those gradients instead (#275).
+// compute a contrast ratio against a gradient. e2e/contrast.spec.ts samples those gradients instead.
 test.describe('built pages', () => {
   test.use({ reducedMotion: 'reduce' });
 

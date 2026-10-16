@@ -89,7 +89,7 @@ describe('AboutMe Widget (Astro) - Social Links', () => {
   });
 });
 
-// Each icon is a decorative SVG asset with an explicit 25px size (#119); the link opens in the same tab (#242). Instagram, the only non-work profile, comes last.
+// Each icon is a decorative SVG asset with an explicit 25px size; the link opens in the same tab. Instagram, the only non-work profile, comes last.
 it('should render each social link with its accessible name and a hidden icon', async () => {
   const container = await AstroContainer.create();
   const props = {
@@ -113,7 +113,7 @@ it('should render each social link with its accessible name and a hidden icon', 
   ]);
 });
 
-// The role belongs to the name, so it is a paragraph in the hgroup, and "About" is the next h2 (#307).
+// The role belongs to the name, so it is a paragraph in the hgroup, and "About" is the next h2.
 it('renders the role in the name hgroup and About as an h2', async () => {
   const container = await AstroContainer.create();
   const doc = new JSDOM(await container.renderToString(AboutMe)).window.document;

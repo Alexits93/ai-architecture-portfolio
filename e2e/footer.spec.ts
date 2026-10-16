@@ -1,7 +1,7 @@
 import { globSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 
-// BaseLayout renders the footer once on every built page (#132).
+// BaseLayout renders the footer once on every built page.
 const ROUTES = globSync('**/*.html', { cwd: 'dist' }).map((file) => `/${file.replace(/index\.html$/, '')}`);
 
 test('finds the built pages', () => expect(ROUTES.length).toBeGreaterThan(5));
@@ -29,7 +29,7 @@ const linkGap = async (page: Page) => {
 };
 
 // test.use sets the viewport before the page opens (https://playwright.dev/docs/emulation#viewport);
-// page.setViewportSize hangs headed Firefox on KDE Wayland (#150).
+// page.setViewportSize hangs headed Firefox on KDE Wayland.
 for (const width of [1280, 320]) {
   test.describe(`Footer at ${width}px`, () => {
     test.use({ viewport: { width, height: 800 } });

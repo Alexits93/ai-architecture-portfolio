@@ -36,7 +36,7 @@ describe('Footer Widget (Astro)', () => {
     const privacyLink = doc.querySelector(`a[href="${ROUTES.privacyPolicy}"]`);
     expect(privacyLink).not.toBeNull();
 
-    // Every page offers the contact email (#220).
+    // Every page offers the contact email.
     const emailLink = doc.querySelector(`a[href="mailto:${SITE.email}"]`);
     assert.exists(emailLink);
     expect(emailLink.textContent).toBe(SITE.email);

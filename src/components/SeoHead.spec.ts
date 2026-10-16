@@ -74,7 +74,7 @@ describe('SeoHead (Astro)', () => {
   });
 });
 
-// The 404 page must stay out of search results (#154), so it names no canonical URL either (#307).
+// The 404 page must stay out of search results, so it names no canonical URL either.
 it('SeoHead emits robots noindex and drops the canonical only when asked', async () => {
   const doc = await render();
   expect(doc.querySelector('meta[name="robots"]')).toBeNull();

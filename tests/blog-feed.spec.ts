@@ -51,7 +51,7 @@ const inPagination = (doc: Document, selector: string) => {
   return el;
 };
 
-// The home design system (#299): an eyebrow over a display h1, the categories as pills, the posts as raised cards.
+// The home design system: an eyebrow over a display h1, the categories as pills, the posts as raised cards.
 describe('BlogFeed head', () => {
   it('renders the Blog eyebrow, a display h1 and the category pills', async () => {
     const doc = await render(pageOf(postsOf(1), 1), 'AI');
@@ -66,7 +66,7 @@ describe('BlogFeed head', () => {
   });
 });
 
-// #347: while test articles are listed, a notice says the blog will only hold articles the owner writes.
+// while test articles are listed, a notice says the blog will only hold articles the owner writes.
 describe('BlogFeed draft notice', () => {
   it('shows the notice when the page lists a draft post', async () => {
     const doc = await render(pageOf([createTestPost({ id: 'real' }), createTestPost({ id: 'test', draft: true })], 1));
@@ -81,7 +81,7 @@ describe('BlogFeed draft notice', () => {
   });
 });
 
-describe('BlogFeed pagination (#160)', () => {
+describe('BlogFeed pagination', () => {
   it('renders no cards and no pagination nav for an empty list', async () => {
     const doc = await render(pageOf([], 1));
     expect(cards(doc)).toHaveLength(0);

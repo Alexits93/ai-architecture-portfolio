@@ -1,7 +1,7 @@
 import { globSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 
-// One h1 on home, post h2 above body text, Inter from the Fonts API only (#232).
+// One h1 on home, post h2 above body text, Inter from the Fonts API only.
 const POST_ROUTE = `/${globSync('blog/*/index.html', { cwd: 'dist' })[0].replace(/index\.html$/, '')}`;
 
 test('home has exactly one h1', async ({ page }) => {

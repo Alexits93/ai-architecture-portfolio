@@ -21,7 +21,7 @@ describe('NavigatorMenu Widget (Astro)', () => {
     expect(navMenu.hasAttribute('open')).toBe(false);
   });
 
-  // #348: the about page sits between home and the blog.
+  // the about page sits between home and the blog.
   it('lists Home, About, Blog and CV in that order', async () => {
     const doc = new JSDOM(await container.renderToString(NavigatorMenu)).window.document;
     const links = [...doc.querySelectorAll('dialog#site-menu .navigator-menu-body a')];
@@ -34,13 +34,13 @@ describe('NavigatorMenu Widget (Astro)', () => {
   });
 
   // The links are navigation, not headings: an h2 in each made the open menu announce three headings and put them
-  // before every page's h1 (#282).
+  // before every page's h1.
   it('renders the menu links without headings', async () => {
     const doc = new JSDOM(await container.renderToString(NavigatorMenu)).window.document;
     expect(doc.querySelectorAll('dialog#site-menu h1, dialog#site-menu h2, dialog#site-menu h3')).toHaveLength(0);
   });
 
-  // Invoker command: the close button closes the dialog, no inline position (#157).
+  // Invoker command: the close button closes the dialog, no inline position.
   it('should render the close button as a close command', async () => {
     const html = await container.renderToString(NavigatorMenu);
     const doc = new JSDOM(html).window.document;

@@ -42,7 +42,7 @@ describe('ExperienceList Widget (Astro)', () => {
     expect(texts('.experience-item .position h3')).toEqual(['Role new - Company new', 'Role old - Company old']);
   });
 
-  // The home design system (#301): an eyebrow over a display h2, each position a raised card with a display title.
+  // The home design system: an eyebrow over a display h2, each position a raised card with a display title.
   it('renders the Career head and each position as a card', async () => {
     const doc = await render([createEntry('a', 2020, 2023)]);
     expect(doc.querySelector('.eyebrow')).toHaveProperty('textContent', '/ Career');

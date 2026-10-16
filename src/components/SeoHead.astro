@@ -24,12 +24,6 @@ const {
   noindex = false,
 } = Astro.props;
 
-/* v8 ignore start */
-if (!Astro.site) {
-  throw new Error('SeoHead requires `site` in astro.config.mjs to build absolute canonical URLs.');
-}
-/* v8 ignore stop */
-
 // canonical and og:url must be the same absolute URL so shares and rankings consolidate.
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 const ogImageUrl = new URL(ogImage.path, Astro.site).href;

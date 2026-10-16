@@ -4,9 +4,9 @@ import { test, expect } from '@playwright/test';
 // Every built page, read from dist/ so a new route is covered without a list edit.
 const ROUTES = globSync('**/*.html', { cwd: 'dist' }).map((file) => `/${file.replace(/index\.html$/, '')}`);
 
-// Owner 2026-10-11: a focus outline keeps a gap to what it outlines, so the outline does not touch the text.
-// 4px still let glyphs overflowing their box (negative letter-spacing, logo ink at the SVG edge) touch it, and
-// the theme toggle fell back to the browser's 1px ring; so 8px and the site's 2px solid outline everywhere (#157).
+// A focus outline keeps a gap to what it outlines, so the outline does not touch the text.
+// Regression: at 4px, glyphs overflowing their box (negative letter-spacing, logo ink at the SVG edge) touched it, and
+// the theme toggle fell back to the browser's 1px ring; so 8px and the site's 2px solid outline everywhere.
 for (const route of ROUTES) {
   test(`every keyboard focus outline on ${route} has an offset`, async ({ page }) => {
     await page.goto(route);

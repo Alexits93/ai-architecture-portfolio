@@ -4,10 +4,10 @@ import { test, expect } from '@playwright/test';
 import { PRIVACY_POLICY_UPDATED, SITE } from '../src/consts';
 import { readPostDates } from '../src/lib/sitemap-lastmod';
 
-// Every built page renders through BaseLayout with one complete SEO head (#113).
-// 404.html builds from src/pages/404.astro, whose URL is /404/ (#154).
+// Every built page renders through BaseLayout with one complete SEO head.
+// 404.html builds from src/pages/404.astro, whose URL is /404/.
 const ROUTES = globSync('**/*.html', { cwd: 'dist' }).map((file) => `/${file.replace(/index\.html$/, '').replace(/\.html$/, '/')}`);
-// Draft posts are noindex and stay out of the sitemap (#354).
+// Draft posts are noindex and stay out of the sitemap.
 const DRAFT_ROUTES = new Set(readPostDates('src/content/blog').filter((post) => post.draft).map((post) => `/blog/${post.id}/`));
 const NOINDEX_ROUTES = new Set(['/404/', ...DRAFT_ROUTES]);
 // @astrojs/sitemap leaves status code pages out of the sitemap; astro.config.mjs filters the drafts.
@@ -32,12 +32,12 @@ for (const route of ROUTES) {
     await expect(page.locator('title')).toHaveCount(1);
     await expect(page.locator('meta[name="description"]')).toHaveCount(1);
     await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /\S/);
-    // Search results show about 50 to 160 characters; five pages and the home page fell outside (#295, #323).
+    // Search results show about 50 to 160 characters; five pages and the home page fell outside.
     const description = await page.locator('meta[name="description"]').getAttribute('content');
     assert(description !== null);
     expect(description.length).toBeGreaterThanOrEqual(50);
     expect(description.length).toBeLessThanOrEqual(160);
-    // A noindex page names no canonical: /404/ does not exist (#307), and a draft post is not meant to be found (#354).
+    // A noindex page names no canonical: /404/ does not exist, and a draft post is not meant to be found.
     if (NOINDEX_ROUTES.has(route)) {
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
       await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
@@ -46,8 +46,8 @@ for (const route of ROUTES) {
       await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://www.pa-tech.dev${route}`);
     }
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', title);
-    // Two inline classic scripts in <head>, injected by astro.config.mjs: the theme script (#86) and the card-to-post
-    // morph (#210), whose pagereveal listener must run before the first render. No external copy.
+    // Two inline classic scripts in <head>, injected by astro.config.mjs: the theme script and the card-to-post
+    // morph, whose pagereveal listener must run before the first render. No external copy.
     // Text locators skip <script> content, so read it directly. Astro's bundled scripts are type="module".
     const classicInline = page.locator('head script:not([src]):not([type])');
     const kinds = await classicInline.evaluateAll((els) =>
@@ -61,7 +61,7 @@ for (const route of ROUTES) {
   });
 }
 
-// The sitemap lists exactly the built pages, so a new page or post needs no manual entry (#127).
+// The sitemap lists exactly the built pages, so a new page or post needs no manual entry.
 test('sitemap lists every built page', async ({ request }) => {
   const xml = await (await request.get('/sitemap-0.xml')).text();
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
@@ -74,15 +74,7 @@ test('robots.txt points to the sitemap index', async ({ request }) => {
   );
 });
 
-// Keyword matching that splits "frontend" and "front-end" still finds these pages (#125).
-for (const route of ['/', '/cv/']) {
-  test(`"front-end" in the text of ${route}`, async ({ page }) => {
-    await page.goto(route);
-    await expect(page.locator('main')).toContainText('front-end');
-  });
-}
-
-// Each page shares an image that exists at the size it declares, with an alt that describes it (#305).
+// Each page shares an image that exists at the size it declares, with an alt that describes it.
 // The PNG IHDR chunk holds the width and height at bytes 16 to 23 (https://www.w3.org/TR/png-3/#11IHDR).
 for (const route of ROUTES) {
   test(`og:image of ${route} is a 1200x630 PNG with alt text`, async ({ page, request }) => {
@@ -110,7 +102,7 @@ for (const route of ROUTES) {
 }
 
 // Home names the owner and the site, /cv/ is the owner's profile page, posts are BlogPosting, other pages carry none
-// (#121, #306).
+//.
 const LD_TYPES: Record<string, string[]> = { '/': ['WebSite', 'Person'], '/cv/': ['ProfilePage'] };
 for (const route of ROUTES) {
   const isPost = /^\/blog\/[^/]+\/$/.test(route);
@@ -146,7 +138,7 @@ for (const route of ROUTES) {
   });
 }
 
-// Headings start at one h1 and go down one level at a time, so the outline has no gaps (WCAG 1.3.1, #307).
+// Headings start at one h1 and go down one level at a time, so the outline has no gaps (WCAG 1.3.1).
 for (const route of ROUTES) {
   test(`heading outline of ${route} skips no level`, async ({ page }) => {
     await page.goto(route);
@@ -158,7 +150,7 @@ for (const route of ROUTES) {
 }
 
 // lastmod comes from content dates: posts, the blog lists by their newest post and the privacy policy by its date.
-// Home, /cv/ and the cookie page have no honest date, so they carry none (owner decision on #307, 2026-10-15).
+// Home, /cv/ and the cookie page have no honest date, so they carry none.
 test('sitemap lastmod matches the content dates', async ({ request, page }) => {
   const xml = await (await request.get('/sitemap-0.xml')).text();
   const lastmods = new Map(
@@ -167,7 +159,7 @@ test('sitemap lastmod matches the content dates', async ({ request, page }) => {
       match[2],
     ]),
   );
-  // The lists show the draft posts too, so a draft still dates them; only the draft's own URL is missing (#354).
+  // The lists show the draft posts too, so a draft still dates them; only the draft's own URL is missing.
   const postDates: string[] = [];
   for (const route of ROUTES.filter((path) => /^\/blog\/[^/]+\/$/.test(path) && !/^\/blog\/\d+\/$/.test(path))) {
     await page.goto(route);

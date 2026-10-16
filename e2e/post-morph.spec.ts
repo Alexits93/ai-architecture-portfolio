@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-// Story #209, Task #210: a card's title morphs into the post's title through a cross-document
+// A card's title morphs into the post's title through a cross-document
 // view transition. The names are set by pageswap and pagereveal, as in Chrome's cross-document guide
 // (https://developer.chrome.com/docs/web-platform/view-transitions/cross-document). Engines without cross-document
 // view transitions navigate normally.
@@ -47,7 +47,7 @@ test('a blog card morphs into the post, and Back morphs it home', async ({ page 
   await expect.poll(() => groups(page)).toBe(MORPH);
 });
 
-// The home writing rows carry [data-post-card] like the blog cards (#219).
+// The home writing rows carry [data-post-card] like the blog cards.
 test('a home writing row morphs into the post', async ({ page }) => {
   await page.goto('/');
   await page.locator('#writing [data-post-card]').first().click();

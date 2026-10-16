@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 
 // Waits until every finite, time-based animation on the page has finished or been cancelled. Skipped: animations
-// that loop forever (the name's gradient, #210) and scroll-driven ones, which finish only when the page scrolls.
+// that loop forever (the name's gradient) and scroll-driven ones, which finish only when the page scrolls.
 export const animationsSettled = (page: Page) =>
   page.evaluate(async () => {
     const finite = document.getAnimations().filter((animation) => {

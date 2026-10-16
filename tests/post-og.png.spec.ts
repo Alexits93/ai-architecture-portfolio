@@ -7,7 +7,7 @@ const post = createTestPost({ id: 'hello' });
 
 vi.mock('astro:content', () => ({ getCollection: async () => [post] }));
 
-// Each post shares its own image, drawn with its title and subtitle (#305).
+// Each post shares its own image, drawn with its title and subtitle.
 describe('post og.png endpoint', () => {
   beforeEach(() => {
     vi.clearAllMocks();

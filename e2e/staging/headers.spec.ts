@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 
-// The live staging site serves public/_headers exactly (#72). statichost.eu reads the file from the publish
+// The live staging site serves public/_headers exactly. statichost.eu reads the file from the publish
 // root and uses the last matched occurrence of each header (https://www.statichost.eu/docs/custom-headers/).
 // Password protection is HTTP Basic Auth (https://www.statichost.eu/docs/password-protection/).
 // Run with pnpm test:e2e:staging; playwright.staging.config.ts supplies the URL and credentials.
