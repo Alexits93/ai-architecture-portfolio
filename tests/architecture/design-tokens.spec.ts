@@ -69,6 +69,7 @@ const ALLOWED_IN_FILE: Record<string, { values: string[]; reason: string }> = {
     reason: 'bullet placement on the 1px guide line',
   },
   'src/components/Header.astro': { values: ['.2rem'], reason: 'hamburger bar thickness' },
+  'src/pages/_Photos.astro': { values: ['.2rem'], reason: 'close button bar thickness, as in the menu (#350)' },
   'src/components/NavigatorMenu.astro': {
     values: ['2.6rem', '.2rem', '0.1rem', '-0.1rem', '100vw', '100vh', '150vmax'],
     reason: 'full-viewport dialog, reveal origin over the hamburger, bar thickness and cross offset',
