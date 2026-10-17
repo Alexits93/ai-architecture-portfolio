@@ -25,7 +25,8 @@ test("a post h2 is larger than its body text", async ({ page }) => {
 });
 
 // The global reset sets margin 0 on p, li and h2, so the first post read as one wall of text on staging. Blocks of
-// a post and list items keep a visible gap, and a heading sits closer to its own text than to the section above.
+// a post and list items keep a visible gap, and a heading sits closer to its own text, or to its topic heading,
+// than to the section above.
 const POST_ROUTES = globSync("blog/*/index.html", { cwd: "dist" }).map(
   (file) => `/${file.replace(/index\.html$/, "")}`,
 );
@@ -56,7 +57,7 @@ for (const route of POST_ROUTES) {
     assert(gaps !== null);
     expect(gaps.blocks.length).toBeGreaterThan(0);
     for (const { gap, heading, afterHeading } of gaps.blocks)
-      expect(gap).toBeGreaterThanOrEqual(heading ? 32 : afterHeading ? 4 : 16);
+      expect(gap).toBeGreaterThanOrEqual(afterHeading ? 4 : heading ? 32 : 16);
     for (const { gap } of gaps.items) expect(gap).toBeGreaterThanOrEqual(8);
   });
 }
