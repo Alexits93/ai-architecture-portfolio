@@ -269,9 +269,9 @@ test.describe("On this page sidebar in a short window", () => {
     });
 });
 
-// The sidebar follows the reading (src/lib/scroll-spy.ts): once the reading moves to another topic, only that topic is
-// open; a toggle peeks into any topic until then; a clicked point is current, also near the end of the page. The owner
-// found the earlier rule, where a toggled topic stayed open and a scrolled one closed, inconsistent while clicking
+// The sidebar follows the reading: once the reading moves to another topic, only that topic is open; a toggle peeks
+// into any topic until then; a clicked point leaves only its topic open and is current, also near the end of the page.
+// The owner found a rule where a toggled topic stayed open and a scrolled one closed inconsistent while clicking
 // around. Without JavaScript every topic is open.
 test.describe("On this page sidebar topics", () => {
   test.use({ viewport: { width: 1280, height: 900 } });
