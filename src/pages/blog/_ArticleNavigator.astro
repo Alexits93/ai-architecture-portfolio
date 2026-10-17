@@ -62,8 +62,16 @@ const { headings } = Astro.props;
     content: "";
   }
 
+  /* A topic reads bold with space above it; its points sit smaller and indented under it. */
+  .h2-link {
+    font-weight: var(--font-weight-bold);
+  }
+  .h2-link:not(:first-child) {
+    margin-top: var(--space-4);
+  }
   .h3-link {
     padding-left: var(--space-4);
+    font-size: var(--font-size-sm);
   }
   .h4-link {
     padding-left: var(--space-8);
