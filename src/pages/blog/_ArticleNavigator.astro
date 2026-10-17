@@ -1,24 +1,131 @@
 ---
-export interface Heading {
-  depth: number;
-  slug: string;
-  text: string;
-}
+import type { MarkdownHeading } from "astro";
 
 export interface Props {
-  headings: Heading[];
+  headings: MarkdownHeading[];
 }
 
-const { headings } = Astro.props;
+// Each h2 is a topic with the deeper headings up to the next h2 as its points; a deeper heading before the first h2
+// stands alone.
+const topics: { heading: MarkdownHeading; points: MarkdownHeading[] }[] = [];
+for (const heading of Astro.props.headings) {
+  const last = topics.at(-1);
+  if (heading.depth > 2 && last !== undefined && last.heading.depth === 2)
+    last.points.push(heading);
+  else topics.push({ heading, points: [] });
+}
 ---
 
+{/* Each topic with points is a native disclosure: the browser owns its toggle, keyboard and open state. Every topic
+   starts open, so the outline is complete without the script below. A topic's name toggles and its points link,
+   since a link inside <summary> is unreliable for keyboard and screen reader users. */}
 <nav class="article-navigator" aria-label="On this page">
-  {headings.map((heading) => (
-    <a href={`#${heading.slug}`} class:list={[`h${heading.depth}-link`]}>
-      {heading.text}
-    </a>
-  ))}
+  <ul class="topics">
+    {topics.map(({ heading, points }) => (
+      <li>
+        {points.length === 0 ? (
+          <a href={`#${heading.slug}`} class:list={[`h${heading.depth}-link`]}>
+            {heading.text}
+          </a>
+        ) : (
+          <details open data-slug={heading.slug}>
+            <summary>{heading.text}</summary>
+            <ul class="points">
+              {points.map((point) => (
+                <li>
+                  <a
+                    href={`#${point.slug}`}
+                    class:list={[`h${point.depth}-link`]}
+                  >
+                    {point.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
+      </li>
+    ))}
+  </ul>
 </nav>
+
+<script>
+  // Enhances the native outline. When the reading moves to another topic, that topic opens and the others close; in
+  // between the toggles stay as the reader set them, since the script only writes `open` on that move. The point
+  // being read is marked current: the last heading at the spot a jump puts it, below the sticky header
+  // (scroll-margin-top), counted 48 px early, about the space above a heading. A clicked point is navigation: its
+  // topic opens alone at once, and the scroll there is not followed until it ends, so the topics it passes stay shut
+  // (scrollend, Baseline 2025: https://developer.mozilla.org/en-US/docs/Web/API/Document/scrollend_event). At the end
+  // of the page the clicked point (:target) is current while in view, else the last.
+  const nav = document.querySelector<HTMLElement>(".article-navigator");
+  const entries = [
+    ...(nav?.querySelectorAll<HTMLElement>("details, a[href^='#']") ?? []),
+  ].flatMap((el) => {
+    const link = el instanceof HTMLAnchorElement ? el : null;
+    const id =
+      link === null ? el.dataset.slug : decodeURIComponent(link.hash.slice(1));
+    const heading = id === undefined ? null : document.getElementById(id);
+    return heading === null
+      ? []
+      : [{ heading, link, topic: el.closest("details") }];
+  });
+  type Entry = (typeof entries)[number];
+
+  let current: Entry | undefined;
+  let jumping = false;
+
+  const show = (entry: Entry | undefined, newTopic = false) => {
+    if (entry === undefined || (entry === current && !newTopic)) return;
+    newTopic ||= entry.topic !== current?.topic;
+    current = entry;
+    for (const { link } of entries)
+      if (link === entry.link) link?.setAttribute("aria-current", "true");
+      else link?.removeAttribute("aria-current");
+    if (newTopic)
+      for (const topic of nav?.querySelectorAll("details") ?? [])
+        topic.open = topic === entry.topic;
+  };
+
+  const beingRead = () => {
+    const atEnd =
+      innerHeight + scrollY >= document.documentElement.scrollHeight - 1;
+    if (atEnd) {
+      const clicked = entries.find(({ heading }) => heading.matches(":target"));
+      const top = clicked?.heading.getBoundingClientRect().top ?? -1;
+      return top >= 0 && top < innerHeight ? clicked : entries.at(-1);
+    }
+    return (
+      entries.findLast(
+        ({ heading }) =>
+          heading.getBoundingClientRect().top <=
+          parseFloat(getComputedStyle(heading).scrollMarginTop) + 48,
+      ) ?? entries[0]
+    );
+  };
+
+  if (entries.length > 0) {
+    let frame = 0;
+    addEventListener(
+      "scroll",
+      () => {
+        if (jumping) return;
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => show(beingRead()));
+      },
+      { passive: true },
+    );
+    addEventListener("scrollend", () => {
+      jumping = false;
+      show(beingRead());
+    });
+    for (const entry of entries)
+      entry.link?.addEventListener("click", () => {
+        jumping = true;
+        show(entry, true);
+      });
+    show(beingRead(), true);
+  }
+</script>
 
 <style>
   .article-navigator {
@@ -39,6 +146,35 @@ const { headings } = Astro.props;
     content: "";
   }
 
+  .topics > li + li {
+    margin-top: var(--space-4);
+  }
+
+  /* A topic name with its + or − toggle sign; the sign is hidden from screen readers, which announce the expanded
+     state instead (https://developer.mozilla.org/en-US/docs/Web/CSS/content#alternative_text). */
+  summary {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    list-style: none;
+    cursor: pointer;
+    color: var(--font-color-bold);
+    font-weight: var(--font-weight-bold);
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary::after {
+    content: "+" / "";
+  }
+  details[open] > summary::after {
+    content: "−" / "";
+  }
+
+  .points {
+    margin-top: var(--space-2);
+  }
+
   a {
     position: relative;
     color: var(--font-color-bold);
@@ -51,23 +187,29 @@ const { headings } = Astro.props;
     color: var(--theme-primary);
   }
 
-  a:hover::before {
+  /* The point being read is bold with a dot on the line, in the text colour: the accent colour is too light for
+     small text (WCAG 1.4.3). Hover shows the dot in the accent colour. */
+  a[aria-current] {
+    font-weight: var(--font-weight-bold);
+  }
+
+  :is(a:hover, a[aria-current])::before {
     position: absolute;
     left: calc(-1 * (var(--space-4) + var(--space-1)));
     top: calc(50% - var(--space-1));
     width: var(--space-2);
     height: var(--space-2);
     border-radius: var(--radius-full);
-    background-color: var(--theme-primary);
+    background-color: var(--font-color-bold);
     content: "";
   }
 
-  /* A topic reads bold with space above it; its points sit smaller and indented under it. */
+  a:hover::before {
+    background-color: var(--theme-primary);
+  }
+
   .h2-link {
     font-weight: var(--font-weight-bold);
-  }
-  .h2-link:not(:first-child) {
-    margin-top: var(--space-4);
   }
   .h3-link {
     padding-left: var(--space-4);
@@ -75,11 +217,24 @@ const { headings } = Astro.props;
   }
   .h4-link {
     padding-left: var(--space-8);
+    font-size: var(--font-size-sm);
   }
-  .h5-link {
-    padding-left: var(--space-12);
-  }
-  .h6-link {
-    padding-left: var(--space-16);
+
+  /* The points slide open and closed where the browser can animate to auto height, and only with motion allowed
+     (https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content). Elsewhere they show and hide at once. */
+  @media (prefers-reduced-motion: no-preference) {
+    .article-navigator {
+      interpolate-size: allow-keywords;
+    }
+    details::details-content {
+      block-size: 0;
+      overflow-y: clip;
+      transition:
+        block-size var(--duration-2) ease-out,
+        content-visibility var(--duration-2) allow-discrete;
+    }
+    details[open]::details-content {
+      block-size: auto;
+    }
   }
 </style>

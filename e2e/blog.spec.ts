@@ -247,6 +247,152 @@ for (const route of ["/blog/", POST_ROUTES[0]]) {
   });
 }
 
+// The sticky On this page sidebar outgrew a 900 px window, and a sticky element taller than the window never
+// scrolls into view, so its last entries were cut off. It keeps to the window and scrolls on its own.
+test.describe("On this page sidebar in a short window", () => {
+  test.use({ viewport: { width: 1280, height: 600 } });
+
+  for (const route of POST_ROUTES)
+    test(`${route} keeps every entry reachable`, async ({ page }) => {
+      await page.goto(route);
+      const nav = page.getByRole("navigation", { name: "On this page" });
+      const links = nav.getByRole("link");
+      test.skip(
+        (await page.locator(".prose :is(h2, h3)").count()) === 0,
+        "the post has no headings",
+      );
+      await page.mouse.wheel(0, 400);
+      const last = links.last();
+      await last.scrollIntoViewIfNeeded();
+      // WebKit rounds the box to a fraction of a pixel short of the edge.
+      await expect(last).toBeInViewport({ ratio: 0.99 });
+    });
+});
+
+// The sidebar follows the reading: once the reading moves to another topic, only that topic is open; a toggle peeks
+// into any topic until then; a clicked point leaves only its topic open and is current, also near the end of the page.
+// The owner found a rule where a toggled topic stayed open and a scrolled one closed inconsistent while clicking
+// around. Without JavaScript every topic is open.
+test.describe("On this page sidebar topics", () => {
+  test.use({ viewport: { width: 1280, height: 900 } });
+  const topics = (page: Page) =>
+    page.getByRole("navigation", { name: "On this page" }).locator("details");
+  const scrollToHeading = (page: Page, selector: string) =>
+    page
+      .locator(selector)
+      .first()
+      .evaluate((el) => el.scrollIntoView({ block: "start" }));
+  const readTopic = (page: Page, index: number) =>
+    page
+      .locator(".prose h2")
+      .nth(index)
+      .evaluate((el) => el.scrollIntoView({ block: "start" }));
+  const openTopics = (page: Page) =>
+    topics(page).evaluateAll((els) =>
+      els.flatMap((el, i) =>
+        el instanceof HTMLDetailsElement && el.open ? [i] : [],
+      ),
+    );
+  const pointHref = async (page: Page, topic: number, point: number) => {
+    const href = await topics(page)
+      .nth(topic)
+      .locator("a")
+      .nth(point)
+      .getAttribute("href");
+    assert(href !== null);
+    return href;
+  };
+
+  for (const route of POST_ROUTES) {
+    test(`${route} keeps a peeked topic open within the topic and resets when the reading moves`, async ({
+      page,
+    }) => {
+      await page.goto(route);
+      const count = await topics(page).count();
+      test.skip(count < 3, "the post has fewer than three topics");
+      await expect.poll(() => openTopics(page)).toEqual([0]);
+
+      await topics(page).nth(2).locator("summary").click();
+      await expect.poll(() => openTopics(page)).toEqual([0, 2]);
+      await scrollToHeading(page, await pointHref(page, 0, 1));
+      await expect.poll(() => openTopics(page)).toEqual([0, 2]);
+
+      await readTopic(page, 1);
+      await expect.poll(() => openTopics(page)).toEqual([1]);
+    });
+
+    test(`${route} opens only the topic of a clicked point and marks the point current`, async ({
+      page,
+    }) => {
+      await page.goto(route);
+      const count = await topics(page).count();
+      test.skip(count < 3, "the post has fewer than three topics");
+      await topics(page).nth(1).locator("summary").click();
+      await topics(page).nth(2).locator("summary").click();
+      await expect.poll(() => openTopics(page)).toEqual([0, 1, 2]);
+
+      // The second point of the last topic sits near the end of the page, where its heading cannot reach the top.
+      // Counted as elements: while the topic still slides open, its links are not yet in the accessibility tree.
+      const points = topics(page).last().locator("a");
+      const point = points.nth(Math.min(1, (await points.count()) - 1));
+      await point.click();
+      await expect.poll(() => openTopics(page)).toEqual([count - 1]);
+      await expect(point).toHaveAttribute("aria-current", "true");
+      await page.waitForTimeout(500);
+      await expect(point).toHaveAttribute("aria-current", "true");
+    });
+
+    test(`${route} keeps the topic being read closed after its toggle until the reading moves`, async ({
+      page,
+    }) => {
+      await page.goto(route);
+      const count = await topics(page).count();
+      test.skip(count < 2, "the post has fewer than two topics");
+      await expect.poll(() => openTopics(page)).toEqual([0]);
+      await topics(page).nth(0).locator("summary").press("Enter");
+      await expect.poll(() => openTopics(page)).toEqual([]);
+      await scrollToHeading(page, await pointHref(page, 0, 1));
+      await expect.poll(() => openTopics(page)).toEqual([]);
+
+      await readTopic(page, 1);
+      await expect.poll(() => openTopics(page)).toEqual([1]);
+      await readTopic(page, 0);
+      await expect.poll(() => openTopics(page)).toEqual([0]);
+    });
+  }
+
+  for (const route of POST_ROUTES)
+    test(`${route} marks the last point current at the end of the page`, async ({
+      page,
+    }) => {
+      await page.goto(route);
+      test.skip((await topics(page).count()) === 0, "the post has no topics");
+      await page.evaluate(() =>
+        scrollTo({ top: document.documentElement.scrollHeight }),
+      );
+      await expect(
+        page
+          .getByRole("navigation", { name: "On this page" })
+          .getByRole("link")
+          .last(),
+      ).toHaveAttribute("aria-current", "true");
+    });
+
+  test.describe("without JavaScript", () => {
+    test.use({ javaScriptEnabled: false });
+
+    for (const route of POST_ROUTES)
+      test(`${route} shows every topic open`, async ({ page }) => {
+        await page.goto(route);
+        const count = await topics(page).count();
+        test.skip(count === 0, "the post has no topics");
+        expect(await openTopics(page)).toEqual(
+          Array.from({ length: count }, (_, i) => i),
+        );
+      });
+  });
+});
+
 // Focus rings show only on :focus-visible, so a mouse click draws none
 // (https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible).
 test("a mouse click on a category link draws no focus outline", async ({

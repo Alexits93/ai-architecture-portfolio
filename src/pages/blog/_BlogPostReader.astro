@@ -251,11 +251,17 @@ const { Content, headings } = await render(post);
       margin: 0;
     }
 
+    /* A sticky element taller than the window never scrolls into view, so the last entries were cut off. The
+       sidebar keeps to the window height and scrolls on its own; the page does not scroll with it at its end. */
     .navigator-sidebar {
       display: block;
       position: sticky;
       top: var(--space-24);
-      height: max-content;
+      max-block-size: calc(100dvh - var(--space-24) - var(--space-8));
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: var(--hairline-color) transparent;
     }
   }
 </style>

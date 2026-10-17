@@ -36,6 +36,14 @@ const SYNTAX_BANS = [
     message:
       "CSP: inline is:inline scripts get no hash and a <meta> CSP does not cover content before it (W3C CSP3 3.3). For a pre-paint script, inject it with injectScript('head-inline') in astro.config.mjs, which Astro hashes, as src/lib/theme.js is.",
   },
+  // The first On this page sidebar in #402 was a custom element holding its own copy of the open topics, about twice
+  // the code of the native <details> with a small script that replaced it. Scripts enhance native elements.
+  {
+    selector:
+      "CallExpression[callee.object.name='customElements'][callee.property.name='define'], :matches(ClassDeclaration, ClassExpression)[superClass.name='HTMLElement']",
+    message:
+      "No custom elements or web components. Use the native element and enhance it with a small processed <script> that keeps no copy of its state (.claude/rules/astro-components.md).",
+  },
 ];
 
 // Specs: a missing value must fail the test at a guard, not flow on as undefined or a fallback (#138).
