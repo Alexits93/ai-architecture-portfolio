@@ -1,26 +1,243 @@
 ---
-export interface Heading {
-  depth: number;
-  slug: string;
-  text: string;
-}
+import type { MarkdownHeading } from "astro";
+import { groupHeadings } from "@/lib/headings";
 
 export interface Props {
-  headings: Heading[];
+  headings: MarkdownHeading[];
 }
 
-const { headings } = Astro.props;
+const topics = groupHeadings(Astro.props.headings);
 ---
 
-<nav class="article-navigator" aria-label="On this page">
-  {headings.map((heading) => (
-    <a href={`#${heading.slug}`} class:list={[`h${heading.depth}-link`]}>
-      {heading.text}
-    </a>
-  ))}
-</nav>
+{/* Each topic with points is a native disclosure: the browser gives it the toggle, the keyboard and the expanded
+   state. Every topic starts open, so the outline is complete without the script below. A topic's name toggles and
+   its points link, since a link inside <summary> is unreliable for keyboard and screen reader users. */}
+<article-navigator>
+  <nav class="article-navigator" aria-label="On this page">
+    <ul class="topics">
+      {topics.map(({ heading, points }) => (
+        <li>
+          {points.length === 0 ? (
+            <a
+              href={`#${heading.slug}`}
+              class:list={[`h${heading.depth}-link`]}
+            >
+              {heading.text}
+            </a>
+          ) : (
+            <details open data-slug={heading.slug}>
+              <summary>{heading.text}</summary>
+              <ul class="points">
+                {points.map((point) => (
+                  <li>
+                    <a
+                      href={`#${point.slug}`}
+                      class:list={[`h${point.depth}-link`]}
+                    >
+                      {point.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </li>
+      ))}
+    </ul>
+  </nav>
+</article-navigator>
+
+<script>
+  // The sidebar follows the reading. The rules live in src/lib/scroll-spy.ts; this element only reads positions,
+  // feeds events to the rules and draws the state they return, so there is one record of which topics are open. It
+  // takes over the native toggle for that; without the script the toggles work natively and every topic is open.
+  // A custom element keeps the state per sidebar
+  // (https://docs.astro.build/en/guides/client-side-scripts/#web-components-with-custom-elements).
+  import {
+    currentHeading,
+    initialSpyState,
+    jumpTo,
+    readTopic,
+    settleJump,
+    toggleTopic,
+  } from "@/lib/scroll-spy";
+
+  interface Target {
+    heading: HTMLElement;
+    topic: number | null;
+    link: HTMLAnchorElement | null;
+  }
+
+  // A jump has settled once the smooth scroll sent no scroll event for this long.
+  const SETTLE_MS = 150;
+  // A heading counts as reached this early, about the space above a heading: once the text before it has gone under
+  // the header, the reader is on it.
+  const READING_SLACK_PX = 48;
+
+  class ArticleNavigator extends HTMLElement {
+    #listeners: AbortController | undefined;
+    #frame = 0;
+    #settleTimer = 0;
+    #topics: HTMLDetailsElement[] = [];
+    #targets: Target[] = [];
+    #state = initialSpyState;
+    #current = -1;
+    // The heading a clicked link jumps to, while the smooth scroll there runs. Scroll positions are ignored until it
+    // settles, so the sidebar does not flicker through the topics the scroll passes.
+    #jump: number | null = null;
+
+    connectedCallback() {
+      this.#topics = [...this.querySelectorAll("details")];
+      const byId = (id: string | undefined) =>
+        id === undefined ? null : document.getElementById(id);
+      const targets: Target[] = [];
+      this.#topics.forEach((topic, index) => {
+        const heading = byId(topic.dataset.slug);
+        if (heading !== null)
+          targets.push({ heading, topic: index, link: null });
+      });
+      for (const link of this.querySelectorAll<HTMLAnchorElement>(
+        "a[href^='#']",
+      )) {
+        const heading = byId(decodeURIComponent(link.hash.slice(1)));
+        const details = link.closest("details");
+        if (heading !== null)
+          targets.push({
+            heading,
+            topic: details === null ? null : this.#topics.indexOf(details),
+            link,
+          });
+      }
+      this.#targets = targets.sort((a, b) =>
+        a.heading.compareDocumentPosition(b.heading) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+          ? -1
+          : 1,
+      );
+      if (this.#targets.length === 0) return;
+
+      this.#listeners = new AbortController();
+      const { signal } = this.#listeners;
+      // Enter and Space on a summary fire a click too.
+      this.#topics.forEach((topic, index) =>
+        topic.querySelector("summary")?.addEventListener(
+          "click",
+          (event) => {
+            event.preventDefault();
+            this.#state = toggleTopic(this.#state, index);
+            this.#render();
+          },
+          { signal },
+        ),
+      );
+      this.#targets.forEach(({ link }, index) =>
+        link?.addEventListener("click", () => this.#startJump(index), {
+          signal,
+        }),
+      );
+      // The reader scrolling or pressing a key during a jump takes over from it.
+      for (const type of ["wheel", "touchstart", "keydown"])
+        addEventListener(type, () => (this.#jump = null), {
+          passive: true,
+          signal,
+        });
+      addEventListener("scroll", () => this.#onScroll(), {
+        passive: true,
+        signal,
+      });
+      addEventListener("resize", () => this.#onScroll(), {
+        passive: true,
+        signal,
+      });
+
+      // A page opened at a heading's address is a jump to that heading.
+      const fromAddress = this.#targets.findIndex(
+        ({ heading }) => `#${heading.id}` === decodeURIComponent(location.hash),
+      );
+      if (fromAddress === -1) this.#setCurrent(this.#fromScroll());
+      else this.#startJump(fromAddress);
+    }
+
+    disconnectedCallback() {
+      this.#listeners?.abort();
+      cancelAnimationFrame(this.#frame);
+      clearTimeout(this.#settleTimer);
+    }
+
+    #onScroll() {
+      if (this.#jump !== null) {
+        this.#armSettle();
+        return;
+      }
+      cancelAnimationFrame(this.#frame);
+      this.#frame = requestAnimationFrame(() => {
+        if (this.#jump === null) this.#setCurrent(this.#fromScroll());
+      });
+    }
+
+    #startJump(index: number) {
+      this.#jump = index;
+      this.#current = index;
+      this.#state = jumpTo(this.#targets[index].topic);
+      this.#render();
+      this.#armSettle();
+    }
+
+    #armSettle() {
+      clearTimeout(this.#settleTimer);
+      this.#settleTimer = window.setTimeout(() => {
+        const jump = this.#jump;
+        this.#jump = null;
+        if (jump === null) return;
+        const { top } = this.#targets[jump].heading.getBoundingClientRect();
+        this.#setCurrent(
+          settleJump(jump, top >= 0 && top < innerHeight, this.#fromScroll()),
+        );
+      }, SETTLE_MS);
+    }
+
+    // The heading the scroll position says is being read: the last one at the spot a jump puts it, just below the
+    // sticky header (its scroll-margin-top), or the last at the end of the page.
+    #fromScroll() {
+      const atEnd =
+        innerHeight + scrollY >= document.documentElement.scrollHeight - 1;
+      return currentHeading(
+        this.#targets.map(
+          ({ heading }) =>
+            heading.getBoundingClientRect().top <=
+            parseFloat(getComputedStyle(heading).scrollMarginTop) +
+              READING_SLACK_PX,
+        ),
+        atEnd,
+      );
+    }
+
+    #setCurrent(index: number) {
+      if (index === this.#current) return;
+      this.#current = index;
+      this.#state = readTopic(this.#state, this.#targets[index].topic);
+      this.#render();
+    }
+
+    #render() {
+      this.#topics.forEach(
+        (topic, index) => (topic.open = this.#state.open.has(index)),
+      );
+      this.#targets.forEach(({ link }, index) => {
+        if (index === this.#current) link?.setAttribute("aria-current", "true");
+        else link?.removeAttribute("aria-current");
+      });
+    }
+  }
+
+  customElements.define("article-navigator", ArticleNavigator);
+</script>
 
 <style>
+  article-navigator {
+    display: block;
+  }
+
   .article-navigator {
     padding: 0 var(--space-8);
     max-width: var(--size-toc);
@@ -39,6 +256,35 @@ const { headings } = Astro.props;
     content: "";
   }
 
+  .topics > li + li {
+    margin-top: var(--space-4);
+  }
+
+  /* A topic name with its + or − toggle sign; the sign is hidden from screen readers, which announce the expanded
+     state instead (https://developer.mozilla.org/en-US/docs/Web/CSS/content#alternative_text). */
+  summary {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    list-style: none;
+    cursor: pointer;
+    color: var(--font-color-bold);
+    font-weight: var(--font-weight-bold);
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary::after {
+    content: "+" / "";
+  }
+  details[open] > summary::after {
+    content: "−" / "";
+  }
+
+  .points {
+    margin-top: var(--space-2);
+  }
+
   a {
     position: relative;
     color: var(--font-color-bold);
@@ -51,23 +297,29 @@ const { headings } = Astro.props;
     color: var(--theme-primary);
   }
 
-  a:hover::before {
+  /* The point being read is bold with a dot on the line, in the text colour: the accent colour is too light for
+     small text (WCAG 1.4.3). Hover shows the dot in the accent colour. */
+  a[aria-current] {
+    font-weight: var(--font-weight-bold);
+  }
+
+  :is(a:hover, a[aria-current])::before {
     position: absolute;
     left: calc(-1 * (var(--space-4) + var(--space-1)));
     top: calc(50% - var(--space-1));
     width: var(--space-2);
     height: var(--space-2);
     border-radius: var(--radius-full);
-    background-color: var(--theme-primary);
+    background-color: var(--font-color-bold);
     content: "";
   }
 
-  /* A topic reads bold with space above it; its points sit smaller and indented under it. */
+  a:hover::before {
+    background-color: var(--theme-primary);
+  }
+
   .h2-link {
     font-weight: var(--font-weight-bold);
-  }
-  .h2-link:not(:first-child) {
-    margin-top: var(--space-4);
   }
   .h3-link {
     padding-left: var(--space-4);
@@ -75,11 +327,24 @@ const { headings } = Astro.props;
   }
   .h4-link {
     padding-left: var(--space-8);
+    font-size: var(--font-size-sm);
   }
-  .h5-link {
-    padding-left: var(--space-12);
-  }
-  .h6-link {
-    padding-left: var(--space-16);
+
+  /* The points slide open and closed where the browser can animate to auto height, and only with motion allowed
+     (https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content). Elsewhere they show and hide at once. */
+  @media (prefers-reduced-motion: no-preference) {
+    .article-navigator {
+      interpolate-size: allow-keywords;
+    }
+    details::details-content {
+      block-size: 0;
+      overflow-y: clip;
+      transition:
+        block-size var(--duration-2) ease-out,
+        content-visibility var(--duration-2) allow-discrete;
+    }
+    details[open]::details-content {
+      block-size: auto;
+    }
   }
 </style>
