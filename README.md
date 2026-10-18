@@ -1,30 +1,52 @@
 # pa-tech.dev
 
-Personal portfolio and blog of Patrik Alexits. Static Astro site hosted on statichost.eu.
+The code for [www.pa-tech.dev](https://www.pa-tech.dev), my portfolio, CV and blog. I'm Patrik Alexits, a frontend architect.
 
-## Stack
+It's a static Astro site. Most pages ship no JavaScript; the theme toggle, the menu and the post transitions each have a small script.
 
-- Astro (`output: 'static'`), vanilla CSS, Markdown and YAML content collections
-- Satori + resvg for the Open Graph image
-- Vitest (AstroContainer) for components, Playwright for pages in Chromium, Firefox and WebKit
+## Run it
 
-## Setup
-
-Requires Node 26 and pnpm (version pinned in `package.json`).
+You need Node 26 and pnpm. The pnpm version is pinned in `package.json`.
 
 ```sh
 pnpm install
-pnpm dev        # http://localhost:4321
+pnpm dev
 ```
+
+The dev server runs at http://localhost:4321.
 
 ## Scripts
 
-| Command         | Purpose                                                    |
-| --------------- | ---------------------------------------------------------- |
-| `pnpm check`    | Lint, `astro check`, unit tests                            |
-| `pnpm build`    | Static build to `dist/`                                    |
-| `pnpm test:e2e` | Playwright against `pnpm preview` (run `pnpm build` first) |
+| Command                | What it does                                          |
+| ---------------------- | ----------------------------------------------------- |
+| `pnpm dev`             | Dev server                                            |
+| `pnpm check`           | Lint, `astro check` and unit tests                    |
+| `pnpm build`           | Builds the site to `dist/`                            |
+| `pnpm preview`         | Serves `dist/`                                        |
+| `pnpm test:e2e`        | Playwright tests on the build. Run `pnpm build` first |
+| `pnpm test:e2e:webkit` | WebKit tests in Podman                                |
 
-## Docs
+## Stack
 
-`docs/ARCHITECTURE.md` (runtime behavior) and `docs/adrs/` (decisions). Agent instructions: `CLAUDE.md` and `.claude/rules/`.
+- Astro 7 and plain CSS
+- Posts and CV data as Markdown and YAML in `src/content/`
+- Open Graph images drawn at build time with Satori and resvg
+- Vitest for components, Playwright and axe for pages in Chromium, Firefox and WebKit
+- Hosted on [statichost.eu](https://www.statichost.eu/), which builds from this repo
+
+The folders follow Astro's default layout. Files in `src/pages/` that start with `_` are page sections, not routes.
+
+## Checks
+
+Pull requests to `master` run lint, typecheck, unit tests, `pnpm audit` and the Playwright suite in all three engines. The PR title has to follow Conventional Commits. Locally, Husky runs ESLint, Prettier and commitlint before each commit.
+
+## Deploys
+
+I start each statichost.eu build by hand. A merge alone doesn't deploy. [ADR 001](docs/adrs/001-framework-migration.md) explains why.
+
+## More docs
+
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): how the theme, menu and page transitions work
+- [docs/adrs/](docs/adrs/): decisions and their reasons
+- [CLAUDE.md](CLAUDE.md) and `.claude/rules/`: the rules Claude Code follows in this repo
+- [SECURITY.md](SECURITY.md): how to report a security issue
