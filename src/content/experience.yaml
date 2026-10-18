@@ -31,7 +31,7 @@
   highlights:
     - Led frontend development of a B2B webshop for licensed hair salon professionals, with more than 10 professional brands and about 1,500 products.
     - Mentored junior frontend developers.
-  emphasis: [more than 10 professional brands, about 1, 500 products]
+  emphasis: [more than 10 professional brands, "about 1,500 products"]
   skills:
     [
       Angular,

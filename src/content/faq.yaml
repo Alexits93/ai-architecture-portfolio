@@ -1,25 +1,9 @@
 # The FAQ on home, shown by `order` (src/content.config.ts).
-- id: frontend-architect
-  order: 1
-  question: What does a frontend architect do?
-  answer: Decides how a large frontend is split, which rules it follows, and which of those rules CI checks. At work that means moving a Windows desktop app to Nx and Angular.
 - id: agent-harness
-  order: 2
+  order: 1
   question: What is an agent harness?
-  answer: The instructions, permissions, hooks and tests around a coding agent, so its work is checked before a person reviews it. This site runs on one.
-- id: stack
-  order: 3
-  question: Which stack do you use?
-  answer: Nx, Angular and TypeScript at work. Astro and plain CSS for this site. Godot and GDScript for my game.
-- id: llms
-  order: 4
-  question: How do you work with LLMs?
-  answer: With Claude Code, inside path-scoped rules, permission limits and tests that run before I review. I read every diff and run the site before a change counts as done.
+  answer: The instructions, permissions, hooks and tests around a coding agent, so its work is checked before a person reviews it.
 - id: ai-writing
-  order: 5
+  order: 2
   question: Do you use AI to write the blog?
   answer: No. I write every article myself, by hand, without AI-generated text.
-- id: game
-  order: 6
-  question: What game are you making?
-  answer: An indie game in Godot with GDScript, built in my free time. I will write about it once there is something to show.

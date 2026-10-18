@@ -32,7 +32,7 @@
 
 - **Architecture Decision Records**
 
-  Each decision is written down with its context and the options it rejected, so nobody argues it again.
+  Each decision is written down with its context and the options it rejected, so nobody reopens it without that context.
 
 - **Ubiquitous language**
 
