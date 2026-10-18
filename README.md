@@ -2,7 +2,7 @@
 
 The code for [www.pa-tech.dev](https://www.pa-tech.dev), my portfolio, CV and blog. I'm Patrik Alexits, a frontend architect.
 
-It's a static Astro site. Most pages ship no JavaScript; the theme toggle, the menu and the post transitions each have a small script.
+It's a static Astro site with no client framework. Small scripts handle the few interactive parts, like the theme toggle, the menu and the photo viewer.
 
 ## Run it
 
@@ -38,7 +38,7 @@ The folders follow Astro's default layout. Files in `src/pages/` that start with
 
 ## Checks
 
-Pull requests to `master` run lint, typecheck, unit tests, `pnpm audit` and the Playwright suite in all three engines. The PR title has to follow Conventional Commits. Locally, Husky runs ESLint, Prettier and commitlint before each commit.
+Pull requests to `master` run lint, typecheck, unit tests, `pnpm audit` and the Playwright suite in all three engines. The PR title has to follow Conventional Commits. Locally, Husky runs ESLint and Prettier on staged files and commitlint on the commit message.
 
 ## Deploys
 
