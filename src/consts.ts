@@ -48,4 +48,5 @@ export const ROUTES = {
   cv: "/cv/",
   cookieDisclaimer: "/cookie-disclaimer/",
   privacyPolicy: "/privacy-policy/",
+  howThisSiteIsBuilt: "/how-this-site-is-built/",
 } as const;

@@ -24,8 +24,23 @@ for (const route of ROUTES) {
         .getByRole("contentinfo")
         .getByRole("link", { name: "Privacy policy" }),
     ).toHaveAttribute("href", "/privacy-policy/");
+    await expect(
+      page
+        .getByRole("contentinfo")
+        .getByRole("link", { name: "How this site is built" }),
+    ).toHaveAttribute("href", "/how-this-site-is-built/");
   });
 }
+
+test("the footer link reaches how this site is built", async ({ page }) => {
+  await page.goto("/");
+  await page
+    .getByRole("contentinfo")
+    .getByRole("link", { name: "How this site is built" })
+    .click();
+  await expect(page).toHaveURL("/how-this-site-is-built/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+});
 
 // compressHTML removes the whitespace between the policy links, so the gap has to come from CSS.
 const linkGap = async (page: Page) => {

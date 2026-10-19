@@ -24,11 +24,6 @@ describe("Footer Widget (Astro)", () => {
     expect(footer.textContent).toContain(currentYear);
     expect(footer.textContent).toContain("Patrik Alexits");
 
-    // Check framework link
-    const frameworkLink = doc.querySelector('a[href="https://astro.build/"]');
-    assert.exists(frameworkLink);
-    expect(frameworkLink.textContent).toBe("Astro");
-
     // Check policy links
     const cookieLink = doc.querySelector(
       `a[href="${ROUTES.cookieDisclaimer}"]`,
