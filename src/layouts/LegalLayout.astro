@@ -1,5 +1,5 @@
 ---
-// The legal pages: a Legal eyebrow, a display title, and text at a readable line length.
+// The legal pages and the colophon: an eyebrow, a display title, and text at a readable line length.
 import DisplayHeading from "@/components/DisplayHeading.astro";
 import Eyebrow from "@/components/Eyebrow.astro";
 import { SITE } from "@/consts";
@@ -10,9 +10,10 @@ interface Props {
   text: string;
   accent: string;
   description: string;
+  eyebrow?: string;
 }
 
-const { text, accent, description } = Astro.props;
+const { text, accent, description, eyebrow = "Legal" } = Astro.props;
 ---
 
 <BaseLayout
@@ -21,7 +22,7 @@ const { text, accent, description } = Astro.props;
 >
   <main>
     <section class="legal">
-      <Eyebrow>Legal</Eyebrow>
+      <Eyebrow>{eyebrow}</Eyebrow>
       <DisplayHeading
         as="h1"
         size="section"

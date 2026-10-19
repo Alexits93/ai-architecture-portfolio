@@ -1,0 +1,82 @@
+---
+import LegalLayout from "@/layouts/LegalLayout.astro";
+---
+
+<LegalLayout
+  eyebrow="Colophon"
+  text="How This Site Is"
+  accent="Built"
+  description="Claude Code wrote the code for pa-tech.dev. The constraints I set for it, how tests enforce them, and what the pages weigh as a result."
+>
+  <p>
+    Claude Code, Anthropic's coding agent, wrote the code for this site. I set
+    the constraints it works under, reviewed every change and made the
+    decisions. This page lists those constraints and how they are enforced.
+  </p>
+
+  <h2>Who does what</h2>
+  <p>
+    Claude Code writes the code and the tests. I define each change as an issue,
+    set the rules in the repository's instruction files, review and merge every
+    pull request, and make the decisions recorded in the architecture decision
+    records.
+  </p>
+
+  <h2>The constraints</h2>
+  <ul>
+    <li>
+      No JavaScript by default. Native HTML and CSS come first, such as{" "}
+      <code>&lt;dialog&gt;</code>, <code>popover</code> and{" "}
+      <code>&lt;details&gt;</code>. A script only enhances a native element when
+      HTML and CSS cannot do the job.
+    </li>
+    <li>
+      No layout shift. Every image has a set width and height, and the font
+      never swaps in late. A test loads a blog post with a slow font and checks
+      that nothing moves.
+    </li>
+    <li>
+      A strict Content Security Policy. Every inline script and style is allowed
+      by its hash, with no <code>unsafe-inline</code>. A test fails if any page
+      breaks the policy.
+    </li>
+    <li>
+      Accessibility checked against WCAG 2.2 AA and the ARIA Authoring Practices
+      Guide. Every page is scanned with axe, and keyboard focus, contrast and
+      reduced motion have their own tests.
+    </li>
+    <li>
+      Small, reviewed changes. One issue per change and one pull request per
+      issue, sized so I can review it in one sitting.
+    </li>
+    <li>
+      Tests in three browsers. Playwright runs the built site in Chromium,
+      Firefox and WebKit.
+    </li>
+    <li>
+      Decisions on record. Choices such as the move to Astro are written down as
+      architecture decision records.
+    </li>
+  </ul>
+
+  <h2>The result</h2>
+  <ul>
+    <li>No page downloads a JavaScript file.</li>
+    <li>
+      A blog post loads in about 65&nbsp;KB. The median mobile home page weighs
+      2,559&nbsp;KB, 632&nbsp;KB of it JavaScript (
+      <a href="https://almanac.httparchive.org/en/2025/page-weight">
+        2025 Web Almanac
+      </a>
+      ).
+    </li>
+    <li>No layout shift on a throttled mobile connection.</li>
+  </ul>
+
+  <h2>Built with</h2>
+  <p>
+    <a href="https://astro.build/">Astro</a>, plain CSS and Markdown, hosted on
+    statichost.eu. The code, issues and pull requests are public on{" "}
+    <a href="https://github.com/Alexits93/ai-architecture-portfolio">GitHub</a>.
+  </p>
+</LegalLayout>

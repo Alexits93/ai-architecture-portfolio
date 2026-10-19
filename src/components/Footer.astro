@@ -6,12 +6,14 @@ const currentYear = new Date().getFullYear();
 
 <footer class="app-footer">
   <p>
-    &copy;{currentYear} {SITE.name} - Made with{" "}
-    <a href="https://astro.build/">Astro</a>
+    &copy;{currentYear} {SITE.name}
   </p>
   <div>
     <p>
       <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+    </p>
+    <p>
+      <a href={ROUTES.colophon}>How this site is built</a>
     </p>
     <p>
       <a href={ROUTES.cookieDisclaimer}>Cookie disclaimer</a>
