@@ -21,6 +21,10 @@ export default defineConfig({
       provider: fontProviders.local(),
       name: "Inter",
       cssVariable: "--font-inter",
+      // The metric-adjusted fallback needs a local Arial, which Linux and Android lack, so a late swap rewrapped the
+      // text. A preloaded optional font blocks the first render for up to 100 ms and then never swaps
+      // (https://web.dev/articles/preload-optional-fonts).
+      display: "optional",
       options: {
         variants: [
           {
