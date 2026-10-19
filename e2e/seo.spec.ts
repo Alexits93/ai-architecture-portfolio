@@ -19,7 +19,7 @@ const TITLES: Record<string, string> = {
   "/blog/": "Blog | Patrik Alexits",
   "/privacy-policy/": "Privacy Policy | Patrik Alexits",
   "/cookie-disclaimer/": "Cookie Disclaimer | Patrik Alexits",
-  "/colophon/": "How This Site Is Built | Patrik Alexits",
+  "/how-this-site-is-built/": "How This Site Is Built | Patrik Alexits",
 };
 
 test("finds the built pages", () => expect(ROUTES.length).toBeGreaterThan(5));

@@ -28,17 +28,17 @@ for (const route of ROUTES) {
       page
         .getByRole("contentinfo")
         .getByRole("link", { name: "How this site is built" }),
-    ).toHaveAttribute("href", "/colophon/");
+    ).toHaveAttribute("href", "/how-this-site-is-built/");
   });
 }
 
-test("the footer link reaches the colophon", async ({ page }) => {
+test("the footer link reaches how this site is built", async ({ page }) => {
   await page.goto("/");
   await page
     .getByRole("contentinfo")
     .getByRole("link", { name: "How this site is built" })
     .click();
-  await expect(page).toHaveURL("/colophon/");
+  await expect(page).toHaveURL("/how-this-site-is-built/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
 });
 
