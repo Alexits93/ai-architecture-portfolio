@@ -17,11 +17,6 @@ for (const route of ROUTES) {
     await expect(
       page
         .getByRole("contentinfo")
-        .getByRole("link", { name: "Cookie disclaimer" }),
-    ).toHaveAttribute("href", "/cookie-disclaimer/");
-    await expect(
-      page
-        .getByRole("contentinfo")
         .getByRole("link", { name: "Privacy policy" }),
     ).toHaveAttribute("href", "/privacy-policy/");
     await expect(
@@ -42,23 +37,23 @@ test("the footer link reaches how this site is built", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
 });
 
-// compressHTML removes the whitespace between the policy links, so the gap has to come from CSS.
+// compressHTML removes the whitespace between the footer links, so the gap has to come from CSS.
 const linkGap = async (page: Page) => {
   const footer = page.getByRole("contentinfo");
-  const cookie = await footer
-    .getByRole("link", { name: "Cookie disclaimer" })
+  const built = await footer
+    .getByRole("link", { name: "How this site is built" })
     .boundingBox();
   const privacy = await footer
     .getByRole("link", { name: "Privacy policy" })
     .boundingBox();
-  if (!cookie || !privacy) throw new Error("footer links are not rendered");
+  if (!built || !privacy) throw new Error("footer links are not rendered");
   const horizontal = Math.max(
-    privacy.x - (cookie.x + cookie.width),
-    cookie.x - (privacy.x + privacy.width),
+    privacy.x - (built.x + built.width),
+    built.x - (privacy.x + privacy.width),
   );
   const vertical = Math.max(
-    privacy.y - (cookie.y + cookie.height),
-    cookie.y - (privacy.y + privacy.height),
+    privacy.y - (built.y + built.height),
+    built.y - (privacy.y + privacy.height),
   );
   return Math.max(horizontal, vertical);
 };

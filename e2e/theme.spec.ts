@@ -255,7 +255,7 @@ test.describe("Theme across pages", () => {
     await expect(html).not.toHaveAttribute("data-theme");
     await page.locator(".theme-toggle").click();
     await expect(html).toHaveAttribute("data-theme", "dark");
-    await page.goto("/cookie-disclaimer/");
+    await page.goto("/privacy-policy/");
     await expect(html).toHaveAttribute("data-theme", "dark");
   });
 });

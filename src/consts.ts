@@ -33,7 +33,7 @@ export const SOCIAL_LINKS = {
 } as const;
 
 /** The date the privacy policy shows and the sitemap gives as its lastmod. */
-export const PRIVACY_POLICY_UPDATED = new Date("2026-10-14");
+export const PRIVACY_POLICY_UPDATED = new Date("2026-10-19");
 
 /** Satori output size. Open Graph and LinkedIn recommend 1200x630. */
 export const OG_IMAGE_SIZE = { width: 1200, height: 630 } as const;
@@ -46,7 +46,6 @@ export const ROUTES = {
   about: "/about/",
   blog: "/blog/",
   cv: "/cv/",
-  cookieDisclaimer: "/cookie-disclaimer/",
   privacyPolicy: "/privacy-policy/",
   howThisSiteIsBuilt: "/how-this-site-is-built/",
 } as const;

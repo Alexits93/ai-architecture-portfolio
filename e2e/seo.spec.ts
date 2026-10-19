@@ -18,7 +18,6 @@ const TITLES: Record<string, string> = {
   "/cv/": "CV | Patrik Alexits",
   "/blog/": "Blog | Patrik Alexits",
   "/privacy-policy/": "Privacy Policy | Patrik Alexits",
-  "/cookie-disclaimer/": "Cookie Disclaimer | Patrik Alexits",
   "/how-this-site-is-built/": "How This Site Is Built | Patrik Alexits",
 };
 
@@ -210,7 +209,7 @@ for (const route of ROUTES) {
 }
 
 // lastmod comes from content dates: posts, the blog lists by their newest post and the privacy policy by its date.
-// Home, /cv/ and the cookie page have no honest date, so they carry none.
+// Home and /cv/ have no honest date, so they carry none.
 test("sitemap lastmod matches the content dates", async ({ request, page }) => {
   const xml = await (await request.get("/sitemap-0.xml")).text();
   const lastmods = new Map(
@@ -238,6 +237,6 @@ test("sitemap lastmod matches the content dates", async ({ request, page }) => {
   expect(lastmods.get("/privacy-policy/")).toBe(
     PRIVACY_POLICY_UPDATED.toISOString(),
   );
-  for (const route of ["/", "/cv/", "/cookie-disclaimer/"])
+  for (const route of ["/", "/cv/"])
     expect(lastmods.get(route)).toBeUndefined();
 });
