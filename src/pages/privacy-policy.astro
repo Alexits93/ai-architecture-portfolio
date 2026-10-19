@@ -7,7 +7,7 @@ import { displayDate, isoDate } from "@/lib/dates";
 <LegalLayout
   text="Privacy"
   accent="Policy"
-  description="How pa-tech.dev handles your data: no cookies, no analytics, no tracking. Who hosts the site, what the host processes, and your rights."
+  description="How pa-tech.dev handles your data: no cookies, no analytics, no tracking. What the host processes, the theme setting, and email."
 >
   <p>
     Last updated:{" "}
@@ -18,26 +18,30 @@ import { displayDate, isoDate } from "@/lib/dates";
 
   <h2>Who is responsible</h2>
   <p>
-    {SITE.name} is responsible for this website and the data processing
-    described here. This is a personal site; I offer no goods or services
-    through it. You can reach me at{" "}
+    {SITE.name} is responsible for this website. This is a personal site; I
+    offer no goods or services through it. You can reach me at{" "}
     <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
   </p>
 
   <h2>Visiting the site</h2>
   <p>
-    To deliver the pages, the host processes your IP address. It does not store
-    it after the request. I see no IP addresses and no visit logs.
-  </p>
-  <p>
     This site sets no cookies. It has no analytics, tracking, forms or
-    third-party content. Your light or dark theme choice is stored in your
-    browser's localStorage and never leaves your device.
+    third-party content. To deliver the pages, the host processes your IP
+    address. It does not store it after the request, and I see no IP addresses
+    or visit logs.
+  </p>
+
+  <h2>Theme setting</h2>
+  <p>
+    When you switch between the light and dark theme, your browser stores that
+    choice under the key "theme" in localStorage, so the next page opens in the
+    same theme. It stays on your device. If you do not want it stored, leave the
+    theme switch alone, or clear the site data in your browser to remove it.
   </p>
 
   <h2>Writing to me</h2>
   <p>
-    If you email me, I process your address and your message to reply. I delete
+    If you email me, I use your address and your message only to reply. I delete
     them when the conversation is over, unless the law requires me to keep them.
   </p>
 
@@ -51,34 +55,5 @@ import { displayDate, isoDate } from "@/lib/dates";
   </ul>
   <p>
     Your data stays in Switzerland and the EEA. I share it with no one else.
-  </p>
-
-  <h2>Legal basis</h2>
-  <p>
-    I process this data out of a legitimate interest in delivering a working,
-    secure website and in answering your messages (Swiss revDSG Art. 31(1);
-    where the GDPR applies, Art. 6(1)(f)).
-  </p>
-
-  <h2>Your rights</h2>
-  <p>
-    You can ask me what data I hold about you and ask me to correct or delete
-    it, or object to its processing. Write to{" "}
-    <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. You can also complain to
-    the Swiss{" "}
-    <a href="https://www.edoeb.admin.ch/en">
-      Federal Data Protection and Information Commissioner (FDPIC)
-    </a>{" "}
-    or, in the EU or EEA, to the data protection authority where you live.
-  </p>
-
-  <h2>Links to other sites</h2>
-  <p>
-    This site links to other websites. Their own privacy policies apply there.
-  </p>
-
-  <h2>Changes</h2>
-  <p>
-    When the site changes how it handles data, I update this page and its date.
   </p>
 </LegalLayout>

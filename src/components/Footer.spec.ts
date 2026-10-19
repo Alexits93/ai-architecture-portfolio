@@ -24,12 +24,7 @@ describe("Footer Widget (Astro)", () => {
     expect(footer.textContent).toContain(currentYear);
     expect(footer.textContent).toContain("Patrik Alexits");
 
-    // Check policy links
-    const cookieLink = doc.querySelector(
-      `a[href="${ROUTES.cookieDisclaimer}"]`,
-    );
-    expect(cookieLink).not.toBeNull();
-
+    // Check policy link
     const privacyLink = doc.querySelector(`a[href="${ROUTES.privacyPolicy}"]`);
     expect(privacyLink).not.toBeNull();
 

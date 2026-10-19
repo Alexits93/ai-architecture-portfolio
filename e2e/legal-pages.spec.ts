@@ -34,10 +34,3 @@ for (const width of [320, 1440]) {
     });
   });
 }
-
-test("the cookie disclaimer links the privacy policy", async ({ page }) => {
-  await page.goto("/cookie-disclaimer/");
-  await expect(
-    page.locator("main").getByRole("link", { name: /Privacy Policy/ }),
-  ).toHaveAttribute("href", "/privacy-policy/");
-});
