@@ -62,6 +62,48 @@ for (const route of POST_ROUTES) {
   });
 }
 
+// On staging the post shifted (CLS 0.06) when Inter arrived late: the metric-adjusted fallback needs a local Arial,
+// which Linux and Android lack, so text rewrapped on the swap. A slow font must not move the layout. Chromium is the
+// only engine that reports layout-shift entries (https://developer.mozilla.org/en-US/docs/Web/API/LayoutShift).
+test.describe("at 390 px with a slow font", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("a post causes no layout shift", async ({ page, browserName }) => {
+    test.skip(
+      browserName !== "chromium",
+      "layout-shift entries exist only in Chromium",
+    );
+    let fontsServed = 0;
+    await page.route("**/_astro/fonts/*.woff2", async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await route.continue();
+      fontsServed++;
+    });
+    await page.goto(POST_ROUTE);
+    await expect.poll(() => fontsServed).toBeGreaterThan(0);
+    // Gives the browser time to apply a font that arrived.
+    await page.waitForTimeout(500);
+    const shift = await page.evaluate(
+      () =>
+        new Promise<number>((resolve) => {
+          new PerformanceObserver((list) => {
+            // TypeScript's DOM types have no LayoutShift, so the value is read through an in-check.
+            const values = list
+              .getEntries()
+              .map((entry) =>
+                "value" in entry && typeof entry.value === "number"
+                  ? entry.value
+                  : 0,
+              );
+            resolve(values.reduce((sum, value) => sum + value, 0));
+          }).observe({ type: "layout-shift", buffered: true });
+          setTimeout(() => resolve(0), 500);
+        }),
+    );
+    expect(shift).toBe(0);
+  });
+});
+
 test("Inter loads through the Fonts API, not @fontsource", async ({ page }) => {
   const fonts: string[] = [];
   page.on("request", (request) => {
