@@ -36,16 +36,16 @@ describe("BlogPostThumbnail Entity (Astro)", () => {
   });
 
   // The home design system: a raised card with the category as its kicker and a display title. The morph
-  // script names the title.
+  // script finds the card link by data-post-card and names the title inside it.
   it("renders a raised card with the category kicker and a display title", async () => {
     const doc = await render();
-    const card = doc.querySelector("a > article.card");
+    const card = doc.querySelector("article.card");
     assert.exists(card);
     const kicker = card.querySelector(".eyebrow");
     assert.exists(kicker);
     expect(kicker.textContent).toBe("Architecture");
     const title = card.querySelector(
-      'h2.display[data-size="card"][data-morph="title"]',
+      'h2.display[data-size="card"] a[data-post-card] [data-morph="title"]',
     );
     assert.exists(title);
   });
@@ -60,7 +60,7 @@ describe("BlogPostThumbnail Entity (Astro)", () => {
     );
   });
 
-  // The card is one link, so the category is text, not a nested link.
+  // The title is the card's only link, so the category is text, not a second link.
   it("renders the category as text, and no arrow icon or image", async () => {
     const doc = await render();
     expect(doc.querySelectorAll("a")).toHaveLength(1);
@@ -69,22 +69,18 @@ describe("BlogPostThumbnail Entity (Astro)", () => {
 });
 
 describe("BlogPostThumbnail link name", () => {
-  // Regression: Firefox computes no name from content for a link that only wraps an <article>, so Orca read "link". The
-  // title names the link and the description describes it.
-  it("names the link by the title and describes it by the description", async () => {
+  // Regression: axe-core 4.14 reported label-content-name-mismatch (WCAG 2.5.3) on every card. The link wrapped the
+  // whole card but was named by the title alone, so the category and the description were visible but not in its name.
+  it("puts the link in the heading, named by its own text, the title", async () => {
     const container = await AstroContainer.create();
     const html = await container.renderToString(BlogPostThumbnail, {
       props: { post: mockPost, heading: "h2" },
     });
     const doc = new JSDOM(html).window.document;
-    const link = doc.querySelector("a");
+    const link = doc.querySelector("h2 > a");
     assert.exists(link);
-    const byIds = (attribute: string) =>
-      String(link.getAttribute(attribute))
-        .split(" ")
-        .map((id) => doc.getElementById(id))
-        .map((el) => el && el.textContent);
-    expect(byIds("aria-labelledby")).toEqual(["Title test-post"]);
-    expect(byIds("aria-describedby")).toEqual(["Description test-post"]);
+    expect(link.textContent).toBe("Title test-post");
+    expect(link.hasAttribute("aria-labelledby")).toBe(false);
+    expect(link.hasAttribute("aria-label")).toBe(false);
   });
 });

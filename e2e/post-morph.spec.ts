@@ -50,7 +50,7 @@ test("a blog card morphs into the post, and Back morphs it home", async ({
   page,
 }) => {
   await page.goto("/blog/");
-  const card = page.locator(".blog-post-thumbnail").first();
+  const card = page.locator(".blog-post-thumbnail .link").first();
   const href = await card.getAttribute("href");
   await card.click();
   await expect(page).toHaveURL(new RegExp(`${href}$`));

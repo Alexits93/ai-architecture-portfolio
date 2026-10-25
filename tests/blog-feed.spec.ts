@@ -55,8 +55,8 @@ const render = async (page: Page<BlogPost>, current?: Category) => {
 };
 
 const cards = (doc: Document) =>
-  [...doc.querySelectorAll(".blog-grid .blog-post-thumbnail")].map((card) =>
-    card.getAttribute("href"),
+  [...doc.querySelectorAll(".blog-grid .blog-post-thumbnail .link")].map(
+    (card) => card.getAttribute("href"),
   );
 const pagination = (doc: Document) =>
   doc.querySelector('nav[aria-label="Pagination"]');

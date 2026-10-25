@@ -1,5 +1,5 @@
 ---
-// A post as one link around a raised card: the category as kicker, the title, the description.
+// A post as a raised card: the category as kicker, the title as the link to the post, the description.
 import Card from "@/components/Card.astro";
 import DisplayHeading from "@/components/DisplayHeading.astro";
 import Eyebrow from "@/components/Eyebrow.astro";
@@ -13,48 +13,49 @@ interface Props {
 }
 
 const { post, heading } = Astro.props;
-// Firefox computes no name from content for a link that only wraps an <article>, so the title names the link
-// and the description describes it. A post appears once per page, so its id keeps them unique.
-const titleId = `card-title-${post.id}`;
-const descriptionId = `card-description-${post.id}`;
 ---
 
-<a
-  href={getPostPath(post)}
-  class="blog-post-thumbnail"
-  data-post-card
-  aria-labelledby={titleId}
-  aria-describedby={descriptionId}
->
-  <Card as="article">
-    <Eyebrow slash={false}>{post.data.category}</Eyebrow>
-    <DisplayHeading
-      as={heading}
-      size="card"
-      class="title"
-      data-morph="title"
-      id={titleId}
-      text={post.data.title}
-    />
-    <p id={descriptionId}>{post.data.description}</p>
-  </Card>
-</a>
+{/* The link sits in the heading and wraps only the title, so its name is its own visible text (WCAG 2.5.3 Label in
+    Name); its ::after covers the card, so a click anywhere opens the post
+    (https://inclusive-components.design/cards/). The morph script finds the card by data-post-card and names the
+    title inside it; the title is a block, since a view transition skips an element split over several lines. */}
+<Card as="article" class="blog-post-thumbnail">
+  <Eyebrow slash={false}>{post.data.category}</Eyebrow>
+  <DisplayHeading as={heading} size="card" class="title">
+    <a href={getPostPath(post)} class="link" data-post-card>
+      <span class="name" data-morph="title">
+        {post.data.title}
+      </span>
+    </a>
+  </DisplayHeading>
+  <p>{post.data.description}</p>
+</Card>
 
 <style>
-  /* The radius lets the keyboard focus outline follow the card's corners. */
+  /* Cards in one grid row share its height. The card is the containing block of the link's ::after. */
   .blog-post-thumbnail {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    border-radius: var(--radius-2xl);
-  }
-
-  /* Cards in one grid row share its height. */
-  .blog-post-thumbnail article {
+    position: relative;
     block-size: 100%;
     transition:
       translate var(--duration-2) ease-out,
       background-color var(--duration-2) ease-out;
+  }
+
+  /* Blocks, so the title is one box for the morph and the focus ring outlines it; an inline link around a block
+     draws its ring around empty line fragments. */
+  .link,
+  .name {
+    display: block;
+  }
+  .link {
+    color: inherit;
+    text-decoration: none;
+  }
+  .link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
   }
 
   .title {
@@ -66,7 +67,7 @@ const descriptionId = `card-description-${post.id}`;
 
   /* Hover lifts the card one step off the page; only where the primary input can hover (MDN @media hover). */
   @media (hover: hover) {
-    .blog-post-thumbnail:hover article {
+    .blog-post-thumbnail:hover {
       translate: 0 calc(-1 * var(--space-1));
       background-color: var(--thumbnail-bg-color-hover);
     }
@@ -76,7 +77,7 @@ const descriptionId = `card-description-${post.id}`;
     }
   }
 
-  .blog-post-thumbnail:active article {
+  .blog-post-thumbnail:active {
     translate: 0 0;
     transition-duration: calc(var(--duration-1) / 2);
   }

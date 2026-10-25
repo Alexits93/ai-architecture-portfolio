@@ -28,8 +28,8 @@ const BLOG_ROUTES = [
 
 const cardHrefs = (page: Page, scope: string) =>
   page
-    .locator(`${scope} .blog-post-thumbnail`)
-    .evaluateAll((cards) => cards.map((card) => card.getAttribute("href")));
+    .locator(`${scope} .blog-post-thumbnail .link`)
+    .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
 
 const categoryNav = (page: Page) =>
   page.getByRole("navigation", { name: "Blog categories" });
@@ -78,8 +78,8 @@ test.describe("Blog category listing", () => {
   test("lists every post on /blog/", async ({ page }) => {
     await page.goto("/blog/");
     const hrefs = await page
-      .locator(".blog-grid .blog-post-thumbnail")
-      .evaluateAll((cards) => cards.map((card) => card.getAttribute("href")));
+      .locator(".blog-grid .blog-post-thumbnail .link")
+      .evaluateAll((links) => links.map((link) => link.getAttribute("href")));
     expect(hrefs.toSorted()).toEqual(POST_ROUTES.toSorted());
   });
 
@@ -227,7 +227,7 @@ test.describe("Recommended articles on a post page", () => {
   }
 });
 
-// Firefox gave a card link that only wraps an <article> no name, so Orca read "link". Each card link is named by
+// Firefox gave a card link that only wrapped an <article> no name, so Orca read "link". Each card link is named by
 // its title, on the blog index and under a post.
 for (const route of ["/blog/", POST_ROUTES[0]]) {
   test(`card links on ${route} are named by their post title`, async ({
@@ -241,11 +241,23 @@ for (const route of ["/blog/", POST_ROUTES[0]]) {
     );
     expect(cards.length).toBeGreaterThan(0);
     for (const card of cards)
-      await expect(card).toHaveAccessibleName(
+      await expect(card.getByRole("link")).toHaveAccessibleName(
         await card.locator(".title").innerText(),
       );
   });
 }
+
+// The link wraps only the title; its stretched ::after covers the card, so a click on the description lands on the
+// link. A mouse click at the description's position, since a locator click waits for the description to be on top.
+test("a click on a card's description opens its post", async ({ page }) => {
+  await page.goto("/blog/");
+  const card = page.locator(".blog-grid .blog-post-thumbnail").first();
+  const href = await card.getByRole("link").getAttribute("href");
+  const box = await card.locator("p:not(.eyebrow)").boundingBox();
+  assert(box !== null);
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(page).toHaveURL(new RegExp(`${href}$`));
+});
 
 // The sticky On this page sidebar outgrew a 900 px window, and a sticky element taller than the window never
 // scrolls into view, so its last entries were cut off. It keeps to the window and scrolls on its own.
