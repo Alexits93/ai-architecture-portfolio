@@ -2,7 +2,7 @@
 
 The code for [www.pa-tech.dev](https://www.pa-tech.dev), my portfolio, CV and blog. I'm Patrik Alexits, a frontend architect.
 
-It's a static Astro site with no client framework. Small scripts handle the few interactive parts, like the theme toggle, the menu and the photo viewer.
+It's a static Astro site with no client framework. Small scripts handle the few interactive parts, like the theme toggle and the menu.
 
 ## Run it
 
