@@ -119,7 +119,7 @@ for (const theme of ["dark", "light"]) {
     );
     await page.goto("/blog/");
     const card = await css(
-      page.locator(".blog-post-thumbnail article").first(),
+      page.locator(".blog-post-thumbnail").first(),
       "backgroundColor",
     );
     expect(card).toBe(home);

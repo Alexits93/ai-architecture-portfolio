@@ -26,7 +26,7 @@ describe("BlogPostRecommended Widget (Astro)", () => {
       .window.document;
 
   const hrefs = (doc: Document) =>
-    [...doc.querySelectorAll(".blog-post-thumbnail")].map((a) =>
+    [...doc.querySelectorAll(".blog-post-thumbnail .link")].map((a) =>
       a.getAttribute("href"),
     );
 

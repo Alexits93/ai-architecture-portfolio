@@ -66,7 +66,7 @@ const journey = async (page: Page, input: Input) => {
   await expectBlogPage(page, AI);
   await expectOnlyCategory(page, "AI");
 
-  const card = page.locator(".blog-grid .blog-post-thumbnail").first();
+  const card = page.locator(".blog-grid .blog-post-thumbnail .link").first();
   const postPath = await card.getAttribute("href");
   expect(postPath).toMatch(/^\/blog\/[a-z0-9-]+\/$/);
   await activate(page, card, input);
