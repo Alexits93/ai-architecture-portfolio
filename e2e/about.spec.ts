@@ -13,7 +13,19 @@ test("/about/ shows the hobbies, causes and goals sections in order", async ({
   ]);
 });
 
-test("the home link between the photos and the now card opens /about/", async ({
+// Staging testers found three cards per row too narrow for the long hobby texts.
+test("hobby cards sit two per row on a wide screen", async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.goto("/about/");
+  const tops = await page
+    .locator("#hobbies li")
+    .evaluateAll((items) =>
+      items.map((item) => item.getBoundingClientRect().top),
+    );
+  expect(tops.filter((top) => top === tops[0])).toHaveLength(2);
+});
+
+test("the home link between the hero and the now card opens /about/", async ({
   page,
 }) => {
   await page.goto("/");

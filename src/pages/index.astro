@@ -7,7 +7,6 @@ import Contact from "./_Contact.astro";
 import Faq from "./_Faq.astro";
 import Hero from "./_Hero.astro";
 import Now from "./_Now.astro";
-import Photos from "./_Photos.astro";
 import Principles from "./_Principles.astro";
 import Services from "./_Services.astro";
 import Work from "./_Work.astro";
@@ -19,7 +18,6 @@ const jsonLd = homeJsonLd(new URL(ROUTES.home, Astro.site).href);
 <BaseLayout title={SITE.title} description={SITE.description} jsonLd={jsonLd}>
   <main>
     <Hero />
-    <Photos />
     <div id="get-to-know" class="get-to-know">
       <Pill href={ROUTES.about}>Get to know me</Pill>
     </div>
@@ -34,7 +32,7 @@ const jsonLd = homeJsonLd(new URL(ROUTES.home, Astro.site).href);
 </BaseLayout>
 
 <style>
-  /* The link to /about/ between the photo row and the now card. */
+  /* The link to /about/ between the hero and the now card. */
   .get-to-know {
     display: flex;
     justify-content: center;

@@ -15,7 +15,7 @@ const datetimes = (page: Page, selector: string) =>
     .locator(selector)
     .evaluateAll((times) => times.map((time) => time.getAttribute("datetime")));
 
-// Astro renders a component's processed <script> in place, so the photo row's drag script is a child of main.
+// Astro renders a component's processed <script> in place, so the hero's script is a child of main.
 test("renders the sections in order", async ({ page }) => {
   await page.goto("/");
   const ids = await page
@@ -23,7 +23,6 @@ test("renders the sections in order", async ({ page }) => {
     .evaluateAll((blocks) => blocks.map((block) => block.id));
   expect(ids).toEqual([
     "hero",
-    "photos",
     "get-to-know",
     "now",
     "services",

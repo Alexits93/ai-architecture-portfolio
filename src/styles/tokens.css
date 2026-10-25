@@ -95,8 +95,6 @@
   /* Dividers and pill outlines: the text colour thinned, so they follow the theme with it
        (https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix). */
   --hairline-color: color-mix(in srgb, var(--font-color) 20%, transparent);
-  /* The page behind an open photo: the page colour, mostly opaque, so the photo stands out in both themes. */
-  --backdrop-color: color-mix(in srgb, var(--body-background) 85%, transparent);
   --outline-width-focus: 2px;
   /* A gap between the focus ring and what it outlines keeps the text readable. */
   --outline-offset-focus: 8px;
@@ -114,22 +112,9 @@
   --size-sidebar: 230px;
   --size-card-max: 400px;
   --size-prose: 800px;
-  /* A negative inline margin that takes a block from its centred column to the window edges (the photo row).
-       The percentage resolves against the column where the token is used. */
-  --size-bleed: calc(50% - 50vw);
   /* The home hero: the portrait card shrinks with a phone screen, and the pitch wraps at a short measure. */
   --size-portrait: min(70vw, 16rem);
   --size-pitch: 36ch;
-  /* A photo in the home row: narrow enough on a phone that the next one peeks in as a hint to scroll. */
-  --size-photo: clamp(12rem, 22vw, 17rem);
-  /* An open photo: the height left after the close button and the caption, no wider than the window allows at
-       the files' 9:10 ratio, and at most the files' 1000px. On a short window, such as 400% zoom, the height keeps a
-       14rem floor, as wide as a thumbnail, and the dialog scrolls. */
-  --size-photo-large: min(
-    max(calc(100dvh - 12rem), 14rem),
-    calc((100vw - 4rem) * 10 / 9),
-    1000px
-  );
   /* The sticky header: the theme toggle and its padding. */
   --size-header: calc(var(--size-icon-lg) + 2 * var(--space-4));
   /* Sticky parts on home stop this far below the viewport top, clear of the sticky header. */
