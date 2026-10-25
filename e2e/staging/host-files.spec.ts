@@ -18,6 +18,15 @@ for (const [from, to] of [
   });
 }
 
+// www.pa-tech.dev is canonical (ADR 001); statichost.eu answers the apex with a redirect to it.
+test("redirects the apex to www with 301", async ({ request }) => {
+  const response = await request.get("https://pa-tech.dev/", {
+    maxRedirects: 0,
+  });
+  expect(response.status()).toBe(301);
+  expect(response.headers().location).toBe("https://www.pa-tech.dev/");
+});
+
 // RFC 9116 section 3 requires text/plain (https://www.rfc-editor.org/rfc/rfc9116).
 test("serves security.txt as plain text", async ({ request }) => {
   const response = await request.get("/.well-known/security.txt");
