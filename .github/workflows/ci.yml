@@ -50,11 +50,39 @@ jobs:
       - name: pnpm Audit (Supply Chain Security)
         run: pnpm audit --audit-level=high
 
+  # The e2e container tag must match the installed @playwright/test, whose browsers the image ships.
+  playwright-version:
+    name: Playwright version
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    outputs:
+      version: ${{ steps.read.outputs.version }}
+    steps:
+      - name: Checkout Lockfile
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: pnpm-lock.yaml
+          sparse-checkout-cone-mode: false
+
+      - name: Read Version
+        id: read
+        run: |
+          version=$(grep -m1 -oP "^  '@playwright/test@\K[0-9.]+(?=':)" pnpm-lock.yaml)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
   # One job per engine, in parallel and alongside the other gates: on one worker the whole suite took 7.4 minutes
   # in one job. Each job keeps one worker, as https://playwright.dev/docs/ci recommends for stability.
+  # The jobs run in the Playwright image, which ships the browsers and their system libraries. Installing them in the
+  # job stalled twice on the Ubuntu apt mirror until the job timeout (runs 40210373092 and 40213658255)
+  # (https://playwright.dev/docs/ci#via-containers).
   e2e-engine:
     name: E2E (${{ matrix.engine }})
+    needs: [playwright-version]
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.playwright-version.outputs.version }}-noble
+      # The runner's user, so the checkout and the pnpm cache stay writable.
+      options: --user 1001
     # Leaves room for setup after the 7-minute Playwright globalTimeout, so Playwright stops first and reports.
     timeout-minutes: 10
     # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idpermissions
@@ -77,10 +105,6 @@ jobs:
 
       - name: Setup Environment
         uses: ./.github/actions/setup-pnpm-env
-
-      # Only this job's browser and its system dependencies (https://playwright.dev/docs/browsers#install-browsers).
-      - name: Install Playwright Browser
-        run: pnpm exec playwright install --with-deps ${{ matrix.engine }}
 
       - name: Astro Build
         run: pnpm run build
