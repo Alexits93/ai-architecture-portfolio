@@ -1,10 +1,14 @@
+import { createRequire } from "node:module";
 import { defineConfig, devices } from "@playwright/test";
 
 // Local WebKit (pnpm test:e2e:webkit): the host lacks WebKit's system libraries, so the browser runs in
 // the Playwright image of the installed version under Podman and connects back to the preview server
-// on the host loopback (https://playwright.dev/docs/docker).
+// on the host loopback (https://playwright.dev/docs/docker). The version is read from the installed package, so a
+// Playwright update moves the image with it.
 const webkitInPodman = process.env.PW_WEBKIT_PODMAN === "1";
-const PLAYWRIGHT_VERSION = "1.64.0";
+const PLAYWRIGHT_VERSION: string = createRequire(import.meta.url)(
+  "@playwright/test/package.json",
+).version;
 const BFCACHE_SPEC = "e2e/menu-bfcache.spec.ts";
 // Live-site specs run only through playwright.staging.config.ts (pnpm test:e2e:staging).
 const STAGING_SPECS = "e2e/staging/**";
