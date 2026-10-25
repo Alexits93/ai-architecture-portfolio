@@ -7,7 +7,7 @@ const baseURL = "https://www.pa-tech.dev";
 export default defineConfig({
   testDir: ".",
   // csp.spec.ts reads the routes from dist/, so dist/ must be built from the commit production serves.
-  testMatch: ["e2e/staging/**/*.spec.ts", "e2e/csp.spec.ts"],
+  testMatch: ["e2e/live/**/*.spec.ts", "e2e/csp.spec.ts"],
   reporter: "list",
   use: { baseURL },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
