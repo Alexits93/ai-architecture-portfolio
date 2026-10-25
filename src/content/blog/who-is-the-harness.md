@@ -11,7 +11,7 @@ I'm a big fan of clear terminology. I require it at work too, and encourage the 
 
 I love how AI/LLMs expose this communication gap clearly present in everyday engineering - describing a pattern or principle, leaving room for misinterpretation and then comes the "that's not what I meant".
 
-Last week I had a talk with Darryn Crawford at the Volaris Group London AI accelerator where we both were present as coaches and I remember using the term "AI harness" to describe the setup I'm building at our company.
+In the first week of October I had a talk with Darryn Crawford at the Volaris Group London AI accelerator where we both were present as coaches and I remember using the term "AI harness" to describe the setup I'm building at our company.
 
 He sharply corrected me as "Claude Code is the harness", which made me think that I've been referring to our "user harness" or "outer harness" the same way as the people I'm trying to influence not to use vague terms to describe principles or patterns.
 
