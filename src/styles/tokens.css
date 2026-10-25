@@ -120,9 +120,10 @@
   /* Sticky parts on home stop this far below the viewport top, clear of the sticky header. */
   --offset-sticky: 7rem;
   /* The service cards sit this far apart before they stack; the space after the last one keeps the pile on screen
-       a while longer. */
-  --space-stack: 16vh;
-  --space-stack-end: 24vh;
+       a while longer. On a phone a card fills most of the screen, so viewport-high gaps read as empty space; the
+       vh values start at 48rem (below). */
+  --space-stack: var(--space-8);
+  --space-stack-end: var(--space-8);
   --page-max-width: 1200px;
   /* main's widest box, its padding included; the blog grid inside it caps at --page-max-width. */
   --size-main: 1280px;
@@ -182,6 +183,13 @@
 
 /* Registered, so the name's gradient accent interpolates between --accent-a and --accent-b instead of jumping
    (https://developer.mozilla.org/en-US/docs/Web/CSS/@property). */
+@media (min-width: 48rem) {
+  :root {
+    --space-stack: 16vh;
+    --space-stack-end: 24vh;
+  }
+}
+
 @property --name-accent {
   syntax: "<color>";
   inherits: false;
