@@ -20,29 +20,36 @@ test.describe("reduced motion", () => {
   test.use({ reducedMotion: "reduce", viewport: { width: 1280, height: 900 } });
 
   // At the end of the stack every card has reached its sticky offset, so each one overlaps the one before it.
-  // Without sticky they would sit a screen apart.
-  test("the cards pile up while the page scrolls", async ({ page }) => {
-    await page.goto("/");
-    await page.evaluate(() => {
-      const stack = document.querySelector("#services ol");
-      if (stack === null) throw new Error("no stack");
-      const box = stack.getBoundingClientRect();
-      window.scrollTo(0, window.scrollY + box.bottom - window.innerHeight);
+  // Without sticky they would sit a screen apart. Phones get smaller gaps between the cards, so a phone is checked too.
+  for (const viewport of [
+    { width: 1280, height: 900 },
+    { width: 390, height: 844 },
+  ])
+    test(`the cards pile up while the page scrolls at ${viewport.width} px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      await page.evaluate(() => {
+        const stack = document.querySelector("#services ol");
+        if (stack === null) throw new Error("no stack");
+        const box = stack.getBoundingClientRect();
+        window.scrollTo(0, window.scrollY + box.bottom - window.innerHeight);
+      });
+      const boxes = await page.locator("#services .card").evaluateAll((cards) =>
+        cards.map((card) => {
+          const box = card.getBoundingClientRect();
+          return { top: box.top, bottom: box.bottom };
+        }),
+      );
+      expect(boxes).toHaveLength(4);
+      for (const [index, box] of boxes.entries()) {
+        const previous = boxes[index - 1];
+        if (previous === undefined) continue;
+        expect(box.top).toBeGreaterThan(previous.top);
+        expect(box.top).toBeLessThan(previous.bottom);
+      }
     });
-    const boxes = await page.locator("#services .card").evaluateAll((cards) =>
-      cards.map((card) => {
-        const box = card.getBoundingClientRect();
-        return { top: box.top, bottom: box.bottom };
-      }),
-    );
-    expect(boxes).toHaveLength(4);
-    for (const [index, box] of boxes.entries()) {
-      const previous = boxes[index - 1];
-      if (previous === undefined) continue;
-      expect(box.top).toBeGreaterThan(previous.top);
-      expect(box.top).toBeLessThan(previous.bottom);
-    }
-  });
 
   test("the cards show without the settle animation", async ({ page }) => {
     await page.goto("/");
