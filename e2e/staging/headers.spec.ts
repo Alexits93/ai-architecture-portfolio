@@ -2,10 +2,9 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { test, expect } from "@playwright/test";
 
-// The live staging site serves public/_headers exactly. statichost.eu reads the file from the publish
+// The production site serves public/_headers exactly. statichost.eu reads the file from the publish
 // root and uses the last matched occurrence of each header (https://www.statichost.eu/docs/custom-headers/).
-// Password protection is HTTP Basic Auth (https://www.statichost.eu/docs/password-protection/).
-// Run with pnpm test:e2e:staging; playwright.staging.config.ts supplies the URL and credentials.
+// Run with pnpm test:e2e:staging; playwright.staging.config.ts supplies the URL.
 
 const blocks = new Map<string, Array<[string, string]>>();
 let current: Array<[string, string]> = [];
@@ -22,7 +21,7 @@ assert(
   "public/_headers lacks the * or /_astro/* block",
 );
 
-// A real hashed asset of this build; dist/ must come from the commit staging serves.
+// A real hashed asset of this build; dist/ must come from the commit production serves.
 const asset = readdirSync("dist/_astro").find((file) =>
   /\.(css|js)$/.test(file),
 );
@@ -49,15 +48,4 @@ test("serves the /_astro/* cache rule on a built asset", async ({
   const served = response.headers();
   for (const [name, value] of assets)
     expect.soft(served[name], name).toBe(value);
-});
-
-// Node's fetch, because Playwright request contexts inherit httpCredentials from the config.
-test("denies access without credentials and shows no page content", async ({
-  baseURL,
-}) => {
-  assert(baseURL !== undefined);
-  const response = await fetch(new URL("/", baseURL));
-  expect(response.status).toBe(401);
-  expect(response.headers.get("www-authenticate")).toMatch(/^Basic\b/);
-  expect(await response.text()).not.toContain("<title>");
 });

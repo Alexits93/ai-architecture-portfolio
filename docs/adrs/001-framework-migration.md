@@ -10,7 +10,7 @@ The host for the static output must meet six requirements:
 2. Serves `public/_headers` unchanged: CSP `frame-ancestors`, HSTS, nosniff, COOP/COEP/CORP and the `/_astro/*` cache rule.
 3. Custom domain with automatic HTTPS.
 4. Builds on the host from the repo, so deploys need no CI job or upload step.
-5. Password-protected staging on the same host as production.
+5. Password-protected staging on the same host as production, until go-live.
 6. Free or low cost, with no server to maintain.
 
 ## Decision
@@ -20,9 +20,9 @@ Migrate to **Astro** with `output: 'static'`: pure static HTML. The code follows
 Host on **statichost.eu**, Hobby plan (free: 1 site, 100 build minutes, 10 GB bandwidth, custom headers and password protection on all plans). `www.pa-tech.dev` is canonical, with a 301 from the apex. Stockholm-based, and states that every layer from git deploy to CDN runs on European infrastructure owned by European companies.
 
 - Build: `statichost.yml` in the repo root (`node:26`, Corepack installed with npm, `pnpm install --frozen-lockfile`, `pnpm build`, public `dist`). The dashboard pnpm preset runs `corepack enable`, which Node.js no longer ships from 25.0.0.
-- Deploy: manual. The owner starts each build in the dashboard; the repo has no push webhook (https://www.statichost.eu/docs/git-providers/#github), so a merge alone does not reach staging.
-- Headers: `public/_headers`, verified live by `pnpm test:e2e:staging`. The site-wide block and the `/_astro/*` wildcard are both served exactly on Hobby.
-- Staging: HTTP Basic Auth set in the dashboard. Authenticated responses carry the `_headers` values unchanged; the 401 carries only the host's own headers and no page content.
+- Deploy: manual. The owner starts each build in the dashboard; the repo has no push webhook (https://www.statichost.eu/docs/git-providers/#github), so a merge alone does not reach production.
+- Headers: `public/_headers`, verified on production by `pnpm test:e2e:staging`. The site-wide block and the `/_astro/*` wildcard are both served exactly on Hobby.
+- Staging: until go-live, the one Hobby site ran behind HTTP Basic Auth as staging. At go-live it became production, and the owner kept the free plan: a change is checked locally (`pnpm build`, `pnpm preview`, the e2e suite) and reaches visitors when the owner starts a build. The Starter plan (EUR 9 per month, unlimited sites) brings a separate staging site back.
 
 ```mermaid
 flowchart TD
@@ -55,8 +55,8 @@ flowchart TD
 - **Positive:** Low exit cost: the output is static files, and `_headers` is the format Netlify and Cloudflare Pages also read.
 - **Negative:** Open Graph images need a build step (`Satori` in Astro).
 - **Negative:** Small operator: a named founder and a Stockholm address, but no legal entity named on the homepage.
-- **Negative:** The docs list path and wildcard header rules as "depending on plan" and do not document pnpm; both are covered by `statichost.yml` and the staging spec, which fail if the host changes behavior.
-- **Negative:** Hobby allows one site, so the staging site becomes production when the domain moves (#168).
+- **Negative:** The docs list path and wildcard header rules as "depending on plan" and do not document pnpm; both are covered by `statichost.yml` and the live spec, which fail if the host changes behavior.
+- **Negative:** Hobby allows one site, so there is no staging after go-live: the first host-side check of a build is on production.
 - **Negative:** The dashboard can report an error for a change it applied (a 504 on enabling password protection), so settings are verified from outside, not from the dashboard response.
 
 Sources (read 2026-10-12):
