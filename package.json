@@ -16,7 +16,7 @@
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "prepare": "husky"
   },
-  "packageManager": "pnpm@12.10.1",
+  "packageManager": "pnpm@12.14.0",
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
     "@resvg/resvg-js": "^2.6.2",
