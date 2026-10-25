@@ -25,7 +25,7 @@ test("hobby cards sit two per row on a wide screen", async ({ page }) => {
   expect(tops.filter((top) => top === tops[0])).toHaveLength(2);
 });
 
-test("the home link between the photos and the now card opens /about/", async ({
+test("the home link between the hero and the now card opens /about/", async ({
   page,
 }) => {
   await page.goto("/");
