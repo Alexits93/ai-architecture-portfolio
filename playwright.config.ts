@@ -10,8 +10,8 @@ const PLAYWRIGHT_VERSION: string = createRequire(import.meta.url)(
   "@playwright/test/package.json",
 ).version;
 const BFCACHE_SPEC = "e2e/menu-bfcache.spec.ts";
-// Live-site specs run only through playwright.staging.config.ts (pnpm test:e2e:staging).
-const STAGING_SPECS = "e2e/staging/**";
+// Live-site specs run only through playwright.live.config.ts (pnpm test:e2e:live).
+const LIVE_SPECS = "e2e/live/**";
 
 export default defineConfig({
   testDir: ".",
@@ -32,7 +32,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      testIgnore: [BFCACHE_SPEC, STAGING_SPECS],
+      testIgnore: [BFCACHE_SPEC, LIVE_SPECS],
       use: { ...devices["Desktop Chrome"] },
     },
     // The back/forward cache needs the real Chromium of new headless mode (https://playwright.dev/docs/browsers)
@@ -49,12 +49,12 @@ export default defineConfig({
     // Trusted Types and the hash-based CSP must hold in every engine, not only Chromium.
     {
       name: "firefox",
-      testIgnore: [BFCACHE_SPEC, STAGING_SPECS],
+      testIgnore: [BFCACHE_SPEC, LIVE_SPECS],
       use: { ...devices["Desktop Firefox"] },
     },
     {
       name: "webkit",
-      testIgnore: [BFCACHE_SPEC, STAGING_SPECS],
+      testIgnore: [BFCACHE_SPEC, LIVE_SPECS],
       use: {
         ...devices["Desktop Safari"],
         connectOptions: webkitInPodman

@@ -12,7 +12,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:webkit": "PW_WEBKIT_PODMAN=1 playwright test --project=webkit",
-    "test:e2e:staging": "playwright test --config playwright.staging.config.ts",
+    "test:e2e:live": "playwright test --config playwright.live.config.ts",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "prepare": "husky"
   },

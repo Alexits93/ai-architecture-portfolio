@@ -4,7 +4,7 @@ import { test, expect } from "@playwright/test";
 
 // The production site serves public/_headers exactly. statichost.eu reads the file from the publish
 // root and uses the last matched occurrence of each header (https://www.statichost.eu/docs/custom-headers/).
-// Run with pnpm test:e2e:staging; playwright.staging.config.ts supplies the URL.
+// Run with pnpm test:e2e:live; playwright.live.config.ts supplies the URL.
 
 const blocks = new Map<string, Array<[string, string]>>();
 let current: Array<[string, string]> = [];

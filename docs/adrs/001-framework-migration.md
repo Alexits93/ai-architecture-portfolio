@@ -21,7 +21,7 @@ Host on **statichost.eu**, Hobby plan (free: 1 site, 100 build minutes, 10 GB ba
 
 - Build: `statichost.yml` in the repo root (`node:26`, Corepack installed with npm, `pnpm install --frozen-lockfile`, `pnpm build`, public `dist`). The dashboard pnpm preset runs `corepack enable`, which Node.js no longer ships from 25.0.0.
 - Deploy: manual. The owner starts each build in the dashboard; the repo has no push webhook (https://www.statichost.eu/docs/git-providers/#github), so a merge alone does not reach production.
-- Headers: `public/_headers`, verified on production by `pnpm test:e2e:staging`. The site-wide block and the `/_astro/*` wildcard are both served exactly on Hobby.
+- Headers: `public/_headers`, verified on production by `pnpm test:e2e:live`. The site-wide block and the `/_astro/*` wildcard are both served exactly on Hobby.
 - Staging: until go-live, the one Hobby site ran behind HTTP Basic Auth as staging. At go-live it became production, and the owner kept the free plan: a change is checked locally (`pnpm build`, `pnpm preview`, the e2e suite) and reaches visitors when the owner starts a build. The Starter plan (EUR 9 per month, unlimited sites) brings a separate staging site back.
 
 ```mermaid
