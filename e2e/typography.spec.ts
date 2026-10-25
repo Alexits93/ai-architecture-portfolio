@@ -36,12 +36,14 @@ for (const route of POST_ROUTES) {
   }) => {
     await page.goto(route);
     const gaps = await page.evaluate(() => {
-      // The gap above each element after the first, and whether the element or the one before is a heading.
+      // The gap above each element after the first, and whether the element or the one before is a heading. Rounded
+      // to whole pixels: Firefox lays out list items at sub-pixel offsets, so an 8px gap measured 7.9999px.
       const gapsOf = (els: Element[]) =>
         els.slice(1).map((el, i) => ({
-          gap:
+          gap: Math.round(
             el.getBoundingClientRect().top -
-            els[i].getBoundingClientRect().bottom,
+              els[i].getBoundingClientRect().bottom,
+          ),
           heading: /^H[2-6]$/.test(el.tagName),
           afterHeading: /^H[2-6]$/.test(els[i].tagName),
         }));
