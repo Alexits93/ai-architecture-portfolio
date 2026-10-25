@@ -26,8 +26,9 @@ const namedSection = (doc: Document, id: string) => {
 const h3s = (section: Element) =>
   [...section.querySelectorAll("h3")].map((h3) => h3.textContent);
 
-// Music follows Video games, and freestyle football joined the Real Madrid card.
-it("renders six hobby cards, with a photo and alt text on the cars, travel and Real Madrid cards", async () => {
+// Music follows Video games, and freestyle football joined the Real Madrid card. Staging testers found photos on only
+// some cards uneven and too personal for a professional site.
+it("renders six hobby cards without photos", async () => {
   const section = namedSection(await render(Hobbies), "hobbies");
   expect(h3s(section)).toEqual([
     "Video games",
@@ -37,19 +38,7 @@ it("renders six hobby cards, with a photo and alt text on the cars, travel and R
     "Real Madrid",
     "Movies",
   ]);
-  const photos = [...section.querySelectorAll("li.card")].map((card) =>
-    card.querySelector("img"),
-  );
-  expect(photos.map((img) => img !== null)).toEqual([
-    false,
-    false,
-    true,
-    true,
-    true,
-    false,
-  ]);
-  for (const img of photos)
-    if (img !== null) expect(img.getAttribute("alt")).toMatch(/\S/);
+  expect(section.querySelectorAll("img")).toHaveLength(0);
 });
 
 it("renders the causes as headed items with a closing line", async () => {
